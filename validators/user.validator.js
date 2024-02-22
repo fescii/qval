@@ -14,12 +14,22 @@ const registrationValidation = async (data) => {
       }
     }
 
-    // validate name
-    if (typeof data.name !== 'string') {
+    // validate first name
+    if (typeof data.firstName !== 'string') {
       throw new TypeError("Name must be text(string)!")
     }
     else {
-      if (data.name.length < 5) {
+      if (data.firstName.length < 5) {
+        throw new Error("Name must have 5 characters or more!")
+      }
+    }
+
+    // validate last name
+    if (typeof data.lastName !== 'string') {
+      throw new TypeError("Name must be text(string)!")
+    }
+    else {
+      if (data.lastName.length < 5) {
         throw new Error("Name must have 5 characters or more!")
       }
     }
@@ -41,23 +51,24 @@ const registrationValidation = async (data) => {
 
     return {
       username: await sanitizeUtil.sanitizeInput(data.username),
-      name: await sanitizeUtil.sanitizeInput(data.name),
+      firstName: await sanitizeUtil.sanitizeInput(data.firstName),
+      lastName: await sanitizeUtil.sanitizeInput(data.lastName),
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (username, name, email, password)");
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (username, firstName, lastName, email, password)");
   }
 }
 
-// Register data validation 
+// Register data validation
 const loginValidation = async (data) => {
-  if (data.user_key && data.password) {
+  if (data.email && data.password) {
 
     // validate username
-    if (typeof data.user_key !== 'string') {
-      throw new TypeError("Email or username must be text(string)!")
+    if (typeof data.email !== 'string') {
+      throw new TypeError("Email must be text(string)!")
     }
 
     // validate password
@@ -66,12 +77,12 @@ const loginValidation = async (data) => {
     }
 
     return {
-      user_key: await sanitizeUtil.sanitizeInput(data.user_key),
+      email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (username/email, password)!");
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (email, password)!");
   }
 }
 
