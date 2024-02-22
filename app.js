@@ -16,13 +16,6 @@ let corsOptions = {
   origin: "http://localhost:${process.env.PORT}"
 };
 
-const db = require("./models");
-
-//SyncDb
-db.syncDb(false).then(() => {
-  console.log('Database Synchronized!')
-})
-
 
 app.use(cors(corsOptions));
 

@@ -1,5 +1,4 @@
 const { authController } = require('../controllers');
-const { authMiddleware } = require("../middlewares");
 
 const base_url = "/api/v1/auth";
 
@@ -14,7 +13,6 @@ module.exports = function (app) {
 
   app.post(
     `${base_url}/register`,
-    authMiddleware.checkDuplicateUsernameOrEmail,
     authController.signUp
   );
 
