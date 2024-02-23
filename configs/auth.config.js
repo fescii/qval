@@ -1,6 +1,5 @@
 authConfig = {
-  secret: process.env['AUTH_SECRET'],
-  jwt_expiry: process.env['JWT_EXPIRY']
+  secret: process.env['SUPABASE_JWT_SECRET']
 };
 
 module.exports = authConfig;

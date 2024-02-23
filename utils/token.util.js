@@ -2,12 +2,6 @@ const jwt = require("jsonwebtoken");
 
 const { authConfig } = require('../configs')
 
-//Function for generating jwt token
-const generateToken = async (userClaims) => {
-  return jwt.sign({ user: userClaims }, authConfig.secret, {
-    expiresIn: authConfig.jwt_expiry
-  });
-}
 
 //Function for verifying jwt token
 const verifyToken = async () => {
@@ -20,6 +14,5 @@ const verifyToken = async () => {
 }
 
 module.exports = {
-  generateToken,
   verifyToken
 }

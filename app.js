@@ -16,7 +16,7 @@ let corsOptions = {
   origin: "http://localhost:${process.env.PORT}"
 };
 
-
+// use cors options
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Require and start all routes
-require('./routes')(app)
+require('./routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
