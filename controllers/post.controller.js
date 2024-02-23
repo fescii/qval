@@ -36,7 +36,7 @@ const createPost = async (req, res) => {
       });
     }
 
-    console.log(data);
+    // console.log(data);
 
     // On success return response to the user
     return res.status(200).send({
