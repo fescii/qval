@@ -18,7 +18,13 @@ const checkDuplicateEmail = async (req, res, next) => {
     req.regData = userData;
 
     // Retrieve a list of all users in your Supabase project
-    const { data: users, error } = await supabase.auth.listUsers()
+    // const { data, error } = await supabase.auth.api.getUserByEmail(userData.email);
+
+    const { data, error } = await supabase.rpc( "get_user_id_by_email",
+      {
+        email: userData.email,
+      }
+    );
 
     if (error) {
       console.error(error);
@@ -28,10 +34,9 @@ const checkDuplicateEmail = async (req, res, next) => {
       });
     }
 
-    // Check if any of the users have an email that matches the email you want to add
-    const emailExists = users.some(user => user.email === userData.email);
-
-    if (emailExists) {
+    // Check if any result was returned
+    if (data.length > 0) {
+      // console.log(data);
       return res.status(409).send({
         success: false,
         message: "Failed! Email is already in use!"
@@ -67,15 +72,17 @@ const verifyToken = async (req, res, next) => {
   }
 
   try {
-    let user = await tokenUtil.verifyToken()
+    // console.log(token);
+    let user = await tokenUtil.verifyToken(token);
 
-    console.log(user);
+    // console.log(user);
 
     // Save user claims to request object
     req.user = user;
     next();
   }
   catch (error) {
+    console.error(error);
     // If not token verification fails - return 401(Unauthorized)
     return res.status(401).send({
       success: false,

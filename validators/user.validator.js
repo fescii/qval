@@ -2,41 +2,31 @@ const { sanitizeUtil } = require('../utils')
 
 // Register data validation
 const registrationValidation = async (data) => {
-  if (data.username && data.name && data.email && data.password) {
-
-    // validate username
-    if (typeof data.username !== 'string') {
-      throw new TypeError("Username must be type text(string)!")
-    }
-    else {
-      if (data.username.length < 5) {
-        throw new Error("Username must have 5 characters or more!")
-      }
-    }
+  if (data.firstName && data.lastName && data.email && data.password) {
 
     // validate first name
     if (typeof data.firstName !== 'string') {
-      throw new TypeError("Name must be text(string)!")
+      throw new TypeError("Firstname must be text(string)!")
     }
     else {
       if (data.firstName.length < 5) {
-        throw new Error("Name must have 5 characters or more!")
+        throw new Error("Firstname must have 5 characters or more!")
       }
     }
 
     // validate last name
     if (typeof data.lastName !== 'string') {
-      throw new TypeError("Name must be text(string)!")
+      throw new TypeError("Lastname must be text(string)!")
     }
     else {
       if (data.lastName.length < 5) {
-        throw new Error("Name must have 5 characters or more!")
+        throw new Error("Lastname must have 5 characters or more!")
       }
     }
 
     // validate email
     if (typeof data.email !== 'string') {
-      throw new TypeError("Name must be text(string)!")
+      throw new TypeError("Email must be text(string)!")
     }
 
     // validate password
@@ -50,7 +40,6 @@ const registrationValidation = async (data) => {
     }
 
     return {
-      username: await sanitizeUtil.sanitizeInput(data.username),
       firstName: await sanitizeUtil.sanitizeInput(data.firstName),
       lastName: await sanitizeUtil.sanitizeInput(data.lastName),
       email: await sanitizeUtil.sanitizeInput(data.email),
@@ -58,7 +47,7 @@ const registrationValidation = async (data) => {
     }
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (username, firstName, lastName, email, password)");
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Firstname, Lastname, email, password)");
   }
 }
 
@@ -82,7 +71,7 @@ const loginValidation = async (data) => {
     }
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (email, password)!");
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Email, Password)!");
   }
 }
 

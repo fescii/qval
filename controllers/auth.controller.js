@@ -18,7 +18,7 @@ const signUp = async (req, res) => {
       options: {
         data: {
           first_name: userData.firstName,
-          last_name: userData.last_name
+          last_name: userData.lastName
         }
       }
     }

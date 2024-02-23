@@ -15,14 +15,17 @@ const createPost = async (req, res) => {
   try {
     const postData = await postValidator.newPostValidator(payload);
 
+    // console.log(user);
     const { data, error } = await supabase
       .from('posts')
       .insert([{
-        user: user.sub,
+        user: user.id,
         title: postData.title,
+        published: false,
         tags: postData.tags,
         introduction: postData.introduction
       }])
+      .select();
 
 
     if (error) {
@@ -32,6 +35,8 @@ const createPost = async (req, res) => {
         message: "An error occurred while adding the blog post!"
       });
     }
+
+    console.log(data);
 
     // On success return response to the user
     return res.status(200).send({

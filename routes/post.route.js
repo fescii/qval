@@ -1,6 +1,6 @@
 const { postController } = require('../controllers');
+const { authMiddleware } = require('../middlewares');
 
-const base_url = "/api/v1/auth";
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -12,9 +12,8 @@ module.exports = function (app) {
   });
 
   app.post(
-    `${base_url}/register`,
-    authController.signUp
+    "/api/v1/post/add",
+    authMiddleware.verifyToken,
+    postController.createPost
   );
-
-  app.post(`${base_url}/login`, authController.signIn);
 };

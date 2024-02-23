@@ -4,13 +4,20 @@ const { authConfig } = require('../configs')
 
 
 //Function for verifying jwt token
-const verifyToken = async () => {
-  jwt.verify(token, authConfig.secret, (err, decoded) => {
+const verifyToken = async (token) => {
+  const user = {};
+  await jwt.verify(token, authConfig.secret, (err, decoded) => {
     if (err) {
       throw err;
     }
-    return decoded.user;
+    user.id = decoded.sub;
+    user.email = decoded.email;
+    user.phone = decoded.phone;
+    user.role = decoded.aud;
   });
+
+  // console.log(user);
+  return user;
 }
 
 module.exports = {
