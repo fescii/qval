@@ -69,6 +69,8 @@ const verifyToken = async (req, res, next) => {
   try {
     let user = await tokenUtil.verifyToken()
 
+    console.log(user);
+
     // Save user claims to request object
     req.user = user;
     next();

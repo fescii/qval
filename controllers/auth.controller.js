@@ -9,46 +9,35 @@ const { userValidator } = require('../validators');
 const signUp = async (req, res) => {
 
   // Get validated payload data from request object
-  const payload = req.body;
+  const userData = req.regData;
 
-  try {
-    const userData = await userValidator.loginValidation(payload);
-
-    const { data, error } = await supabase.auth.signUp(
-      {
-        email: userData.email,
-        password: userData.password,
-        options: {
-          data: {
-            first_name: userData.firstName,
-            last_name: userData.last_name
-          }
+  const { data, error } = await supabase.auth.signUp(
+    {
+      email: userData.email,
+      password: userData.password,
+      options: {
+        data: {
+          first_name: userData.firstName,
+          last_name: userData.last_name
         }
       }
-    )
-
-    if (error) {
-      console.error(error);
-      return res.status(500).send({
-        success: false,
-        message: "An error occurred while trying to add the user!"
-      });
     }
+  )
 
-    // On success return response to the user
-    return res.status(200).send({
-      success: true,
-      data: data,
-      message: "User was registered successfully!"
-    });
-
-  }
-  catch (error) {
-    return res.status(400).send({
+  if (error) {
+    console.error(error);
+    return res.status(500).send({
       success: false,
-      message: error.message
+      message: "An error occurred while trying to add the user!"
     });
   }
+
+  // On success return response to the user
+  return res.status(200).send({
+    success: true,
+    data: data,
+    message: "User was registered successfully!"
+  });
 };
 
 // Controller to log in user into the system

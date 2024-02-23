@@ -10,6 +10,7 @@ const createPost = async (req, res) => {
 
   // Get validated payload data from request object
   const payload = req.body;
+  const user = req.user;
 
   try {
     const postData = await postValidator.newPostValidator(payload);
@@ -17,6 +18,7 @@ const createPost = async (req, res) => {
     const { data, error } = await supabase
       .from('posts')
       .insert([{
+        user: user.sub,
         title: postData.title,
         tags: postData.tags,
         introduction: postData.introduction

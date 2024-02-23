@@ -1,6 +1,5 @@
 const { authController } = require('../controllers');
-
-const base_url = "/api/v1/auth";
+const { authMiddleware } = require('../middlewares');
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -11,10 +10,16 @@ module.exports = function (app) {
     next();
   });
 
+  // Register route
   app.post(
-    `${base_url}/register`,
+    "/api/v1/auth/register",
+    authMiddleware.checkDuplicateEmail,
     authController.signUp
   );
 
-  app.post(`${base_url}/login`, authController.signIn);
+  //Login route
+  app.post(
+    "/api/v1/auth/login",
+    authController.signIn
+  );
 };
