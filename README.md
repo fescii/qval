@@ -46,7 +46,7 @@ A personal blog platform built with Node.js, Express.js, and Supabase for robust
    PORT=3000
 
    # DATABASE CONFIGS
-   SUPABASE_URL=[https://mvhidbqsedvddhipnkex.supabase.co](https://mvhidbqsedvddhipnkex.supabase.co)
+   SUPABASE_URL=your supabse url
    SUPABASE_ANON_KEY=this is supabase anon key
    SUPABASE_JWT_SECRET=this supabase api jwt secrete
 
