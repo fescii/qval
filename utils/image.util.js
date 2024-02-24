@@ -1,20 +1,40 @@
 const { dbConfig } = require('../configs');
 const supabase = dbConfig.supabase;
 
-uploadImage = async (file, filePath) => {
+uploadImage = async (bucket, filePath, extName, file) => {
   const { data, error } = await supabase.storage
-    .from('images')
-    .upload(filePath, file)
+    .from(bucket)
+    .upload(filePath, file.buffer, {
+      contentType: `image/${extName}`,
+      cacheControl: '3600',
+      upsert: true
+    })
 
   if (error) {
     throw error
   }
   else {
-    console.log(data);
-    return data;
+    // console.log(data);
+
+    const urlData = await getPublicUrl(bucket, data.fullPath);
+    // console.log(urlData);
+    return urlData.publicUrl;
+  }
+}
+
+const getPublicUrl = async(bucket, path) => {
+  const { data, error } = supabase
+    .storage
+    .from(bucket)
+    .getPublicUrl(path)
+
+  if (error) {
+    throw error;
   }
 
+  return data;
 }
+
 
 module.exports = {
   uploadImage

@@ -16,4 +16,10 @@ module.exports = function (app) {
     authMiddleware.verifyToken,
     postController.createPost
   );
+
+  app.post(
+    "/api/v1/post/:postId/upload/cover",
+    authMiddleware.verifyToken,
+    postController.updateCoverImage
+  );
 };
