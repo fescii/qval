@@ -1,5 +1,5 @@
 const { postController } = require('../controllers');
-const { authMiddleware } = require('../middlewares');
+const { authMiddleware, uploadMiddleware } = require('../middlewares');
 
 
 module.exports = function (app) {
@@ -11,15 +11,17 @@ module.exports = function (app) {
     next();
   });
 
+  // Endpoint for creating a new blog post
   app.post(
     "/api/v1/post/add",
     authMiddleware.verifyToken,
     postController.createPost
   );
 
+  // Endpoint for uploading post cover image
   app.post(
     "/api/v1/post/:postId/upload/cover",
-    authMiddleware.verifyToken,
+    [authMiddleware.verifyToken, uploadMiddleware.imageUpload],
     postController.updateCoverImage
   );
 };
