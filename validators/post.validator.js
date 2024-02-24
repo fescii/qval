@@ -35,7 +35,42 @@ const newPostValidator = async (data) => {
   }
 }
 
+// New  post data validation
+const sectionValidator = async (data) => {
+  if (data.title && data.content) {
+
+    // validate title
+    if (typeof data.title !== 'string') {
+      throw new TypeError("Title must be type text(string)!")
+    }
+    else {
+      if (data.title.length < 5) {
+        throw new Error("Title must have 5 characters or more!")
+      }
+    }
+
+    // validate description
+    if (typeof data.content !== 'string') {
+      throw new TypeError("Content must be text(string)!")
+    }
+    else {
+      if (data.content.length < 5) {
+        throw new Error("Content must have 5 characters or more!")
+      }
+    }
+
+    return {
+      title: await sanitizeUtil.sanitizeInput(data.title),
+      content: await sanitizeUtil.sanitizeInput(data.content)
+    }
+  }
+  else {
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Title, & Content)");
+  }
+}
+
 
 module.exports = {
-  newPostValidator
+  newPostValidator,
+  sectionValidator
 }
