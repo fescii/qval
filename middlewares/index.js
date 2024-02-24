@@ -1,5 +1,7 @@
-const authMiddleware = require("./auth.middleware");
+const authMiddleware = require('./auth.middleware');
+const uploadMiddleware = require('./upload.middleware');
 
 module.exports = {
-  authMiddleware
+  authMiddleware,
+  uploadMiddleware
 };

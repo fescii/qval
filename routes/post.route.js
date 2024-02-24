@@ -1,5 +1,5 @@
 const { postController } = require('../controllers');
-const { authMiddleware } = require('../middlewares');
+const { authMiddleware, uploadMiddleware } = require('../middlewares');
 
 
 module.exports = function (app) {
@@ -11,9 +11,38 @@ module.exports = function (app) {
     next();
   });
 
+  // Endpoint for creating a new article
   app.post(
     "/api/v1/post/add",
     authMiddleware.verifyToken,
     postController.createPost
+  );
+
+  // Endpoint for updating an article
+  app.post(
+    "/api/v1/post/:postId/edit",
+    authMiddleware.verifyToken,
+    postController.updatePost
+  );
+
+  // Endpoint for updating article status
+  app.post(
+    "/api/v1/post/:postId/edit/status",
+    authMiddleware.verifyToken,
+    postController.updatePostStatus
+  );
+
+  // Endpoint for deleting an article
+  app.post(
+    "/api/v1/post/:postId/delete",
+    authMiddleware.verifyToken,
+    postController.deletePost
+  );
+
+  // Endpoint for uploading post cover image
+  app.post(
+    "/api/v1/post/:postId/upload/cover",
+    [authMiddleware.verifyToken, uploadMiddleware.imageUpload],
+    postController.updateCoverImage
   );
 };
