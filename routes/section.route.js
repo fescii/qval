@@ -37,6 +37,6 @@ module.exports = function (app) {
   app.post(
     "/api/v1/section/:sectionId/upload/cover",
     [authMiddleware.verifyToken, uploadMiddleware.sectionImageUpload],
-    postController.updateCoverImage
+    sectionController.updateSectionImage
   );
 };

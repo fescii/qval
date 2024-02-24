@@ -68,7 +68,7 @@ const updateSection = async (req, res) => {
 
     // Update post to include uploaded file
     const { data: post, error } = await supabase
-      .from('posts')
+      .from('sections')
       .update({
         title: sectionData.title,
         content: sectionData.content
@@ -108,7 +108,7 @@ const deleteSection = async (req, res) => {
   const sectionId = req.params.sectionId;
 
   const { error } = await supabase
-    .from('posts')
+    .from('sections')
     .delete()
     .eq('id', sectionId)
 
@@ -133,6 +133,7 @@ const updateSectionImage = async (req, res) => {
 
   // Get section id from request parameters
   const sectionId = req.params.sectionId;
+  const imagePath = req.imagePath;
 
   // Update post to include uploaded file
   const { data, error } = await supabase
