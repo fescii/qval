@@ -11,11 +11,25 @@ module.exports = function (app) {
     next();
   });
 
-  // Endpoint for creating a new blog post
+  // Endpoint for creating a new article
   app.post(
     "/api/v1/post/add",
     authMiddleware.verifyToken,
     postController.createPost
+  );
+
+  // Endpoint for updating an article
+  app.post(
+    "/api/v1/post/:postId/edit",
+    authMiddleware.verifyToken,
+    postController.updatePost
+  );
+
+  // Endpoint for updating article status
+  app.post(
+    "/api/v1/post/:postId/edit/status",
+    authMiddleware.verifyToken,
+    postController.updatePostStatus
   );
 
   // Endpoint for uploading post cover image
