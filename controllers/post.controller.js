@@ -141,6 +141,33 @@ const updatePostStatus = async (req, res) => {
   });
 };
 
+// Controller for deleting post/article
+const deletePost = async (req, res) => {
+
+  // Get post/article id from  request parameters
+  const postId = req.params.postId;
+
+  const { error } = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId)
+
+
+  if (error) {
+    console.error(error);
+    return res.status(500).send({
+      success: false,
+      message: "An error occurred while deleting the article!"
+    });
+  }
+
+  // On success return response to the user
+  return res.status(200).send({
+    success: true,
+    message: "Article was delete successfully!"
+  });
+};
+
 // Controller to register new users
 const updateCoverImage = async (req, res) => {
 
@@ -175,6 +202,7 @@ const updateCoverImage = async (req, res) => {
 module.exports = {
   createPost,
   updatePost,
+  deletePost,
   updatePostStatus,
   updateCoverImage
 }

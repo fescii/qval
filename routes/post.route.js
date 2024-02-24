@@ -32,6 +32,13 @@ module.exports = function (app) {
     postController.updatePostStatus
   );
 
+  // Endpoint for deleting an article
+  app.post(
+    "/api/v1/post/:postId/delete",
+    authMiddleware.verifyToken,
+    postController.deletePost
+  );
+
   // Endpoint for uploading post cover image
   app.post(
     "/api/v1/post/:postId/upload/cover",
