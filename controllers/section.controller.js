@@ -135,7 +135,7 @@ const updateSectionImage = async (req, res) => {
   const sectionId = req.params.sectionId;
   const imagePath = req.imagePath;
 
-  // Update post to include uploaded file
+  // Update  section to include uploaded file
   const { data, error } = await supabase
     .from('sections')
     .update({ cover: imagePath })
