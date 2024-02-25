@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 const { dbConfig } = require('../configs');
 const supabase = dbConfig.supabase;
 
@@ -14,7 +16,7 @@ const createPost = async (req, res) => {
   try {
     const postData = await postValidator.newPostValidator(payload);
 
-    // console.log(user);
+    // noinspection JSUnresolvedReference
     const { data, error } = await supabase
       .from('posts')
       .insert([{
@@ -60,12 +62,13 @@ const updatePost = async (req, res) => {
   const payload = req.body;
   // const user = req.user;
 
-  const postId = req.params.postId;
+  const postId = req.params["postId"];
 
   try {
     const postData = await postValidator.newPostValidator(payload);
 
     // Update post to include uploaded file
+    // noinspection JSUnresolvedReference
     const { data: post, error } = await supabase
       .from('posts')
       .update({
@@ -107,7 +110,7 @@ const updatePostStatus = async (req, res) => {
   const payload = req.body;
   // const user = req.user;
 
-  const postId = req.params.postId;
+  const postId = req.params["postId"];
 
   if (payload.status === null || payload.status === undefined) {
     return res.status(400).send({
@@ -116,6 +119,7 @@ const updatePostStatus = async (req, res) => {
     });
   }
 
+  // noinspection JSUnresolvedReference
   // Update post to include uploaded file
   const { data: post, error } = await supabase
     .from('posts')
@@ -145,8 +149,9 @@ const updatePostStatus = async (req, res) => {
 const deletePost = async (req, res) => {
 
   // Get post/article id from  request parameters
-  const postId = req.params.postId;
+  const postId = req.params["postId"];
 
+  // noinspection JSUnresolvedReference
   const { error } = await supabase
     .from('posts')
     .delete()
@@ -172,11 +177,12 @@ const deletePost = async (req, res) => {
 const updateCoverImage = async (req, res) => {
 
   // Get validated payload data from request object
-  const postId = req.params.postId;
+  const postId = req.params["postId"];
   const imagePath = req.imagePath;
   // const user = req.user;
 
   // Update post to include uploaded file
+  // noinspection JSUnresolvedReference
   const { data, error } = await supabase
     .from('posts')
     .update({ cover: imagePath })
