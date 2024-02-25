@@ -1,5 +1,5 @@
 const { commentController } = require('../controllers');
-const { authMiddleware, uploadMiddleware } = require('../middlewares');
+const { authMiddleware } = require('../middlewares');
 
 module.exports = function (app) {
 	app.use(function (req, res, next) {
