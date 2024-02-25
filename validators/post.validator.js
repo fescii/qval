@@ -69,8 +69,44 @@ const sectionValidator = async (data) => {
   }
 }
 
+// Register comment & Replies validator
+const commentValidator = async (data) => {
+  if (data.name && data.email && data.content) {
+
+    // validate first name
+    if (typeof data.name !== 'string') {
+      throw new TypeError("Name must be text(string)!")
+    }
+    else {
+      if (data.name.length < 5) {
+        throw new Error("Name must have 5 characters or more!")
+      }
+    }
+
+    // validate email
+    if (typeof data.email !== 'string') {
+      throw new TypeError("Email must be text(string)!")
+    }
+
+    // validate password
+    if (typeof data.content !== 'string') {
+      throw new TypeError("Password must be text(string)!")
+    }
+
+    return {
+      name: await sanitizeUtil.sanitizeInput(data.name),
+      email: await sanitizeUtil.sanitizeInput(data.email),
+      content: await sanitizeUtil.sanitizeInput(data.content)
+    }
+  }
+  else {
+    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Name, Email, and Comment/Content)");
+  }
+}
+
 
 module.exports = {
   newPostValidator,
-  sectionValidator
+  sectionValidator,
+  commentValidator
 }

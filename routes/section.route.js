@@ -12,29 +12,28 @@ module.exports = function (app) {
   });
 
   // Endpoint for creating a section
-  app.post(
+  app.put(
     "/api/v1/post/:postId/section/add",
     authMiddleware.verifyToken,
     sectionController.createSection
   );
 
   // Endpoint for updating a section
-  app.post(
+  app.patch(
     "/api/v1/section/:sectionId/edit",
     authMiddleware.verifyToken,
     sectionController.updateSection
   );
 
-
   // Endpoint for deleting a section
-  app.post(
+  app.delete(
     "/api/v1/section/:sectionId/delete",
     authMiddleware.verifyToken,
     sectionController.deleteSection
   );
 
   // Endpoint for uploading post cover image
-  app.post(
+  app.patch(
     "/api/v1/section/:sectionId/upload/cover",
     [authMiddleware.verifyToken, uploadMiddleware.sectionImageUpload],
     sectionController.updateSectionImage
