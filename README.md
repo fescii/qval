@@ -28,7 +28,7 @@ A personal blog platform built with Node.js, Express.js, and Supabase for robust
 1. **Clone the Repository**
 
    ```bash
-   git clone [https://github.com/fescii/femar.git](https://github.com/fescii/femar.git)
+   git clone https://github.com/fescii/femar.git
 
 2. **Install Dependencies**
 
