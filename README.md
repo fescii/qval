@@ -8,8 +8,8 @@ A personal blog platform built with Node.js, Express.js, and Supabase for robust
 
 * **Dynamic Content:** Create and manage engaging blog posts with ease.
 * **Secure User Authentication:** Supabase handles user registration and login.
-* **Media Storage:** Upload and integrate images or other media for enhanced posts (powered by Supabase Storage).
-* **Modern Frontend Design:**  todo().
+* **Media Storage:** Upload and integrate images or other media for enhanced articles (powered by Supabase Storage).
+* **Modern Frontend Design:**  todo(current).
 
 ## Technologies
 
