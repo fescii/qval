@@ -2,7 +2,7 @@
 
 A personal blog platform built with Node.js, Express.js, and Supabase for robust database and file storage capabilities.
 
-[https://github.com/fescii/femar.git](https://github.com/fescii/femar.git)
+[https://github.com/fescii/avalq.git](https://github.com/fescii/avalq.git)
 
 ## Features
 
@@ -28,7 +28,7 @@ A personal blog platform built with Node.js, Express.js, and Supabase for robust
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/fescii/femar.git
+   git clone https://github.com/fescii/avalq.git
 
 2. **Install Dependencies**
 
