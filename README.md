@@ -21,7 +21,7 @@ A personal blog platform built with Node.js, Express.js, and Supabase for robust
 
 **Prerequisites**
 
-* Node.js and npm (or another package manager) installed on your system.
+* Node.js and npm (or another package manager) installed on your system
 
 **Installation**
 
