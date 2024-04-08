@@ -11,7 +11,7 @@ module.exports = function (app) {
   });
 
   // Register route
-  app.post(
+  app.put(
     "/api/v1/auth/register",
     authMiddleware.checkDuplicateEmail,
     authController.signUp

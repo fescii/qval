@@ -1,15 +1,16 @@
-const { createClient } = require('@supabase/supabase-js');
-
-// Create a single supabase client for interacting with your database
-const supabase = createClient(
-  process.env['SUPABASE_URL'],
-  process.env['SUPABASE_ANON_KEY'], {
-    autoRefreshToken: true, // Set this based on your requirements
-    cleanupStorage: false // Disable cleanup of empty folders after upload
+dbConfig = {
+  HOST: process.env['POSTGRES_DB_HOST'],
+  USER: process.env['POSTGRES_DB_USER'],
+  PASSWORD: process.env['POSTGRES_DB_PASSWORD'],
+  DB: process.env['POSTGRES_DB_NAME'],
+  PORT: process.env['POSTGRES_DB_PORT'],
+  dialect: "postgres",
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
   }
-);
+};
 
-
-module.exports = {
-  supabase
-}
+module.exports = dbConfig;

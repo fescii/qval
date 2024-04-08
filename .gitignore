@@ -21,4 +21,6 @@ atlassian-ide-plugin.xml
 
 node_modules/
 
-.env
+# key & cert
+key.pem
+cert.pem
