@@ -3,28 +3,35 @@ const bcrypt = require("bcryptjs");
 
 // Importing within the app
 const db = require("../models");
-const { tokenUtil } = require('../utils');
+const { tokenUtil, hashUtil } = require('../utils');
 const { userValidator } = require('../validators');
 
 // Models objects
-const { User } = db;
+const { User, sequelize } = db;
 const Op = db.Sequelize.Op;
 
 // Controller to register new users
 const signUp = async (req, res) => {
-
   // Get validated payload data from request object
   const data = req.reg_data;
-
+  
+  // Start a transaction
+  const transaction = await sequelize.transaction();
+  
   try {
     // Trying to create new user to the database
     const user = await User.create({
       username: data.username,
-      name: data.name,
+      name: `${data.first_name} ${data.last_name}`,
       email: data.email,
       password: bcrypt.hashSync(data.password, 8)
-    })
+    }, { transaction })
     
+    user.username = await hashUtil.hashNumberWithKey('U', user.id);
+    
+    await user.save({ transaction });
+    
+    await transaction.commit();
 
     // On success return response to the user
     return res.status(200).send({
@@ -38,9 +45,10 @@ const signUp = async (req, res) => {
     });
   }
   catch (error) {
+    await transaction.rollback();
     return res.status(500).send({
       success: false,
-      message: "An error occurred while trying to add the user!"
+      message: "An error occurred, please try again!"
     });
   }
 };
@@ -96,7 +104,7 @@ const signIn = async (req, res) => {
           username: user.username
         },
         accessToken: token,
-        message: "Sign in was successful!"
+        message: "You're logged in successful!"
       });
     }
     catch (error) {

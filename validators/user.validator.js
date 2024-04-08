@@ -39,8 +39,8 @@ const validateUserData = async (data) => {
     }
 
     return {
-      firstName: await sanitizeUtil.sanitizeInput(data.firstName),
-      lastName: await sanitizeUtil.sanitizeInput(data.lastName),
+      first_name: await sanitizeUtil.sanitizeInput(data.first_name),
+      last_name: await sanitizeUtil.sanitizeInput(data.last_name),
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }

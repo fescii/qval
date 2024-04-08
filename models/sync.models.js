@@ -1,6 +1,17 @@
 module.exports = (sequelize) => {
   // Function to sync database ( Useful for development )
   const syncDb = async (alter) => {
+    const schemas = ['account', 'platform', 'story'];
+    for (const schema of schemas) {
+      await sequelize.createSchema(schema).catch((error) => {
+        if (error.code === "42P06") {
+          console.log(`Schema ${schema} already exists`);
+        }
+        else {
+          console.error(`Error creating schemas ${schema}: exits`);
+        }
+      });
+    }
     try {
       if (alter) {
         console.log('Altering Db Changes...');
@@ -10,10 +21,6 @@ module.exports = (sequelize) => {
       }
       else {
         console.log('No Db Changes detected, Everything is Synced!');
-        // console.log('Syncing Db Changes...');
-        // sequelize.sync().then(() => {
-        //   console.log('All Changes Synced!');
-        // });
       }
     } 
     catch (e) {

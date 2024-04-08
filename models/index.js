@@ -37,7 +37,7 @@ Object.assign(db, { System, Section, Role, Approval, Log })
 
 
 //Sync database functions
-const { syncDb } = require('./sync.models')(sequelize)
-Object.assign(db, { syncDb })
+const { syncDb } = require('./sync.models')(sequelize);
+Object.assign(db, { syncDb });
 
 module.exports = db;

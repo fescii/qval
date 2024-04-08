@@ -22,6 +22,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
   }, 
   {
+    schema: 'platform',
     freezeTableName: true
   });
 
@@ -50,6 +51,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
   },
   {
+    schema: 'platform',
     freezeTableName: true
   });
 
@@ -89,6 +91,7 @@ module.exports = (User, sequelize, Sequelize) => {
     }
   },
   {
+    schema: 'platform',
     freezeTableName: true
   });
 
@@ -118,6 +121,7 @@ module.exports = (User, sequelize, Sequelize) => {
     }
   },
   {
+    schema: 'platform',
     freezeTableName: true
   });
 
@@ -150,6 +154,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
   },
   {
+    schema: 'platform',
     freezeTableName: true
   });
 
