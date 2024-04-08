@@ -8,7 +8,6 @@ const { userValidator } = require('../validators');
 
 // Models objects
 const { User, sequelize } = db;
-const Op = db.Sequelize.Op;
 
 // Controller to register new users
 const signUp = async (req, res) => {
