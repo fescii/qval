@@ -5,7 +5,7 @@ const { imageUtil } = require('../utils');
 
 const imageUpload = async(req, res, next) => {
 
-  const postId = req.params.postId;
+  const postId = req.params["post_id"];
 
   fileConfig.upload.single('file')(req, res, async err => {
     if (err) {

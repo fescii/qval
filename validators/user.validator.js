@@ -1,25 +1,24 @@
 const { sanitizeUtil } = require('../utils')
 
 // Register data validation
-const registrationValidation = async (data) => {
-  if (data.firstName && data.lastName && data.email && data.password) {
-
+const validateUserData = async (data) => {
+  if (data.first_name && data.last_name && data.email && data.password) {
     // validate first name
-    if (typeof data.firstName !== 'string') {
+    if (typeof data.first_name !== 'string') {
       throw new TypeError("Firstname must be text(string)!")
     }
     else {
-      if (data.firstName.length < 5) {
+      if (data.first_name.length < 5) {
         throw new Error("Firstname must have 5 characters or more!")
       }
     }
 
     // validate last name
-    if (typeof data.lastName !== 'string') {
+    if (typeof data.last_name !== 'string') {
       throw new TypeError("Lastname must be text(string)!")
     }
     else {
-      if (data.lastName.length < 5) {
+      if (data.last_name.length < 5) {
         throw new Error("Lastname must have 5 characters or more!")
       }
     }
@@ -52,7 +51,7 @@ const registrationValidation = async (data) => {
 }
 
 // Register data validation
-const loginValidation = async (data) => {
+const validateLoginData = async (data) => {
   if (data.email && data.password) {
 
     // validate username
@@ -77,6 +76,6 @@ const loginValidation = async (data) => {
 
 
 module.exports = {
-  registrationValidation,
-  loginValidation
+  validateUserData,
+  validateLoginData
 }
