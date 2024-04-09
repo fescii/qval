@@ -32,7 +32,7 @@ module.exports = (User, sequelize, Sequelize) => {
     ]
   });
 
-  // Create section table to store info about various section of the app
+  // Create section table to store info about various sections of the app
   const Section = sequelize.define("sections", {
     id: {
       type: Sequelize.INTEGER,
@@ -69,7 +69,7 @@ module.exports = (User, sequelize, Sequelize) => {
   });
 
 
-  // Create section table to store info about various section of the app
+  // Create role table to store info about all privileges of each section
   const Role = sequelize.define("roles", {
     id: {
       type: Sequelize.INTEGER,

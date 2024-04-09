@@ -22,7 +22,7 @@ let corsOptions = {
 const db = require("./models");
 
 //SyncDb
-db.syncDb(false).then(() => {
+db.syncDb(true).then(() => {
   console.log('Database Synchronized!')
 })
 
