@@ -144,7 +144,7 @@ module.exports = (User, sequelize, Sequelize) => {
     });
   
   // Create upvote table to store all upvotes(Like to distinguish) on post/story
-  const Like = sequelize.define("upvotes", {
+  const Like = sequelize.define("likes", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
