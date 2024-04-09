@@ -1,5 +1,4 @@
 // Importing from modules
-const jwt = require("jsonwebtoken");
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 
