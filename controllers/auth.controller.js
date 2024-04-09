@@ -65,7 +65,7 @@ const signIn = async (req, res) => {
         }
       });
 
-      // If no user is found return 404(Not found)
+      // If no user is found, return 404(Not found)
       if (!user) {
         return res.status(404).send({
           success: false,
@@ -79,7 +79,7 @@ const signIn = async (req, res) => {
         user.password
       );
 
-      // If passwords does not match return 401(Unauthorized)
+      // If passwords do not match return 401(Unauthorized)
       if (!passwordIsValid) {
         return res.status(401).send({
           success: false,

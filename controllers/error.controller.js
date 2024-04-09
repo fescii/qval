@@ -2,12 +2,11 @@ const { envConfig } = require('../configs');
 
 //Error handler
 const errorHandler = (err, req, res, _next) => {
-  console.log(res.status)
   console.error(err.stack);
-  const errrorStatus = err.status || 500;
+  const errorStatus = err.status || 500;
   const errorMsg = err.message || 'Something went wrong!'
 
-  return res.status(errrorStatus).send({
+  return res.status(errorStatus).send({
     success: false,
     error: true,
     stack_message: errorMsg,
