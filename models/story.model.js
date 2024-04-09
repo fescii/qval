@@ -35,6 +35,11 @@ module.exports = (User, sequelize, Sequelize) => {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      topics: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: true,
+        defaultValue: []
+      },
       total_upvotes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
@@ -90,7 +95,7 @@ module.exports = (User, sequelize, Sequelize) => {
       ]
     });
   
-  // Create opinion table for all opinions and recursive replies
+  // Create an opinion table for all opinions and recursive replies
   const Opinion = sequelize.define("opinions", {
       id: {
         type: Sequelize.INTEGER,
@@ -118,6 +123,11 @@ module.exports = (User, sequelize, Sequelize) => {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      topics: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: true,
+        defaultValue: []
+      },
       total_upvotes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
@@ -144,7 +154,7 @@ module.exports = (User, sequelize, Sequelize) => {
     });
   
   // Create upvote table to store all upvotes(Like to distinguish) on post/story
-  const Like = sequelize.define("upvotes", {
+  const Like = sequelize.define("likes", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,

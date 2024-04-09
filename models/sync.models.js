@@ -1,7 +1,7 @@
 module.exports = (sequelize) => {
   // Function to sync database ( Useful for development )
   const syncDb = async (alter) => {
-    const schemas = ['account', 'platform', 'story'];
+    const schemas = ['topic', 'account', 'platform', 'story'];
     for (const schema of schemas) {
       await sequelize.createSchema(schema).catch((error) => {
         if (error.code === "42P06") {
