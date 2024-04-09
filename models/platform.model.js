@@ -23,7 +23,13 @@ module.exports = (User, sequelize, Sequelize) => {
   }, 
   {
     schema: 'platform',
-    freezeTableName: true
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      }
+    ]
   });
 
   // Create section table to store info about various section of the app
@@ -35,7 +41,8 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     identity: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     target: {
       type: Sequelize.INTEGER,
@@ -52,7 +59,13 @@ module.exports = (User, sequelize, Sequelize) => {
   },
   {
     schema: 'platform',
-    freezeTableName: true
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id', 'identity']
+      }
+    ]
   });
 
 
@@ -92,7 +105,16 @@ module.exports = (User, sequelize, Sequelize) => {
   },
   {
     schema: 'platform',
-    freezeTableName: true
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['section', 'user', 'base']
+      }
+    ]
   });
 
   // Creating approval table for approving any type of request in the platform
@@ -122,7 +144,16 @@ module.exports = (User, sequelize, Sequelize) => {
   },
   {
     schema: 'platform',
-    freezeTableName: true
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['target', 'name', 'approved']
+      }
+    ]
   });
 
   // Creating table for roles for managing & storing roles
@@ -155,18 +186,27 @@ module.exports = (User, sequelize, Sequelize) => {
   },
   {
     schema: 'platform',
-    freezeTableName: true
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['audit', 'user', 'target', 'action']
+      }
+    ]
   });
 
   // Defining the associations
   Section.hasMany(Role, { foreignKey: 'section', });
-  Role.belongsTo(Section, { foreignKey: 'section', as: 'section_roles' });
+  Role.belongsTo(Section, { foreignKey: 'section', as: 'section_roles', onDelete: 'CASCADE' });
 
   User.hasMany(Role, { foreignKey: 'user' });
-  Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles' });
+  Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles', onDelete: 'CASCADE' });
 
   User.hasMany(Log, { foreignKey: 'user' });
-  Log.belongsTo(User, { foreignKey: 'user', as: 'user_logs' });
+  Log.belongsTo(User, { foreignKey: 'user', as: 'user_logs', onDelete: 'CASCADE' });
 
   return { System, Section, Role, Approval, Log }
 }

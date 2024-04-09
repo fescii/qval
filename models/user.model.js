@@ -17,6 +17,7 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		email: {
 			type: Sequelize.STRING,
+			unique: true,
 			allowNull: false
 		},
 		password: {
@@ -35,9 +36,18 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING,
 			allowNull: true
 		}
-	}, {
+	},{
 			schema: 'account',
-			freezeTableName: true
+			freezeTableName: true,
+			indexes: [
+				{
+					unique: true,
+					fields: ['id', 'username']
+				},
+				{
+					fields: ['email']
+				}
+			]
 	});
 	
 	return {User};
