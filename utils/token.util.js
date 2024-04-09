@@ -3,22 +3,24 @@ const { envConfig } = require('../configs')
 
 //Function for generating jwt token
 const generateToken = async (userClaims) => {
+  // console.log(envConfig.jwt_expiry);
   return jwt.sign({ user: userClaims }, envConfig.secret, {
     expiresIn: envConfig.jwt_expiry
   });
 }
 
 //Function for verifying jwt token
-const verifyToken = async (token) => {
-  jwt.verify(token, envConfig.secret, (err, decoded) => {
+const validateToken = async (token) => {
+   return jwt.verify(token, envConfig.secret, (err, decoded) => {
     if (err) {
       throw err;
     }
+    
     return decoded.user;
   });
 }
 
 module.exports = {
   generateToken,
-  verifyToken
+  validateToken
 }

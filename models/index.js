@@ -21,33 +21,29 @@ let sequelize = new Sequelize(
   }
 );
 
-const db = {};
-
-// Adding sequelize to db object
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
+const models = {};
 
 // Importing from account schema models
 const Account = require('./user.model')(sequelize, Sequelize);
 // const { User } = require('./user.model')(sequelize, Sequelize);
-Object.assign(db, Account)
+Object.assign(models, Account)
 
 // Importing from platform schema models
 const Platform = require('./platform.model')(Account.User, sequelize, Sequelize);
-Object.assign(db, Platform)
+Object.assign(models, Platform)
 
 // Importing story schema models
 const Content = require('./story.model')(Account.User, sequelize, Sequelize);
-Object.assign(db, Content)
+Object.assign(models, Content)
 
 // Importing topic schema models
 const TopicSchema = require('./topic.model')(Account.User, sequelize, Sequelize);
-Object.assign(db, TopicSchema);
+Object.assign(models, TopicSchema);
 
 //Sync database functions
 const { syncDb } = require('./sync.models')(sequelize);
-Object.assign(db, { syncDb });
 
-// console.log(db)
-
-module.exports = db;
+module.exports =  {
+  Sequelize, sequelize, models,
+  syncDb
+};

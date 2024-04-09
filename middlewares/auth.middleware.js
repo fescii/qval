@@ -1,13 +1,11 @@
 // Importing from modules
-const jwt = require("jsonwebtoken");
 
 // Importing within the app
 const { tokenUtil } = require('../utils');
 const { userValidator } = require('../validators');
 
 // Database imports
-const db = require("../models");
-const { User } = db;
+const { User } = require("../models").models;
 
 const checkDuplicateEmail = async (req, res, next) => {
   // Get user data from request body
@@ -67,7 +65,7 @@ const verifyToken = async (req, res, next) => {
   // Get jwt token from cookies or headers
   let token = req.cookies['x-access-token'] || req.headers["x-access-token"]
 
-  // If not token is found in the headers/cookies - return 403(Forbidden)
+  // If not, token is found in the headers/cookies - return 403(Forbidden)
   if (!token) {
     return res.status(403).send({
       success: false,
@@ -77,14 +75,15 @@ const verifyToken = async (req, res, next) => {
 
   try {
     // Save user claims to request object
-    req.user = await tokenUtil.verifyToken();
+    req.user = await tokenUtil.validateToken(token);
+    // console.log(req.user)
     next();
   }
   catch (error) {
-    // If not token verification fails - return 401(Unauthorized)
+    // If not, token verification fails - return 401(Unauthorized)
     return res.status(401).send({
       success: false,
-      message: "Unauthorized!"
+      message: "Unauthorized!, please login to continue!"
     });
   }
 };
