@@ -2,12 +2,10 @@
 const bcrypt = require("bcryptjs");
 
 // Importing within the app
-const db = require("../models");
+const { User, sequelize } = require("../models").models;
 const { tokenUtil, hashUtil } = require('../utils');
+const { hashConfig } = require('../configs');
 const { userValidator } = require('../validators');
-
-// Models objects
-const { User, sequelize } = db;
 
 // Controller to register new users
 const signUp = async (req, res, next) => {
@@ -26,7 +24,7 @@ const signUp = async (req, res, next) => {
       password: bcrypt.hashSync(data.password, 8)
     }, { transaction })
     
-    user.username = await hashUtil.hashNumberWithKey('U', user.id);
+    user.username = await hashUtil.hashNumberWithKey(hashConfig.user, user.id);
     
     await user.save({ transaction });
     
@@ -50,7 +48,7 @@ const signUp = async (req, res, next) => {
 };
 
 // Controller to log in user into the system
-const signIn = async (req, res) => {
+const signIn = async (req, res, next) => {
   // Get user data from request body
   const payload = req.body;
 
@@ -65,7 +63,7 @@ const signIn = async (req, res) => {
         }
       });
 
-      // If no user is found return 404(Not found)
+      // If no user is found, return 404(Not found)
       if (!user) {
         return res.status(404).send({
           success: false,
@@ -79,7 +77,7 @@ const signIn = async (req, res) => {
         user.password
       );
 
-      // If passwords does not match return 401(Unauthorized)
+      // If passwords do not match return 401(Unauthorized)
       if (!passwordIsValid) {
         return res.status(401).send({
           success: false,
@@ -104,10 +102,7 @@ const signIn = async (req, res) => {
       });
     }
     catch (error) {
-      return res.status(500).send({
-        success: false,
-        message: "An error occurred while trying to login!"
-      });
+      return next(error);
     }
   }
   catch (error) {

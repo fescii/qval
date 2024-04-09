@@ -1,7 +1,7 @@
 const { authController } = require('../controllers');
 const { authMiddleware } = require('../middlewares');
 
-module.exports = (app) => {
+module.exports = (app, url) => {
   app.use((req, res, next) => {
     res.header(
       "Access-Control-Allow-Headers",
@@ -12,14 +12,14 @@ module.exports = (app) => {
 
   // Register route
   app.put(
-    "/api/v1/auth/register",
+    `${url}/register`,
     authMiddleware.checkDuplicateEmail,
     authController.signUp
   );
 
   //Login route
   app.post(
-    "/api/v1/auth/login",
+    `${url}/login`,
     authController.signIn
   );
 };
