@@ -1,7 +1,8 @@
-authConfig = {
+envConfig = {
   secret: process.env['AUTH_SECRET'],
   jwt_expiry: process.env['JWT_EXPIRY'],
-  hash_secret: process.env['HASH_SECRET']
+  hash_secret: process.env['HASH_SECRET'],
+  node_env: process.env['NODE_ENV']
 };
 
-module.exports = authConfig;
+module.exports = envConfig;

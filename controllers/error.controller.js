@@ -1,32 +1,29 @@
-//Error handler
-const errorHandler = (err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
+const { envConfig } = require('../configs');
 
-  res.status(500).send.json({
-    "success": false,
-    "message": "An internal server error has occurred!"
+//Error handler
+const errorHandler = (err, req, res, _next) => {
+  console.log(res.status)
+  console.error(err.stack);
+  const errrorStatus = err.status || 500;
+  const errorMsg = err.message || 'Something went wrong!'
+
+  return res.status(errrorStatus).send({
+    success: false,
+    error: true,
+    stack_message: errorMsg,
+    message: "Something went wrong!",
+    stack: envConfig.node_env === 'development' ? err.stack : {}
   });
 }
 
-const logErrors = (err, req, res, next) => {
-  console.error(err.stack);
-  next(err)
-}
-
-const clientErrorHandler = (err, req, res, next) => {
-  if (req.xhr) {
-    res.status(500).send.json({
-      "success": false,
-      "message": "An internal server error has occurred!"
-    });
-  }
-  else {
-    next(err);
-  }
+const notFound = (req, res, _next) => {
+  res.status(404).json({
+    success: false,
+    error: true,
+    message: "Resource not found!"
+  });
 }
 
 module.exports = {
-  errorHandler, logErrors, clientErrorHandler
+  errorHandler, notFound
 }
