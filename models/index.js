@@ -27,14 +27,23 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Importing from user models
+// Importing from account schema models
 const { User } = require('./user.model')(sequelize, Sequelize);
 Object.assign(db, { User })
 
-// Importing from platform models
-const { System, Section, Role, Approval, Log } = require('./platform.model')(User, sequelize, Sequelize);
+// Importing from platform schema models
+const {
+  System, Section,
+  Role, Approval, Log
+} = require('./platform.model')(User, sequelize, Sequelize);
 Object.assign(db, { System, Section, Role, Approval, Log })
 
+// Importing story schema models
+const {
+  Story, Upvote,
+  Opinion, Like
+} = require('./story.model')(User, sequelize, Sequelize);
+Object.assign(db, { Story, Upvote, Opinion, Like })
 
 //Sync database functions
 const { syncDb } = require('./sync.models')(sequelize);
