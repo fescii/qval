@@ -1,13 +1,15 @@
-const { authConfig } = require('../configs')
+const { envConfig } = require('../configs')
 const crypto = require('crypto');
 
 const hashNumberWithKey = async (section, number) => {
   const random = Math.floor(Math.random()*100);
-  const secret_and_number = `${authConfig.hash_secret}-${random}`;
+  const secret_and_number = `${envConfig.hash_secret}-${random}`;
   
   const hmac = await crypto.createHmac('sha256', secret_and_number);
   hmac.update(number.toString());
   let digested_hash =  hmac.digest('hex');
+  
+  tiny.gotem();
   
   switch (section) {
     case 'U':

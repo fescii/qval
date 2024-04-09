@@ -10,7 +10,7 @@ const { userValidator } = require('../validators');
 const { User, sequelize } = db;
 
 // Controller to register new users
-const signUp = async (req, res) => {
+const signUp = async (req, res, next) => {
   // Get validated payload data from request object
   const data = req.reg_data;
   
@@ -43,12 +43,9 @@ const signUp = async (req, res) => {
       message: "User was registered successfully!"
     });
   }
-  catch (error) {
+  catch (err) {
     await transaction.rollback();
-    return res.status(500).send({
-      success: false,
-      message: "An error occurred, please try again!"
-    });
+    await next(err);
   }
 };
 
