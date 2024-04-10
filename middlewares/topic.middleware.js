@@ -22,9 +22,6 @@ const checkDuplicateTopic = async (req, res, next) => {
     });
   }
   
-  console.log(valObj)
-  
-  
   const {
     topic,
     error
