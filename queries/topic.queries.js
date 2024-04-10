@@ -23,10 +23,10 @@ const addTopic = async (userId, data) => {
     await transaction.commit();
     
     // On success return data
-    return { data: topic, error: null}
-  } catch (err) {
+    return { topic: topic, error: null}
+  } catch (error) {
     await transaction.rollback();
-    return { data: null, error: err}
+    return { topic: null, error: error}
   }
 }
 
@@ -42,17 +42,18 @@ const checkIfTopicExists = async (name, slug) => {
     });
     
     if (topic) {
+      // console.log(topic)
       // On success return data
-      return { data: topic, error: null}
+      return { topic: topic, error: null}
     }
     else {
       // If a topic doesn't exist, returns both null
-      return { data: null, error: null}
+      return { topic: null, error: null}
     }
     
   }
   catch (error) {
-    return { data: null, error: error}
+    return { topic: null, error: error}
   }
 }
 

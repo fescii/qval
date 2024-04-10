@@ -19,36 +19,41 @@ const addUser = async (data) => {
     
     user.username = await hashUtil.hashNumberWithKey(hashConfig.user, user.id);
     
+    // console.log(user)
+    
     await user.save({transaction});
     
     await transaction.commit();
     
     // On success return data
-    return { data: user, error: null}
+    return { user: user, error: null}
   } catch (err) {
+    // console.log(err)
     await transaction.rollback();
-    return { data: null, error: err}
+    return { user: null, error: err}
   }
 }
 
 // Check if the user already exists using: - email
-const checkIfUserExits = async (email) => {
+const checkIfUserExits = async (userEmail) => {
   try{
     const user = await User.findOne({
       where: {
-        email: email
+        email: userEmail
       }
     });
     
+    // console.log(user)
     if (user) {
-      return { data: user, error: null}
+      // console.log('This code runs')
+      return { user: user, error: null}
     }
     else {
-      return {data: null, error: null}
+      return {user: null, error: null}
     }
   }
   catch (error) {
-    return {data: null, error: error}
+    return {user: null, error: error}
   }
 }
 

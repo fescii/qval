@@ -12,27 +12,29 @@ const checkDuplicateTopic = async (req, res, next) => {
   // Get user data from request body
   const payload = req.body;
   
-  const {
-    data,
-    error
-  } = await validateTopicData(payload);
+  const valObj = await validateTopicData(payload);
   
   // Handling data validation error
-  if (error) {
+  if (valObj.error) {
     return res.status(400).send({
       success: false,
-      message: error.message
+      message: valObj.error.message
     });
   }
   
+  console.log(valObj)
+  
+  
   const {
     topic,
-    err
-  } = await checkIfTopicExists(data.name, data.slug);
+    error
+  } = await checkIfTopicExists(valObj.data.name, valObj.data.slug);
+  
+  // console.log(topic)
   
   // Passing the error to error middleware
-  if (err) {
-    return next(err);
+  if (error) {
+    return next(error);
   }
   
   // If a topic already exits, return it
@@ -45,7 +47,7 @@ const checkDuplicateTopic = async (req, res, next) => {
   }
   
   // Add the validated data to the request object for the next() function
-  req.topic_data = data;
+  req.topic_data = valObj.data;
   next();
 };
 

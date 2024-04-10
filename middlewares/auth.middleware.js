@@ -13,27 +13,25 @@ const checkDuplicateEmail = async (req, res, next) => {
   // Get user data from request body
   const payload = req.body;
   
-  const {
-    data,
-    error
-  } = await validateUserData(payload);
+  const valueObj = await validateUserData(payload);
   
   // Handling data validation error
-  if (error) {
+  if (valueObj.error) {
     return res.status(400).send({
       success: false,
-      message: error.message
+      message: valueObj.error.message
     });
   }
   
   const {
     user,
-    err
-  } = await checkIfUserExits(data.email);
+    error
+  } = await checkIfUserExits(valueObj.data.email);
   
   // Passing the error to error middleware
-  if (err) {
-    return next(err);
+  if (error) {
+    console.log('This error segment runs')
+    return next(error);
   }
   
   if (user) {
@@ -44,7 +42,7 @@ const checkDuplicateEmail = async (req, res, next) => {
   }
   
   // Call next function to proceed with data processing
-  req.reg_data = data;
+  req.reg_data = valueObj.data;
   next();
 };
 
