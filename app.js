@@ -19,10 +19,11 @@ let corsOptions = {
   origin: "http://localhost:${process.env.PORT}"
 };
 
-const db = require("./models");
+// Require method for a syncing database
+const { syncDb } = require("./models");
 
-//SyncDb
-db.syncDb(false).then(() => {
+// SyncDb - take true or false for when altering the database or not
+syncDb(false).then(() => {
   console.log('Database Synchronized!')
 })
 

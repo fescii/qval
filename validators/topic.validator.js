@@ -12,10 +12,10 @@ const validateTopicData = async (data) => {
     }
     
     // validate last name
-    if (typeof data.about !== 'string' || data.about < 2) {
+    if (typeof data.about !== 'string' || data.about < 30) {
       return {
         data: null,
-        error: new Error("About topic should have 2 chars or more and must be a string!")
+        error: new Error("About topic should have 30 chars or more and must be a string!")
       }
     }
     
