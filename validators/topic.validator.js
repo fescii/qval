@@ -2,47 +2,39 @@ const { sanitizeUtil } = require('../utils')
 
 // Register data validation
 const validateTopicData = async (data) => {
-  if (data.name && data.slug && data.about) {
-    // validate name
-    if (typeof data.name !== 'string') {
-      throw new TypeError("Topic name must be text(string)!")
-    }
-    else {
-      if (data.name.length < 2) {
-        throw new Error("Topic name must have 2 characters or more!")
+  if (data.name && data.slug && data.about)  {
+    // validate first name
+    if (typeof data.name !== 'string' || data.name.length < 2) {
+      return {
+        data: null,
+        error: new Error("Topic name should have 2 chars or more and must be a string!")
       }
     }
     
-    // validate slug
-    if (typeof data.slug !== 'string') {
-      throw new TypeError("Topic slug must be text(string)!")
-    }
-    else {
-      if (data.slug.length < 2) {
-        throw new Error("Topic slug must have 2 characters or more!")
-      }
-    }
-    
-    if (typeof data.about !== 'string') {
-      throw new TypeError("Topic about must be text(string)!")
-    }
-    else {
-      if (data.name.about < 5) {
-        throw new Error("Topic about must have 5 characters or more!")
+    // validate last name
+    if (typeof data.about !== 'string' || data.about < 30) {
+      return {
+        data: null,
+        error: new Error("About topic should have 30 chars or more and must be a string!")
       }
     }
     
     const slug_data =  await sanitizeUtil.sanitizeInput(data.slug);
     
-    return {
+    const validatedData = {
       name: await sanitizeUtil.sanitizeInput(data.name),
       slug: slug_data.trim().replace(/\s+/g, ' ').
       toLowerCase().replace(/\s+/g, '-'),
       about: await sanitizeUtil.sanitizeInput(data.about),
     }
+    
+    return { data: validatedData, error: null };
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Name, Slug)");
+    return {
+      data: null,
+      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (name, about, slug)")
+    }
   }
 }
 

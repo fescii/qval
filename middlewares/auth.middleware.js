@@ -1,62 +1,49 @@
-// Importing from modules
-
 // Importing within the app
-const { tokenUtil } = require('../utils');
-const { userValidator } = require('../validators');
-
-// Database imports
-const { User } = require("../models").models;
+const { validateToken } = require('../utils').tokenUtil;
+const { validateUserData } = require('../validators').userValidator;
+const { checkIfUserExits } = require('../queries').authQueries;
 
 const checkDuplicateEmail = async (req, res, next) => {
+  // Check if the payload is available in the request object
+  if (!req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
+  
   // Get user data from request body
   const payload = req.body;
-
-  try {
-    const validatedData = await userValidator.validateUserData(payload);
-
-    // console.log(validatedData);
-
-    // Add the validated data to the request object for the next() function
-    req.reg_data = validatedData;
-
-
-    // Check if Username or Email is available using a single query
-    try {
-      const user = await User.findOne({
-        where: {
-          email: validatedData.email
-        }
-      });
-
-      // console.log(user);
-
-      if (user) {
-        return res.status(409).send({
-          success: false,
-          message: "Failed! User with similar email is already exits!"
-        });
-      }
-
-      // Call next function to proceed with data processing
-      next();
-    }
-    catch (error) {
-      console.log(error)
-      return res.status(500).send({
-        success: false,
-        message: "An error occurred while trying to add the user!"
-      });
-    }
-
-  }
-  catch (error) {
-    // console.log(error);
+  
+  const valueObj = await validateUserData(payload);
+  
+  // Handling data validation error
+  if (valueObj.error) {
     return res.status(400).send({
       success: false,
-      message: error.message
+      message: valueObj.error.message
     });
   }
-
+  
+  const {
+    user,
+    error
+  } = await checkIfUserExits(valueObj.data.email);
+  
+  // Passing the error to error middleware
+  if (error) {
+    console.log('This error segment runs')
+    return next(error);
+  }
+  
+  if (user) {
+    return res.status(409).send({
+      success: false,
+      message: "Failed! User with similar email is already exits!"
+    });
+  }
+  
+  // Call next function to proceed with data processing
+  req.reg_data = valueObj.data;
+  next();
 };
 
 // Middleware to verify token(JWT)
@@ -69,23 +56,28 @@ const verifyToken = async (req, res, next) => {
   if (!token) {
     return res.status(403).send({
       success: false,
-      message: "No token provided!"
+      unverified: true,
+      message: "No token provided!, login to continue"
     })
   }
-
-  try {
-    // Save user claims to request object
-    req.user = await tokenUtil.validateToken(token);
-    // console.log(req.user)
-    next();
-  }
-  catch (error) {
-    // If not, token verification fails - return 401(Unauthorized)
+  
+  const {
+    user,
+    error
+  } = await validateToken(token);
+  
+  // If error is returned
+  if(error) {
     return res.status(401).send({
       success: false,
+      unverified: true,
       message: "Unauthorized!, please login to continue!"
     });
   }
+  
+  // Add user to the request object
+  req.user = user;
+  next();
 };
 
 module.exports = {

@@ -4,49 +4,55 @@ const { sanitizeUtil } = require('../utils')
 const validateUserData = async (data) => {
   if (data.first_name && data.last_name && data.email && data.password) {
     // validate first name
-    if (typeof data.first_name !== 'string') {
-      throw new TypeError("Firstname must be text(string)!")
-    }
-    else {
-      if (data.first_name.length < 5) {
-        throw new Error("Firstname must have 5 characters or more!")
+    if (typeof data.first_name !== 'string' || data.first_name.length < 2) {
+      return {
+        data: null,
+        error: new Error("First name should have 2 chars or more and must be a string!")
       }
     }
 
     // validate last name
-    if (typeof data.last_name !== 'string') {
-      throw new TypeError("Lastname must be text(string)!")
-    }
-    else {
-      if (data.last_name.length < 5) {
-        throw new Error("Lastname must have 5 characters or more!")
+    if (typeof data.last_name !== 'string' || data.last_name.length < 2) {
+      return {
+        data: null,
+        error: new Error("Last name should have 2 chars or more and must be a string!")
       }
     }
 
     // validate email
-    if (typeof data.email !== 'string') {
-      throw new TypeError("Email must be text(string)!")
-    }
-
-    // validate password
-    if (typeof data.password !== 'string') {
-      throw new TypeError("Password must be text(string)!")
-    }
-    else {
-      if (data.password.length < 6) {
-        throw new Error("Password must have 6 characters or more!")
+    // noinspection RegExpRedundantEscape
+    let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    
+    if (!data.email.match(validRegex)){
+      return {
+        data: null,
+        error: new Error("Invalid email address!")
       }
     }
+      
+    // validate password
+    if (typeof data.password !== 'string' || data.password.length < 6) {
+      return {
+        data: null,
+        error: new Error("Password should have 6 chars or more and must be a string!")
+      }
+    }
+    
 
-    return {
+    const validatedData = {
       first_name: await sanitizeUtil.sanitizeInput(data.first_name),
       last_name: await sanitizeUtil.sanitizeInput(data.last_name),
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
+    
+    return { data: validatedData, error: null };
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Firstname, Lastname, email, password)");
+    return {
+      data: null,
+      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (Firstname, Lastname, email, password)")
+    }
   }
 }
 
@@ -56,21 +62,33 @@ const validateLoginData = async (data) => {
 
     // validate username
     if (typeof data.email !== 'string') {
-      throw new TypeError("Email must be text(string)!")
+      return {
+        data: null,
+        error: new TypeError("Email must be text(string)!")
+      }
     }
 
     // validate password
     if (typeof data.password !== 'string') {
-      throw new TypeError("Password must be text(string)!")
+      return {
+        data: null,
+        error: new TypeError("Password must be text(string)!")
+      }
     }
 
-    return {
+    
+    const validatedData =  {
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
+    
+    return { data: validatedData, error:null }
   }
   else {
-    throw new Error("Some fields were not provided or contains null values, Ensure you provide: (Email, Password)!");
+    return {
+      data: null,
+      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (email, password)")
+    }
   }
 }
 

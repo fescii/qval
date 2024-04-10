@@ -11,12 +11,11 @@ const generateToken = async (userClaims) => {
 
 //Function for verifying jwt token
 const validateToken = async (token) => {
-   return jwt.verify(token, envConfig.secret, (err, decoded) => {
+  return  jwt.verify(token, envConfig.secret, (err, decoded) => {
     if (err) {
-      throw err;
+      return { user: null, error: err}
     }
-    
-    return decoded.user;
+    return {user: decoded.user, error: null};
   });
 }
 

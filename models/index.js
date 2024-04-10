@@ -23,6 +23,9 @@ let sequelize = new Sequelize(
 
 const models = {};
 
+models.sequelize = sequelize;
+models.Sequelize = Sequelize;
+
 // Importing from account schema models
 const Account = require('./user.model')(sequelize, Sequelize);
 // const { User } = require('./user.model')(sequelize, Sequelize);
@@ -44,6 +47,5 @@ Object.assign(models, TopicSchema);
 const { syncDb } = require('./sync.models')(sequelize);
 
 module.exports =  {
-  Sequelize, sequelize, models,
-  syncDb
+  models, syncDb
 };
