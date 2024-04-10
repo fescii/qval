@@ -4,8 +4,6 @@ const Op = sequelize.Op;
 
 // Importing within the app
 const { topicValidator } = require('../validators');
-
-// Database imports
 const { Topic } = require("../models").models;
 
 const checkDuplicateTopic = async (req, res, next) => {
