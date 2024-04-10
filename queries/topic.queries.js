@@ -1,4 +1,5 @@
 const { hashConfig} = require("../configs");
+const {Op} = require("sequelize");
 const { hashNumberWithKey } = require("../utils").hashUtil;
 const { sequelize, Topic } = require('../models').models;
 
@@ -29,6 +30,32 @@ const addTopic = async (userId, data) => {
   }
 }
 
+const checkIfTopicExists = async (name, slug) => {
+  try {
+    const topic = await Topic.findOne({
+      where: {
+        [Op.or]: [
+          {name: name},
+          {slug: slug}
+        ]
+      }
+    });
+    
+    if (topic) {
+      // On success return data
+      return { data: topic, error: null}
+    }
+    else {
+      // If a topic doesn't exist, returns both null
+      return { data: null, error: null}
+    }
+    
+  }
+  catch (error) {
+    return { data: null, error: error}
+  }
+}
+
 module.exports = {
-  addTopic
+  addTopic, checkIfTopicExists
 }
