@@ -77,7 +77,7 @@ module.exports = (User, sequelize, Sequelize) => {
       autoIncrement: true,
     },
     section: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: false
     },
     user: {

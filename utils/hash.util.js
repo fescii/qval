@@ -9,8 +9,6 @@ const hashNumberWithKey = async (section, number) => {
   hmac.update(number.toString());
   let digested_hash =  hmac.digest('hex');
   
-  // tiny.gotem();
-  
   switch (section) {
     case 'U':
       return `U0${digested_hash.slice(0, 10).toLocaleUpperCase()}`

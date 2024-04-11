@@ -1,5 +1,7 @@
-const { topicController } = require('../controllers');
 const { authMiddleware, topicMiddleware } = require('../middlewares');
+const {
+  createTopic, updateTopic
+} = require('../controllers').topicController;
 
 module.exports = (app, url) => {
   app.use((req, res, next) => {
@@ -13,12 +15,12 @@ module.exports = (app, url) => {
   // Creating a new topic
   app.put(`${url}/add`,
     [authMiddleware.verifyToken, topicMiddleware.checkDuplicateTopic],
-    topicController.createTopic
+    createTopic
   );
   
-  //Login route
-  // app.post(
-  //   `${url}/login`,
-  //   authController.signIn
-  // );
+  // Creating a new topic
+  app.patch(`${url}/:topicHash/edit`,
+    authMiddleware.verifyToken,
+    updateTopic
+  );
 };
