@@ -2,9 +2,8 @@
 const bcrypt = require("bcryptjs");
 
 // Importing within the app
-const { User, sequelize } = require("../models").models;
-const { tokenUtil, hashUtil } = require('../utils');
-const { validateLoginData, validateUserData } = require('../validators').userValidator;
+const { tokenUtil } = require('../utils');
+const { validateLoginData } = require('../validators').userValidator;
 
 const { addUser, checkIfUserExits } = require('../queries').authQueries;
 

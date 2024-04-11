@@ -77,7 +77,7 @@ module.exports = (User, sequelize, Sequelize) => {
       autoIncrement: true,
     },
     section: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: false
     },
     user: {
@@ -96,6 +96,10 @@ module.exports = (User, sequelize, Sequelize) => {
     privileges: {
       type: Sequelize.JSON,
       allowNull: true
+    },
+    expiry: {
+      type: Sequelize.DATE,
+      allowNull: true,
     },
     expired: {
       type: Sequelize.BOOLEAN,
@@ -199,8 +203,8 @@ module.exports = (User, sequelize, Sequelize) => {
   });
 
   // Defining the associations
-  Section.hasMany(Role, { foreignKey: 'section', });
-  Role.belongsTo(Section, { foreignKey: 'section', as: 'section_roles', onDelete: 'CASCADE' });
+  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity' });
+  Role.belongsTo(Section, { foreignKey: 'section', targetKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
 
   User.hasMany(Role, { foreignKey: 'user' });
   Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles', onDelete: 'CASCADE' });

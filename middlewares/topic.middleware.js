@@ -38,7 +38,13 @@ const checkDuplicateTopic = async (req, res, next) => {
   if (topic) {
     return res.status(409).send({
       success: false,
-      topic,
+      topic: {
+        author: topic.author,
+        name: topic.name,
+        slug: topic.slug,
+        hash: topic.hash,
+        about: topic.about
+      },
       message: "Failed! topic with similar name or slug already exits!"
     });
   }
