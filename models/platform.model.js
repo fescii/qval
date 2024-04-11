@@ -203,8 +203,8 @@ module.exports = (User, sequelize, Sequelize) => {
   });
 
   // Defining the associations
-  Section.hasMany(Role, { foreignKey: 'section', });
-  Role.belongsTo(Section, { foreignKey: 'section', as: 'section_roles', onDelete: 'CASCADE' });
+  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity' });
+  Role.belongsTo(Section, { foreignKey: 'section', targetKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
 
   User.hasMany(Role, { foreignKey: 'user' });
   Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles', onDelete: 'CASCADE' });

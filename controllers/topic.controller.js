@@ -67,7 +67,7 @@ const updateTopic = async (req, res, next) => {
     section: topicHash,
     privilege: Privileges.Update,
     user: userId,
-    key: 'topic'
+    key: 'action'
   }
   
   const isAuthorised = await checkAuthority(access);

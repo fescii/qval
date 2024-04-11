@@ -1,7 +1,8 @@
 const { hashConfig} = require('../configs');
 const {Op} = require("sequelize");
-const { sequelize, Topic } = require('../models').models;
-const { hashUtil } = require("../utils");
+const { sequelize, Topic, Section, Role } = require('../models').models;
+const { hashNumberWithKey } = require('../hash').identityHash;
+const { RoleBase } = require('../configs').platformConfig;
 
 const addTopic = async (userId, data) => {
   // Start a transaction
@@ -16,15 +17,36 @@ const addTopic = async (userId, data) => {
       about: data.about
     }, {transaction})
     
-    topic.hash = await hashUtil.hashNumberWithKey(hashConfig.topic, topic.id);
+    topic.hash = await hashNumberWithKey(hashConfig.topic, topic.id);
     
     await topic.save({transaction});
+    
+    // Create a section for the topic created
+    const section = await Section.create({
+      identity: topic.hash,
+      target: topic.id,
+      name: topic.name,
+      description: `This is a section for the topic - ${topic.name}`
+    }, {transaction});
+    
+    await Role.create({
+      section: section.identity,
+      user: userId,
+      base: RoleBase.Owner,
+      name: `This is a role for section - ${topic.name}`,
+      privileges: {
+        'action': ["create", "read", "update", "delete"],
+        'members': ["create", "read", "update", "delete"]
+      },
+      expired: false
+    }, {transaction});
     
     await transaction.commit();
     
     // On success return data
     return { topic: topic, error: null}
   } catch (error) {
+    console.log(error)
     await transaction.rollback();
     return { topic: null, error: error}
   }
