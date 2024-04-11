@@ -97,6 +97,10 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.JSON,
       allowNull: true
     },
+    expiry: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
     expired: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
