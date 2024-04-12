@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  express:
+    image: qval-app
+    deploy:
+      replicas: 3  # Number of replicas (containers) to deploy
+      restart_policy:
+        condition: any
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
