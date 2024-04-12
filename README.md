@@ -1,4 +1,4 @@
-# Open platform
+# Open platform ( Instructions To be updated)
 
 A platform built with Node.js, Express.js, and Postgres for robust database and AWS for file storage capabilities.
 
