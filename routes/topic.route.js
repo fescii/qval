@@ -1,6 +1,7 @@
 const { authMiddleware, topicMiddleware } = require('../middlewares');
 const {
-  createTopic, updateTopic
+  createTopic, updateTopic,
+  deleteTopic
 } = require('../controllers').topicController;
 
 module.exports = (app, url) => {
@@ -18,9 +19,15 @@ module.exports = (app, url) => {
     createTopic
   );
   
-  // Creating a new topic
+  // Updating existing token
   app.patch(`${url}/:topicHash/edit`,
     authMiddleware.verifyToken,
     updateTopic
+  );
+  
+  // Deleting a topic
+  app.delete(`${url}/:topicHash/remove`,
+    authMiddleware.verifyToken,
+    deleteTopic
   );
 };

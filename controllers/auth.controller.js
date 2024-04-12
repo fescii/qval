@@ -30,7 +30,7 @@ const signUp = async (req, res, next) => {
   }
   
   // On success return response to the user
-  return res.status(200).send({
+  return res.status(201).send({
     success: true,
     user: {
       name: user.name,

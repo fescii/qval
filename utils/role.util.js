@@ -11,6 +11,10 @@ const checkAuthority = async (access) => {
     return false;
   }
   
+  if (!role) {
+    return false;
+  }
+  
   if (role.base === RoleBase.Owner) {
     return true;
   }

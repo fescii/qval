@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const {hashUtil} = require("../utils");
+const { hashNumberWithKey } = require('../hash').identityHash;
 const {hashConfig} = require("../configs");
 const { User, sequelize } = require("../models").models;
 
@@ -17,7 +17,7 @@ const addUser = async (data) => {
       password: bcrypt.hashSync(data.password, 8)
     }, {transaction})
     
-    user.username = await hashUtil.hashNumberWithKey(hashConfig.user, user.id);
+    user.username = await hashNumberWithKey(hashConfig.user, user.id);
     
     // console.log(user)
     

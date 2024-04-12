@@ -1,8 +1,8 @@
 // Importing within the app
-const { addTopic, editTopic } = require('../queries').topicQueries;
 const { validateTopicData } = require('../validators').topicValidator;
 const { Privileges } = require('../configs').platformConfig;
 const { checkAuthority } = require('../utils').roleUtil;
+const { addTopic, editTopic, removeTopic } = require('../queries').topicQueries;
 
 // Controller for creating a topic
 const createTopic = async (req, res, next) => {
@@ -26,7 +26,7 @@ const createTopic = async (req, res, next) => {
     return next(error);
   }
   
-  return res.status(200).send({
+  return res.status(201).send({
     success: true,
     topic: {
       author: topic.author,
@@ -35,11 +35,11 @@ const createTopic = async (req, res, next) => {
       hash: topic.hash,
       about: topic.about
     },
-    message: "Topic was added successfully!"
+    message: "Topic was created successfully!"
   });
 };
 
-// Controller for creating a topic
+// Controller updating creating a topic
 const updateTopic = async (req, res, next) => {
   // Check if the user or payload is available
   const { topicHash } = req.params;
@@ -67,7 +67,7 @@ const updateTopic = async (req, res, next) => {
     section: topicHash,
     privilege: Privileges.Update,
     user: userId,
-    key: 'topic'
+    key: 'action'
   }
   
   const isAuthorised = await checkAuthority(access);
@@ -81,6 +81,14 @@ const updateTopic = async (req, res, next) => {
     // Passing the error to error middleware
     if (error) {
       return next(error);
+    }
+    
+    // Handling when the topic is not found
+    if (!topic) {
+      return res.status(404).send({
+        success: false,
+        message: "The topic you're trying to update was not found!"
+      });
     }
     
     return res.status(200).send({
@@ -103,6 +111,54 @@ const updateTopic = async (req, res, next) => {
   }
 };
 
+// Controller updating creating a topic
+const deleteTopic = async (req, res, next) => {
+  // Check if the user or payload is available
+  const { topicHash } = req.params;
+  
+  // get user id
+  const userId = req.user.id;
+  
+  // Create access data - (For authorizing user)
+  const access = {
+    section: topicHash,
+    privilege: Privileges.Delete,
+    user: userId,
+    key: 'action'
+  }
+  
+  const isAuthorised = await checkAuthority(access);
+  
+  if (isAuthorised){
+    const {
+      deleted,
+      error
+    } = await removeTopic(topicHash);
+    
+    // Passing the error to error middleware
+    if (error) {
+      return next(error);
+    }
+    
+    if(!deleted){
+      const error = new Error('Something went insanely wrong!');
+      return next(error)
+    }
+    
+    // Handling when the topic was deleted
+    return res.status(200).send({
+      success: true,
+      message: `Topic - ${topicHash} was deleted successfully!`
+    });
+  }
+  else {
+    return res.status(401).send({
+      success: false,
+      message: "You are not authorize to perform this action!"
+    });
+  }
+};
+
 module.exports = {
-  createTopic, updateTopic
+  createTopic, updateTopic, deleteTopic
 }
