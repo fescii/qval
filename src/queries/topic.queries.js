@@ -36,7 +36,7 @@ const addTopic = async (userId, data) => {
       name: `This is a role for section - ${topic.name}`,
       privileges: {
         'action': ["create", "read", "update", "delete"],
-        'members': ["create", "read", "update", "delete"]
+        'authors': ["create", "read", "update", "delete"]
       },
       expired: false
     }, {transaction});
