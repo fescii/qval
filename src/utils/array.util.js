@@ -1,20 +1,20 @@
 // Mapping array of objects to array of fields
-const mapFields = (arr, field) => {
+const mapFields = async (arr, field) => {
   return arr.map(item => item[field])
 }
 
 // Summing array of numbers
-const sumArray = (arr) => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+const sumArray = async (arr) => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
 
 // Mapping array of string to slug fields using regex
 
-const slugify = (text) => {
+const slugify = async (text) => {
   return text.trim().replace(/\s+/g, ' ').
     toLowerCase().replace(/\s+/g, '-');
 }
 
-const slugifyArray = (arr) => {
+const slugifyArray = async (arr) => {
   return arr.map(item => slugify(item));
 };
 
