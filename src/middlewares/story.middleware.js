@@ -25,12 +25,22 @@ const checkDuplicateStory = async(req, res, next) => {
     error
   } = await checkIfStoryExists(valObj.data.slug);
 
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // If a story already exits, return it
+  if (story) {
+    return res.status(400).send({
+      success: false,
+      message: 'Story with similar slug - link - already exists!'
+    });
+  }
+
+  // Add the validated data to the request object for the next() function
   req.story_data = valObj.data;
-
-
-
-  // Call next() to proceed to the next middleware or route handler
-  next();
+  await next();
 }
 
 module.exports = {

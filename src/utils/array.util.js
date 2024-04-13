@@ -18,8 +18,6 @@ const slugifyArray = async (arr) => {
   return arr.map(item => slugify(item));
 };
 
-const arrayUtil = {
+module.exports = {
   mapFields, sumArray, slugifyArray, slugify
 };
-
-module.exports = arrayUtil;
