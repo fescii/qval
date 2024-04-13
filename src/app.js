@@ -23,7 +23,7 @@ let corsOptions = {
 const { syncDb } = require("./models");
 
 // SyncDb - take true or false for when altering the database or not
-syncDb(true).then(() => {
+syncDb(false).then(() => {
   console.log('Database Synchronized!')
 })
 
@@ -39,16 +39,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 require('./routes')(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const credentials = {
   key: fs.readFileSync(path.join(__dirname, 'key.pem')),
   cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
   allowHTTP1: true
 }
-// app listen port
+
+// Create a secure server
 const server = http2.createSecureServer(credentials, app);
 
+// app listen port
 server.listen(PORT, ()=> {
     console.log(`Server is listening on port ${PORT}.`);
   }

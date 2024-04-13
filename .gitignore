@@ -20,6 +20,7 @@ out/
 atlassian-ide-plugin.xml
 
 node_modules/
+src/node_modules/
 
 # key & cert
 key.pem
