@@ -51,7 +51,7 @@ const findStoryByHash = async (hash) => {
 
 
 // Create a new story
-const createStory = async (userId, data) => {
+const addStory = async (userId, data) => {
 
   const storyData = await newStoryData(userId, data);
 
@@ -103,5 +103,5 @@ const createStory = async (userId, data) => {
 }
 
 module.exports = {
-  checkIfStoryExists, findStoryByHash, createStory
+  checkIfStoryExists, findStoryByHash, addStory
 }
