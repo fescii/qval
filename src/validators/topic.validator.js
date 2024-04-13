@@ -10,7 +10,7 @@ const validateTopicData = async (data) => {
         error: new Error("Topic name should have 2 chars or more and must be a string!")
       }
     }
-    
+
     // validate last name
     if (typeof data.about !== 'string' || data.about < 30) {
       return {
@@ -18,16 +18,16 @@ const validateTopicData = async (data) => {
         error: new Error("About topic should have 30 chars or more and must be a string!")
       }
     }
-    
+
     const slug_data =  await sanitizeUtil.sanitizeInput(data.slug);
-    
+
     const validatedData = {
       name: await sanitizeUtil.sanitizeInput(data.name),
       slug: slug_data.trim().replace(/\s+/g, ' ').
       toLowerCase().replace(/\s+/g, '-'),
       about: await sanitizeUtil.sanitizeInput(data.about),
     }
-    
+
     return { data: validatedData, error: null };
   }
   else {
