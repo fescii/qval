@@ -19,7 +19,6 @@ const checkIfStoryExists = async (slug) => {
     else {
       return {story: null, error: null};
     }
-
   }
   catch (error) {
     console.log(error);
@@ -60,7 +59,7 @@ const createStory = async (userId, data) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const story = await Story.create({storyData}, { transaction });
+    const story = await Story.create(storyData, { transaction });
 
     story.hash = await hashNumberWithKey(hashConfig.story, story.id);
 
