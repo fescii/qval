@@ -7,7 +7,7 @@ const { RoleBase } = require('../configs').platformConfig;
 const addTopic = async (userId, data) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
-  
+
   try {
     // Trying to create a topic to the database
     const topic = await Topic.create({
@@ -16,11 +16,11 @@ const addTopic = async (userId, data) => {
       slug: data.slug,
       about: data.about
     }, {transaction})
-    
+
     topic.hash = await hashNumberWithKey(hashConfig.topic, topic.id);
-    
+
     await topic.save({transaction});
-    
+
     // Create a section for the topic created
     const section = await Section.create({
       identity: topic.hash,
@@ -28,7 +28,7 @@ const addTopic = async (userId, data) => {
       name: topic.name,
       description: `This is a section for the topic - ${topic.name}`
     }, {transaction});
-    
+
     await Role.create({
       section: section.identity,
       user: userId,
@@ -40,9 +40,9 @@ const addTopic = async (userId, data) => {
       },
       expired: false
     }, {transaction});
-    
+
     await transaction.commit();
-    
+
     // On success return data
     return { topic: topic, error: null}
   } catch (error) {
@@ -53,7 +53,7 @@ const addTopic = async (userId, data) => {
 }
 
 const checkIfTopicExists = async (name, slug) => {
-  
+
   try {
     const topic = await Topic.findOne({
       where: {
@@ -63,7 +63,7 @@ const checkIfTopicExists = async (name, slug) => {
         ]
       }
     });
-    
+
     if (topic) {
       // console.log(topic)
       // On success return data
@@ -73,7 +73,6 @@ const checkIfTopicExists = async (name, slug) => {
       // If a topic doesn't exist, returns both null
       return { topic: null, error: null}
     }
-    
   }
   catch (error) {
     return { topic: null, error: error}
