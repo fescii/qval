@@ -9,6 +9,7 @@ const validateStoryData = async (data) => {
     }
   }
 
+  // Check if the story is of kind === post
   if (data.kind === 'post') {
     if (data.content && data.topics) {
       // validate first name
