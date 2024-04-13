@@ -9,7 +9,7 @@ module.exports = (User, sequelize, Sequelize) => {
         autoIncrement: true,
       },
       kind: {
-        type: Sequelize.ENUM('story', 'post', 'poll'),
+        type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
         defaultValue: 'story',
         allowNull: false
       },
