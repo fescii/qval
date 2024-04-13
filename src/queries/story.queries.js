@@ -1,6 +1,7 @@
 const { sequelize, Story} = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
 const { hashConfig } = require('../configs');
+const { newStoryData } = require('../data').storyData;
 
 
 // Check if story exists
@@ -52,20 +53,14 @@ const findStoryByHash = async (hash) => {
 
 // Create a new story
 const createStory = async (userId, data) => {
+
+  const storyData = await newStoryData(userId, data);
+
   // Start a transaction
   const transaction = await sequelize.transaction();
 
   try {
-    const story = await Story.create({
-      title: data.title,
-      kind: data.kind,
-      content: data.content,
-      author: userId,
-      body: data.body,
-      topics: data.topics,
-      hash: data.hash,
-      slug: data.slug
-    }, { transaction });
+    const story = await Story.create({storyData}, { transaction });
 
     story.hash = await hashNumberWithKey(hashConfig.story, story.id);
 

@@ -10,7 +10,7 @@ module.exports = (User, sequelize, Sequelize) => {
       },
       kind: {
         type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
-        defaultValue: 'story',
+        defaultValue: 'post',
         allowNull: false
       },
       author: {
