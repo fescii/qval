@@ -128,8 +128,86 @@ const editStoryContent = async (hash, data) => {
   }
 }
 
+// Edit the story body
+const editStoryBody = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story body
+      story.body = data.body;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit story title
+const editStoryTitle = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story title
+      story.title = data.title;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit story slug
+const editStorySlug = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story slug
+      story.slug = data.slug;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
 // Export the the story queries functions
 module.exports = {
   checkIfStoryExists, findStoryByHash, addStory,
-  editStoryContent
+  editStoryContent, editStoryBody, editStoryTitle, editStorySlug
 }

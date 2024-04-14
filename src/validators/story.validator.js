@@ -177,8 +177,99 @@ const validateStoryBody = async (data) => {
   };
 }
 
+// Story title validation
+const validateStoryTitle = async (data) => {
+
+  // Check if title field is provided
+  if (!data.title || !data.kind) {
+    return {
+      data: null,
+      error: new Error("Missing fields, make sure you provide all the fields required!")
+    }
+  }
+
+  // Check if story kind is valid
+  if (!StoryType.includes(data.kind)) {
+    return {
+      data: null,
+      error: new Error("Invalid story kind, make sure you provide a valid story kind!")
+    }
+  }
+
+  // Check if story kind is neither 'post' nor 'poll'
+  if (data.kind !== 'post' && data.kind !== 'poll') {
+    return {
+      data: null,
+      error: new Error("Invalid story kind, make sure you provide a valid story kind!")
+    }
+  }
+
+  // Check if title is a string and is at least 5 chars long
+  if (typeof data.title !== 'string' || data.title.length < 5) {
+    return {
+      data: null,
+      error: new Error("Title should be a string and should be at least 5 chars long!")
+    };
+  }
+
+  // Return data if all fields are valid
+  return {
+    data: {
+      kind: data.kind,
+      title: await sanitizeUtil.sanitizeInput(data.title)
+    },
+    error: null
+  };
+}
+
+// Story slug validation
+const validateStorySlug = async (data) => {
+
+  // Check if slug field is provided
+  if (!data.slug || !data.kind) {
+    return {
+      data: null,
+      error: new Error("Missing fields, make sure you provide all the fields required!")
+    }
+  }
+
+  // Check if story kind is valid
+  if (!StoryType.includes(data.kind)) {
+    return {
+      data: null,
+      error: new Error("Invalid story kind, make sure you provide a valid story kind!")
+    }
+  }
+
+  // Check if story kind is neither 'post' nor 'poll'
+  if (data.kind !== 'post' && data.kind !== 'poll') {
+    return {
+      data: null,
+      error: new Error("Invalid story kind, make sure you provide a valid story kind!")
+    }
+  }
+
+  // Check if slug is a string and is at least 5 chars long
+  if (typeof data.slug !== 'string' || data.slug.length < 5) {
+    return {
+      data: null,
+      error: new Error("Slug should be a string and should be at least 5 chars long!")
+    };
+  }
+
+  // Return data if all fields are valid
+  return {
+    data: {
+      kind: data.kind,
+      slug: await sanitizeUtil.sanitizeInput(data.slug)
+    },
+    error: null
+  };
+}
+
 
 // Export the module
 module.exports = {
-  validateStoryData, validateStoryContent, validateStoryBody
+  validateStoryData, validateStoryContent, validateStoryBody,
+  validateStoryTitle, validateStorySlug
 }
