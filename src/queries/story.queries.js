@@ -102,6 +102,34 @@ const addStory = async (userId, data) => {
   }
 }
 
+// Edit the story content
+const editStoryContent = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story content
+      story.content = data.content;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Export the the story queries functions
 module.exports = {
-  checkIfStoryExists, findStoryByHash, addStory
+  checkIfStoryExists, findStoryByHash, addStory,
+  editStoryContent
 }

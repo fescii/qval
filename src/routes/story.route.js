@@ -1,7 +1,8 @@
 // Story all routes
 
-const { storyController } = require('../controllers');
 const { storyMiddleware, authMiddleware } = require('../middlewares');
+const { createStory, updateStoryContent } = require('../controllers').storyController;
+
 
 // Function to export all story routes
 module.exports = (app, url) => {
@@ -16,6 +17,12 @@ module.exports = (app, url) => {
   // Creating a new story
   app.put(`${url}/add`,
     [authMiddleware.verifyToken, storyMiddleware.checkDuplicateStory],
-    storyController.createStory
+    createStory
+  );
+
+  // Route for updating story content
+  app.patch(`${url}/:storyHash/edit`,
+    authMiddleware.verifyToken,
+    updateStoryContent
   );
 }

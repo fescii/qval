@@ -2,7 +2,7 @@ const { sanitizeUtil } = require('../utils');
 const { slugifyArray, slugify } = require('../utils').arrayUtil;
 const { StoryType } = require('../configs').platformConfig;
 
-// Register data validation
+// New story data validation
 const validateStoryData = async (data) => {
   if (!data.kind || !data.content || !data.topics) {
     return {
@@ -96,6 +96,21 @@ const validateStoryData = async (data) => {
   }
 }
 
+// Story content validation
+const validateStoryContent = async (data) => {
+  if (typeof data.content !== 'string' || data.content.length < 3) {
+    return {
+      data: null,
+      error: new Error("Content should be a string and should be at least 3 chars long!")
+    };
+  }
+
+  return {
+    data: await sanitizeUtil.sanitizeInput(data.content),
+    error: null
+  };
+}
+
 module.exports = {
-  validateStoryData
+  validateStoryData, validateStoryContent
 }
