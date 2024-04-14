@@ -93,20 +93,20 @@ const updateStoryContent = async (req, res, next) => {
     return next(error);
   }
 
-  // Check if story was updated
-  if (story) {
-    // Return the response
-    return res.status(200).send({
-      success: true,
-      story: story,
-      message: "Story was updated successfully!",
+  // Check if story was not found
+  if (!story) {
+    // Return the 404 response
+    return res.status(404).send({
+      success: false,
+      message: "Story not you are trying to update was not found!"
     });
   }
 
-  // Else story was not found in the database
-  return res.status(404).send({
-    success: false,
-    message: "Story not you are trying to update was not found!"
+  // Return the response
+  return res.status(200).send({
+    success: true,
+    story: story,
+    message: "Story was updated successfully!",
   });
 }
 
