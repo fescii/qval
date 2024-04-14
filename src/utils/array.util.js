@@ -8,12 +8,12 @@ const sumArray = async (arr) => arr.reduce((accumulator, currentValue) => accumu
 
 
 // Mapping array of string to slug fields using regex
-
 const slugify = (text) => {
   return text.trim().replace(/\s+/g, ' ').
     toLowerCase().replace(/\s+/g, '-');
 }
 
+// Slugify array of strings
 const slugifyArray = (arr) => {
   return arr.map(item => slugify(item));
 };
