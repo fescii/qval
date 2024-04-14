@@ -102,7 +102,7 @@ const updateStoryContent = async (req, res, next) => {
     });
   }
 
-  // Return the response
+  // Return success response
   return res.status(200).send({
     success: true,
     story: story,
