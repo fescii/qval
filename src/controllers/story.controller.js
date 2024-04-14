@@ -1,6 +1,6 @@
 const { addStory } = require('../queries').storyQueries;
 
-const createStory = async (req, res) => {
+const createStory = async (req, res, next) => {
   // Check if the user or payload is available
   if (!req.story_data || !req.user) {
     const error = new Error('Payload data or user data is undefined!');

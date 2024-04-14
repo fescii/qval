@@ -1,6 +1,6 @@
-const { sequelize, Story} = require('../models').models;
+const { sequelize, Story, Section, Role } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
-const { hashConfig } = require('../configs');
+const { hashConfig, platformConfig } = require('../configs');
 const { newStoryData } = require('../data').storyData;
 
 
@@ -69,7 +69,7 @@ const addStory = async (userId, data) => {
     const section = await Section.create({
       identity: story.hash,
       target: story.id,
-      name: story.title,
+      name: story.hash,
       description: `This is a section for the story - ${story.title}`
     }, { transaction });
 
@@ -77,7 +77,7 @@ const addStory = async (userId, data) => {
     await Role.create({
       section: section.identity,
       user: userId,
-      base: RoleBase.Owner,
+      base: platformConfig.RoleBase.Admin,
       name: `This is a role for section - ${story.title}`,
       privileges: {
         'action': ["create", "read", "update", "delete"],
@@ -96,7 +96,7 @@ const addStory = async (userId, data) => {
   }
 
   catch (error) {
-    console.log(error);
+    // console.log(error);
     await transaction.rollback();
     return { story: null, error: error };
   }

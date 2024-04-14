@@ -3,7 +3,7 @@ const { slugifyArray, slugify } = require('../utils').arrayUtil;
 
 // Register data validation
 const validateStoryData = async (data) => {
-  if (!story.kind && !story.content && !story.topics) {
+  if (!data.kind || !data.content || !data.topics) {
     return {
       data: null,
       error: new Error("Missing fields, make sure you provide all the fields required!")
@@ -26,7 +26,9 @@ const validateStoryData = async (data) => {
     }
   }
 
-  const topics = await slugifyArray(data.topics);
+  const topics = slugifyArray(data.topics);
+
+  console.log(topics);
 
   // Check if the story is of kind === post
   if (data.kind === 'post') {
@@ -70,7 +72,7 @@ const validateStoryData = async (data) => {
       }
     }
 
-    const slug_data = await slugify(data.slug);
+    const slug_data = slugify(data.slug);
 
     const validatedData = {
       title: await sanitizeUtil.sanitizeInput(data.title),

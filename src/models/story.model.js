@@ -31,6 +31,10 @@ module.exports = (User, sequelize, Sequelize) => {
         unique: true,
         allowNull: true
       },
+      content: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
       body: {
         type: Sequelize.TEXT,
         allowNull: true
