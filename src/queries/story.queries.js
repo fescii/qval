@@ -206,8 +206,34 @@ const editStorySlug = async (hash, data) => {
   }
 }
 
+// Edit story topics
+const editStoryTopics = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story topics
+      story.topics = data.topics;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
 // Export the the story queries functions
 module.exports = {
-  checkIfStoryExists, findStoryByHash, addStory,
+  checkIfStoryExists, findStoryByHash, addStory, editStoryTopics,
   editStoryContent, editStoryBody, editStoryTitle, editStorySlug
 }
