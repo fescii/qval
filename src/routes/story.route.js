@@ -3,7 +3,7 @@
 const { storyMiddleware, authMiddleware } = require('../middlewares');
 const {
   createStory, updateStoryContent,
-  updateStoryBody
+  updateStoryBody, updateStoryTitle, updateStorySlug
 } = require('../controllers').storyController;
 
 
@@ -34,5 +34,17 @@ module.exports = (app, url) => {
   app.patch(`${url}/:storyHash/edit/body`,
     authMiddleware.verifyToken,
     updateStoryBody
+  );
+
+  // Route for handling updating story title
+  app.patch(`${url}/:storyHash/edit/title`,
+    authMiddleware.verifyToken,
+    updateStoryTitle
+  );
+
+  // Route for handling updating story slug
+  app.patch(`${url}/:storyHash/edit/slug`,
+    authMiddleware.verifyToken,
+    updateStorySlug
   );
 }
