@@ -1,5 +1,6 @@
 const { validateStoryContent } = require('../validators').storyValidator;
 const { addStory, editStoryContent } = require('../queries').storyQueries;
+const { checkAuthority } = require('../utils').roleUtil;
 
 // Controller for creating a new story
 const createStory = async (req, res, next) => {
@@ -57,6 +58,27 @@ const updateStoryContent = async (req, res, next) => {
     return res.status(400).send({
       success: false,
       message: valObj.error.message
+    });
+  }
+
+  // Create access data - (For authorizing user)
+  const access = {
+    section: storyHash,
+    privilege: Privileges.Update,
+    user: userId,
+    key: 'action'
+  }
+
+
+  // Check if the user has access to update the story
+  const hasAccess = await checkAuthority(access);
+
+
+  // If user does not have access return unauthorized
+  if (!hasAccess) {
+    return res.status(401).send({
+      success: false,
+      message: "You are not authorized to update this story!"
     });
   }
 

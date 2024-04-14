@@ -11,10 +11,11 @@ module.exports = (app, url) => {
       "Access-Control-Allow-Headers",
       "x-access-token, Origin, Content-Type, Accept"
     );
+
     next();
   });
 
-  // Creating a new story
+  // Route for creating a new story
   app.put(`${url}/add`,
     [authMiddleware.verifyToken, storyMiddleware.checkDuplicateStory],
     createStory
