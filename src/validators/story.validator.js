@@ -1,5 +1,6 @@
 const { sanitizeUtil } = require('../utils');
 const { slugifyArray, slugify } = require('../utils').arrayUtil;
+const { StoryType } = require('../configs').platformConfig;
 
 // Register data validation
 const validateStoryData = async (data) => {
@@ -7,6 +8,14 @@ const validateStoryData = async (data) => {
     return {
       data: null,
       error: new Error("Missing fields, make sure you provide all the fields required!")
+    }
+  }
+
+  // Check if story kind is valid
+  if (!StoryType.includes(data.kind)) {
+    return {
+      data: null,
+      error: new Error("Invalid story kind, make sure you provide a valid story kind!")
     }
   }
 
@@ -28,7 +37,7 @@ const validateStoryData = async (data) => {
 
   const topics = slugifyArray(data.topics);
 
-  console.log(topics);
+  // console.log(topics);
 
   // Check if the story is of kind === post
   if (data.kind === 'post') {

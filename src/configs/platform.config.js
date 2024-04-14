@@ -21,5 +21,6 @@ module.exports = {
     Read: 'read',
     Update: 'update',
     Delete: 'delete'
-  }
+  },
+  StoryType: ['story', 'post', 'poll', 'article', 'blog', 'news', 'journal']
 }
