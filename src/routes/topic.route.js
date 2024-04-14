@@ -19,13 +19,13 @@ module.exports = (app, url) => {
     createTopic
   );
 
-  // Updating existing token
+  // Updating existing topic
   app.patch(`${url}/:topicHash/edit`,
     authMiddleware.verifyToken,
     updateTopic
   );
 
-  // Deleting a topic
+  // Deleting an existing topic
   app.delete(`${url}/:topicHash/remove`,
     authMiddleware.verifyToken,
     deleteTopic

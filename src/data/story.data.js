@@ -1,3 +1,4 @@
+// Get required data based on the kind of story
 const newStoryData = async (userId, data) => {
   switch (data.kind) {
     case 'post':

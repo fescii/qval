@@ -1,6 +1,6 @@
-const { sequelize, Story} = require('../models').models;
+const { sequelize, Story, Section, Role } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
-const { hashConfig } = require('../configs');
+const { hashConfig, platformConfig } = require('../configs');
 const { newStoryData } = require('../data').storyData;
 
 
@@ -69,7 +69,7 @@ const addStory = async (userId, data) => {
     const section = await Section.create({
       identity: story.hash,
       target: story.id,
-      name: story.title,
+      name: story.hash,
       description: `This is a section for the story - ${story.title}`
     }, { transaction });
 
@@ -77,7 +77,7 @@ const addStory = async (userId, data) => {
     await Role.create({
       section: section.identity,
       user: userId,
-      base: RoleBase.Owner,
+      base: platformConfig.RoleBase.Admin,
       name: `This is a role for section - ${story.title}`,
       privileges: {
         'action': ["create", "read", "update", "delete"],
@@ -96,12 +96,144 @@ const addStory = async (userId, data) => {
   }
 
   catch (error) {
-    console.log(error);
+    // console.log(error);
     await transaction.rollback();
     return { story: null, error: error };
   }
 }
 
+// Edit the story content
+const editStoryContent = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story content
+      story.content = data.content;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit the story body
+const editStoryBody = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story body
+      story.body = data.body;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit story title
+const editStoryTitle = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story title
+      story.title = data.title;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit story slug
+const editStorySlug = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story slug
+      story.slug = data.slug;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Edit story topics
+const editStoryTopics = async (hash, data) => {
+  try {
+    const story = await Story.findOne({
+      hash: hash
+    })
+
+    // Check of the story exists
+    if (story) {
+      // Update the story topics
+      story.topics = data.topics;
+      await story.save();
+
+      return { story: story, error: null };
+    }
+    // If story does not exist return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // console.log(error);
+    return { story: null, error: error };
+  }
+}
+
+// Export the the story queries functions
 module.exports = {
-  checkIfStoryExists, findStoryByHash, addStory
+  checkIfStoryExists, findStoryByHash, addStory, editStoryTopics,
+  editStoryContent, editStoryBody, editStoryTitle, editStorySlug
 }

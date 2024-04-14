@@ -1,7 +1,11 @@
 // Story all routes
 
-const { storyController } = require('../controllers');
 const { storyMiddleware, authMiddleware } = require('../middlewares');
+const {
+  createStory, updateStoryContent, updateStoryTopics,
+  updateStoryBody, updateStoryTitle, updateStorySlug
+} = require('../controllers').storyController;
+
 
 // Function to export all story routes
 module.exports = (app, url) => {
@@ -10,12 +14,43 @@ module.exports = (app, url) => {
       "Access-Control-Allow-Headers",
       "x-access-token, Origin, Content-Type, Accept"
     );
+
     next();
   });
 
-  // Creating a new story
+  // Route for handling creation a new story
   app.put(`${url}/add`,
     [authMiddleware.verifyToken, storyMiddleware.checkDuplicateStory],
-    storyController.createStory
+    createStory
+  );
+
+  // Route for handling updating story content
+  app.patch(`${url}/:storyHash/edit/content`,
+    authMiddleware.verifyToken,
+    updateStoryContent
+  );
+
+  // Route for handling updating story body
+  app.patch(`${url}/:storyHash/edit/body`,
+    authMiddleware.verifyToken,
+    updateStoryBody
+  );
+
+  // Route for handling updating story title
+  app.patch(`${url}/:storyHash/edit/title`,
+    authMiddleware.verifyToken,
+    updateStoryTitle
+  );
+
+  // Route for handling updating story slug
+  app.patch(`${url}/:storyHash/edit/slug`,
+    authMiddleware.verifyToken,
+    updateStorySlug
+  );
+
+  // Route for handling updating story topics
+  app.patch(`${url}/:storyHash/edit/topics`,
+    authMiddleware.verifyToken,
+    updateStoryTopics
   );
 }

@@ -70,45 +70,46 @@ const updateTopic = async (req, res, next) => {
     key: 'action'
   }
 
-  const isAuthorized = await checkAuthority(access);
+  // Check if the user has access to perform the action
+  const hasAccess = await checkAuthority(access);
 
-  if (isAuthorized){
-    const {
-      topic,
-      error
-    } = await editTopic(topicHash, topicData.data);
-
-    // Passing the error to error middleware
-    if (error) {
-      return next(error);
-    }
-
-    // Handling when the topic is not found
-    if (!topic) {
-      return res.status(404).send({
-        success: false,
-        message: "The topic you're trying to update was not found!"
-      });
-    }
-
-    return res.status(200).send({
-      success: true,
-      topic: {
-        author: topic.author,
-        name: topic.name,
-        slug: topic.slug,
-        hash: topic.hash,
-        about: topic.about
-      },
-      message: "Topic was updated successfully!"
-    });
-  }
-  else {
+  // If user is not authorized return unauthorized
+  if (!hasAccess) {
     return res.status(401).send({
       success: false,
-      message: "You are not authorize to perform this action!"
+      message: "You are not authorized to update this topic!"
     });
   }
+
+  const {
+    topic,
+    error
+  } = await editTopic(topicHash, topicData.data);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // Handling when the topic is not found
+  if (!topic) {
+    return res.status(404).send({
+      success: false,
+      message: "The topic you're trying to update was not found!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    topic: {
+      author: topic.author,
+      name: topic.name,
+      slug: topic.slug,
+      hash: topic.hash,
+      about: topic.about
+    },
+    message: "Topic was updated successfully!"
+  });
 };
 
 // Controller updating creating a topic

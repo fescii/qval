@@ -1,5 +1,5 @@
-// Import and export all data files here
-const { storyData } = require('./story.data');
+// Importing all the data and exporting it as an object
+const storyData = require('./story.data');
 
 
 module.exports = {
