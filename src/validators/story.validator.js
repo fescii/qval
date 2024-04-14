@@ -127,7 +127,9 @@ const validateStoryContent = async (data) => {
 
   // Return data if all fields are valid
   return {
-    data: await sanitizeUtil.sanitizeInput(data.content),
+    data: {
+      content: await sanitizeUtil.sanitizeInput(data.content)
+    },
     error: null
   };
 }
@@ -267,9 +269,40 @@ const validateStorySlug = async (data) => {
   };
 }
 
+// Story topics validation
+const validateStoryTopics = async (data) => {
+
+  // Check if topics field is provided
+  if (!data.topics) {
+    return {
+      data: null,
+      error: new Error("Missing fields, make sure you provide all the fields required!")
+    }
+  }
+
+  // Check if topics is an array and has at least one topic
+  if (!Array.isArray(data.topics) || data.topics.length < 1) {
+    return {
+      data: null,
+      error: new Error("Topics should be an array and should have at least one topic!")
+    }
+  }
+
+  // Slugify topics
+  const topics = slugifyArray(data.topics);
+
+  // Return data if all fields are valid
+  return {
+    data: {
+      topics: topics
+    },
+    error: null
+  };
+}
+
 
 // Export the module
 module.exports = {
   validateStoryData, validateStoryContent, validateStoryBody,
-  validateStoryTitle, validateStorySlug
+  validateStoryTitle, validateStorySlug, validateStoryTopics
 }
