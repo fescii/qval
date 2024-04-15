@@ -132,11 +132,6 @@ module.exports = (User, sequelize, Sequelize) => {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      topics: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: true,
-        defaultValue: []
-      },
       views: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
@@ -162,7 +157,7 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id', 'hash']
         },
         {
-          fields: ['parent', 'author']
+          fields: ['parent', 'author', 'story']
         }
       ]
     });
