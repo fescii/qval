@@ -7,6 +7,6 @@ const story = require('./story.route');
 module.exports = (app) => {
   auth(app, '/api/v1/auth');
   topic(app, '/api/v1/topic');
-  story(app, '/api/v1/story');
+  story(app, '/api/v1/s');
   errors(app);
 }

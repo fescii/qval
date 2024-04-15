@@ -111,9 +111,13 @@ const editStoryContent = async (hash, data) => {
 
     // Check of the story exists
     if (story) {
+
+      console.log(story.topics);
       // Update the story content
       story.content = data.content;
       await story.save();
+
+      console.log(story);
 
       return { story: story, error: null };
     }

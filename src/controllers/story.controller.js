@@ -1,5 +1,6 @@
 
 const { checkAuthority } = require('../utils').roleUtil;
+const { Privileges } = require('../configs').platformConfig;
 const {
   addStory, editStoryBody, editStoryTopics,
   editStoryContent, editStoryTitle, editStorySlug
