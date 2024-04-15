@@ -1,12 +1,15 @@
 
 const { checkAuthority } = require('../utils').roleUtil;
+const { Privileges } = require('../configs').platformConfig;
 const {
   addStory, editStoryBody, editStoryTopics,
-  editStoryContent, editStoryTitle, editStorySlug
+  editStoryContent, editStoryTitle,
+  editStorySlug, removeStory
 } = require('../queries').storyQueries;
 const {
   validateStoryContent, validateStorySlug,
-  validateStoryBody, validateStoryTitle
+  validateStoryBody, validateStoryTitle,
+  validateStoryTopics
 } = require('../validators').storyValidator;
 
 // Controller for creating a new story
@@ -309,12 +312,21 @@ const updateStorySlug = async (req, res, next) => {
   // Update the story slug
   const {
     story,
+    exists,
     error
   } = await editStorySlug(storyHash, valObj.data);
 
   // Passing the error to error middleware
   if (error) {
     return next(error);
+  }
+
+  // Check if story slug already exists
+  if (exists) {
+    return res.status(409).send({
+      success: false,
+      message: "Story with slug already exists or you didn't change the slug at all!"
+    });
   }
 
   // Check if story was not found
@@ -407,8 +419,70 @@ const updateStoryTopics = async (req, res, next) => {
   });
 }
 
+
+// Controller for removing a story
+const deleteStory = async (req, res, next) => {
+  // Check if the params is available
+  const { storyHash } = req.params;
+
+  if (!req.user || !storyHash) {
+    const error = new Error('Params data or payload is undefined!');
+    return next(error)
+  }
+
+  // Get user data from request object
+  const userId = req.user.id;
+
+  // Create access data - (For authorizing user)
+  const access = {
+    section: storyHash,
+    privilege: Privileges.Delete,
+    user: userId,
+    key: 'action'
+  };
+
+  // Check if the user has access to delete the story
+  const hasAccess = await checkAuthority(access);
+
+  // If user does not have access return unauthorized
+  if (!hasAccess) {
+    return res.status(401).send({
+      success: false,
+      message: "You are not authorized to delete this story!"
+    });
+  }
+
+  // Remove the story
+  const {
+    story,
+    error
+  } = await removeStory(storyHash);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // Check if story was not found
+  if (!story) {
+    // Return the 404 response
+    return res.status(404).send({
+      success: false,
+      message: "Story not you are trying to delete was not found!"
+    });
+  }
+
+  // Return success response
+  return res.status(200).send({
+    success: true,
+    story: story,
+    message: "Story was deleted successfully!",
+  });
+}
+
 // Export the module
 module.exports = {
-  createStory, updateStoryContent, updateStoryTopics,
-  updateStoryBody, updateStoryTitle, updateStorySlug
+  createStory, updateStoryContent,
+  updateStoryTopics, updateStoryBody,
+  updateStoryTitle, updateStorySlug, deleteStory
 }

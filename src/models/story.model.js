@@ -44,6 +44,11 @@ module.exports = (User, sequelize, Sequelize) => {
         allowNull: true,
         defaultValue: []
       },
+      views: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: true
+      },
       total_upvotes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
@@ -68,7 +73,7 @@ module.exports = (User, sequelize, Sequelize) => {
         }
       ]
     });
-  
+
   // Create upvote table to store all upvotes on post/story
   const Upvote = sequelize.define("upvotes", {
       id: {
@@ -98,7 +103,7 @@ module.exports = (User, sequelize, Sequelize) => {
         }
       ]
     });
-  
+
   // Create an opinion table for all opinions and recursive replies
   const Opinion = sequelize.define("opinions", {
       id: {
@@ -107,11 +112,11 @@ module.exports = (User, sequelize, Sequelize) => {
         autoIncrement: true,
       },
       story: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: true
       },
       parent: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: true
       },
       author: {
@@ -127,10 +132,10 @@ module.exports = (User, sequelize, Sequelize) => {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      topics: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: true,
-        defaultValue: []
+      views: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: true
       },
       total_upvotes: {
         type: Sequelize.INTEGER,
@@ -152,11 +157,11 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id', 'hash']
         },
         {
-          fields: ['parent', 'author']
+          fields: ['parent', 'author', 'story']
         }
       ]
     });
-  
+
   // Create upvote table to store all upvotes(Like to distinguish) on post/story
   const Like = sequelize.define("likes", {
       id: {
@@ -190,27 +195,27 @@ module.exports = (User, sequelize, Sequelize) => {
   // Defining the associations
   User.hasMany(Story, { foreignKey: 'author' });
   Story.belongsTo(User, { foreignKey: 'author', as: 'user_stories', onDelete: 'CASCADE' });
-  
+
   User.hasMany(Upvote, { foreignKey: 'author' });
   Upvote.belongsTo(User, { foreignKey: 'author', as: 'user_upvotes', onDelete: 'CASCADE' });
-  
+
   Story.hasMany(Upvote, { foreignKey: 'story' });
   Upvote.belongsTo(Story, { foreignKey: 'story', as: 'story_upvotes', onDelete: 'CASCADE' });
-  
-  Story.hasMany(Opinion, { foreignKey: 'story' });
-  Opinion.belongsTo(Story, { foreignKey: 'story', as: 'story_opinions', onDelete: 'CASCADE' });
-  
+
+  Story.hasMany(Opinion, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
+  Opinion.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_opinions', onDelete: 'CASCADE' });
+
   User.hasMany(Opinion, { foreignKey: 'author' });
   Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
-  
-  Opinion.hasMany(Opinion, { foreignKey: 'opinion' });
-  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', as: 'opinion_replies', onDelete: 'CASCADE' });
-  
+
+  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash'});
+  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
+
   Opinion.hasMany(Like, { foreignKey: 'opinion' });
   Like.belongsTo(Opinion, { foreignKey: 'opinion', as: 'opinion_likes', onDelete: 'CASCADE' });
-  
+
   User.hasMany(Like, { foreignKey: 'author' });
   Upvote.belongsTo(Story, { foreignKey: 'author', as: 'user_likes', onDelete: 'CASCADE' });
-  
+
   return { Story, Opinion, Upvote, Like }
 }

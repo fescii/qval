@@ -3,8 +3,9 @@ const userValidator = require('./user.validator');
 const postValidator = require('./post.validator');
 const topicValidator = require('./topic.validator');
 const storyValidator = require('./story.validator');
+const opinionValidator = require('./opinion.validator');
 
 module.exports = {
   userValidator, storyValidator,
-  postValidator, topicValidator
+  postValidator, topicValidator, opinionValidator
 };
