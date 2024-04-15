@@ -305,8 +305,39 @@ const editStoryTopics = async (hash, data) => {
   }
 }
 
+
+// Query for deleting a story based on the hash field
+const removeStory = async (hash) => {
+  // Start a transaction
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Find the story by hash
+    const story = await Story.findOne({
+      where: { hash: hash }
+    }, { transaction });
+
+    // If story is found then delete the story
+    if (story) {
+      await story.destroy({ transaction });
+      await transaction.commit();
+      return { story: story, error: null };
+    }
+    // If story is not found then return both null
+    else {
+      return { story: null, error: null };
+    }
+  }
+  catch (error) {
+    // Rollback the transaction
+    await transaction.rollback();
+    return { story: null, error: error };
+  }
+}
+
 // Export the the story queries functions
 module.exports = {
-  checkIfStoryExists, findStoryByHash, addStory, editStoryTopics,
-  editStoryContent, editStoryBody, editStoryTitle, editStorySlug
+  checkIfStoryExists, findStoryByHash, addStory,
+  editStoryTopics, editStoryContent, editStoryBody,
+  editStoryTitle, editStorySlug, removeStory
 }

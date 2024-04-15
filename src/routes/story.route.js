@@ -2,8 +2,9 @@
 
 const { storyMiddleware, authMiddleware } = require('../middlewares');
 const {
-  createStory, updateStoryContent, updateStoryTopics,
-  updateStoryBody, updateStoryTitle, updateStorySlug
+  createStory, updateStoryContent,
+  updateStoryTopics, updateStoryBody,
+  updateStoryTitle, updateStorySlug, deleteStory
 } = require('../controllers').storyController;
 
 
@@ -52,5 +53,11 @@ module.exports = (app, url) => {
   app.patch(`${url}/:storyHash/edit/topics`,
     authMiddleware.verifyToken,
     updateStoryTopics
+  );
+
+  // Route for handling story removal/deletion
+  app.delete(`${url}/:storyHash/remove`,
+    authMiddleware.verifyToken,
+    deleteStory
   );
 }
