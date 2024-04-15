@@ -1,7 +1,7 @@
 // Importing middlewares and controllers
 const { verifyToken } = require('../middlewares').authMiddleware;
 const {
-  addOpinion, updateOpinion,
+  createOpinion, updateOpinion,
   deleteOpinion
 } = require('../controllers').opinionController;
 
@@ -20,7 +20,7 @@ module.exports = (app, url) => {
   // Route for handling opinion creation
   app.put(`${url}/s/:storyHash/add/opinion`,
     verifyToken,
-    addOpinion
+    createOpinion
   );
 
   // Route for handling opinion update
