@@ -1,5 +1,4 @@
 // Importing from internal modules
-const { checkAuthority } = require('../utils').roleUtil;
 const {
   addOpinion, editOpinion, removeOpinion, addParentOpinion
 } = require('../queries').opinionQueries;
@@ -201,6 +200,6 @@ const deleteOpinion = async (req, res, next) => {
 // Export all controllers
 module.exports = {
   createOpinion,
-  updateOpinion,
+  updateOpinion, deleteOpinion,
   createParentOpinion
 }
