@@ -112,11 +112,11 @@ module.exports = (User, sequelize, Sequelize) => {
         autoIncrement: true,
       },
       story: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: true
       },
       parent: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: true
       },
       author: {
@@ -202,14 +202,14 @@ module.exports = (User, sequelize, Sequelize) => {
   Story.hasMany(Upvote, { foreignKey: 'story' });
   Upvote.belongsTo(Story, { foreignKey: 'story', as: 'story_upvotes', onDelete: 'CASCADE' });
 
-  Story.hasMany(Opinion, { foreignKey: 'story' });
-  Opinion.belongsTo(Story, { foreignKey: 'story', as: 'story_opinions', onDelete: 'CASCADE' });
+  Story.hasMany(Opinion, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
+  Opinion.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_opinions', onDelete: 'CASCADE' });
 
   User.hasMany(Opinion, { foreignKey: 'author' });
   Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
 
-  Opinion.hasMany(Opinion, { foreignKey: 'opinion' });
-  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', as: 'opinion_replies', onDelete: 'CASCADE' });
+  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash'});
+  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
 
   Opinion.hasMany(Like, { foreignKey: 'opinion' });
   Like.belongsTo(Opinion, { foreignKey: 'opinion', as: 'opinion_likes', onDelete: 'CASCADE' });
