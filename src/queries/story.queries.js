@@ -1,3 +1,7 @@
+// Importing from external modules
+const { Op } = require('sequelize');
+
+// Importing from internal modules
 const { sequelize, Story, Section, Role } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
 const { hashConfig, platformConfig } = require('../configs');
@@ -31,7 +35,7 @@ const checkIfStoryExists = async (slug) => {
 const findStoryByHash = async (hash) => {
   try {
     const story = await Story.findOne({
-       where: { hash: hash }
+      where: { hash: hash }
     });
 
     // If story is returned by the query then return the story
@@ -104,20 +108,24 @@ const addStory = async (userId, data) => {
 
 // Edit the story content
 const editStoryContent = async (hash, data) => {
+  const transaction = await sequelize.transaction();
+
   try {
     const story = await Story.findOne({
-      hash: hash
-    })
+      where: { hash: hash }
+    },{ transaction })
 
     // Check of the story exists
     if (story) {
 
-      console.log(story.topics);
-      // Update the story content
+      // console.log(story.topics);
       story.content = data.content;
-      await story.save();
 
-      console.log(story);
+      await story.save({ transaction });
+
+      await transaction.commit();
+
+      // console.log(story.topics);
 
       return { story: story, error: null };
     }
@@ -128,22 +136,33 @@ const editStoryContent = async (hash, data) => {
   }
   catch (error) {
     // console.log(error);
+    await transaction.rollback();
     return { story: null, error: error };
   }
 }
 
 // Edit the story body
 const editStoryBody = async (hash, data) => {
+
+  // create a new transaction
+  const transaction = await sequelize.transaction();
+
+  // Try to update the story body
   try {
+
+    // Get the story by hash from the database
     const story = await Story.findOne({
-      hash: hash
-    })
+      where: { hash: hash }
+    }, { transaction })
 
     // Check of the story exists
     if (story) {
       // Update the story body
       story.body = data.body;
-      await story.save();
+      await story.save({ transaction });
+
+      // Commit the transaction
+      await transaction.commit();
 
       return { story: story, error: null };
     }
@@ -153,23 +172,34 @@ const editStoryBody = async (hash, data) => {
     }
   }
   catch (error) {
-    // console.log(error);
+    // Rollback the transaction
+    await transaction.rollback();
+
     return { story: null, error: error };
   }
 }
 
 // Edit story title
 const editStoryTitle = async (hash, data) => {
+  // create a new transaction
+  const transaction = await sequelize.transaction();
+
+  // Try to update the story title
   try {
+
+    // Get the story by hash from the database
     const story = await Story.findOne({
-      hash: hash
-    })
+      where: { hash: hash }
+    }, { transaction })
 
     // Check of the story exists
     if (story) {
       // Update the story title
       story.title = data.title;
-      await story.save();
+      await story.save({ transaction });
+
+      // Commit the transaction
+      await transaction.commit();
 
       return { story: story, error: null };
     }
@@ -179,49 +209,86 @@ const editStoryTitle = async (hash, data) => {
     }
   }
   catch (error) {
-    // console.log(error);
+    // Rollback the transaction
+    await transaction.rollback();
+
     return { story: null, error: error };
   }
 }
 
 // Edit story slug
 const editStorySlug = async (hash, data) => {
+  // create a new transaction
+  const transaction = await sequelize.transaction();
+
+  // Try to update the story slug
   try {
+
+    // Check if the story with similar slug already exists
+    const storyExists = await Story.findOne({
+      where: {
+        slug: data.slug,
+        [Op.not]: { hash: hash }
+      }
+    }, { transaction });
+
+    console.log(data.slug);
+
+    console.log(storyExists);
+
+    if (storyExists) {
+      return { story: storyExists, exists: true, error: null };
+    }
+
+    // Get the story by hash from the database
     const story = await Story.findOne({
-      hash: hash
-    })
+      where: { hash: hash }
+    }, { transaction });
+
 
     // Check of the story exists
     if (story) {
       // Update the story slug
       story.slug = data.slug;
-      await story.save();
+      await story.save({ transaction });
 
-      return { story: story, error: null };
+      // Commit the transaction
+      await transaction.commit();
+
+      return { story: story, exists: false, error: null };
     }
     // If story does not exist return both null
     else {
-      return { story: null, error: null };
+      return { story: null, exists: false, error: null };
     }
   }
   catch (error) {
-    // console.log(error);
-    return { story: null, error: error };
+    // Rollback the transaction
+    await transaction.rollback();
+
+    return { story: null, exists: false, error: error };
   }
 }
 
 // Edit story topics
 const editStoryTopics = async (hash, data) => {
+  // create a new transaction
+  const transaction = await sequelize.transaction();
+
+  // Try to update the story topics
   try {
     const story = await Story.findOne({
-      hash: hash
-    })
+      where: { hash: hash }
+    }, { transaction })
 
     // Check of the story exists
     if (story) {
       // Update the story topics
       story.topics = data.topics;
-      await story.save();
+      await story.save({ transaction });
+
+      // Commit the transaction
+      await transaction.commit();
 
       return { story: story, error: null };
     }
@@ -231,7 +298,9 @@ const editStoryTopics = async (hash, data) => {
     }
   }
   catch (error) {
-    // console.log(error);
+    // Rollback the transaction
+    await transaction.rollback();
+
     return { story: null, error: error };
   }
 }

@@ -154,7 +154,7 @@ const validateStoryBody = async (data) => {
   }
 
   // Check if story kind is neither 'post' nor 'poll'
-  if (data.kind !== 'post' && data.kind !== 'poll') {
+  if (data.kind === 'post' || data.kind === 'poll') {
     return {
       data: null,
       error: new Error("Invalid story kind, make sure you provide a valid story kind!")
@@ -199,7 +199,7 @@ const validateStoryTitle = async (data) => {
   }
 
   // Check if story kind is neither 'post' nor 'poll'
-  if (data.kind !== 'post' && data.kind !== 'poll') {
+  if (data.kind === 'post' || data.kind === 'poll') {
     return {
       data: null,
       error: new Error("Invalid story kind, make sure you provide a valid story kind!")
@@ -244,7 +244,7 @@ const validateStorySlug = async (data) => {
   }
 
   // Check if story kind is neither 'post' nor 'poll'
-  if (data.kind !== 'post' && data.kind !== 'poll') {
+  if (data.kind === 'post' || data.kind === 'poll') {
     return {
       data: null,
       error: new Error("Invalid story kind, make sure you provide a valid story kind!")
@@ -259,11 +259,14 @@ const validateStorySlug = async (data) => {
     };
   }
 
+  // Slugify the slug
+  const slug_data = slugify(data.slug);
+
   // Return data if all fields are valid
   return {
     data: {
       kind: data.kind,
-      slug: await sanitizeUtil.sanitizeInput(data.slug)
+      slug: slug_data
     },
     error: null
   };

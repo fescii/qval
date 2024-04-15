@@ -7,7 +7,7 @@ const {
 } = require('../queries').storyQueries;
 const {
   validateStoryContent, validateStorySlug,
-  validateStoryBody, validateStoryTitle
+  validateStoryBody, validateStoryTitle, validateStoryTopics
 } = require('../validators').storyValidator;
 
 // Controller for creating a new story
@@ -310,12 +310,21 @@ const updateStorySlug = async (req, res, next) => {
   // Update the story slug
   const {
     story,
+    exists,
     error
   } = await editStorySlug(storyHash, valObj.data);
 
   // Passing the error to error middleware
   if (error) {
     return next(error);
+  }
+
+  // Check if story slug already exists
+  if (exists) {
+    return res.status(409).send({
+      success: false,
+      message: "Story with slug already exists or you didn't change the slug at all!"
+    });
   }
 
   // Check if story was not found
