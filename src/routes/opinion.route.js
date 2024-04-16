@@ -1,10 +1,8 @@
-const { createParentOpinion } = require('../controllers/opinion.controller');
-
 // Importing middlewares and controllers
 const { verifyToken } = require('../middlewares').authMiddleware;
 const {
   createOpinion, updateOpinion,
-  deleteOpinion
+  deleteOpinion, createReplyOpinion
 } = require('../controllers').opinionController;
 
 
@@ -34,7 +32,7 @@ module.exports = (app, url) => {
   // Route for handling all opinion replies
   app.put(`${url}/o/:opinionHash/reply`,
     verifyToken,
-    createParentOpinion
+    createReplyOpinion
   );
 
   // Route for handling opinion deletion

@@ -1,5 +1,5 @@
 // Importing from internal modules
-const { sequelize, Opinion } = require('../models').models;
+const { sequelize, Opinion, Story } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
 const { hashConfig } = require('../configs');
 
@@ -7,6 +7,7 @@ const { hashConfig } = require('../configs');
 // Check if Opinion exists using hash
 const findOpinionByHash = async (hash) => {
   try {
+
     const opinion = await Opinion.findOne({
       where: { hash: hash }
     });
@@ -34,9 +35,24 @@ const addOpinion = async (userId, storyHash, data) => {
 
   // Try to create the opinion
   try {
+
+    // Make sure the story exists before adding opinion
+    const story = await Story.findOne({
+      where: { hash: storyHash }
+    }, { transaction });
+
+    // If not story found then return null
+    if (!story) {
+      return {
+        story: null,
+        opinion: null,
+        error: null
+      };
+    }
+
     const opinion = await Opinion.create({
       author: userId,
-      story: storyHash,
+      story: story.hash,
       body: data.body,
     }, { transaction });
 
@@ -50,27 +66,51 @@ const addOpinion = async (userId, storyHash, data) => {
     await transaction.commit();
 
     // If opinion is created then return the opinion
-    return { opinion: opinion, error: null };
+    return {
+      story: story,
+      opinion: opinion,
+      error: null
+    };
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, error: error };
+    return {
+      story: null,
+      opinion: null,
+      error: error
+    };
   }
 }
 
 // Create a new Opinion of parent type
-const addParentOpinion = async (userId, opinionHash, data) => {
+const replyOpinion = async (userId, opinionHash, data) => {
 
   // Start new transaction
   const transaction = await sequelize.transaction();
 
   // Try to create the opinion
   try {
+
+    // Make sure the parent opinion exists before adding opinion
+    const parentOpinion = await Opinion.findOne({
+      where: { hash: opinionHash }
+    }, { transaction });
+
+    // If not parent opinion found then return null
+    if (!parentOpinion) {
+      return {
+        parent: null,
+        opinion: null,
+        error: null
+      };
+    }
+
+    // Create the opinion
     const opinion = await Opinion.create({
       author: userId,
-      parent: opinionHash,
+      opinion: opinionHash,
       body: data.body,
     }, { transaction });
 
@@ -95,12 +135,13 @@ const addParentOpinion = async (userId, opinionHash, data) => {
 }
 
 // Query for editing the opinion body
-const editOpinion = async (opinionHash, data) => {
+const editOpinion = async (userId, opinionHash, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
 
   // Try to update the opinion
   try {
+    // console.log(typeof(opinionHash));
 
     // Find the opinion using hash
     const opinion = await Opinion.findOne({
@@ -109,6 +150,15 @@ const editOpinion = async (opinionHash, data) => {
 
     // If opinion is found then update the body
     if (opinion) {
+      // Check if the user is the author of the opinion
+      if (opinion.author !== userId) {
+        return {
+          opinion: opinion,
+          authorized: false,
+          error: null
+        };
+      }
+
       // Update the body
       opinion.body = data.body;
 
@@ -118,18 +168,18 @@ const editOpinion = async (opinionHash, data) => {
       // Commit the transaction
       await transaction.commit();
 
-      return { opinion: opinion, error: null };
+      return { opinion: opinion, authorized: true, error: null };
     }
     // Else return null
     else {
-      return { opinion: null, error: null };
+      return { opinion: null, authorized: false, error: null };
     }
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, error: error };
+    return { opinion: null, authorized: false, error: error };
   }
 }
 
@@ -153,7 +203,7 @@ const removeOpinion = async (userId, opinionHash) => {
       if (opinion.author !== userId) {
         return {
           opinion: opinion,
-          author: false,
+          authorized: false,
           error: null
         };
       }
@@ -164,18 +214,18 @@ const removeOpinion = async (userId, opinionHash) => {
       // Commit the transaction
       await transaction.commit();
 
-      return { opinion: opinion, author: true, error: null };
+      return { opinion: opinion, authorized: true, error: null };
     }
     // Else return null
     else {
-      return { opinion: null, author: false, error: null };
+      return { opinion: null, authorized: false, error: null };
     }
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, author: false, error: error };
+    return { opinion: null, authorized: false, error: error };
   }
 }
 
@@ -183,5 +233,5 @@ const removeOpinion = async (userId, opinionHash) => {
 // Export the functions
 module.exports = {
   findOpinionByHash, removeOpinion,
-  addOpinion, addParentOpinion, editOpinion
+  addOpinion, replyOpinion, editOpinion
 };

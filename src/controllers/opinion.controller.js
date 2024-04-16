@@ -1,6 +1,6 @@
 // Importing from internal modules
 const {
-  addOpinion, editOpinion, removeOpinion, addParentOpinion
+  addOpinion, editOpinion, removeOpinion, replyOpinion,
 } = require('../queries').opinionQueries;
 
 const { validateOpinionData } = require('../validators').opinionValidator;
@@ -36,6 +36,7 @@ const createOpinion = async (req, res, next) => {
 
   // Add the opinion
   const {
+    story,
     opinion,
     error
   } = await addOpinion(userId, storyHash, valObj.data);
@@ -43,6 +44,14 @@ const createOpinion = async (req, res, next) => {
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // If story is null then return the error
+  if (!story) {
+    return res.status(404).json({
+      success: false,
+      message: 'The story you are trying to add opinion to was not found!'
+    })
   }
 
   // Return the success message
@@ -54,8 +63,8 @@ const createOpinion = async (req, res, next) => {
 }
 
 
-// Add Parent Opinion
-const createParentOpinion = async (req, res, next) => {
+// Add Reply Opinion
+const createReplyOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.body || !req.user || !req.params) {
     const error = new Error('Payload data or user data is undefined!');
@@ -84,13 +93,22 @@ const createParentOpinion = async (req, res, next) => {
 
   // Add the opinion
   const {
+    parent,
     opinion,
     error
-  } = await addParentOpinion(userId, opinionHash, valObj.data);
+  } = await replyOpinion(userId, opinionHash, valObj.data);
 
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // If parent is null then return the error
+  if (!parent) {
+    return res.status(404).json({
+      success: false,
+      message: 'The opinion you are trying to reply to was not found!'
+    })
   }
 
   // Return the success message
@@ -112,6 +130,8 @@ const updateOpinion = async (req, res, next) => {
   // Get opinion hash from params
   const opinionHash = req.params.opinionHash;
 
+  // console.log(opinionHash);
+
   // Get user id from user data
   const userId = req.user.id;
 
@@ -120,6 +140,8 @@ const updateOpinion = async (req, res, next) => {
 
   // Validate the opinion data
   const valObj = await validateOpinionData(data);
+
+  // console.log(valObj.data);
 
   // If validation failed, return the error
   if (valObj.error) {
@@ -132,12 +154,29 @@ const updateOpinion = async (req, res, next) => {
   // Edit the opinion
   const {
     opinion,
+    authorized,
     error
   } = await editOpinion(userId, opinionHash, valObj.data);
 
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // Check if the opinion was not found
+  if (!opinion) {
+    return res.status(404).json({
+      success: false,
+      message: 'The opinion you are trying to edit was not found!'
+    })
+  }
+
+  // Check if author is was false (meaning the user isn't the author)
+  if (!authorized) {
+    return res.status(403).json({
+      success: false,
+      message: 'You are not authorized to edit this opinion!'
+    })
   }
 
   // Return the success message
@@ -165,7 +204,7 @@ const deleteOpinion = async (req, res, next) => {
   // Delete the opinion
   const {
     opinion,
-    author,
+    authorized,
     error
   } = await removeOpinion(userId, opinionHash);
 
@@ -183,7 +222,7 @@ const deleteOpinion = async (req, res, next) => {
   }
 
   // Check of author is was false (meaning the user isn't the author)
-  if (!author) {
+  if (!authorized) {
     return res.status(403).json({
       success: false,
       message: 'You are not authorized to delete this opinion!'
@@ -197,9 +236,10 @@ const deleteOpinion = async (req, res, next) => {
   })
 }
 
+
 // Export all controllers
 module.exports = {
   createOpinion,
   updateOpinion, deleteOpinion,
-  createParentOpinion
+  createReplyOpinion
 }

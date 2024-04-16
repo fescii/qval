@@ -115,7 +115,7 @@ module.exports = (User, sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true
       },
-      parent: {
+      opinion: {
         type: Sequelize.STRING,
         allowNull: true
       },
@@ -157,7 +157,7 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id', 'hash']
         },
         {
-          fields: ['parent', 'author', 'story']
+          fields: ['opinion', 'author', 'story']
         }
       ]
     });
@@ -208,7 +208,7 @@ module.exports = (User, sequelize, Sequelize) => {
   User.hasMany(Opinion, { foreignKey: 'author' });
   Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
 
-  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash'});
+  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
   Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
 
   Opinion.hasMany(Like, { foreignKey: 'opinion' });
