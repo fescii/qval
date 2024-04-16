@@ -95,12 +95,13 @@ const replyOpinion = async (userId, opinionHash, data) => {
 }
 
 // Query for editing the opinion body
-const editOpinion = async (opinionHash, data) => {
+const editOpinion = async (userId, opinionHash, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
 
   // Try to update the opinion
   try {
+    // console.log(typeof(opinionHash));
 
     // Find the opinion using hash
     const opinion = await Opinion.findOne({

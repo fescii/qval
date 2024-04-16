@@ -112,6 +112,8 @@ const updateOpinion = async (req, res, next) => {
   // Get opinion hash from params
   const opinionHash = req.params.opinionHash;
 
+  // console.log(opinionHash);
+
   // Get user id from user data
   const userId = req.user.id;
 
@@ -120,6 +122,8 @@ const updateOpinion = async (req, res, next) => {
 
   // Validate the opinion data
   const valObj = await validateOpinionData(data);
+
+  // console.log(valObj.data);
 
   // If validation failed, return the error
   if (valObj.error) {
@@ -132,12 +136,29 @@ const updateOpinion = async (req, res, next) => {
   // Edit the opinion
   const {
     opinion,
+    authorized,
     error
   } = await editOpinion(userId, opinionHash, valObj.data);
 
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // Check if the opinion was not found
+  if (!opinion) {
+    return res.status(404).json({
+      success: false,
+      message: 'The opinion you are trying to edit was not found!'
+    })
+  }
+
+  // Check if author is was false (meaning the user isn't the author)
+  if (!authorized) {
+    return res.status(403).json({
+      success: false,
+      message: 'You are not authorized to edit this opinion!'
+    })
   }
 
   // Return the success message
@@ -165,7 +186,7 @@ const deleteOpinion = async (req, res, next) => {
   // Delete the opinion
   const {
     opinion,
-    author,
+    authorized,
     error
   } = await removeOpinion(userId, opinionHash);
 
@@ -183,7 +204,7 @@ const deleteOpinion = async (req, res, next) => {
   }
 
   // Check of author is was false (meaning the user isn't the author)
-  if (!author) {
+  if (!authorized) {
     return res.status(403).json({
       success: false,
       message: 'You are not authorized to delete this opinion!'
