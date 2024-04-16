@@ -39,7 +39,7 @@ const addOpinion = async (userId, storyHash, data) => {
     // Make sure the story exists before adding opinion
     const story = await Story.findOne({
       where: { hash: storyHash }
-    });
+    }, { transaction });
 
     // If not story found then return null
     if (!story) {
@@ -96,7 +96,7 @@ const replyOpinion = async (userId, opinionHash, data) => {
     // Make sure the parent opinion exists before adding opinion
     const parentOpinion = await Opinion.findOne({
       where: { hash: opinionHash }
-    });
+    }, { transaction });
 
     // If not parent opinion found then return null
     if (!parentOpinion) {
@@ -214,7 +214,7 @@ const removeOpinion = async (userId, opinionHash) => {
       // Commit the transaction
       await transaction.commit();
 
-      return { opinion: opinion, authorized: false, error: null };
+      return { opinion: opinion, authorized: true, error: null };
     }
     // Else return null
     else {
