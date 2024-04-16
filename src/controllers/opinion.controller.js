@@ -36,6 +36,7 @@ const createOpinion = async (req, res, next) => {
 
   // Add the opinion
   const {
+    story,
     opinion,
     error
   } = await addOpinion(userId, storyHash, valObj.data);
@@ -43,6 +44,14 @@ const createOpinion = async (req, res, next) => {
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // If story is null then return the error
+  if (!story) {
+    return res.status(404).json({
+      success: false,
+      message: 'The story you are trying to add opinion to was not found!'
+    })
   }
 
   // Return the success message
@@ -84,6 +93,7 @@ const createReplyOpinion = async (req, res, next) => {
 
   // Add the opinion
   const {
+    parent,
     opinion,
     error
   } = await replyOpinion(userId, opinionHash, valObj.data);
@@ -91,6 +101,14 @@ const createReplyOpinion = async (req, res, next) => {
   // If error occurred, return the error
   if (error) {
     return next(error);
+  }
+
+  // If parent is null then return the error
+  if (!parent) {
+    return res.status(404).json({
+      success: false,
+      message: 'The opinion you are trying to reply to was not found!'
+    })
   }
 
   // Return the success message

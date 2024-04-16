@@ -1,5 +1,5 @@
 // Importing from internal modules
-const { sequelize, Opinion } = require('../models').models;
+const { sequelize, Opinion, Story } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
 const { hashConfig } = require('../configs');
 
@@ -7,6 +7,7 @@ const { hashConfig } = require('../configs');
 // Check if Opinion exists using hash
 const findOpinionByHash = async (hash) => {
   try {
+
     const opinion = await Opinion.findOne({
       where: { hash: hash }
     });
@@ -34,9 +35,24 @@ const addOpinion = async (userId, storyHash, data) => {
 
   // Try to create the opinion
   try {
+
+    // Make sure the story exists before adding opinion
+    const story = await Story.findOne({
+      where: { hash: storyHash }
+    });
+
+    // If not story found then return null
+    if (!story) {
+      return {
+        story: null,
+        opinion: null,
+        error: null
+      };
+    }
+
     const opinion = await Opinion.create({
       author: userId,
-      story: storyHash,
+      story: story.hash,
       body: data.body,
     }, { transaction });
 
@@ -50,13 +66,21 @@ const addOpinion = async (userId, storyHash, data) => {
     await transaction.commit();
 
     // If opinion is created then return the opinion
-    return { opinion: opinion, error: null };
+    return {
+      story: story,
+      opinion: opinion,
+      error: null
+    };
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, error: error };
+    return {
+      story: null,
+      opinion: null,
+      error: error
+    };
   }
 }
 
@@ -68,6 +92,22 @@ const replyOpinion = async (userId, opinionHash, data) => {
 
   // Try to create the opinion
   try {
+
+    // Make sure the parent opinion exists before adding opinion
+    const parentOpinion = await Opinion.findOne({
+      where: { hash: opinionHash }
+    });
+
+    // If not parent opinion found then return null
+    if (!parentOpinion) {
+      return {
+        parent: null,
+        opinion: null,
+        error: null
+      };
+    }
+
+    // Create the opinion
     const opinion = await Opinion.create({
       author: userId,
       opinion: opinionHash,
