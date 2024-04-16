@@ -1,6 +1,6 @@
 // Importing from internal modules
 const {
-  addOpinion, editOpinion, removeOpinion, addParentOpinion
+  addOpinion, editOpinion, removeOpinion, replyOpinion,
 } = require('../queries').opinionQueries;
 
 const { validateOpinionData } = require('../validators').opinionValidator;
@@ -54,8 +54,8 @@ const createOpinion = async (req, res, next) => {
 }
 
 
-// Add Parent Opinion
-const createParentOpinion = async (req, res, next) => {
+// Add Reply Opinion
+const createReplyOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.body || !req.user || !req.params) {
     const error = new Error('Payload data or user data is undefined!');
@@ -86,7 +86,7 @@ const createParentOpinion = async (req, res, next) => {
   const {
     opinion,
     error
-  } = await addParentOpinion(userId, opinionHash, valObj.data);
+  } = await replyOpinion(userId, opinionHash, valObj.data);
 
   // If error occurred, return the error
   if (error) {
@@ -201,5 +201,5 @@ const deleteOpinion = async (req, res, next) => {
 module.exports = {
   createOpinion,
   updateOpinion, deleteOpinion,
-  createParentOpinion
+  createReplyOpinion
 }

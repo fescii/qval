@@ -61,7 +61,7 @@ const addOpinion = async (userId, storyHash, data) => {
 }
 
 // Create a new Opinion of parent type
-const addParentOpinion = async (userId, opinionHash, data) => {
+const replyOpinion = async (userId, opinionHash, data) => {
 
   // Start new transaction
   const transaction = await sequelize.transaction();
@@ -70,7 +70,7 @@ const addParentOpinion = async (userId, opinionHash, data) => {
   try {
     const opinion = await Opinion.create({
       author: userId,
-      parent: opinionHash,
+      opinion: opinionHash,
       body: data.body,
     }, { transaction });
 
@@ -109,6 +109,15 @@ const editOpinion = async (opinionHash, data) => {
 
     // If opinion is found then update the body
     if (opinion) {
+      // Check if the user is the author of the opinion
+      if (opinion.author !== userId) {
+        return {
+          opinion: opinion,
+          authorized: false,
+          error: null
+        };
+      }
+
       // Update the body
       opinion.body = data.body;
 
@@ -118,18 +127,18 @@ const editOpinion = async (opinionHash, data) => {
       // Commit the transaction
       await transaction.commit();
 
-      return { opinion: opinion, error: null };
+      return { opinion: opinion, authorized: true, error: null };
     }
     // Else return null
     else {
-      return { opinion: null, error: null };
+      return { opinion: null, authorized: false, error: null };
     }
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, error: error };
+    return { opinion: null, authorized: false, error: error };
   }
 }
 
@@ -153,7 +162,7 @@ const removeOpinion = async (userId, opinionHash) => {
       if (opinion.author !== userId) {
         return {
           opinion: opinion,
-          author: false,
+          authorized: false,
           error: null
         };
       }
@@ -164,18 +173,18 @@ const removeOpinion = async (userId, opinionHash) => {
       // Commit the transaction
       await transaction.commit();
 
-      return { opinion: opinion, author: true, error: null };
+      return { opinion: opinion, authorized: false, error: null };
     }
     // Else return null
     else {
-      return { opinion: null, author: false, error: null };
+      return { opinion: null, authorized: false, error: null };
     }
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, author: false, error: error };
+    return { opinion: null, authorized: false, error: error };
   }
 }
 
@@ -183,5 +192,5 @@ const removeOpinion = async (userId, opinionHash) => {
 // Export the functions
 module.exports = {
   findOpinionByHash, removeOpinion,
-  addOpinion, addParentOpinion, editOpinion
+  addOpinion, replyOpinion, editOpinion
 };
