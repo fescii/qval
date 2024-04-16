@@ -1,5 +1,3 @@
-const { auth } = require("../configs/mpesa.config");
-
 // Import from within the app
 const { sequelize, Upvote, Like } = require("../models").models;
 
@@ -23,7 +21,7 @@ const upvoteQuery = async (storyHash, userId) => {
     if (created) {
       // Commit the transaction
       await transaction.commit();
-      return { upvote: upvote, action: 1, error: null };
+      return { action: 1, error: null };
     }
     else {
       // Delete the upvote
@@ -31,28 +29,28 @@ const upvoteQuery = async (storyHash, userId) => {
 
       // Commit the transaction
       await transaction.commit();
-      return { upvote: null, number: -1, error: null};
+      return { number: -1, error: null};
     }
   }
   catch(error){
     // Rollback the transaction
     await transaction.rollback();
 
-    return { upvote: null, number: 0, error: error };
+    return { number: 0, error: error };
   }
 }
 
 // Query for creating or deleting a like
-const likeQuery = async (storyHash, userId) => {
+const likeQuery = async (opinionHash, userId) => {
   // Create a new transaction
   const transaction = await sequelize.transaction();
 
   // Try to create or delete the like
   try {
     const [like, created] = await Like.findOrCreate({
-      where: { story: storyHash, author: userId },
+      where: { story: opinionHash, author: userId },
       defaults: {
-        story: storyHash,
+        opinion: opinionHash,
         author: userId,
       },
     }, { transaction });
@@ -61,7 +59,7 @@ const likeQuery = async (storyHash, userId) => {
     if (created) {
       // Commit the transaction
       await transaction.commit();
-      return { like: like, number: 1, error: null };
+      return { number: 1, error: null };
     }
     else {
       // Delete the like
@@ -69,14 +67,14 @@ const likeQuery = async (storyHash, userId) => {
 
       // Commit the transaction
       await transaction.commit();
-      return { like: null, number: -1, error: null };
+      return { number: -1, error: null };
     }
   }
   catch (error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { like: null, number: 0, error: error };
+    return { number: 0, error: error };
   }
 }
 
