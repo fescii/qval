@@ -1,23 +1,25 @@
 // Import within the app
 const { Upvote, Story } = require("../models").models;
+const { upvoteQueue } = require('../bull');
 
 // A hook function for updating of total upvotes in a story
-const upvoteHook = async (upvote) => {
-
+const upvoteHook = async () => {
   try {
-    // Sequelize hook to update total_votes when a new upvote is added or removed
-    Upvote.afterCreate(async (upvote) => {
+    // Listen to the upvoteQueue for new jobs (upvotes)
+    upvoteQueue.process(async (job) => {
+      const upvote = job.data; // Data contains the upvote object
       const storyId = upvote.story;
       const totalLikes = await Upvote.count({ where: { story: storyId } });
       await Story.update({ total_upvotes: totalLikes }, { where: { id: storyId } });
     });
+
+    console.log('Upvote hook process initialized');
   }
   catch (error) {
-    // Report this error
-    console.log(error);
-    // TODO: create a handler for handling this error
+    console.error('Error initializing upvote hook process:', error);
+    // TODO: Create a handler for handling this error
   }
-}
+};
 
 
 // Export all hooks

@@ -5,7 +5,7 @@
   "description": "Blog site using supabase",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "pm2-runtime start ecosystem.config.js --env development",
     "test": "node app.js"
   },
   "author": "Fredrick Femar Ochieng",

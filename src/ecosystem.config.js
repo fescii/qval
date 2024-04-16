@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 module.exports = {
   apps: [
     {
@@ -14,7 +17,7 @@ module.exports = {
     },
     {
       name: 'upvote-worker',
-      script: 'upvoteWorker.js', // Replace with your Bull worker file
+      script: './workers/upvote.worker.js', // Replace with your Bull worker file
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads'], // Ignore specific directories for file watching
       env: {
