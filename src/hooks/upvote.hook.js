@@ -2,11 +2,12 @@
 const { Upvote, Story } = require("../models").models;
 const { upvoteQueue } = require('../bull');
 
+
 // A hook function for updating of total upvotes in a story
 const upvoteHook = async () => {
   try {
     // Listen to the upvoteQueue for new jobs (upvotes)
-    upvoteQueue.process(async (job) => {
+    upvoteQueue.add(async (job) => {
       const upvote = job.data; // Data contains the upvote object
       const storyId = upvote.story;
       const totalLikes = await Upvote.count({ where: { story: storyId } });
