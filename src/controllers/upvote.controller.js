@@ -2,7 +2,7 @@
 const { upvoteQuery, likeQuery } = require('../queries').upvoteQueries;
 
 // Controller for creating or deleting an upvote on a story
-const upvoteController = async (req, res, next) => {
+const upvoteStory = async (req, res, next) => {
   // Check if the user or params is valid
   if (!req.user || !req.params) {
     const error = new Error('Param data or user data is undefined!');
@@ -32,7 +32,7 @@ const upvoteController = async (req, res, next) => {
 };
 
 // Controller for liking a an opinion
-const likeController = async (req, res, next) => {
+const likeOpinion = async (req, res, next) => {
   // Check if the user or params is valid
   if (!req.user || !req.params) {
     const error = new Error('Param data or user data is undefined!');
@@ -59,4 +59,11 @@ const likeController = async (req, res, next) => {
     number: number,
     message: `Your like was ${action === 1 ? 'added' : 'removed'}.`,
   });
+};
+
+
+// Export all controllers
+module.exports = {
+  upvoteStory,
+  likeOpinion
 };
