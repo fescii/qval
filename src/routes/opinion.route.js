@@ -1,5 +1,3 @@
-const { createParentOpinion } = require('../controllers/opinion.controller');
-
 // Importing middlewares and controllers
 const { verifyToken } = require('../middlewares').authMiddleware;
 const {
