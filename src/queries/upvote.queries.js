@@ -61,6 +61,9 @@ const likeQuery = async (opinionHash, userId) => {
       transaction: transaction
     });
 
+    // Add the upvote to the queue
+    await upvoteQueue.add('upvoteJob', like);
+
     // If the like was created return positive (+1)
     if (created) {
       // Commit the transaction
