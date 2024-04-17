@@ -1,12 +1,12 @@
-
-const { worker } = require('bullmq');
+const { redisConfig } = require('../configs').storageConfig;
+const { Worker } = require('bullmq');
 const { upvoteHook } = require('../hooks').upvoteHook;
 
 // Initialize the Bull worker for the upvoteQueue
-const upvoteWorker = worker('upvoteQueue', async (job) => {
+const upvoteWorker = new Worker('upvoteQueue', async (job) => {
   console.log('Processing upvote job:', job.data);
   await upvoteHook(); // Run the upvoteHook function for each job (upvote)
-});
+}, {connection: redisConfig});
 
 upvoteWorker.on('completed', (job) => {
   console.log(`Upvote job ${job.id} completed`);
