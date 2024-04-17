@@ -16,14 +16,20 @@ const upvoteHook = async (data) => {
 
   try {
     if (data.story) {
+      // Get the total upvotes for the story
       const storyHash = data.story;
       const totalUpvotes = await Upvote.count({ where: { story: storyHash } });
+
+      // Update the total upvotes for the story
       await Story.update({ total_upvotes: totalUpvotes }, { where: { hash: storyHash } });
     }
     else {
+      // Get the total likes for the opinion
       const opinionHash = data.opinion;
       const totalLikes = await Like.count({ where: { opinion: opinionHash } });
-      await Opinion.update({ total_likes: totalLikes }, { where: { id: opinionHash } });
+
+      // Update the total likes for the opinion
+      await Opinion.update({ total_upvotes: totalLikes }, { where: { hash: opinionHash } });
     }
     // Log the process completion
     console.log('Upvote hook process completed');
