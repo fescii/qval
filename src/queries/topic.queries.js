@@ -159,6 +159,7 @@ const removeTopic = async (hash) => {
   }
 }
 
+// Export the query functions
 module.exports = {
   addTopic, checkIfTopicExists, editTopic,
   findTopic, removeTopic
