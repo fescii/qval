@@ -1,5 +1,6 @@
 // Import from within the app
 const { sequelize, Upvote, Like } = require("../models").models;
+const { upvoteQueue } = require('../bull');
 
 
 // A Query function for creating or deleting an upvote
@@ -15,13 +16,17 @@ const upvoteQuery = async (storyHash, userId) => {
         story: storyHash,
         author: userId,
       },
-    }, { transaction });
+      transaction: transaction
+    });
+
+    // Add the upvote to the queue
+    await upvoteQueue.add('upvoteJob', upvote);
 
     // If the upvote was created return positive (+1)
     if (created) {
       // Commit the transaction
       await transaction.commit();
-      return { action: 1, error: null };
+      return { number: 1, error: null };
     }
     else {
       // Delete the upvote
@@ -48,12 +53,16 @@ const likeQuery = async (opinionHash, userId) => {
   // Try to create or delete the like
   try {
     const [like, created] = await Like.findOrCreate({
-      where: { story: opinionHash, author: userId },
+      where: { opinion: opinionHash, author: userId },
       defaults: {
         opinion: opinionHash,
         author: userId,
       },
-    }, { transaction });
+      transaction: transaction
+    });
+
+    // Add the upvote to the queue
+    await upvoteQueue.add('upvoteJob', like);
 
     // If the like was created return positive (+1)
     if (created) {

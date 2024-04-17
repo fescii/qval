@@ -7,7 +7,6 @@ const { hashConfig } = require('../configs');
 // Check if Opinion exists using hash
 const findOpinionByHash = async (hash) => {
   try {
-
     const opinion = await Opinion.findOne({
       where: { hash: hash }
     });
@@ -124,13 +123,21 @@ const replyOpinion = async (userId, opinionHash, data) => {
     await transaction.commit();
 
     // If opinion is created then return the opinion
-    return { opinion: opinion, error: null };
+    return {
+      parent: parentOpinion,
+      opinion: opinion,
+      error: null
+    };
   }
   catch(error) {
     // Rollback the transaction
     await transaction.rollback();
 
-    return { opinion: null, error: error };
+    return {
+      parent: null,
+      opinion: null,
+      error: error
+    };
   }
 }
 
