@@ -15,7 +15,8 @@ const upvoteQuery = async (storyHash, userId) => {
         story: storyHash,
         author: userId,
       },
-    }, { transaction });
+      transaction: transaction
+    });
 
     // If the upvote was created return positive (+1)
     if (created) {
@@ -53,7 +54,8 @@ const likeQuery = async (opinionHash, userId) => {
         opinion: opinionHash,
         author: userId,
       },
-    }, { transaction });
+      transaction: transaction
+    });
 
     // If the like was created return positive (+1)
     if (created) {
