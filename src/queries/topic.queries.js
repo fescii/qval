@@ -4,6 +4,7 @@ const { sequelize, Topic, Section, Role } = require('../models').models;
 const { hashNumberWithKey } = require('../hash').identityHash;
 const { RoleBase } = require('../configs').platformConfig;
 
+// Query for adding a new topic
 const addTopic = async (userId, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
@@ -56,6 +57,7 @@ const addTopic = async (userId, data) => {
   }
 }
 
+// Query for checking if a topic exists using the name or slug
 const checkIfTopicExists = async (name, slug) => {
   // Check if a topic exists
   try {
@@ -84,6 +86,7 @@ const checkIfTopicExists = async (name, slug) => {
   }
 }
 
+// Query for editing an existing topic
 const editTopic = async (hash, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
@@ -119,6 +122,7 @@ const editTopic = async (hash, data) => {
   }
 }
 
+// Query for finding a topic using the hash
 const findTopic = async (hash) => {
   // Check if a topic exists
   try {
@@ -142,6 +146,7 @@ const findTopic = async (hash) => {
   }
 }
 
+// Query for removing a topic using the hash
 const removeTopic = async (hash) => {
   // Check if a topic exists
   try {
