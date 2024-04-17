@@ -53,7 +53,7 @@ const likeQuery = async (opinionHash, userId) => {
   // Try to create or delete the like
   try {
     const [like, created] = await Like.findOrCreate({
-      where: { story: opinionHash, author: userId },
+      where: { opinion: opinionHash, author: userId },
       defaults: {
         opinion: opinionHash,
         author: userId,

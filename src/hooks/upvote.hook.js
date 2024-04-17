@@ -1,5 +1,5 @@
 // Import within the app
-const { Upvote, Story } = require("../models").models;
+const { Upvote, Story, Like, Opinion } = require("../models").models;
 
 
 // A hook function for updating of total upvotes in a story

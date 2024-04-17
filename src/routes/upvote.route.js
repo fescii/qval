@@ -21,7 +21,7 @@ module.exports = (app, url) => {
   );
 
   // Route for handling opinion likes
-  app.post(`${url}/o/:opinionHash/like`,
+  app.post(`${url}/o/:opinionHash/upvote`,
     verifyToken,
     likeOpinion
   );
