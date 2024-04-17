@@ -1,6 +1,5 @@
 // Import within the app
 const { Upvote, Story } = require("../models").models;
-// const { upvoteQueue } = require('../bull');
 
 
 // A hook function for updating of total upvotes in a story
