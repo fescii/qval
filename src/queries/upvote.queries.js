@@ -1,5 +1,6 @@
 // Import from within the app
 const { sequelize, Upvote, Like } = require("../models").models;
+const { upvoteQueue } = require('../bull');
 
 
 // A Query function for creating or deleting an upvote
@@ -17,6 +18,9 @@ const upvoteQuery = async (storyHash, userId) => {
       },
       transaction: transaction
     });
+
+    // Add the upvote to the queue
+    await upvoteQueue.add('upvoteJob', upvote);
 
     // If the upvote was created return positive (+1)
     if (created) {

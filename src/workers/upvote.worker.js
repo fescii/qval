@@ -5,7 +5,7 @@ const { upvoteHook } = require('../hooks').upvoteHook;
 // Initialize the Bull worker for the upvoteQueue
 const upvoteWorker = new Worker('upvoteQueue', async (job) => {
   console.log('Processing upvote job:', job.data);
-  await upvoteHook(); // Run the upvoteHook function for each job (upvote)
+  await upvoteHook(job.data); // Run the upvoteHook function for each job (upvote)
 }, {connection: redisConfig});
 
 upvoteWorker.on('completed', (job) => {
