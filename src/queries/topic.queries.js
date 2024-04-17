@@ -5,7 +5,7 @@ const { hashNumberWithKey } = require('../hash').identityHash;
 const { RoleBase } = require('../configs').platformConfig;
 
 const addTopic = async (userId, data) => {
-  // Start a transaction
+  // Start a new transaction
   const transaction = await sequelize.transaction();
 
   try {
@@ -17,8 +17,10 @@ const addTopic = async (userId, data) => {
       about: data.about
     }, {transaction})
 
+    // Generate a hash for the topic created
     topic.hash = await hashNumberWithKey(hashConfig.topic, topic.id);
 
+    // Save the topic with the hash
     await topic.save({transaction});
 
     // Create a section for the topic created
@@ -29,6 +31,7 @@ const addTopic = async (userId, data) => {
       description: `This is a section for the topic - ${topic.name}`
     }, {transaction});
 
+    // Create a role for the user who created the topic
     await Role.create({
       section: section.identity,
       user: userId,
@@ -41,19 +44,20 @@ const addTopic = async (userId, data) => {
       expired: false
     }, {transaction});
 
+    // Commit the transaction
     await transaction.commit();
 
     // On success return data
     return { topic: topic, error: null}
   } catch (error) {
-    console.log(error)
+    // Rollback the transaction
     await transaction.rollback();
     return { topic: null, error: error}
   }
 }
 
 const checkIfTopicExists = async (name, slug) => {
-
+  // Check if a topic exists
   try {
     const topic = await Topic.findOne({
       where: {
@@ -64,6 +68,7 @@ const checkIfTopicExists = async (name, slug) => {
       }
     });
 
+    // If a topic exists, return the topic
     if (topic) {
       // console.log(topic)
       // On success return data
@@ -80,26 +85,27 @@ const checkIfTopicExists = async (name, slug) => {
 }
 
 const editTopic = async (hash, data) => {
-  // Start a transaction
+  // Start a new transaction
   const transaction = await sequelize.transaction();
-  
+
   try {
     const topic = await Topic.findOne({
       where: {
         hash: hash
       }
     });
-    
+
+    // If a topic exists, update the topic
     if (topic) {
       // console.log(topic)
       topic.name = data.name;
       topic.slug = data.slug;
       topic.about = data.about;
-      
+
       await topic.save({transaction});
-      
+
       await transaction.commit();
-      
+
       return { topic: topic, error: null}
     }
     else {
@@ -114,14 +120,15 @@ const editTopic = async (hash, data) => {
 }
 
 const findTopic = async (hash) => {
-  
+  // Check if a topic exists
   try {
     const topic = await Topic.findOne({
       where: {
         hash: hash
       }
     });
-    
+
+    // If a topic exists, return the topic
     if (topic) {
       return { topic: topic, error: null}
     }
@@ -136,13 +143,15 @@ const findTopic = async (hash) => {
 }
 
 const removeTopic = async (hash) => {
-  
+  // Check if a topic exists
   try {
     await Topic.destroy({
       where: {
         hash: hash
       }
     });
+
+    // If operation is successful, return deleted true
     return { deleted: true, error: null}
   }
   catch (error) {
