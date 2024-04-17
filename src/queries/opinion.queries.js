@@ -7,7 +7,6 @@ const { hashConfig } = require('../configs');
 // Check if Opinion exists using hash
 const findOpinionByHash = async (hash) => {
   try {
-
     const opinion = await Opinion.findOne({
       where: { hash: hash }
     });
