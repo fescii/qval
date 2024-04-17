@@ -26,7 +26,7 @@ let corsOptions = {
 const { syncDb } = require("./models");
 
 // SyncDb - take true or false for when altering the database or not
-syncDb(true).then(() => {
+syncDb(false).then(() => {
   console.log('Database Synchronized!')
 })
 

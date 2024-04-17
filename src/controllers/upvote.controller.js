@@ -27,7 +27,7 @@ const upvoteStory = async (req, res, next) => {
   return res.status(200).json({
     success: true,
     number: number,
-    message: `Your upvote was ${action === 1 ? 'added' : 'removed'}.`,
+    message: `Your upvote was ${number === 1 ? 'added' : 'removed'}.`,
   });
 };
 
@@ -57,7 +57,7 @@ const likeOpinion = async (req, res, next) => {
   return res.status(200).json({
     success: true,
     number: number,
-    message: `Your like was ${action === 1 ? 'added' : 'removed'}.`,
+    message: `Your like was ${number === 1 ? 'added' : 'removed'}.`,
   });
 };
 

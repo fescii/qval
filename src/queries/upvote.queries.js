@@ -22,7 +22,7 @@ const upvoteQuery = async (storyHash, userId) => {
     if (created) {
       // Commit the transaction
       await transaction.commit();
-      return { action: 1, error: null };
+      return { number: 1, error: null };
     }
     else {
       // Delete the upvote
