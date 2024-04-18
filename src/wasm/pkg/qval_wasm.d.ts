@@ -4,9 +4,9 @@
 * @param {string} secrete
 * @param {string} section
 * @param {string} key
-* @returns {Promise<Hash>}
+* @returns {Promise<any>}
 */
-export function gen_hash(secrete: string, section: string, key: string): Promise<Hash>;
+export function gen_hash(secrete: string, section: string, key: string): Promise<any>;
 /**
 */
 export class Hash {
