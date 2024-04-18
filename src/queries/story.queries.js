@@ -3,9 +3,12 @@ const { Op } = require('sequelize');
 
 // Importing from internal modules
 const { sequelize, Story, Section, Role } = require('../models').models;
-const { hashNumberWithKey } = require('../hash').identityHash;
 const { hashConfig, platformConfig } = require('../configs');
 const { newStoryData } = require('../data').storyData;
+
+// Imports for gen_hash
+const { hash_secret } = require("../configs").envConfig;
+const { gen_hash } = require("../wasm");
 
 
 // Check if story exists
@@ -65,7 +68,9 @@ const addStory = async (userId, data) => {
   try {
     const story = await Story.create(storyData, { transaction });
 
-    story.hash = await hashNumberWithKey(hashConfig.story, story.id);
+    // story.hash = await hashNumberWithKey(hashConfig.story, story.id);
+    // Generate the story hash
+    story.hash = await gen_hash(hash_secret, hashConfig.story, story.id.toString());
 
     await story.save({ transaction });
 

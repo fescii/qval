@@ -24,7 +24,7 @@ const addUser = async (data) => {
     // Generate the username hash
     user.username = await gen_hash(hash_secret, hashConfig.user, user.id.toString());
 
-    console.log(user)
+    // console.log(user)
 
     await user.save({transaction});
 
