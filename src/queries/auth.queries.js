@@ -21,10 +21,20 @@ const addUser = async (data) => {
 
     // user.username = await hashNumberWithKey(hashConfig.user, user.id);
 
-    // Generate the username hash
-    user.username = await gen_hash(hash_secret, hashConfig.user, user.id.toString());
+    // Generate the username - hash
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.user, user.id.toString());
 
-    console.log(user.username)
+    // If error is not equal to undefined throw an error
+    if (error) {
+      // console.log(error);
+      throw error;
+    }
+
+    // Else set the username to the hash
+    user.username = hash;
 
     await user.save({transaction});
 
