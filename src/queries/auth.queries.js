@@ -1,13 +1,15 @@
 const bcrypt = require("bcryptjs");
-const { hashNumberWithKey } = require('../hash').identityHash;
+// const { hashNumberWithKey } = require('../hash').identityHash;
 const {hashConfig} = require("../configs");
 const { User, sequelize } = require("../models").models;
+const { gen_hash } = require("../wasm");
+const { hash_secret } = require("../configs").envConfig;
 
 
 const addUser = async (data) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
-  
+
   try {
     // Trying to create new user to the database
     const user = await User.create({
@@ -16,15 +18,18 @@ const addUser = async (data) => {
       email: data.email,
       password: bcrypt.hashSync(data.password, 8)
     }, {transaction})
-    
-    user.username = await hashNumberWithKey(hashConfig.user, user.id);
-    
-    // console.log(user)
-    
+
+    // user.username = await hashNumberWithKey(hashConfig.user, user.id);
+
+    // Generate the username hash
+    user.username = await gen_hash(hash_secret, hashConfig.user, user.id.toString());
+
+    console.log(user)
+
     await user.save({transaction});
-    
+
     await transaction.commit();
-    
+
     // On success return data
     return { user: user, error: null}
   } catch (err) {
@@ -42,7 +47,7 @@ const checkIfUserExits = async (userEmail) => {
         email: userEmail
       }
     });
-    
+
     // console.log(user)
     if (user) {
       // console.log('This code runs')

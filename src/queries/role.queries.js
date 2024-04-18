@@ -10,7 +10,7 @@ const findRole = async (hash) => {
         hash: hash
       }
     });
-    
+
     if (role) {
       return { role: role, error: null}
     }

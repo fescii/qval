@@ -1,0 +1,17 @@
+{
+  "name": "qval-wasm",
+  "description": "Wasm package for the qval project",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fescii/qval-wasm"
+  },
+  "files": [
+    "qval_wasm_bg.wasm",
+    "qval_wasm.js",
+    "qval_wasm.d.ts"
+  ],
+  "main": "qval_wasm.js",
+  "types": "qval_wasm.d.ts"
+}
