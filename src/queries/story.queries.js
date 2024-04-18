@@ -69,8 +69,19 @@ const addStory = async (userId, data) => {
     const story = await Story.create(storyData, { transaction });
 
     // story.hash = await hashNumberWithKey(hashConfig.story, story.id);
-    // Generate the story hash
-    story.hash = await gen_hash(hash_secret, hashConfig.story, story.id.toString());
+    // Generate the story hash using story id
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.story, story.id.toString());
+
+    // If error is not equal to undefined throw an error
+    if (error){
+      throw new Error(error);
+    }
+
+    // Else set the hash to the story hash
+    story.hash = hash;
 
     await story.save({ transaction });
 

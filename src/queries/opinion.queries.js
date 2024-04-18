@@ -60,8 +60,18 @@ const addOpinion = async (userId, storyHash, data) => {
     }, { transaction });
 
     // Create hash using opinion id
-    // opinion.hash = await hashNumberWithKey(hashConfig.opinion, opinion.id);
-    opinion.hash = await gen_hash(hash_secret, hashConfig.opinion, opinion.id.toString());
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.opinion, opinion.id.toString());
+
+    // If error is not equal to undefined throw an error
+    if (error) {
+      throw error;
+    }
+
+    // Else set the topic hash to hash
+    opinion.hash = hash;
 
     // Save the opinion
     await opinion.save({ transaction });

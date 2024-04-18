@@ -22,8 +22,18 @@ const addTopic = async (userId, data) => {
     }, {transaction})
 
     // Generate a hash for the topic created
-    // topic.hash = await hashNumberWithKey(hashConfig.topic, topic.id);
-    topic.hash = await gen_hash(hash_secret, hashConfig.topic, topic.id.toString());
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.topic, topic.id.toString());
+
+    // If there is an error, throw an error
+    if (error) {
+      throw new Error(error);
+    }
+
+    // Assign the hash to the topic
+    topic.hash = hash;
 
     // Save the topic with the hash
     await topic.save({transaction});
