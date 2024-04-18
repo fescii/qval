@@ -4,6 +4,12 @@ const {
   deleteTopic
 } = require('../controllers').topicController;
 
+/**
+ * @function topicRoutes
+ * @description a modular function that registers all the topic routes
+ * @param {Object} app - The express app
+ * @param {String} url - The base url, usually '/api/v1' or '/api/v1/t'
+*/
 module.exports = (app, url) => {
   app.use((_req, res, next) => {
     res.header(

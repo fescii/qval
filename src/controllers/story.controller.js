@@ -12,7 +12,15 @@ const {
   validateStoryTopics
 } = require('../validators').storyValidator;
 
-// Controller for creating a new story
+
+/**
+ * @function createStory
+ * @description Controller for creating a new story
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const createStory = async (req, res, next) => {
   // Check if the user or payload is available
   if (!req.story_data || !req.user) {
@@ -44,7 +52,15 @@ const createStory = async (req, res, next) => {
   });
 }
 
-// Controller for updating story content
+
+/**
+ * @function updateStoryContent
+ * @description Controller for updating story content
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateStoryContent = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
@@ -58,10 +74,8 @@ const updateStoryContent = async (req, res, next) => {
   const data = req.body;
   const userId = req.user.id;
 
-
   // Validate story content data
   const valObj = await validateStoryContent(data);
-
 
   // Check if there is a validation error
   if (valObj.error) {
@@ -79,10 +93,8 @@ const updateStoryContent = async (req, res, next) => {
     key: 'action'
   }
 
-
   // Check if the user has access to update the story
   const hasAccess = await checkAuthority(access);
-
 
   // If user does not have access return unauthorized
   if (!hasAccess) {
@@ -120,7 +132,14 @@ const updateStoryContent = async (req, res, next) => {
   });
 }
 
-// Controller for updating story body
+/**
+ * @function updateStoryBody
+ * @description Controller for updating story body
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateStoryBody = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
@@ -184,7 +203,6 @@ const updateStoryBody = async (req, res, next) => {
     });
   }
 
-
   // Return success response
   return res.status(200).send({
     success: true,
@@ -193,7 +211,14 @@ const updateStoryBody = async (req, res, next) => {
   });
 }
 
-// Controller for updating story title
+/**
+ * @function updateStoryTitle
+ * @description Controller for updating story title
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ */
 const updateStoryTitle = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
@@ -265,7 +290,15 @@ const updateStoryTitle = async (req, res, next) => {
   });
 }
 
-// Controller for updating story slug
+
+/**
+ * @function updateStorySlug
+ * @description Controller for updating story slug
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateStorySlug = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
@@ -347,7 +380,14 @@ const updateStorySlug = async (req, res, next) => {
 }
 
 
-// Controller for updating story topics
+/**
+ * @function updateStoryTopics
+ * @description Controller for updating story topics
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateStoryTopics = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
@@ -420,7 +460,14 @@ const updateStoryTopics = async (req, res, next) => {
 }
 
 
-// Controller for removing a story
+/**
+ * @function deleteStory
+ * @description Controller for deleting a story
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const deleteStory = async (req, res, next) => {
   // Check if the params is available
   const { storyHash } = req.params;
@@ -480,7 +527,9 @@ const deleteStory = async (req, res, next) => {
   });
 }
 
-// Export the module
+/**
+ * Exporting Controllers
+*/
 module.exports = {
   createStory, updateStoryContent,
   updateStoryTopics, updateStoryBody,

@@ -4,7 +4,15 @@ const { Privileges } = require('../configs').platformConfig;
 const { checkAuthority } = require('../utils').roleUtil;
 const { addTopic, editTopic, removeTopic } = require('../queries').topicQueries;
 
-// Controller for creating a topic
+
+/**
+ * @function createTopic
+ * @description Controller for creating a new topic
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const createTopic = async (req, res, next) => {
   // Check if the user or payload is available
   if (!req.topic_data || !req.user) {
@@ -39,7 +47,15 @@ const createTopic = async (req, res, next) => {
   });
 };
 
-// Controller updating creating a topic
+
+/**
+ * @function updateTopic
+ * @description Controller for updating a topic by hash
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateTopic = async (req, res, next) => {
   // Check if the user or payload is available
   const { topicHash } = req.params;
@@ -112,7 +128,15 @@ const updateTopic = async (req, res, next) => {
   });
 };
 
-// Controller updating creating a topic
+
+/**
+ * @function deleteTopic
+ * @description Controller for deleting a topic by hash
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const deleteTopic = async (req, res, next) => {
   // Check if the user or payload is available
   const { topicHash } = req.params;
@@ -160,6 +184,9 @@ const deleteTopic = async (req, res, next) => {
   }
 };
 
+/**
+ * Exporting all controllers as a single object
+*/
 module.exports = {
   createTopic, updateTopic, deleteTopic
 }

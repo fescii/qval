@@ -11,7 +11,12 @@ const { hash_secret } = require("../configs").envConfig;
 const { gen_hash } = require("../wasm");
 
 
-// Check if story exists
+/**
+ * @function checkIfStoryExists
+ * @description Query function to check if a story exists
+ * @param {String} slug - The slug of the story
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const checkIfStoryExists = async (slug) => {
   try {
     const story = await Story.findOne({
@@ -34,7 +39,12 @@ const checkIfStoryExists = async (slug) => {
 }
 
 
-// Check if story exists using hash
+/**
+ * @function findStoryByHash
+ * @description Query function to find a story by hash
+ * @param {String} hash - The hash of the story
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const findStoryByHash = async (hash) => {
   try {
     const story = await Story.findOne({
@@ -57,7 +67,13 @@ const findStoryByHash = async (hash) => {
 }
 
 
-// Create a new story
+/**
+ * @function addStory
+ * @description Query function to add a story
+ * @param {String} userId - The id of the user adding the story
+ * @param {Object} data - The data of the story to be added
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const addStory = async (userId, data) => {
 
   const storyData = await newStoryData(userId, data);
@@ -122,7 +138,13 @@ const addStory = async (userId, data) => {
   }
 }
 
-// Edit the story content
+/**
+ * @function editStoryContent
+ * @description Query function to edit the story content
+ * @param {String} hash - The hash of the story
+ * @param {Object} data - The data to be updated
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const editStoryContent = async (hash, data) => {
   const transaction = await sequelize.transaction();
 
@@ -157,7 +179,13 @@ const editStoryContent = async (hash, data) => {
   }
 }
 
-// Edit the story body
+/**
+ * @function editStoryBody
+ * @description Query function to edit the story body
+ * @param {String} hash - The hash of the story
+ * @param {Object} data - The data to be updated
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const editStoryBody = async (hash, data) => {
 
   // create a new transaction
@@ -195,7 +223,13 @@ const editStoryBody = async (hash, data) => {
   }
 }
 
-// Edit story title
+/**
+ * @function editStoryTitle
+ * @description Query function to edit the story title
+ * @param {String} hash - The hash of the story
+ * @param {Object} data - The data to be updated
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const editStoryTitle = async (hash, data) => {
   // create a new transaction
   const transaction = await sequelize.transaction();
@@ -232,7 +266,13 @@ const editStoryTitle = async (hash, data) => {
   }
 }
 
-// Edit story slug
+/**
+ * @function editStorySlug
+ * @description Query function to edit the story slug
+ * @param {String} hash - The hash of the story
+ * @param {Object} data - The data to be updated
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const editStorySlug = async (hash, data) => {
   // create a new transaction
   const transaction = await sequelize.transaction();
@@ -286,7 +326,13 @@ const editStorySlug = async (hash, data) => {
   }
 }
 
-// Edit story topics
+/**
+ * @function editStoryTopics
+ * @description Query function to edit the story topics
+ * @param {String} hash - The hash of the story
+ * @param {Object} data - The data to be updated
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const editStoryTopics = async (hash, data) => {
   // create a new transaction
   const transaction = await sequelize.transaction();
@@ -322,7 +368,12 @@ const editStoryTopics = async (hash, data) => {
 }
 
 
-// Query for deleting a story based on the hash field
+/**
+ * @function removeStory
+ * @description Query function to remove a story
+ * @param {String} hash - The hash of the story
+ * @returns {Object} - The story object or null, and the error if any
+*/
 const removeStory = async (hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();

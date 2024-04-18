@@ -7,7 +7,13 @@ const { RoleBase } = require('../configs').platformConfig;
 const { gen_hash } = require("../wasm");
 const  { hash_secret } = require("../configs").envConfig;
 
-// Query for adding a new topic
+/**
+ * @function addTopic
+ * @description Query to add a new topic
+ * @param {String} userId - The id of the user
+ * @param {Object} data - The data of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
 const addTopic = async (userId, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
@@ -71,7 +77,13 @@ const addTopic = async (userId, data) => {
   }
 }
 
-// Query for checking if a topic exists using the name or slug
+/**
+ * @function checkIfTopicExists
+ * @description Query to check if a topic exists
+ * @param {String} name - The name of the topic
+ * @param {String} slug - The slug of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
 const checkIfTopicExists = async (name, slug) => {
   // Check if a topic exists
   try {
@@ -100,7 +112,13 @@ const checkIfTopicExists = async (name, slug) => {
   }
 }
 
-// Query for editing an existing topic
+/**
+ * @function editTopic
+ * @description Query to edit a topic
+ * @param {String} hash - The hash of the topic
+ * @param {Object} data - The data of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
 const editTopic = async (hash, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
@@ -136,7 +154,12 @@ const editTopic = async (hash, data) => {
   }
 }
 
-// Query for finding a topic using the hash
+/**
+ * @function findTopic
+ * @description Query to find a topic
+ * @param {String} hash - The hash of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
 const findTopic = async (hash) => {
   // Check if a topic exists
   try {
@@ -160,7 +183,12 @@ const findTopic = async (hash) => {
   }
 }
 
-// Query for removing a topic using the hash
+/**
+ * @function removeTopic
+ * @description Query to remove a topic
+ * @param {String} hash - The hash of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
 const removeTopic = async (hash) => {
   // Check if a topic exists
   try {

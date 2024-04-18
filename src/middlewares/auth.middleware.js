@@ -3,18 +3,28 @@ const { validateToken } = require('../utils').tokenUtil;
 const { validateUserData } = require('../validators').userValidator;
 const { checkIfUserExits } = require('../queries').authQueries;
 
+
+/**
+ * @function checkDuplicateEmail
+ * @description - Middleware to check if user with similar email exists
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
 const checkDuplicateEmail = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.body) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }
-  
+
   // Get user data from request body
   const payload = req.body;
-  
+
   const valueObj = await validateUserData(payload);
-  
+
   // Handling data validation error
   if (valueObj.error) {
     return res.status(400).send({
@@ -22,30 +32,39 @@ const checkDuplicateEmail = async (req, res, next) => {
       message: valueObj.error.message
     });
   }
-  
+
   const {
     user,
     error
   } = await checkIfUserExits(valueObj.data.email);
-  
+
   // Passing the error to error middleware
   if (error) {
     console.log('This error segment runs')
     return next(error);
   }
-  
+
   if (user) {
     return res.status(409).send({
       success: false,
       message: "Failed! User with similar email is already exits!"
     });
   }
-  
+
   // Call next function to proceed with data processing
   req.reg_data = valueObj.data;
   next();
 };
 
+/**
+ * @function verifyToken
+ * @description - Middleware to verify token(JWT) and add user to the request object
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
 // Middleware to verify token(JWT)
 const verifyToken = async (req, res, next) => {
 
@@ -60,12 +79,12 @@ const verifyToken = async (req, res, next) => {
       message: "No token provided!, login to continue"
     })
   }
-  
+
   const {
     user,
     error
   } = await validateToken(token);
-  
+
   // If error is returned
   if(error) {
     return res.status(401).send({
@@ -74,12 +93,16 @@ const verifyToken = async (req, res, next) => {
       message: "Unauthorized!, please login to continue!"
     });
   }
-  
+
   // Add user to the request object
   req.user = user;
   next();
 };
 
+
+/**
+ * Exporting all the middlewares as a single object
+ */
 module.exports = {
   checkDuplicateEmail,
   verifyToken

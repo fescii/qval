@@ -8,7 +8,12 @@ const { gen_hash } = require("../wasm");
 
 
 
-// Check if Opinion exists using hash
+/**
+ * @function findOpinionByHash
+ * @description Query to find an opinion by hash
+ * @param {String} hash - The hash of the opinion
+ * @returns {Object} - The opinion object or null, and the error if any
+*/
 const findOpinionByHash = async (hash) => {
   try {
     const opinion = await Opinion.findOne({
@@ -30,7 +35,14 @@ const findOpinionByHash = async (hash) => {
   }
 }
 
-// Create a new Opinion
+/**
+ * @function addOpinion
+ * @description Query to add a new opinion
+ * @param {String} userId - The id of the user
+ * @param {String} storyHash - The hash of the story
+ * @param {Object} data - The data of the opinion
+ * @returns {Object} - The story and opinion object or null, and the error if any
+*/
 const addOpinion = async (userId, storyHash, data) => {
 
   // Start new transaction
@@ -98,7 +110,14 @@ const addOpinion = async (userId, storyHash, data) => {
   }
 }
 
-// Create a new Opinion of parent type
+/**
+ * @function replyOpinion
+ * @description Query to reply to an opinion
+ * @param {String} userId - The id of the user
+ * @param {String} opinionHash - The hash of the opinion
+ * @param {Object} data - The data of the opinion
+ * @returns {Object} - The parent opinion and opinion object or null, and the error if any
+*/
 const replyOpinion = async (userId, opinionHash, data) => {
 
   // Start new transaction
@@ -156,7 +175,14 @@ const replyOpinion = async (userId, opinionHash, data) => {
   }
 }
 
-// Query for editing the opinion body
+/**
+ * @function editOpinion
+ * @description Query to edit an opinion
+ * @param {String} userId - The id of the user
+ * @param {String} opinionHash - The hash of the opinion
+ * @param {Object} data - The data of the opinion
+ * @returns {Object} - The opinion object or null, and the error if any
+*/
 const editOpinion = async (userId, opinionHash, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
@@ -206,7 +232,13 @@ const editOpinion = async (userId, opinionHash, data) => {
 }
 
 
-// Query for deleting/removing the opinion
+/**
+ * @function removeOpinion
+ * @description Query to remove an opinion
+ * @param {String} userId - The id of the user
+ * @param {String} opinionHash - The hash of the opinion
+ * @returns {Object} - The opinion object or null, and the error if any
+*/
 const removeOpinion = async (userId, opinionHash) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();

@@ -1,8 +1,13 @@
 // Import within the app
 const { Upvote, Story, Like, Opinion } = require("../models").models;
 
-
-// A hook function for updating of total upvotes in a story
+/**
+ * @function upvoteHook
+ * @name upvoteHook
+ * @description A Hook function that updates the total upvotes in a story or an opinion
+ * @param {Object} data - Data object (story or opinion)
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
 const upvoteHook = async (data) => {
   if (!data) {
     // Log the error

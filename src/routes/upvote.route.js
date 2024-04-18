@@ -3,7 +3,12 @@ const { verifyToken } = require('../middlewares').authMiddleware;
 const { upvoteStory, likeOpinion } = require('../controllers').upvoteController;
 
 
-// Function to export all upvote routes
+/**
+ * @function upvoteRoutes
+ * @description a modular function that registers all the upvote routes
+ * @param {Object} app - The express app
+ * @param {String} url - The base url, usually '/api/v1' or '/api/v1/u'
+*/
 module.exports = (app, url) => {
   app.use((_req, res, next) => {
     res.header(

@@ -2,6 +2,17 @@
 const { validateTopicData } = require('../validators').topicValidator;
 const { checkIfTopicExists } = require('../queries').topicQueries;
 
+
+/**
+ * @function checkDuplicateTopic
+ * @name checkDuplicateTopic
+ * @description This middleware checks if a topic with similar name or slug exists
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
 const checkDuplicateTopic = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.body) {
@@ -53,6 +64,9 @@ const checkDuplicateTopic = async (req, res, next) => {
   next();
 };
 
+/**
+ * Exporting all the middlewares as an object
+*/
 module.exports = {
   checkDuplicateTopic
 };
