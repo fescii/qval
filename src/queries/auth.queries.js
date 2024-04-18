@@ -22,7 +22,7 @@ const addUser = async (data) => {
     // user.username = await hashNumberWithKey(hashConfig.user, user.id);
 
     // Generate the username hash
-    user.username = gen_hash(hash_secret, hashConfig.user, user.id.toString());
+    user.username = await gen_hash(hash_secret, hashConfig.user, user.id.toString());
 
     console.log(user)
 
