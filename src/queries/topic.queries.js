@@ -1,8 +1,11 @@
 const { hashConfig} = require('../configs');
 const {Op} = require("sequelize");
 const { sequelize, Topic, Section, Role } = require('../models').models;
-const { hashNumberWithKey } = require('../hash').identityHash;
 const { RoleBase } = require('../configs').platformConfig;
+
+// Imports for gen_hash
+const { gen_hash } = require("../wasm");
+const  { hash_secret } = require("../configs").envConfig;
 
 // Query for adding a new topic
 const addTopic = async (userId, data) => {
@@ -19,7 +22,18 @@ const addTopic = async (userId, data) => {
     }, {transaction})
 
     // Generate a hash for the topic created
-    topic.hash = await hashNumberWithKey(hashConfig.topic, topic.id);
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.topic, topic.id.toString());
+
+    // If there is an error, throw an error
+    if (error) {
+      throw new Error(error);
+    }
+
+    // Assign the hash to the topic
+    topic.hash = hash;
 
     // Save the topic with the hash
     await topic.save({transaction});

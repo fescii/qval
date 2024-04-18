@@ -1,7 +1,11 @@
 // Importing from internal modules
 const { sequelize, Opinion, Story } = require('../models').models;
-const { hashNumberWithKey } = require('../hash').identityHash;
+
+// Imports for gen_hash
 const { hashConfig } = require('../configs');
+const { hash_secret } = require("../configs").envConfig;
+const { gen_hash } = require("../wasm");
+
 
 
 // Check if Opinion exists using hash
@@ -56,7 +60,18 @@ const addOpinion = async (userId, storyHash, data) => {
     }, { transaction });
 
     // Create hash using opinion id
-    opinion.hash = await hashNumberWithKey(hashConfig.opinion, opinion.id);
+    const {
+      hash,
+      error
+    } = await gen_hash(hash_secret, hashConfig.opinion, opinion.id.toString());
+
+    // If error is not equal to undefined throw an error
+    if (error) {
+      throw error;
+    }
+
+    // Else set the topic hash to hash
+    opinion.hash = hash;
 
     // Save the opinion
     await opinion.save({ transaction });
