@@ -6,7 +6,14 @@ const {
 const { validateOpinionData } = require('../validators').opinionValidator;
 
 
-// Create new opinion
+/**
+ * @function createOpinion
+ * @description Controller for creating an Opinion
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const createOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.body || !req.user || !req.params) {
@@ -63,7 +70,14 @@ const createOpinion = async (req, res, next) => {
 }
 
 
-// Add Reply Opinion
+/**
+ * @function createReplyOpinion
+ * @description Controller for creating a reply opinion to an opinion(thread like nature)
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const createReplyOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.body || !req.user || !req.params) {
@@ -119,7 +133,14 @@ const createReplyOpinion = async (req, res, next) => {
   })
 }
 
-// Edit opinion
+/**
+ * @function updateOpinion
+ * @description Controller for updating an Opinion
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const updateOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.body || !req.user || !req.params) {
@@ -187,7 +208,15 @@ const updateOpinion = async (req, res, next) => {
   })
 }
 
-// Controller for deleting/removing opinion
+
+/**
+ * @function deleteOpinion
+ * @description Controller for deleting an Opinion
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const deleteOpinion = async (req, res, next) => {
   // Check if the payload or params is valid
   if (!req.params || !req.user) {
@@ -237,7 +266,9 @@ const deleteOpinion = async (req, res, next) => {
 }
 
 
-// Export all controllers
+/**
+ * Exporting all the controllers
+*/
 module.exports = {
   createOpinion,
   updateOpinion, deleteOpinion,

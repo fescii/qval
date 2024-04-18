@@ -7,7 +7,14 @@ const { validateLoginData } = require('../validators').userValidator;
 
 const { addUser, checkIfUserExits } = require('../queries').authQueries;
 
-// Controller to register new users
+/**
+ * @function signUp
+ * @description Controller to register a new user
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const signUp = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.reg_data) {
@@ -41,7 +48,16 @@ const signUp = async (req, res, next) => {
   });
 };
 
-// Controller to log in user into the system
+
+/**
+ * @function signIn
+ * @description Controller to login a user
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
 const signIn = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.body) {
@@ -115,6 +131,9 @@ const signIn = async (req, res, next) => {
   });
 }
 
+/**
+ * Exporting all controllers
+*/
 module.exports = {
   signUp, signIn
 }

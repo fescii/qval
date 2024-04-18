@@ -1,6 +1,15 @@
 const { validateStoryData } = require('../validators').storyValidator;
 const { checkIfStoryExists } = require('../queries').storyQueries;
 
+/**
+ * @function checkDuplicateStory
+ * @name checkDuplicateStory
+ * @description This middleware checks if a story with similar slug exists
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const checkDuplicateStory = async(req, res, next) => {
   //Check if the payload is available in the request object
   if (!req.body) {
@@ -46,6 +55,9 @@ const checkDuplicateStory = async(req, res, next) => {
   await next();
 }
 
+/**
+ * Exporting the middlewares as a single object
+*/
 module.exports = {
   checkDuplicateStory
 };

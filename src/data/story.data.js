@@ -1,4 +1,12 @@
-// Get required data based on the kind of story
+
+/**
+ * Function to get required data based on the kind of story
+ * @function newStoryData
+ * @typedef {Object} StoryData
+ * @param {string} userId - The user id
+ * @param {Object} data - The data to be validated
+ * @returns {Object} - Returns the data object
+*/
 const newStoryData = async (userId, data) => {
   switch (data.kind) {
     case 'post':
@@ -21,6 +29,9 @@ const newStoryData = async (userId, data) => {
   }
 }
 
+/**
+ * Exporting the functions as a single object
+*/
 module.exports =  {
   newStoryData
 }

@@ -6,7 +6,12 @@ const {
 } = require('../controllers').opinionController;
 
 
-// Function to export all opinion routes
+/**
+ * @function opinionRoutes
+ * @description a modular function that registers all the opinion routes
+ * @param {Object} app - The express app
+ * @param {String} url - The base url, usually '/api/v1' or '/api/v1/o'
+*/
 module.exports = (app, url) => {
   app.use((_req, res, next) => {
     res.header(

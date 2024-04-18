@@ -1,7 +1,14 @@
 // Import from within the app (internal modules)
 const { upvoteQuery, likeQuery } = require('../queries').upvoteQueries;
 
-// Controller for creating or deleting an upvote on a story
+/**
+ * @function upvoteStory
+ * @description Controller for creating or deleting an upvote on a story
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const upvoteStory = async (req, res, next) => {
   // Check if the user or params is valid
   if (!req.user || !req.params) {
@@ -31,7 +38,15 @@ const upvoteStory = async (req, res, next) => {
   });
 };
 
-// Controller for liking a an opinion
+
+/**
+ * @function likeOpinion
+ * @description Controller for creating or deleting a like on an opinion
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
 const likeOpinion = async (req, res, next) => {
   // Check if the user or params is valid
   if (!req.user || !req.params) {
@@ -62,7 +77,9 @@ const likeOpinion = async (req, res, next) => {
 };
 
 
-// Export all controllers
+/**
+ * Export all the controllers as an object
+*/
 module.exports = {
   upvoteStory,
   likeOpinion

@@ -3,7 +3,13 @@ const { sequelize, Upvote, Like } = require("../models").models;
 const { upvoteQueue } = require('../bull');
 
 
-// A Query function for creating or deleting an upvote
+/**
+ * @function upvoteQuery
+ * @description Query to create or delete an upvote
+ * @param {String} storyHash - The hash of the story
+ * @param {String} userId - The id of the user
+ * @returns {Object} - The number of upvotes, and the error if any
+ */
 const upvoteQuery = async (storyHash, userId) => {
   // Create a new transaction
   const transaction = await sequelize.transaction();
@@ -45,7 +51,13 @@ const upvoteQuery = async (storyHash, userId) => {
   }
 }
 
-// Query for creating or deleting a like
+/**
+ * @function likeQuery
+ * @description Query to create or delete a like
+ * @param {String} opinionHash - The hash of the opinion
+ * @param {String} userId - The id of the user
+ * @returns {Object} - The number of likes, and the error if any
+*/
 const likeQuery = async (opinionHash, userId) => {
   // Create a new transaction
   const transaction = await sequelize.transaction();
