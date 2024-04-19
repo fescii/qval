@@ -1,6 +1,22 @@
 const { mpesaConfig } = require('../configs')
 const { timestamp } = require('./time.util')
 
+/**
+ * @type {Object}
+ * @property {string} url - The mpesa endpoint
+ * @property {string} auth_url - The mpesa auth endpoint
+ * @property {string} bs_short_code - The business shortcode
+ * @property {string} passkey - The mpesa passkey
+ * @property {string} timestamp - The current timestamp
+ * @property {string} password - The base64 encoded password
+ * @property {string} transaction_type - The transaction type
+ * @property {string} amount - The amount to be transacted
+ * @property {string} partyB - The business shortcode
+ * @property {string} callBackUrl - The callback url
+ * @property {string} accountReference - The account reference
+ * @property {string} transaction_desc - The transaction description
+ * @description The mpesa data object
+ */
 mpesaData = {
   url: mpesaConfig.url,
   auth_url: mpesaConfig.auth_url,

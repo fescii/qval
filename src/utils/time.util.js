@@ -1,5 +1,11 @@
-//we come up with the current timestamp
-currentTimestamp = () => {
+
+/**
+ * @name currentTimestamp
+ * @function currentTimestamp
+ * @description This utility module provides functions for working with timestamps and dates.
+ * @returns {string} - The current timestamp
+*/
+const currentTimestamp = () => {
   const date = new Date();
 
   let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
@@ -11,7 +17,14 @@ currentTimestamp = () => {
   return `${date.getFullYear()}${month}${day}${hour}${minute}${second}`;
 };
 
-localTime = (dateNumeric) => {
+/**
+ * @name localTime
+ * @function localTime
+ * @description a utility function that converts a date in numeric format to local time
+ * @param {number} dateNumeric - The date in numeric format
+ * @returns {string} - The local time
+*/
+const localTime = (dateNumeric) => {
   const dateString = dateNumeric.toString();
   // console.log(dateString)
   const year = parseInt(dateString.slice(0, 4));
@@ -29,7 +42,14 @@ localTime = (dateNumeric) => {
 };
 
 
-formatDate = inputDate => {
+/**
+ * @name formatDate
+ * @function formatDate
+ * @description a utility function that formats a date in numeric format to ISO format
+ * @param {number} inputDate - The date in numeric format
+ * @returns {string} - The date in ISO format
+*/
+const formatDate = inputDate => {
   const dateString = inputDate.toString(); // Your date string
   const year = dateString.slice(0, 4);
   const month = dateString.slice(4, 6);
@@ -42,6 +62,13 @@ formatDate = inputDate => {
 };
 
 
+/**
+ * @type {Object}
+ * @property {string} timestamp - The current timestamp
+ * @property {function} localTime - The local time function
+ * @property {function} formatDate - The format date function
+ * @description The time utility object
+*/
 const timeUtil = {
   timestamp: currentTimestamp(),
   localTime: localTime,

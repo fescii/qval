@@ -1,6 +1,12 @@
 const { sanitizeUtil } = require('../utils')
 
-// Register data validation
+/**
+ * @name validateTopicData
+ * @function validateTopicData
+ * @description a function that validates topic data before being passed to the controllers or middlewares
+ * @param {Object} data - The topic data object
+ * @returns {Object} - The validated topic data object
+*/
 const validateTopicData = async (data) => {
   if (data.name && data.slug && data.about)  {
     // validate first name
