@@ -2,7 +2,13 @@
 const { sanitizeInput } = require('../utils').sanitizeUtil;
 
 
-// New opinion data validation
+/**
+ * @name validateOpinionData
+ * @function validateOpinionData
+ * @description a function that validates opinion data before being passed to the controllers or middlewares
+ * @param {Object} data - The opinion data object
+ * @returns {Object} - The validated opinion data object
+*/
 const validateOpinionData = async (data) => {
 
   // Check if all fields are provided

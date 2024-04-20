@@ -2,6 +2,7 @@ const { redisConfig } = require('../configs').storageConfig;
 const { Worker } = require('bullmq');
 const { upvoteHook } = require('../hooks').upvoteHook;
 
+
 // Initialize the Bull worker for the upvoteQueue
 const upvoteWorker = new Worker('upvoteQueue', async (job) => {
   console.log('Processing upvote job:', job.data);

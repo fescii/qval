@@ -2,7 +2,13 @@ const { sanitizeUtil } = require('../utils');
 const { slugifyArray, slugify } = require('../utils').arrayUtil;
 const { StoryType } = require('../configs').platformConfig;
 
-// New story data validation
+/**
+ * @name validateStoryData
+ * @function validateStoryData
+ * @description a function that validates story data before being passed to the controllers or middlewares
+ * @param {Object} data - The story data object
+ * @returns {Object} - The validated story data object
+*/
 const validateStoryData = async (data) => {
 
   // Check if all fields are provided
@@ -106,7 +112,13 @@ const validateStoryData = async (data) => {
   }
 }
 
-// Story content validation
+/**
+ * @name validateStoryContent
+ * @function validateStoryContent
+ * @description a function that validates story content before being passed to the controllers or middlewares
+ * @param {Object} data - The story content object
+ * @returns {Object} validatedData - The validated story content object
+*/
 const validateStoryContent = async (data) => {
 
   // Check if content field is provided
@@ -134,7 +146,14 @@ const validateStoryContent = async (data) => {
   };
 }
 
-// Story body validation
+
+/**
+ * @name validateStoryBody
+ * @function validateStoryBody
+ * @description a function that validates story body before being passed to the controllers or middlewares
+ * @param {Object} data - The story body object
+ * @returns {Object} validatedData - The validated story body object
+*/
 const validateStoryBody = async (data) => {
 
   // Check if body field is provided
@@ -179,7 +198,14 @@ const validateStoryBody = async (data) => {
   };
 }
 
-// Story title validation
+
+/**
+ * @name validateStoryTitle
+ * @function validateStoryTitle
+ * @description a function that validates story title before being passed to the controllers or middlewares
+ * @param {Object} data - The story title object
+ * @returns {Object} validatedData - The validated story title object
+*/
 const validateStoryTitle = async (data) => {
 
   // Check if title field is provided
@@ -224,7 +250,13 @@ const validateStoryTitle = async (data) => {
   };
 }
 
-// Story slug validation
+/**
+ * @name validateStorySlug
+ * @function validateStorySlug
+ * @description a function that validates story slug before being passed to the controllers or middlewares
+ * @param {Object} data - The story slug object
+ * @returns {Object} validatedData - The validated story slug object
+*/
 const validateStorySlug = async (data) => {
 
   // Check if slug field is provided
@@ -272,7 +304,13 @@ const validateStorySlug = async (data) => {
   };
 }
 
-// Story topics validation
+/**
+ * @name validateStoryTopics
+ * @function validateStoryTopics
+ * @description a function that validates story topics before being passed to the controllers or middlewares
+ * @param {Object} data - The story topics object
+ * @returns {Object} validatedData - The validated story topics object
+*/
 const validateStoryTopics = async (data) => {
 
   // Check if topics field is provided
