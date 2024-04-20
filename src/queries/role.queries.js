@@ -1,8 +1,15 @@
 const {Op} = require("sequelize");
 const { Role } = require('../models').models;
 
+
+/**
+ * @function findRole
+ * @description Query to find a role by hash
+ * @param {String} hash - The hash of the role
+ * @returns {Object} - The role object or null, and the error if any
+*/
 const findRole = async (hash) => {
-  
+
   try {
     const role = await Role.findOne({
       attributes: ['section', 'user', 'base', 'privileges'],
@@ -10,7 +17,7 @@ const findRole = async (hash) => {
         hash: hash
       }
     });
-    
+
     if (role) {
       return { role: role, error: null}
     }
@@ -24,8 +31,15 @@ const findRole = async (hash) => {
   }
 }
 
+/**
+ * @function findUserRole
+ * @description Query to find a role by section and user
+ * @param {String} section - The section of the role
+ * @param {String} user - The user of the role
+ * @returns {Object} - The role object or null, and the error if any
+*/
 const findUserRole = async (section, user) => {
-  
+
   try {
     const role = await Role.findOne({
       attributes: ['section', 'user', 'base', 'privileges'],
@@ -36,7 +50,7 @@ const findUserRole = async (section, user) => {
         ]
       }
     });
-    
+
     if (role) {
       return { role: role, error: null}
     }

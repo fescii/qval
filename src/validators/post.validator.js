@@ -1,6 +1,12 @@
 const { sanitizeUtil } = require('../utils')
 
-// New  post data validation
+/**
+ * @name newPostValidator
+ * @function newPostValidator
+ * @description a function that validates post data before being passed to the controllers or middlewares
+ * @param {Object} data - The post data object
+ * @returns {Object} - The validated post data object
+ */
 const newPostValidator = async (data) => {
   if (data.title && data.tags && data.introduction) {
 
@@ -35,7 +41,13 @@ const newPostValidator = async (data) => {
   }
 }
 
-// New  post data validation
+/**
+ * @name sectionValidator
+ * @function sectionValidator
+ * @description a function that validates section data before being passed to the controllers or middlewares
+ * @param {Object} data - The section data object
+ * @returns {Object} - The validated section data object
+*/
 const sectionValidator = async (data) => {
   if (data.title && data.content) {
 
@@ -69,7 +81,13 @@ const sectionValidator = async (data) => {
   }
 }
 
-// Register comment & Replies validator
+/**
+ * @name commentValidator
+ * @function commentValidator
+ * @description a function that validates comment data before being passed to the controllers or middlewares
+ * @param {Object} data - The comment data object
+ * @returns {Object} - The validated comment data object
+*/
 const commentValidator = async (data) => {
   if (data.name && data.email && data.content) {
 

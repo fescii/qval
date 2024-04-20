@@ -2,18 +2,29 @@
 const { validateTopicData } = require('../validators').topicValidator;
 const { checkIfTopicExists } = require('../queries').topicQueries;
 
+
+/**
+ * @function checkDuplicateTopic
+ * @name checkDuplicateTopic
+ * @description This middleware checks if a topic with similar name or slug exists
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
 const checkDuplicateTopic = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.body) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }
-  
+
   // Get user data from request body
   const payload = req.body;
-  
+
   const valObj = await validateTopicData(payload);
-  
+
   // Handling data validation error
   if (valObj.error) {
     return res.status(400).send({
@@ -21,19 +32,18 @@ const checkDuplicateTopic = async (req, res, next) => {
       message: valObj.error.message
     });
   }
-  
+
+  // Check if a topic already exists
   const {
     topic,
     error
   } = await checkIfTopicExists(valObj.data.name, valObj.data.slug);
-  
-  // console.log(topic)
-  
+
   // Passing the error to error middleware
   if (error) {
     return next(error);
   }
-  
+
   // If a topic already exits, return it
   if (topic) {
     return res.status(409).send({
@@ -48,12 +58,15 @@ const checkDuplicateTopic = async (req, res, next) => {
       message: "Failed! topic with similar name or slug already exits!"
     });
   }
-  
+
   // Add the validated data to the request object for the next() function
   req.topic_data = valObj.data;
   next();
 };
 
+/**
+ * Exporting all the middlewares as an object
+*/
 module.exports = {
   checkDuplicateTopic
 };

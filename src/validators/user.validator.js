@@ -1,6 +1,12 @@
 const { sanitizeUtil } = require('../utils')
 
-// Register data validation
+/**
+ * @function validateUserData
+ * @name validateUserData
+ * @description A validator function to validate user data before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated topic data object
+*/
 const validateUserData = async (data) => {
   if (data.first_name && data.last_name && data.email && data.password) {
     // validate first name
@@ -22,14 +28,14 @@ const validateUserData = async (data) => {
     // validate email
     // noinspection RegExpRedundantEscape
     let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    
+
     if (!data.email.match(validRegex)){
       return {
         data: null,
         error: new Error("Invalid email address!")
       }
     }
-      
+
     // validate password
     if (typeof data.password !== 'string' || data.password.length < 6) {
       return {
@@ -37,7 +43,6 @@ const validateUserData = async (data) => {
         error: new Error("Password should have 6 chars or more and must be a string!")
       }
     }
-    
 
     const validatedData = {
       first_name: await sanitizeUtil.sanitizeInput(data.first_name),
@@ -45,7 +50,7 @@ const validateUserData = async (data) => {
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
-    
+
     return { data: validatedData, error: null };
   }
   else {
@@ -56,7 +61,13 @@ const validateUserData = async (data) => {
   }
 }
 
-// Register data validation
+/**
+ * @function validateLoginData
+ * @name validateLoginData
+ * @description A validator function to validate user data before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated topic data object
+*/
 const validateLoginData = async (data) => {
   if (data.email && data.password) {
 
@@ -76,12 +87,11 @@ const validateLoginData = async (data) => {
       }
     }
 
-    
     const validatedData =  {
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
-    
+
     return { data: validatedData, error:null }
   }
   else {
