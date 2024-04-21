@@ -124,7 +124,12 @@ const validatePassword = async (data) => {
       error: new Error("Password should have 6 chars or more and must be a string!")
     }
   }
-  return { data: password, error: null }
+  return {
+    data: {
+      password: data.password
+    },
+    error: null
+  }
 }
 
 /**
@@ -158,7 +163,12 @@ const validateEmail = async (data) => {
     }
   }
 
-  return { data: email, error: null }
+  return {
+    data: {
+      email: email
+    },
+    error: null
+  }
 }
 
 /**
@@ -178,10 +188,20 @@ const validateContact = async (data) => {
     }
   }
 
-  //sanitize contact
-  const contact = await sanitizeUtil.sanitizeInput(data.contact)
+  // Check if contact is type of object/json
+  if (typeof data.contact !== 'object') {
+    return {
+      data: null,
+      error: new TypeError("Contact must be an object!")
+    }
+  }
 
-  return { data: contact, error: null }
+  return {
+    data: {
+      contact: contact
+    },
+    error: null
+  }
 }
 
 /**
@@ -204,26 +224,12 @@ const validateBio = async (data) => {
   //sanitize bio
   const bio = await sanitizeUtil.sanitizeInput(data.bio)
 
-  return { data: bio, error: null }
-}
-
-const validatePicture = async (data) => {
-  //check if picture is provided in the form of a file
-  if (!data.picture) {
-    return {
-      data: null,
-      error: new Error("Picture field is required!")
-    }
-  }
-
-  // check if file size is greater than 10MB
-  if (data.picture.size > 10000000) {
-    return {
-      data: null,
-      error: new Error("Picture size should be less than 10MB!")
-    }
+  return {
+    data: { bio: bio },
+    error: null
   }
 }
+
 
 /**
  * @module Export all validators
