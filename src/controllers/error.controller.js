@@ -1,3 +1,4 @@
+const multer = require('multer');
 const { envConfig } = require('../configs');
 
 /**
@@ -14,6 +15,14 @@ const errorHandler = (err, _req, res, _next) => {
   console.error(err.stack);
   const errorStatus = err.status || 500;
   const errorMsg = err.message || 'Something went wrong!'
+
+  if (err instanceof multer.MulterError) {
+    res.status(400).json({
+      success: false,
+      error: true,
+      message: err.message
+    });
+  }
 
   return res.status(errorStatus).send({
     success: false,

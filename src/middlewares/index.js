@@ -2,9 +2,10 @@
 const authMiddleware = require("./auth.middleware");
 const topicMiddleware = require('./topic.middleware');
 const storyMiddleware = require('./story.middleware');
+const upload = require('./profile.middleware');
 
 // Export all middlewares as a single object
 module.exports = {
   authMiddleware, topicMiddleware,
-  storyMiddleware
+  storyMiddleware, upload
 };
