@@ -102,8 +102,140 @@ const validateLoginData = async (data) => {
   }
 }
 
+/**
+ * @function validatePassword
+ * @name validatePassword
+ * @description A validator function to validate password before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated password object
+ * @returns {Error} - The error object
+*/
+const validatePassword = async (data) => {
+  //check if password is provided
+  if (!data.password) {
+    return {
+      data: null,
+      error: new Error("Password field is required!")
+    }
+  }
+  if (typeof data.password !== 'string' || data.password.length < 6) {
+    return {
+      data: null,
+      error: new Error("Password should have 6 chars or more and must be a string!")
+    }
+  }
+  return { data: password, error: null }
+}
 
+/**
+ * @function validateUsername
+ * @name validateUsername
+ * @description A validator function to validate username before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated username object
+ * @returns {Error} - The error object
+*/
+const validateEmail = async (data) => {
+  //check if email is provided
+  if (!data.email) {
+    return {
+      data: null,
+      error: new Error("Email field is required!")
+    }
+  }
+
+  //sanitize email
+  const email = await sanitizeUtil.sanitizeInput(data.email)
+
+  // validate email
+  // noinspection RegExpRedundantEscape
+  let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+  if (!email.match(validRegex)){
+    return {
+      data: null,
+      error: new Error("Invalid email address!")
+    }
+  }
+
+  return { data: email, error: null }
+}
+
+/**
+ * @function validateUsername
+ * @name validateUsername
+ * @description A validator function to validate username before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated username object
+ * @returns {Error} - The error object
+*/
+const validateContact = async (data) => {
+  //check if contact is provided
+  if (!data.contact) {
+    return {
+      data: null,
+      error: new Error("Contact field is required!")
+    }
+  }
+
+  //sanitize contact
+  const contact = await sanitizeUtil.sanitizeInput(data.contact)
+
+  return { data: contact, error: null }
+}
+
+/**
+ * @function validateBio
+ * @name validateBio
+ * @description A validator function to validate bio before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated bio object
+ * @returns {Error} - The error object
+*/
+const validateBio = async (data) => {
+  //check if bio is provided
+  if (!data.bio) {
+    return {
+      data: null,
+      error: new Error("Bio field is required!")
+    }
+  }
+
+  //sanitize bio
+  const bio = await sanitizeUtil.sanitizeInput(data.bio)
+
+  return { data: bio, error: null }
+}
+
+const validatePicture = async (data) => {
+  //check if picture is provided in the form of a file
+  if (!data.picture) {
+    return {
+      data: null,
+      error: new Error("Picture field is required!")
+    }
+  }
+
+  // check if file size is greater than 10MB
+  if (data.picture.size > 10000000) {
+    return {
+      data: null,
+      error: new Error("Picture size should be less than 10MB!")
+    }
+  }
+}
+
+/**
+ * @module Export all validators
+ * @name Validators
+ * @description Export all validators as an object
+*/
 module.exports = {
   validateUserData,
-  validateLoginData
+  validateLoginData,
+  validatePassword,
+  validateEmail,
+  validateContact,
+  validateBio,
+  validatePicture
 }
