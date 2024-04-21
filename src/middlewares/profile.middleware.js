@@ -1,5 +1,6 @@
 // Import necessary packages and modules
 const multer = require('multer');
+const { createDirectory } = require('../utils').fileUtil;
 
 
 // Set up storage for uploaded profile pictures
