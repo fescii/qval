@@ -1,16 +1,16 @@
 // Import all the necessary modules and dependencies
-const bycrypt = require('bcrypt');
+const bcrypt = require("bcryptjs");
 const { User, sequelize } = require('../models').models;
 
 /**
- * @name updatePassword
- * @function updatePassword
- * @description - A function query to update the user's password
+ * @name editPassword
+ * @function editPassword
+ * @description - A function query to edit the user's password
  * @param {String} password - New password of the user
  * @param {String} username - Username of the user
- * @returns {Object} - Returns the updated user object or null or error if the user is not found
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const updatePassword = async (password, username) => {
+const editPassword = async (password, username) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
@@ -23,10 +23,10 @@ const updatePassword = async (password, username) => {
       };
     }
 
-    // hash the password using bycrypt
-    const hashPassword = await bycrypt.hash(password, 8);
+    // hash the password using bcrypt
+    const hashPassword = await bcrypt.hash(password, 8);
 
-    // Update the user password
+    // edit the user password
     user.password = hashPassword;
 
     // Save the user
@@ -49,14 +49,14 @@ const updatePassword = async (password, username) => {
 
 
 /**
- * @name updateEmail
- * @function updateEmail
- * @description - A function query to update the user's email
+ * @name editEmail
+ * @function editEmail
+ * @description - A function query to edit the user's email
  * @param {String} email - New email of the user
  * @param {String} username - Username of the user
- * @returns {Object} - Returns the updated user object or null or error if the user is not found
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const updateEmail = async (email, username) => {
+const editEmail = async (email, username) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
@@ -69,7 +69,7 @@ const updateEmail = async (email, username) => {
       };
     }
 
-    // Update the user email
+    // edit the user email
     user.email = email;
 
     // Save the user
@@ -91,14 +91,14 @@ const updateEmail = async (email, username) => {
 }
 
 /**
- * @name updateContact
- * @function updateContact
- * @description - A function query to update the user's contact
+ * @name editContact
+ * @function editContact
+ * @description - A function query to edit the user's contact
  * @param {String} contact - New contact of the user
  * @param {String} username - Username of the user
- * @returns {Object} - Returns the updated user object or null or error if the user is not found
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const updateContact = async (contact, username) => {
+const editContact = async (contact, username) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
@@ -111,7 +111,7 @@ const updateContact = async (contact, username) => {
       };
     }
 
-    // Update the user email
+    // edit the user email
     user.contact = contact;
 
     // Save the user
@@ -133,14 +133,14 @@ const updateContact = async (contact, username) => {
 }
 
 /**
- * @name updateBio
- * @function updateBio
- * @description - A function query to update the user's bio
+ * @name editBio
+ * @function editBio
+ * @description - A function query to edit the user's bio
  * @param {String} bio - New bio of the user
  * @param {String} username - Username of the user
- * @returns {Object} - Returns the updated user object or null or error if the user is not found
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const updateBio = async (bio, username) => {
+const editBio = async (bio, username) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
@@ -154,7 +154,7 @@ const updateBio = async (bio, username) => {
       };
     }
 
-    // Update the user email
+    // edit the user email
     user.bio = bio;
 
     // Save the user
@@ -176,7 +176,7 @@ const updateBio = async (bio, username) => {
 }
 
 
-const updatePicture = async (picture, username) => {
+const editPicture = async (picture, username) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
@@ -190,7 +190,7 @@ const updatePicture = async (picture, username) => {
       };
     }
 
-    // Update the user email
+    // edit the user email
     user.picture = picture;
 
     // Save the user
@@ -218,9 +218,9 @@ const updatePicture = async (picture, username) => {
  * @returns {Object} - Returns all the user queries
  */
 module.exports = {
-  updatePassword,
-  updateEmail,
-  updateContact,
-  updateBio,
-  updatePicture
+  editPassword,
+  editEmail,
+  editContact,
+  editBio,
+  editPicture
 }

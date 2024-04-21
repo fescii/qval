@@ -1,5 +1,5 @@
 // Import middlewares and controllers
-const { veryToken } = require('../middlewares').authMiddleware;
+const { verifyToken } = require('../middlewares').authMiddleware;
 const {
   updateProfilePicture, updateProfileBio,
   updateProfileContact, updateProfilePassword,
@@ -22,30 +22,26 @@ module.exports = (app, url) => {
   });
 
   // Register route
-  app.patch(
-    `${url}/edit/picture`,
-    veryToken,
+  app.patch(`${url}/edit/picture`,
+    verifyToken,
     updateProfilePicture
   );
 
   // Update user bio route
-  app.patch(
-    `${url}/edit/bio`,
-    veryToken,
+  app.patch(`${url}/edit/bio`,
+    verifyToken,
     updateProfileBio
   );
 
   // Update user contact route
-  app.patch(
-    `${url}/edit/contact`,
-    veryToken,
+  app.patch(`${url}/edit/contact`,
+    verifyToken,
     updateProfileContact
   );
 
   // Update user password route
-  app.patch(
-    `${url}/edit/password`,
-    veryToken,
+  app.patch(`${url}/edit/password`,
+    verifyToken,
     updateProfilePassword
   );
 };

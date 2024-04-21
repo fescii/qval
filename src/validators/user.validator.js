@@ -242,6 +242,5 @@ module.exports = {
   validatePassword,
   validateEmail,
   validateContact,
-  validateBio,
-  validatePicture
+  validateBio
 }

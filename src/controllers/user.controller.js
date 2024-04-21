@@ -1,8 +1,8 @@
 // Import necessary packages and modules
 const upload = require('../middlewares').upload;
 const {
-  updatePicture, updateBio, updateContact,
-  updatePassword, updateEmail
+  editPicture, editBio, editContact,
+  editPassword, editEmail
 } = require('../queries').userQueries;
 
 const {
@@ -41,7 +41,7 @@ const updateProfilePicture = async (req, res, next) => {
       const {
         user,
         error
-      } = await updatePicture(filename, username);
+      } = await editPicture(filename, username);
 
       // Check if there was an error updating the user's profile picture
       if (error) {
@@ -112,7 +112,7 @@ const updateProfileBio = async (req, res, next) => {
   const {
     user,
     error
-  } = await updateBio(validatedData.data.bio, username);
+  } = await editBio(validatedData.data.bio, username);
 
   // Check if there was an error updating the user's profile bio
   if (error) {
@@ -178,7 +178,7 @@ const updateProfileContact = async (req, res, next) => {
   const {
     user,
     error
-  } = await updateContact(validatedData.data.contact, username);
+  } = await editContact(validatedData.data.contact, username);
 
   // Check if there was an error updating the user's profile contact
   if (error) {
@@ -244,7 +244,7 @@ const updateProfileEmail = async (req, res, next) => {
   const {
     user,
     error
-  } = await updateEmail(validatedData.data.email, username);
+  } = await editEmail(validatedData.data.email, username);
 
   // Check if there was an error updating the user's profile email
   if (error) {
@@ -310,7 +310,7 @@ const updateProfilePassword = async (req, res, next) => {
   const {
     user,
     error
-  } = await updatePassword(validatedData.data.password, username);
+  } = await editPassword(validatedData.data.password, username);
 
   // Check if there was an error updating the user's profile password
   if (error) {
