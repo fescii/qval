@@ -5,6 +5,7 @@ const topicController = require('./topic.controller');
 const storyController = require('./story.controller');
 const opinionController = require('./opinion.controller');
 const upvoteController = require('./upvote.controller');
+const userController = require('./user.controller');
 
 /**
  * Exporting all controllers as a single object
@@ -12,5 +13,6 @@ const upvoteController = require('./upvote.controller');
 module.exports = {
   authController, topicController,
   errorController, storyController,
-  opinionController, upvoteController
+  opinionController, upvoteController,
+  userController
 };
