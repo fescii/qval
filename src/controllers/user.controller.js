@@ -22,7 +22,7 @@ const {
 */
 const updateProfilePicture = async (req, res, next) => {
   // Check if the payload contains a file
-  if (!req.file || !req.user) {
+  if (!req.user) {
     return res.status(400).json({
       success: false,
       error: true,
@@ -30,18 +30,18 @@ const updateProfilePicture = async (req, res, next) => {
     });
   }
   try {
-    upload.single('profilePicture')(req, res, async (err) => {
+    upload.single('file')(req, res, async (err) => {
       if (err) {
         return next(err);
       }
 
       const username = req.user.username;
-      const { filename } = req.file.filename;
+      const { path } = req.file;
 
       const {
         user,
         error
-      } = await editPicture(filename, username);
+      } = await editPicture(path, username);
 
       // Check if there was an error updating the user's profile picture
       if (error) {
