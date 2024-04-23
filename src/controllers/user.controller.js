@@ -35,6 +35,15 @@ const updateProfilePicture = async (req, res, next) => {
         return next(err);
       }
 
+      // If file is not defined
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: true,
+          message: 'File not found in the payload'
+        });
+      }
+
       const username = req.user.username;
       const { path } = req.file;
 
@@ -105,7 +114,7 @@ const updateProfileBio = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -171,7 +180,7 @@ const updateProfileContact = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -237,7 +246,7 @@ const updateProfileEmail = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -303,7 +312,7 @@ const updateProfilePassword = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 

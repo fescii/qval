@@ -32,6 +32,9 @@ const editPassword = async (password, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -75,6 +78,9 @@ const editEmail = async (email, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -116,6 +122,9 @@ const editContact = async (contact, username) => {
 
     // Save the user
     await user.save({ transaction });
+
+    // Commit the transaction
+    await transaction.commit();
 
     return {
       user,
@@ -160,6 +169,9 @@ const editBio = async (bio, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -195,6 +207,9 @@ const editPicture = async (picture, username) => {
 
     // Save the user
     await user.save({ transaction });
+
+    // Commit the transaction
+    await transaction.commit();
 
     return {
       user,

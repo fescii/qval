@@ -198,7 +198,7 @@ const validateContact = async (data) => {
 
   return {
     data: {
-      contact: contact
+      contact: data.contact
     },
     error: null
   }
