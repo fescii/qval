@@ -410,6 +410,7 @@ const updateProfileName = async (req, res, next) => {
       picture: user.picture,
       bio: user.bio,
       contact: user.contact,
+      name: user.name,
     },
     message: 'Profile name updated successfully',
   });
