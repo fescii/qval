@@ -20,17 +20,19 @@ const errorHandler = (err, _req, res, _next) => {
     res.status(400).json({
       success: false,
       error: true,
-      message: err.message
+      message: err.message,
+      stack: envConfig.node_env === 'development' ? err.stack : {}
     });
   }
-
-  return res.status(errorStatus).send({
+  else {
+    return res.status(errorStatus).send({
     success: false,
     error: true,
     stack_message: errorMsg,
     message: "Something went wrong!",
     stack: envConfig.node_env === 'development' ? err.stack : {}
   });
+  }
 }
 
 
