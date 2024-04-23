@@ -350,15 +350,15 @@ const updateProfilePassword = async (req, res, next) => {
 }
 
 /**
- * @name updateName
- * @function updateName
+ * @name updateProfileName
+ * @function updateProfileName
  * @description A controller function to update a user's profile name
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
 */
-const updateName = async (req, res, next) => {
+const updateProfileName = async (req, res, next) => {
   // Check for payload or user
   if (!req.body || !req.user) {
     return res.status(400).json({
@@ -421,5 +421,6 @@ module.exports = {
   updateProfileBio,
   updateProfileContact,
   updateProfileEmail,
-  updateProfilePassword
+  updateProfilePassword,
+  updateProfileName
 }

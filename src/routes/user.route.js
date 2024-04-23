@@ -1,7 +1,7 @@
 // Import middlewares and controllers
 const { verifyToken } = require('../middlewares').authMiddleware;
 const {
-  updateProfilePicture, updateProfileBio,
+  updateProfilePicture, updateProfileBio, updateProfileName,
   updateProfileContact, updateProfilePassword,
 } = require('../controllers').userController;
 
@@ -43,5 +43,11 @@ module.exports = (app, url) => {
   app.patch(`${url}/edit/password`,
     verifyToken,
     updateProfilePassword
+  );
+
+  // Update user name route
+  app.patch(`${url}/edit/name`,
+    verifyToken,
+    updateProfileName
   );
 };
