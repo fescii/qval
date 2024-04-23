@@ -2,11 +2,11 @@
 const upload = require('../middlewares').upload;
 const {
   editPicture, editBio, editContact,
-  editPassword, editEmail
+  editPassword, editEmail, editName
 } = require('../queries').userQueries;
 
 const {
-  validateBio, validateContact,
+  validateBio, validateContact, validateName,
   validateEmail, validatePassword,
 } = require('../validators').userValidator;
 
@@ -346,6 +346,72 @@ const updateProfilePassword = async (req, res, next) => {
       contact: user.contact,
     },
     message: 'Profile password updated successfully',
+  });
+}
+
+/**
+ * @name updateName
+ * @function updateName
+ * @description A controller function to update a user's profile name
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const updateName = async (req, res, next) => {
+  // Check for payload or user
+  if (!req.body || !req.user) {
+    return res.status(400).json({
+      success: false,
+      error: true,
+      message: 'Payload or user not found in the payload'
+    });
+  }
+
+  const payload = req.body;
+  const username = req.user.username;
+
+  // Validate the name
+  const validatedData = await validateName(payload);
+
+  // Check if there was an error validating the name
+  if (validatedData.error) {
+    return res.status(400).json({
+      success: false,
+      message: validatedData.error.message
+    });
+  }
+
+  const {
+    user,
+    error
+  } = await editName(validatedData.data.name, username);
+
+  // Check if there was an error updating the user's profile name
+  if (error) {
+    return next(error);
+  }
+
+  // Check if user is null
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      error: true,
+      message: "The profile you are trying to update does not exist"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      picture: user.picture,
+      bio: user.bio,
+      contact: user.contact,
+    },
+    message: 'Profile name updated successfully',
   });
 }
 

@@ -230,6 +230,30 @@ const validateBio = async (data) => {
   }
 }
 
+/**
+ * @function validateName
+ * @name validateName
+ * @description A validator function to validate name before being passed controllers or middlewares
+ * @param {Object} data - The input data from client request
+ * @returns {Object} - The validated name object or an error object
+*/
+const validateName = async (data) => {
+  //check if name is provided
+  if (!data.first_name || !data.last_name) {
+    return {
+      data: null,
+      error: new Error("First name and Last name fields are required!")
+    }
+  }
+
+  //sanitize name
+  const name = `${await sanitizeUtil.sanitizeInput(data.first_name)} ${await sanitizeUtil.sanitizeInput(data.last_name)}`
+
+  return {
+    data: { name: name },
+    error: null
+  }
+}
 
 /**
  * @module Export all validators
@@ -242,5 +266,5 @@ module.exports = {
   validatePassword,
   validateEmail,
   validateContact,
-  validateBio
+  validateBio, validateName
 }
