@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./env/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  express:
+    build: ./src
+    depends_on:
+      - postgres
+    ports:
+      - '3000:3000'
+    links:
+      - postgres
+    env_file:
+      - ./env/.env
+    volumes:
+      - .:/home/node/app
+    networks:
+      - app-network
+    command: npm start
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

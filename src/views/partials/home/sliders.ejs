@@ -1,0 +1,262 @@
+<section class="landing">
+  <div class="wrapper">
+    <div class="box">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <% for(let i = 0; i < slidersArray.length; i++) {%>
+      <% function cardStart(cardNumber) {%>
+        <% if (cardNumber === 0) { %>
+          <div class="content-one">
+        <% } else if (cardNumber === 1) { %>
+          <div class="content-one second">
+        <% } else if (cardNumber === 2) { %>
+          <div class="content-one third">
+        <% } else if (cardNumber === 3) { %>
+          <div class="content-one forth">
+        <% } else if (cardNumber === 4) { %>
+          <div class="content-one fifth">
+        <% } %>
+      <% } %>
+
+      <%= cardStart(i) %>
+        <div class="text">
+          <h2 class="title"><%= slidersArray[i].title %></h2>
+          <p class="decription">
+            <%= slidersArray[i].sliderDescription.substring(0, 200) + '...' %>
+          </p>
+          
+          <div class="actions">
+            <a href="" class="action shop" id="shop-now">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M16.3638 6.87003C16.3638 4.48403 14.4298 2.55003 12.0438 2.55003C9.65783 2.53903 7.71583 4.46503 7.70483 6.85103V6.87003"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14.9727 11.3739H14.9267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M9.14165 11.3739H9.09565" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M12.0342 21.4896C5.52619 21.4896 4.77719 19.4396 3.31619 14.0226C1.85019 8.58863 4.79119 6.55563 12.0342 6.55563C19.2772 6.55563 22.2182 8.58863 20.7522 14.0226C19.2912 19.4396 18.5422 21.4896 12.0342 21.4896Z"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="text" onclick="location.href = '/articles/<%= slidersArray[i].associated_product_category;%>'">Shop now</span>
+            </a>
+            <a href="" class="action explore">
+              <span class="text">Explore products</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M13.8055 5.31595C13.6935 5.25395 13.5715 5.22595 13.4515 5.22595C13.1835 5.22595 12.9265 5.36895 12.7905 5.61995C12.5945 5.98495 12.7295 6.43995 13.0945 6.63595C14.9757 7.65095 17.8054 9.64262 18.56 11.2502L4.5 11.2502C4.086 11.2502 3.75 11.5862 3.75 12.0002C3.75 12.4142 4.086 12.7502 4.5 12.7502L18.5584 12.7502C17.8014 14.3594 14.9743 16.3498 13.0945 17.365C12.7295 17.562 12.5945 18.016 12.7905 18.381C12.9875 18.745 13.4445 18.88 13.8055 18.685C14.4665 18.33 20.2505 15.1209 20.2505 11.998C20.2505 8.87895 14.4665 5.67095 13.8055 5.31595Z"
+                  fill="black" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="image">
+          <div class="back-color"></div>
+          <% for (let l = 0; l < slidersArray[i].image.length; l++) { %>
+            <% if(l == 0) {%>
+              <img src="<%= slidersArray[i].image[0]%>" alt="Image" srcset="">
+                <% break %> <!-- Looping through all the product images but returning only one image -->
+            <% } %>
+          <% } %>
+          
+        </div>
+      </div>
+  <% } %>
+
+  
+
+  <!-- <div class="content-one second">
+    <div class="text">
+      <h2 class="title">Discover the <br /> world in every click</h2>
+      <p class="decription">
+        Photography is our language, and every frame speaks universal truth.
+      </p>
+      <p class="decription">
+        Come along on our journey as we unveil the world's hidden treasures, each click capturing a story waiting to
+        be told.
+      </p>
+      <div class="actions">
+        <a href="" class="action shop" id="shop-now">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16.3638 6.87003C16.3638 4.48403 14.4298 2.55003 12.0438 2.55003C9.65783 2.53903 7.71583 4.46503 7.70483 6.85103V6.87003"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14.9727 11.3739H14.9267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M9.14165 11.3739H9.09565" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12.0342 21.4896C5.52619 21.4896 4.77719 19.4396 3.31619 14.0226C1.85019 8.58863 4.79119 6.55563 12.0342 6.55563C19.2772 6.55563 22.2182 8.58863 20.7522 14.0226C19.2912 19.4396 18.5422 21.4896 12.0342 21.4896Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="text">Shop now</span>
+        </a>
+        <a href="" class="action explore">
+          <span class="text">Explore products</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13.8055 5.31595C13.6935 5.25395 13.5715 5.22595 13.4515 5.22595C13.1835 5.22595 12.9265 5.36895 12.7905 5.61995C12.5945 5.98495 12.7295 6.43995 13.0945 6.63595C14.9757 7.65095 17.8054 9.64262 18.56 11.2502L4.5 11.2502C4.086 11.2502 3.75 11.5862 3.75 12.0002C3.75 12.4142 4.086 12.7502 4.5 12.7502L18.5584 12.7502C17.8014 14.3594 14.9743 16.3498 13.0945 17.365C12.7295 17.562 12.5945 18.016 12.7905 18.381C12.9875 18.745 13.4445 18.88 13.8055 18.685C14.4665 18.33 20.2505 15.1209 20.2505 11.998C20.2505 8.87895 14.4665 5.67095 13.8055 5.31595Z"
+              fill="black" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="image">
+      <div class="back-color"></div>
+      <img src="img/home/top2.png" alt="Image" srcset="">
+    </div>
+  </div>
+
+  <div class="content-one third">
+    <div class="text">
+      <h2 class="title">Unveiling wonders, <br /> one frame at a time</h2>
+      <p class="decription">
+        Our passion lies in the art of Photography, where every image tells a story waiting to be unveiled.
+      </p>
+      <p class="decription">
+        Dive into our portfolio and immerse yourself into the world of captivating moments and breathtaking vistas.
+      </p>
+      <div class="actions">
+        <a href="" class="action shop" id="shop-now">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16.3638 6.87003C16.3638 4.48403 14.4298 2.55003 12.0438 2.55003C9.65783 2.53903 7.71583 4.46503 7.70483 6.85103V6.87003"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14.9727 11.3739H14.9267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M9.14165 11.3739H9.09565" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12.0342 21.4896C5.52619 21.4896 4.77719 19.4396 3.31619 14.0226C1.85019 8.58863 4.79119 6.55563 12.0342 6.55563C19.2772 6.55563 22.2182 8.58863 20.7522 14.0226C19.2912 19.4396 18.5422 21.4896 12.0342 21.4896Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="text">Shop now</span>
+        </a>
+        <a href="" class="action explore">
+          <span class="text">Learn more</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13.8055 5.31595C13.6935 5.25395 13.5715 5.22595 13.4515 5.22595C13.1835 5.22595 12.9265 5.36895 12.7905 5.61995C12.5945 5.98495 12.7295 6.43995 13.0945 6.63595C14.9757 7.65095 17.8054 9.64262 18.56 11.2502L4.5 11.2502C4.086 11.2502 3.75 11.5862 3.75 12.0002C3.75 12.4142 4.086 12.7502 4.5 12.7502L18.5584 12.7502C17.8014 14.3594 14.9743 16.3498 13.0945 17.365C12.7295 17.562 12.5945 18.016 12.7905 18.381C12.9875 18.745 13.4445 18.88 13.8055 18.685C14.4665 18.33 20.2505 15.1209 20.2505 11.998C20.2505 8.87895 14.4665 5.67095 13.8055 5.31595Z"
+              fill="black" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="image">
+      <div class="back-color"></div>
+      <img src="img/home/top3.png" alt="Image" srcset="">
+    </div>
+  </div>
+
+  <div class="content-one forth">
+    <div class="text">
+      <h2 class="title">Through the <br /> lens of beauty</h2>
+      <p class="decription">
+        Welcome to our visual odyssey, where we capture the beauty of the world through lenses.
+      </p>
+      <p class="decription">
+        Join us on an exploration of diverse landscapes, vibrant cultures, and the timeless art of photography.
+      </p>
+      <div class="actions">
+        <a href="" class="action shop" id="shop-now">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16.3638 6.87003C16.3638 4.48403 14.4298 2.55003 12.0438 2.55003C9.65783 2.53903 7.71583 4.46503 7.70483 6.85103V6.87003"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14.9727 11.3739H14.9267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M9.14165 11.3739H9.09565" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12.0342 21.4896C5.52619 21.4896 4.77719 19.4396 3.31619 14.0226C1.85019 8.58863 4.79119 6.55563 12.0342 6.55563C19.2772 6.55563 22.2182 8.58863 20.7522 14.0226C19.2912 19.4396 18.5422 21.4896 12.0342 21.4896Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="text">Shop now</span>
+        </a>
+        <a href="" class="action explore">
+          <span class="text">Explore products</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13.8055 5.31595C13.6935 5.25395 13.5715 5.22595 13.4515 5.22595C13.1835 5.22595 12.9265 5.36895 12.7905 5.61995C12.5945 5.98495 12.7295 6.43995 13.0945 6.63595C14.9757 7.65095 17.8054 9.64262 18.56 11.2502L4.5 11.2502C4.086 11.2502 3.75 11.5862 3.75 12.0002C3.75 12.4142 4.086 12.7502 4.5 12.7502L18.5584 12.7502C17.8014 14.3594 14.9743 16.3498 13.0945 17.365C12.7295 17.562 12.5945 18.016 12.7905 18.381C12.9875 18.745 13.4445 18.88 13.8055 18.685C14.4665 18.33 20.2505 15.1209 20.2505 11.998C20.2505 8.87895 14.4665 5.67095 13.8055 5.31595Z"
+              fill="black" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="image">
+      <div class="back-color"></div>
+      <img src="img/home/top4.png" alt="Image" srcset="">
+    </div>
+  </div>
+
+  <div class="content-one fifth">
+    <div class="text">
+      <h2 class="title">Journey into moments,<br /> and infinite stories. </h2>
+      <p class="decription">
+        In the world of photography, every shutter click ia a journey into the unknown.
+      </p>
+      <p class="decription">
+        Join us as we dive into realm of infinite stories, where each image a chapter in the book of life's wonders.
+      </p>
+      <div class="actions">
+        <a href="" class="action shop" id="shop-now">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16.3638 6.87003C16.3638 4.48403 14.4298 2.55003 12.0438 2.55003C9.65783 2.53903 7.71583 4.46503 7.70483 6.85103V6.87003"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14.9727 11.3739H14.9267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M9.14165 11.3739H9.09565" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12.0342 21.4896C5.52619 21.4896 4.77719 19.4396 3.31619 14.0226C1.85019 8.58863 4.79119 6.55563 12.0342 6.55563C19.2772 6.55563 22.2182 8.58863 20.7522 14.0226C19.2912 19.4396 18.5422 21.4896 12.0342 21.4896Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="text">Shop now</span>
+        </a>
+        <a href="" class="action explore">
+          <span class="text">Explore products</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13.8055 5.31595C13.6935 5.25395 13.5715 5.22595 13.4515 5.22595C13.1835 5.22595 12.9265 5.36895 12.7905 5.61995C12.5945 5.98495 12.7295 6.43995 13.0945 6.63595C14.9757 7.65095 17.8054 9.64262 18.56 11.2502L4.5 11.2502C4.086 11.2502 3.75 11.5862 3.75 12.0002C3.75 12.4142 4.086 12.7502 4.5 12.7502L18.5584 12.7502C17.8014 14.3594 14.9743 16.3498 13.0945 17.365C12.7295 17.562 12.5945 18.016 12.7905 18.381C12.9875 18.745 13.4445 18.88 13.8055 18.685C14.4665 18.33 20.2505 15.1209 20.2505 11.998C20.2505 8.87895 14.4665 5.67095 13.8055 5.31595Z"
+              fill="black" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="image">
+      <div class="back-color"></div>
+      <img src="img/home/top6.png" alt="Image" srcset="">
+    </div>
+  </div> -->
+  
+  <div class="numbers">
+    <span class="no active">
+      <span class="pick">1</span>
+    </span>
+    <span class="no">
+      <span class="pick">2</span>
+    </span>
+    <span class="no">
+      <span class="pick">3</span>
+    </span>
+    <span class="no">
+      <span class="pick">4</span>
+    </span>
+    <span class="no">
+      <span class="pick">5</span>
+    </span>
+  </div>
+</section>
