@@ -7,7 +7,7 @@ module.exports = {
       name: 'express-app',
       script: 'app.js', // Replace with your main Express server file
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {
         NODE_ENV: 'development'
       },

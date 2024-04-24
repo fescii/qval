@@ -32,6 +32,9 @@ const editPassword = async (password, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -75,6 +78,9 @@ const editEmail = async (email, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -116,6 +122,9 @@ const editContact = async (contact, username) => {
 
     // Save the user
     await user.save({ transaction });
+
+    // Commit the transaction
+    await transaction.commit();
 
     return {
       user,
@@ -160,6 +169,9 @@ const editBio = async (bio, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -196,6 +208,55 @@ const editPicture = async (picture, username) => {
     // Save the user
     await user.save({ transaction });
 
+    // Commit the transaction
+    await transaction.commit();
+
+    return {
+      user,
+      error: null,
+    };
+  }
+  catch (error) {
+    // console.log(error);
+    await transaction.rollback();
+    return {
+      user: null,
+      error,
+    };
+  }
+}
+
+/**
+ * @function editName
+ * @name editName
+ * @description - A function query to edit the user's name
+ * @param {String} name - New name of the user
+ * @param {String} username - Username of the user
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
+*/
+const editName = async (name, username) => {
+  // Start a transaction
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ where: { username } }, { transaction });
+    if (!user) {
+      return {
+        user: null,
+        error: null,
+      };
+    }
+
+    // edit the user email
+    user.name = name;
+
+    // Save the user
+    await user.save({ transaction });
+
+    // Commit the transaction
+    await transaction.commit();
+
     return {
       user,
       error: null,
@@ -221,6 +282,6 @@ module.exports = {
   editPassword,
   editEmail,
   editContact,
-  editBio,
+  editBio, editName,
   editPicture
 }

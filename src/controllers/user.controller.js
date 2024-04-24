@@ -2,11 +2,11 @@
 const upload = require('../middlewares').upload;
 const {
   editPicture, editBio, editContact,
-  editPassword, editEmail
+  editPassword, editEmail, editName
 } = require('../queries').userQueries;
 
 const {
-  validateBio, validateContact,
+  validateBio, validateContact, validateName,
   validateEmail, validatePassword,
 } = require('../validators').userValidator;
 
@@ -22,7 +22,7 @@ const {
 */
 const updateProfilePicture = async (req, res, next) => {
   // Check if the payload contains a file
-  if (!req.file || !req.user) {
+  if (!req.user) {
     return res.status(400).json({
       success: false,
       error: true,
@@ -30,18 +30,27 @@ const updateProfilePicture = async (req, res, next) => {
     });
   }
   try {
-    upload.single('profilePicture')(req, res, async (err) => {
+    upload.single('file')(req, res, async (err) => {
       if (err) {
         return next(err);
       }
 
+      // If file is not defined
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: true,
+          message: 'File not found in the payload'
+        });
+      }
+
       const username = req.user.username;
-      const { filename } = req.file.filename;
+      const { path } = req.file;
 
       const {
         user,
         error
-      } = await editPicture(filename, username);
+      } = await editPicture(path, username);
 
       // Check if there was an error updating the user's profile picture
       if (error) {
@@ -105,7 +114,7 @@ const updateProfileBio = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -171,7 +180,7 @@ const updateProfileContact = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -237,7 +246,7 @@ const updateProfileEmail = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -303,7 +312,7 @@ const updateProfilePassword = async (req, res, next) => {
   if (validatedData.error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: validatedData.error.message
     });
   }
 
@@ -340,11 +349,79 @@ const updateProfilePassword = async (req, res, next) => {
   });
 }
 
+/**
+ * @name updateProfileName
+ * @function updateProfileName
+ * @description A controller function to update a user's profile name
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const updateProfileName = async (req, res, next) => {
+  // Check for payload or user
+  if (!req.body || !req.user) {
+    return res.status(400).json({
+      success: false,
+      error: true,
+      message: 'Payload or user not found in the payload'
+    });
+  }
+
+  const payload = req.body;
+  const username = req.user.username;
+
+  // Validate the name
+  const validatedData = await validateName(payload);
+
+  // Check if there was an error validating the name
+  if (validatedData.error) {
+    return res.status(400).json({
+      success: false,
+      message: validatedData.error.message
+    });
+  }
+
+  const {
+    user,
+    error
+  } = await editName(validatedData.data.name, username);
+
+  // Check if there was an error updating the user's profile name
+  if (error) {
+    return next(error);
+  }
+
+  // Check if user is null
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      error: true,
+      message: "The profile you are trying to update does not exist"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      picture: user.picture,
+      bio: user.bio,
+      contact: user.contact,
+      name: user.name,
+    },
+    message: 'Profile name updated successfully',
+  });
+}
+
 // Export the module
 module.exports = {
   updateProfilePicture,
   updateProfileBio,
   updateProfileContact,
   updateProfileEmail,
-  updateProfilePassword
+  updateProfilePassword,
+  updateProfileName
 }
