@@ -1,0 +1,29 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/shop-main/global.css">
+  <link rel="stylesheet" href="../css/shop-main/style.css">
+  <link rel="stylesheet" href="../css/shop-main/utils.css">
+
+  <title><%= title %></title>
+
+  <meta name="description" content="<%= description %>">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:image" content="<%= image %>">
+
+  <script type="module">
+    //Custom Elements
+    import ModalProduct from "../js/shop-main/modal.product.js";
+    import ModalCheckout from "../js/shop-main/modal.checkout.js";
+    import ProductItem from "../js/shop-main/product.item.js";
+    
+    import ProductDetail from "../js/shop-main/product.detail.js";
+
+    //Apps-modals
+    customElements.define("product-detail", ProductDetail);
+    customElements.define("modal-product", ModalProduct);
+    customElements.define("modal-checkout", ModalCheckout);
+    customElements.define("product-item", ProductItem);
+
+  </script>
+</head>
