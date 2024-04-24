@@ -23,7 +23,8 @@ services:
       - app-network
 
   express:
-    build: ./src
+    build: ./../src
+    image: qval-app
     depends_on:
       - postgres
       - redis
@@ -40,9 +41,19 @@ services:
       - app-network
     command: npm start
 
+  nginx:
+    build: ./nginx
+    ports:
+      - '80:80'
+    depends_on:
+      - express
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   postgres_data:
+  redis-data:
