@@ -23,7 +23,9 @@ services:
       - app-network
 
   qval-app:
-    build: .
+    build:
+      context: ./src
+      dockerfile: ./../Dockerfile
     depends_on:
       - postgres
       - redis
@@ -50,7 +52,7 @@ services:
     networks:
       - app-network
     volumes:
-      - ./templates:/etc/nginx/templates
+      - ./etc/nginx/templates
     ports:
       - "8080:80"
     environment:

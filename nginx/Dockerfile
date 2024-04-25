@@ -5,7 +5,7 @@ FROM nginx:mainline
 RUN mkdir -p /etc/nginx/ssl_certs
 
 # Copy SSL/TLS certificates directory
-COPY ./ssl_certs/* /etc/nginx/ssl_certs
+COPY ./src/ssl_certs/* /etc/nginx/ssl_certs
 
 # Copy the custom NGINX configuration file
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
