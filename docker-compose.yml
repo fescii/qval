@@ -23,7 +23,7 @@ services:
       - app-network
 
   qval-app:
-    build: ./../src
+    build: .
     depends_on:
       - postgres
       - redis
@@ -42,7 +42,9 @@ services:
 
   nginx-server:
     image: nginx:latest
-    build: ./nginx
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
     depends_on:
       - qval-app
     networks:
