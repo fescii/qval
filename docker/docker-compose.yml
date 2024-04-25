@@ -22,9 +22,8 @@ services:
     networks:
       - app-network
 
-  express:
+  qval-app:
     build: ./../src
-    image: qval-app
     depends_on:
       - postgres
       - redis
@@ -45,7 +44,7 @@ services:
     image: nginx:latest
     build: ./nginx
     depends_on:
-      - express
+      - qval-app
     networks:
       - app-network
     volumes:
