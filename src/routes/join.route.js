@@ -21,6 +21,7 @@ module.exports = (app) => {
     next();
   });
 
+
   // Route for handling logon page
   app.get('/join', joinApp);
 }
