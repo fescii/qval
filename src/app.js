@@ -16,7 +16,10 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 
 let corsOptions = {
-  origin: "http://localhost:${process.env.PORT}"
+  origin: [`http://localhost:${process.env['PORT']}`, "https://192.168.68.24:${process.env['PORT']}"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 // Require method for a syncing database
@@ -51,7 +54,7 @@ const credentials = {
 const server = http2.createSecureServer(credentials, app);
 
 // app listen port
-server.listen(PORT, ()=> {
+server.listen(PORT, '192.168.68.24', ()=> {
     console.log(`Server is listening on port ${PORT}.`);
   }
 );
