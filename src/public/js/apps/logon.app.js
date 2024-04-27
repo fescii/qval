@@ -65,7 +65,8 @@ export default class LogonApp extends HTMLElement {
     // console.log('We are inside disconnectedCallback');
   }
 
-  loginLoaded(contentContainer, stagesContainer, contentTitle) {
+
+  loginLoaded = (contentContainer, stagesContainer, contentTitle) => {
     const outerThis = this;
 
     contentTitle.textContent = 'Login';
@@ -77,14 +78,12 @@ export default class LogonApp extends HTMLElement {
     outerThis.prevStep('login', stagesContainer, contentContainer)
   }
 
-  registerLoaded(contentContainer, stagesContainer, contentTitle) {
+  registerLoaded = (contentContainer, stagesContainer, contentTitle) => {
     const outerThis = this;
 
     contentTitle.textContent = 'Register';
     outerThis.changeStages('register', stagesContainer);
     outerThis.nextStep('register', stagesContainer);
-    stagesContainer.insertAdjacentHTML('afterend', form);
-
 
     outerThis.submitEvent('register', contentContainer.querySelector('form'));
     outerThis.prevStep('register', stagesContainer, contentContainer)
