@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 // Importing within the app
 const { tokenUtil } = require('../utils');
-const { validateLoginData } = require('../validators').userValidator;
+const { validateLoginData, validateEmail } = require('../validators').userValidator;
 
 const { addUser, checkIfUserExits } = require('../queries').authQueries;
 
@@ -131,9 +131,64 @@ const signIn = async (req, res, next) => {
   });
 }
 
+
+/**
+ * @function checkIfUserExits
+ * @description Controller to check if a user exists using the email
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const checkIfEmailExits = async (req, res, next) => {
+  // Check if the payload is available in the request object
+  if (!req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
+
+  // Get payload from request body
+  const payload = req.body;
+
+  // Validate email data from the payload
+  const validatedObj = await validateEmail(payload);
+
+  // If validation returns an error
+  if (validatedObj.error) {
+    return res.status(400).send({
+      success: false,
+      message: validatedObj.error.message
+    });
+  }
+
+  // Check if user with that email exists
+  const {
+    user,
+    error
+  } = await checkIfUserExits(validatedObj.data.email)
+
+  // If error is not equal to undefined throw an error
+  if (error) {
+    return next(error);
+  }
+
+  // If user is found, return conflict
+  if (user) {
+    return res.status(409).send({
+      success: false,
+      message: "Email address already exists."
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    message: "Email address is available."
+  });
+}
+
 /**
  * Exporting all controllers
 */
 module.exports = {
-  signUp, signIn
+  signUp, signIn, checkIfEmailExits
 }

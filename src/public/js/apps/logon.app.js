@@ -423,78 +423,6 @@ export default class LogonApp extends HTMLElement {
     }, 3000);
   }
 
-  validateUsername(form) {
-    const outerThis = this;
-    const submitButton = form.querySelector('.actions > .action.next ');
-    const inputField = form.querySelector('.field.username');
-    const inputGroup = inputField.querySelector('.input-group');
-
-    submitButton.innerHTML = outerThis.getButtonLoader();
-    submitButton.style.setProperty("pointer-events", 'none');
-    inputGroup.classList.remove('success', 'failed');
-    let svg = inputGroup.querySelector('svg');
-    if (svg) {
-      svg.remove();
-    }
-
-    const inputValue = inputGroup.querySelector('input').value.trim();
-    // console.log(inputValue);
-    const status = inputGroup.querySelector('span.status');
-
-    let msg = 'Username is required!'
-
-    if (inputValue === '') {
-      status.textContent = msg;
-      inputGroup.insertAdjacentHTML('beforeend', outerThis._failed);
-      inputGroup.classList.add('failed');
-
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
-    else if (inputValue.length < 5) {
-      msg = 'Username must be 5 characters or more!'
-      status.textContent = msg;
-      inputGroup.insertAdjacentHTML('beforeend', outerThis._failed);
-      inputGroup.classList.add('failed');
-
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
-
-    else {
-      // Call API
-      outerThis.checkUsername(form, inputValue, inputGroup, status);
-    }
-  }
-
-  checkUsername(form, inputValue, inputGroup, status) {
-    const submitButton = form.querySelector('.actions > .action.next ');
-
-    // After API call
-    let msg = 'Username is available' // From API
-
-    //Add user to the data object
-    this._data.register['username'] = inputValue;
-
-
-    status.textContent = msg;
-    inputGroup.insertAdjacentHTML('beforeend', this._success);
-
-    setTimeout(() => {
-      inputGroup.classList.add('success');
-    }, 2000);
-
-    setTimeout(() => {
-      submitButton.innerHTML = `<span class="text">Continue</span>`
-      submitButton.style.setProperty("pointer-events", 'auto');
-      this.activateBio(form)
-    }, 3000);
-  }
-
   activateBio(form) {
     const stagesContainer = form.parentElement.querySelector('.stages');
     form.firstElementChild.remove()
@@ -561,7 +489,7 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
-  validateName(nameElement, submitButton) {
+  validateName = (nameElement, submitButton) => {
     const outerThis = this;
     const inputElement = nameElement.querySelector('input')
     const input = nameElement.querySelector('input').value.trim();
@@ -590,10 +518,10 @@ export default class LogonApp extends HTMLElement {
       nameElement.insertAdjacentHTML('beforeend', this._success);
 
       if (inputElement.dataset.name === "firstname") {
-        this._data.register['firstname'] = input;
+        this._data.register['first_name'] = input;
       }
       else {
-        this._data.register['lastname'] = input;
+        this._data.register['last_name'] = input;
       }
 
       nameElement.classList.add('success');
@@ -602,33 +530,55 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
-  checkEmail(form, input, email, emailStatus) {
+  checkEmail = async (form, input, email, emailStatus) =>  {
     const submitButton = form.querySelector('.actions > .action.next');
 
     // After API call
-    let msg = 'Username is available' // From API
+    const {
+      result,
+      error
+    } = await this.checkIfEmailExists({ email: input });
 
-    //Add user to the data object
-    this._data.register['username'] = input;
+    // If error occurs
+    if (error) {
+      const errorMsg = this.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
 
-    emailStatus.textContent = msg;
-    email.insertAdjacentHTML('beforeend', this._success);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
 
-    this._data.register['email'] = input;
+    // If email does not exists
+    if (result.success) {
+      // Add email to the data object
+      this._data.register['email'] = input;
 
-    setTimeout(() => {
+      emailStatus.textContent = result.message;
+      email.insertAdjacentHTML('beforeend', this._success);
+
       email.classList.add('success');
-    }, 1000);
 
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Register</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+        this.activatePassword(form)
+      }, 2000);
+    }
+    else {
+      emailStatus.textContent = result.message;
+      email.insertAdjacentHTML('beforeend', this._failed);
+      email.classList.add('failed');
 
-    setTimeout(() => {
-      submitButton.innerHTML = `<span class="text">Register</span>`
-      submitButton.style.setProperty("pointer-events", 'auto');
-      this.activatePassword(form)
-    }, 2000);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
   }
 
-  activatePassword(form) {
+  activatePassword = form => {
     const stagesContainer = form.parentElement.querySelector('.stages');
     form.firstElementChild.remove()
     this.nextStep('register', stagesContainer);
@@ -638,7 +588,7 @@ export default class LogonApp extends HTMLElement {
     form.insertAdjacentHTML('afterbegin', this.getPasswordFields())
   }
 
-  validatePassword(form) {
+  validatePassword = async form => {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
@@ -657,9 +607,16 @@ export default class LogonApp extends HTMLElement {
     repeatPassword.classList.remove('success', 'failed');
     let svg = password.querySelector('svg');
     let svgRepeat = repeatPassword.querySelector('svg');
-    if (svg && svgRepeat) {
+    let serverMsg = form.querySelector('.server-status');
+    if(svg){
       svg.remove();
+    }
+    if (svgRepeat) {
       svgRepeat.remove();
+    }
+
+    if (serverMsg) {
+      serverMsg.remove();
     }
 
 
@@ -689,7 +646,34 @@ export default class LogonApp extends HTMLElement {
           repeatPassword.classList.add('success');
 
           // API Call
-          this.activateFinish(form.parentElement);
+
+          const {
+            result,
+            error
+          } = await outerThis.performRegistration(outerThis._data.register);
+
+          if (error) {
+            const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
+            form.insertAdjacentHTML('afterbegin', errorMsg);
+
+            setTimeout(() => {
+              submitButton.innerHTML = `<span class="text">Continue</span>`
+              submitButton.style.setProperty("pointer-events", 'auto');
+            }, 1000);
+          }
+
+          if (result.success) {
+            this.activateFinish(form.parentElement, result.user);
+          }
+          else {
+            const errorMsg = outerThis.getServerMsg(result.message);
+            form.insertAdjacentHTML('afterbegin', errorMsg);
+
+            setTimeout(() => {
+              submitButton.innerHTML = `<span class="text">Continue</span>`
+              submitButton.style.setProperty("pointer-events", 'auto');
+            }, 1000);
+          }
         }
         else {
           repeatStatus.textContent = 'Passwords must match be equal!';
@@ -707,6 +691,60 @@ export default class LogonApp extends HTMLElement {
           submitButton.innerHTML = `<span class="text">Continue</span>`
           submitButton.style.setProperty("pointer-events", 'auto');
         }, 1000);
+      }
+    }
+  }
+
+  performRegistration = async data => {
+    const outerThis = this;
+    const registerUrl = outerThis.getAttribute('api-register');
+    try {
+      const response = await fetch(registerUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return  {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
+  }
+
+  checkIfEmailExists = async data => {
+    const outerThis = this;
+    const checkEmailUrl = outerThis.getAttribute('api-check-email');
+    try {
+      const response = await fetch(checkEmailUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
       }
     }
   }
@@ -765,11 +803,11 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
-  activateFinish(contentContainer) {
+  activateFinish(contentContainer, data) {
     const outerThis = this;
     const stagesContainer = contentContainer.querySelector('.stages');
     const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
-    const finish = this.getRegSuccess();
+    const finish = this.getRegSuccess(data);
     const form = contentContainer.querySelector('form');
 
     setTimeout(() => {
@@ -911,12 +949,12 @@ export default class LogonApp extends HTMLElement {
     `
   }
 
-  getRegSuccess() {
+  getRegSuccess(data) {
     return `
       <div class="finish">
         <h2 class="title">Welcome!</h2>
 				<p>
-					Your account has been created successfully. Please log in into your account to start sharing great ideas.
+					Dear ${data.name} your account has been created successfully. Please log in into your account to start sharing great ideas.
 				</p>
 				<a href="/login/" class="login">Login</a>
 			</div>
@@ -937,7 +975,7 @@ export default class LogonApp extends HTMLElement {
   }
 
   getRegistrationForm() {
-    return `
+    return /* html */`
       <form class="fields initial">
 				${this.getBioFields()}
 				<div class="actions">
@@ -949,6 +987,12 @@ export default class LogonApp extends HTMLElement {
 					</button>
 				</div>
 			</form>
+    `
+  }
+
+  getServerMsg = text => {
+    return `
+      <p class="server-status">${text}</p>
     `
   }
 
@@ -1351,6 +1395,18 @@ export default class LogonApp extends HTMLElement {
           color: var(--text-color);
           line-height: 1.4;
           font-size: 1.5rem;
+        }
+
+        p.server-status {
+          grid-column: 1/3;
+          margin: 0;
+          order: 0;
+          text-align: center;
+          font-family: var(--font-read), sans-serif;
+          color: var(--error-color);
+          font-weight: 500;
+          line-height: 1.4;
+          font-size: 1.18rem;
         }
 
         .logon-container > .finish  p,

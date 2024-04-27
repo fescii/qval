@@ -28,4 +28,10 @@ module.exports = (app, url) => {
     `${url}/login`,
     authController.signIn
   );
+
+  // Check if email already exists
+  app.post(
+    `${url}/check-email`,
+    authController.checkIfEmailExits
+  );
 };
