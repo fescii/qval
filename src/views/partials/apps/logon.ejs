@@ -1,8 +1,9 @@
 
 <app-logon
+  name="<%- data.name %>"
   api-login="/api/v1/auth/login"
   api-register="/api/v1/auth/register"
-  join-url="/join" login="/join/login"
-  register="/join/register"
+  join-url="/join" login="<%- data.login %>"
+  register="<%- data.register %>"
 >
 </app-logon>

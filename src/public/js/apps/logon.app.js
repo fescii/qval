@@ -36,18 +36,58 @@ export default class LogonApp extends HTMLElement {
   }
 
   connectedCallback() {
+    const outerThis = this;
+    const initialName = this.getAttribute('name');
     const contentContainer = this.shadowObj.querySelector('.logon-container');
     if (contentContainer) {
       const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action')
       const stagesContainer = contentContainer.querySelector('.stages');
-      this.activateRegister(contentContainer, stagesContainer, contentTitle);
-      this.activateLogin(contentContainer, stagesContainer, contentTitle);
-    }
 
+      switch (initialName) {
+        case 'join':
+          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+          break;
+        case 'login':
+          outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
+          break;
+        case 'register':
+          outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
+        default:
+          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+          break;
+      }
+    }
   }
 
   disconnectedCallback() {
     // console.log('We are inside disconnectedCallback');
+  }
+
+  loginLoaded(contentContainer, stagesContainer, contentTitle) {
+    const outerThis = this;
+
+    contentTitle.textContent = 'Login';
+    outerThis.changeStages('login', stagesContainer);
+    outerThis.nextStep('login', stagesContainer);
+
+
+    outerThis.submitEvent('login', contentContainer.querySelector('form'));
+    outerThis.prevStep('login', stagesContainer, contentContainer)
+  }
+
+  registerLoaded(contentContainer, stagesContainer, contentTitle) {
+    const outerThis = this;
+
+    contentTitle.textContent = 'Register';
+    outerThis.changeStages('register', stagesContainer);
+    outerThis.nextStep('register', stagesContainer);
+    stagesContainer.insertAdjacentHTML('afterend', form);
+
+
+    outerThis.submitEvent('register', contentContainer.querySelector('form'));
+    outerThis.prevStep('register', stagesContainer, contentContainer)
   }
 
   activateRegister(contentContainer, stagesContainer, contentTitle) {
@@ -778,12 +818,26 @@ export default class LogonApp extends HTMLElement {
       <div class="logon-container">
         ${this.getHeader()}
         ${this.getStages()}
-        ${this.getWelcome()}
+        ${this.initialInterface(this.getAttribute('name'))}
         ${this.getFooter()}
       </div>
 
       ${this.getStyles()}
     `
+  }
+
+  initialInterface = (startName) => {
+    const outerThis = this;
+    switch (startName) {
+      case 'join':
+        return outerThis.getWelcome()
+      case 'login':
+        return outerThis.getLoginForm();
+      case 'register':
+        return outerThis.getRegistrationForm();
+      default:
+        return outerThis.getWelcome();
+    }
   }
 
   getLoader() {
