@@ -1,5 +1,6 @@
 const express = require("express");
-const http2 = require("http2");
+// const http2 = require("http2");
+const spdy = require('spdy');
 const fs = require("fs");
 const path = require("path");
 const dotenv = require('dotenv');
@@ -51,10 +52,11 @@ const credentials = {
 }
 
 // Create a secure server
-const server = http2.createSecureServer(credentials, app);
+// const server = http2.createSecureServer(credentials, app);
+const server = spdy.createServer(credentials, app);
 
 // app listen port
-server.listen(PORT, '192.168.68.24', ()=> {
-    console.log(`Server is listening on port ${PORT}.`);
+server.listen(PORT, ()=> {
+  console.log(`Server is listening on port https://localhost:${PORT}`);
   }
 );

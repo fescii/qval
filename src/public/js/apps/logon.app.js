@@ -69,7 +69,13 @@ export default class LogonApp extends HTMLElement {
           contentTitle.textContent = 'Register';
           outerThis.changeStages('register', stagesContainer);
           outerThis.nextStep('register', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form)
+          stagesContainer.insertAdjacentHTML('afterend', form);
+
+          // Updating History State
+          window.history.pushState(
+            { content: form, page: 'register' },
+            outerThis.getAttribute('register'), outerThis.getAttribute('register')
+          );
 
           contentContainer.querySelector('#loader-container').remove();
 
@@ -106,9 +112,16 @@ export default class LogonApp extends HTMLElement {
           contentTitle.textContent = 'Login';
           outerThis.changeStages('login', stagesContainer);
           outerThis.nextStep('login', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form)
+          stagesContainer.insertAdjacentHTML('afterend', form);
 
+          // Remove the loader
           contentContainer.querySelector('#loader-container').remove();
+
+          // Updating History State
+          window.history.pushState(
+            { content: form, page: 'login' },
+            outerThis.getAttribute('login'), outerThis.getAttribute('login')
+          );
 
           outerThis.submitEvent('login', contentContainer.querySelector('form'));
           outerThis.prevStep('login', stagesContainer, contentContainer)
@@ -213,6 +226,9 @@ export default class LogonApp extends HTMLElement {
               stagesContainer.insertAdjacentHTML('afterend', welcome)
               outerThis._step = 0;
 
+              // Going back history state
+              window.history.back();
+
               contentTitle.textContent = 'Join';
 
               outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
@@ -239,6 +255,9 @@ export default class LogonApp extends HTMLElement {
               form.remove();
               stagesContainer.insertAdjacentHTML('afterend', welcome)
               outerThis._step = 0;
+
+              // Going back history state
+              window.history.back();
 
               contentTitle.textContent = 'Join';
 
@@ -824,8 +843,8 @@ export default class LogonApp extends HTMLElement {
 					Connect with your audience, amplify collaborations, and share your knowledge without limits.
 					Build a vibrant project hub where ideas ignite and progress shines.
 				</p>
-				<a href="/login/" class="login">Login</a>
-				<a href="/register/" class="register">Register</a>
+				<a href=${this.getAttribute('login')} class="login">Login</a>
+				<a href=${this.getAttribute('register')} class="register">Register</a>
 				<div class="info">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill"
 						viewBox="0 0 16 16">
