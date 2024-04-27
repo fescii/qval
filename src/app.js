@@ -42,8 +42,8 @@ require('./routes')(app);
 const PORT = process.env.PORT || 8080;
 
 const credentials = {
-  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
+  key: fs.readFileSync(path.join(__dirname, 'ssl_certs', 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname,'ssl_certs',  'cert.pem')),
   allowHTTP1: true
 }
 

@@ -22,9 +22,10 @@ services:
     networks:
       - app-network
 
-  express:
-    build: ./../src
-    image: qval-app
+  qval-app:
+    build:
+      context: ./src
+      dockerfile: ./../Dockerfile
     depends_on:
       - postgres
       - redis
@@ -41,14 +42,22 @@ services:
       - app-network
     command: npm start
 
-  nginx:
-    build: ./nginx
-    ports:
-      - '80:80'
+  nginx-server:
+    image: nginx:latest
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
     depends_on:
-      - express
+      - qval-app
     networks:
       - app-network
+    volumes:
+      - ./etc/nginx/templates
+    ports:
+      - "8080:80"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
 
 networks:
   app-network:
