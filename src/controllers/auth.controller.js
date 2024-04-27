@@ -2,6 +2,7 @@
 const bcrypt = require("bcryptjs");
 
 // Importing within the app
+const { jwt_expiry } = require('../configs').envConfig;
 const { tokenUtil } = require('../utils');
 const { validateLoginData, validateEmail } = require('../validators').userValidator;
 
@@ -96,7 +97,7 @@ const signIn = async (req, res, next) => {
   if (!user) {
     return res.status(404).send({
       success: false,
-      message: "User Not found."
+      message: "No user found using that email address!"
     });
   }
 
@@ -110,7 +111,7 @@ const signIn = async (req, res, next) => {
   if (!passwordIsValid) {
     return res.status(401).send({
       success: false,
-      message: "Invalid Password!"
+      message: "Password is incorrect!"
     });
   }
 
@@ -118,6 +119,19 @@ const signIn = async (req, res, next) => {
     id: user.id, email: user.email,
     username: user.username, name: user.name
   })
+
+  // Add cookie to the response object
+  let options = {
+    maxAge: jwt_expiry,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/'
+  }
+
+  // Set cookie
+  res.cookie('x-access-token', token, options) // options is optional
+
 
   return res.status(200).send({
     success: true,

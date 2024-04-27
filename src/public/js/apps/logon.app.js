@@ -354,9 +354,17 @@ export default class LogonApp extends HTMLElement {
 
     let svg = userKeyGroup.querySelector('svg');
     let passwordSvg = passwordGroup.querySelector('svg');
-    if (svg && passwordSvg) {
+    let serverMsg = form.querySelector('.server-status');
+    if (svg) {
       svg.remove();
+    }
+
+    if(passwordSvg) {
       passwordSvg.remove();
+    }
+
+    if (serverMsg) {
+      serverMsg.remove();
     }
 
     const userKeyValue = userKeyGroup.querySelector('input').value.trim();
@@ -381,7 +389,8 @@ export default class LogonApp extends HTMLElement {
       setTimeout(() => {
         userKeyGroup.classList.add('success');
       }, 2000);
-      data['user-key'] = userKeyValue;
+
+      data['email'] = userKeyValue;
     }
 
     if (passwordValue === '') {
@@ -402,25 +411,78 @@ export default class LogonApp extends HTMLElement {
       data['password'] = passwordValue;
     }
 
-    if (data['user-key'] && data['password']) {
+    if (data['email'] && data['password']) {
       //API CALL
       outerThis.performLogin(form, data)
     }
   }
 
-  performLogin(form, data) {
+  performLogin = async (form, data) => {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next ');
 
-    // After API call
-    let _msg = 'Username is available' // From API
+    // Call login API
+    const {
+      result,
+      error
+    } = await outerThis.apiLogin(data);
 
-    setTimeout(() => {
-      submitButton.innerHTML = `<span class="text">Continue</span>`
-      submitButton.style.setProperty("pointer-events", 'auto');
+    // If error occurs
+    if (error) {
+      const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
 
-      outerThis.activateLoginFinish(form.parentElement, 'Fredrick');
-    }, 3000);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Login</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
+
+    // If login is successful
+    if (result.success) {
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+
+        outerThis.activateLoginFinish(form.parentElement, result.user.name);
+      }, 3000);
+    }
+    else {
+      const errorMsg = outerThis.getServerMsg(result.message);
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Login</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
+  }
+
+  apiLogin = async data => {
+    const outerThis = this;
+    const loginUrl = outerThis.getAttribute('api-login');
+    try {
+      const response = await fetch(loginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return  {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
   }
 
   activateBio(form) {
@@ -1004,17 +1066,17 @@ export default class LogonApp extends HTMLElement {
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 						<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
 					</svg>
-					<input data-name="firstname" type="text" name="firstname" id="firstname" placeholder="Enter your first name" required>
+					<input data-name="firstname" type="text" name="firstname" id="firstname" placeholder="e.g John" required>
 					<span class="status">First name is required</span>
 				</div>
 				<div class="input-group lastname">
 					<label for="lastname" class="center">Last name</label>
-					<input data-name="lastname" type="text" name="lastname" id="lastname" placeholder="Enter your last name" required>
+					<input data-name="lastname" type="text" name="lastname" id="lastname" placeholder="e.g Doe" required>
 					<span class="status">Last name is required</span>
 				</div>
 				<div class="input-group email">
 					<label for="email" class="center">Email</label>
-					<input data-name="Email" type="email" name="email" id="email" placeholder="Enter your email" required>
+					<input data-name="Email" type="email" name="email" id="email" placeholder="e.g john@example.com" required>
 					<span class="status">Email is required</span>
 				</div>
 			</div>
@@ -1043,12 +1105,12 @@ export default class LogonApp extends HTMLElement {
       <form class="fields initial bio">
 				<div class="field login bio">
 					<div class="input-group user-key">
-						<label for="user-key" class="center">Username or email</label>
+						<label for="email" class="center">Email</label>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 							<path
 								d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
 						</svg>
-						<input data-name="user-key" type="text" name="user-key" id="user-key" placeholder="Enter username or email"
+						<input data-name="email" type="email" name="email" id="email" placeholder="e.g john@example.com"
 							required>
 						<span class="status">Username or email is required</span>
 					</div>
@@ -1058,7 +1120,7 @@ export default class LogonApp extends HTMLElement {
 							<path
 								d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
 						</svg>
-						<input data-name="password" type="password" name="password" id="password" placeholder="Enter password"
+						<input data-name="password" type="password" name="password" id="password" placeholder="Your password"
 							required>
 						<span class="status">Password is required</span>
 					</div>
