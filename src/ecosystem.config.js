@@ -27,6 +27,17 @@ module.exports = {
         NODE_ENV: 'production'
       }
     },
-    // Add more apps/workers as needed
+    {
+      name: 'mail-worker',
+      script: './workers/mail.worker.js', // Replace with your Bull worker file
+      watch: true,
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      env: {
+        NODE_ENV: 'development'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
   ]
 };

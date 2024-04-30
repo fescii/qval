@@ -104,9 +104,11 @@ const addOrEditCode = async data => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
+  // console.log(data);
+
   try {
     // Check if a code exists
-    let code = await Code.findOne({
+    let codeData = await Code.findOne({
       where: {
         email: data.email
       }
@@ -118,39 +120,37 @@ const addOrEditCode = async data => {
 
 
     // If the code exists update the code
-    if (code) {
-      code.token = data.token;
-      code.expires = expires;
-      await code.save({transaction});
+    if (codeData) {
+      codeData.code = data.code;
+      codeData.expires = expires;
+      await codeData.save({transaction});
     }
     // Else create a new code
     else {
-      code = await Code.create({
-        token: data.token,
+      codeData = await Code.create({
+        code: data.code,
         email: data.email,
         expires: expires
       }, {transaction});
     }
 
-    await transaction.commit();
-
     // create data object to be sent to the mail queue
     const mailData = {
       from: emailConfig.user,
-      user: code.email,
-      token: code.token
+      user: codeData.email,
+      token: codeData.code
     }
 
     // Add the code to the mail queue
-    mailQueue.add('resetEmailJob', mailData, {
-      delay: 1000
-    });
+    mailQueue.add('mailJob', mailData);
 
-    return { code: code, error: null}
+    await transaction.commit();
+
+    return { codeData: codeData, error: null}
   }
   catch (err) {
     await transaction.rollback();
-    return { code: null, error: err}
+    return { codeData: null, error: err}
   }
 }
 
@@ -172,7 +172,7 @@ const verifyCode = async (email, token) => {
     // If the use has code and the code is equal to the token
     if (code) {
       // Check if the code is equal to the token
-      if (code.token === token) {
+      if (code.code === token) {
         // Check if the expires date field is less than or equal to the current date
         if (code.expires <= new Date(Date.now())) {
           return false;

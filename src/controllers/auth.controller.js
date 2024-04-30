@@ -256,14 +256,14 @@ const forgotPassword = async (req, res, next) => {
   const token = await generateRandomToken(6);
 
   // Save the token to the database
-  const codeData = await addOrEditCode({
+  const addedData = await addOrEditCode({
     email: user.email,
     code: token
   });
 
   // If error is not equal to undefined throw an error
-  if (codeData.error) {
-    return next(codeData.error);
+  if (addedData.error) {
+    return next(addedData.error);
   }
 
   // Send success response to the user

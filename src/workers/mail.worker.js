@@ -18,5 +18,3 @@ mailWorker.on('failed', (job, err) => {
 });
 
 console.log('Mail worker process initialized');
-
-module.exports = mailWorker;

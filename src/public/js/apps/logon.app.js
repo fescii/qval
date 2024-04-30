@@ -1177,56 +1177,157 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
-  checkForgotEmail(form, input, email, emailStatus) {
+  checkForgotEmail = async (form, input, email, emailStatus) => {
     const submitButton = form.querySelector('.actions > .action.next');
 
     // After API call
-    let msg = 'Username is available' // From API
+    const {
+      result,
+      error
+    } = await this.apiForget({ email: input });
 
-    //Add user to the data object
-    this._data.register['username'] = input;
+    // If error occurs
+    if (error) {
+      const errorMsg = this.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
 
-    emailStatus.textContent = msg;
-    email.insertAdjacentHTML('beforeend', this._success);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
 
-    this._data.register['email'] = input;
+    // If email does not exists
+    if (!result.success) {
+      emailStatus.textContent = result.message;
+      email.insertAdjacentHTML('beforeend', this._failed);
+      email.classList.add('failed');
 
-    setTimeout(() => {
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
+    else {
+      // Add email to the data object
+      this._data.register['email'] = input;
+
+      const errorMsg = this.getServerMsg(result.message);
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+
+
+      emailStatus.textContent = result.message;
+      email.insertAdjacentHTML('beforeend', this._success);
+
       email.classList.add('success');
-    }, 1000);
 
-
-    setTimeout(() => {
-      submitButton.innerHTML = `<span class="text">Continue</span>`
-      submitButton.style.setProperty("pointer-events", 'auto');
-      this.activateForgotCode(form)
-    }, 2000);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+        this.activateForgotCode(form)
+      }, 2000);
+    }
   }
 
-  checkCode(form, input, codeInput, codeStatus) {
+  apiForget = async data => {
+    const outerThis = this;
+    const url = outerThis.getAttribute('api-forgot-password');
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
+  }
+
+  apiVerify = async data => {
+    const outerThis = this;
+    const url = outerThis.getAttribute('api-verify-token');
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
+  }
+
+  checkCode = async (form, input, codeInput, codeStatus) => {
+    const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
 
     // After API call
-    let msg = 'Username is available' // From API
+    const {
+      result,
+      error
+    } = await this.apiVerify({ code: input, email: outerThis._data.register['email'] });
 
-    //Add user to the data object
-    this._data.register['username'] = input;
+    // If error occurs
+    if (error) {
+      const errorMsg = this.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
 
-    codeStatus.textContent = msg;
-    codeInput.insertAdjacentHTML('beforeend', this._success);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
 
-    this._data.register['email'] = input;
+    // If verification is successful
+    if (result.success) {
+      codeStatus.textContent = result.message;
+      codeInput.insertAdjacentHTML('beforeend', this._success);
 
-    setTimeout(() => {
-      codeInput.classList.add('success');
-    }, 1000);
+      setTimeout(() => {
+        codeInput.classList.add('success');
+      }, 1000);
 
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+        this.activateForgotPassword(form)
+      }, 2000);
+    }
+    else {
+      codeStatus.textContent = result.message;
+      codeInput.insertAdjacentHTML('beforeend', this._failed);
 
-    setTimeout(() => {
-      submitButton.innerHTML = `<span class="text">Continue</span>`
-      submitButton.style.setProperty("pointer-events", 'auto');
-      this.activateForgotPassword(form)
-    }, 2000);
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`
+        submitButton.style.setProperty("pointer-events", 'auto');
+      }, 1000);
+    }
   }
 
   activateFinish(contentContainer, data) {
