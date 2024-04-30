@@ -7,7 +7,10 @@ const { tokenUtil } = require('../utils');
 const { validateLoginData, validateEmail } = require('../validators').userValidator;
 const { generateRandomToken } = require('../utils').mailUtil;
 
-const { addUser, checkIfUserExits, addOrEditCode } = require('../queries').authQueries;
+const {
+  addUser, checkIfUserExits,
+  addOrEditCode, verifyCode
+} = require('../queries').authQueries;
 
 /**
  * @function signUp
@@ -263,7 +266,57 @@ const forgotPassword = async (req, res, next) => {
     return next(codeData.error);
   }
 
-  // Send the token to the user's email
+  // Send success response to the user
+  return res.status(200).send({
+    success: true,
+    message: "Password reset token has been sent to your email address."
+  });
+}
+
+/**
+ * @function verifyCode
+ * @description A controller function to verify a code
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const verifyUserCode = async (req, res, next) => {
+  // Check if the payload is available in the request object
+  if (!req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
+
+  // Get payload from request body
+  const payload = req.body;
+
+  // If validation returns an error
+  if (!payload.token || !payload.email) {
+    return res.status(400).send({
+      success: false,
+      message: 'Email or code is missing!'
+    });
+  }
+
+  // Very if the code is valid
+  const isValid = await verifyCode(payload.email, payload.token);
+
+  // If code is not valid
+  if (!isValid) {
+    return res.status(400).send({
+      success: false,
+      message: 'The code is invalid or has expired!'
+    });
+  }
+
+  // Send success response to the user
+  return res.status(200).send({
+    success: true,
+    message: "Code is valid!"
+  });
+
+
 }
 
 /**

@@ -154,7 +154,48 @@ const addOrEditCode = async data => {
   }
 }
 
+/**
+ * @name verifyCode
+ * @description - Verify the code user to the one in the db
+ * @param {String} email - The email of the user
+ * @param {String} token - The token of the user
+ * @returns {Boolean} - Returns true or false
+*/
+const verifyCode = async (email, token) => {
+  try {
+    const code = await Code.findOne({
+      where: {
+        email: email
+      }
+    });
+
+    // If the use has code and the code is equal to the token
+    if (code) {
+      // Check if the code is equal to the token
+      if (code.token === token) {
+        // Check if the expires date field is less than or equal to the current date
+        if (code.expires <= new Date(Date.now())) {
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+  catch (error) {
+    return false;
+  }
+}
+
 // Export the functions as a single object
 module.exports = {
-  addUser, checkIfUserExits, addOrEditCode
+  addUser, checkIfUserExits, addOrEditCode,
+  verifyCode
 }
