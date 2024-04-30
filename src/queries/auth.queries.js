@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 // const { hashNumberWithKey } = require('../hash').identityHash;
 const {hashConfig} = require("../configs");
-const { User, sequelize } = require("../models").models;
+const { User, Code, sequelize } = require("../models").models;
 const { gen_hash } = require("../wasm");
 const { hash_secret } = require("../configs").envConfig;
 
@@ -16,7 +16,7 @@ const { hash_secret } = require("../configs").envConfig;
  * @param {String} data.email - The email of the user
  * @param {String} data.password - The password of the user
  * @returns {Object} - Returns the user data or an error
- */
+*/
 const addUser = async (data) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
@@ -89,7 +89,58 @@ const checkIfUserExits = async (userEmail) => {
   }
 }
 
+/**
+ * @function addOrEditCode
+ * @name addOrEditCode
+ * @description - Add or edit a code to the database
+ * @param {Object} data - The code data
+ * @param {String} data.token - The token code
+ * @param {String} data.email - The email of the user
+ * @returns {Object} - Returns the code data or an error
+*/
+const addOrEditCode = async data => {
+  // Start a transaction
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Check if a code exists
+    const code = await Code.findOne({
+      where: {
+        email: data.email
+      }
+    });
+
+    // Create an expiry date to be 10 minutes from now\
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 10);
+
+
+    // If the code exists update the code
+    if (code) {
+      code.token = data.token;
+      code.expires = expires;
+      await code.save({transaction});
+    }
+    // Else create a new code
+    else {
+      await Code.create({
+        token: data.token,
+        email: data.email,
+        expires: expires
+      }, {transaction});
+    }
+
+    await transaction.commit();
+
+    return { code: code, error: null}
+  }
+  catch (err) {
+    await transaction.rollback();
+    return { code: null, error: err}
+  }
+}
+
 // Export the functions as a single object
 module.exports = {
-  addUser, checkIfUserExits
+  addUser, checkIfUserExits, addOrEditCode
 }

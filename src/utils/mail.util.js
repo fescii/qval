@@ -1,14 +1,17 @@
-
+const crypto = require('crypto');
 
 /**
- * @name createDirectory
- * @function createDirectory
- * @description - A function to create a directory from the working dir if it doesn't exists
- * @param {String} - Path name
- * @returns {String | undefined} - Returns a string of the path or undefined value
+ * @name generateRandomToken
+ * @function generateRandomToken
+ * @description - A utility function that generates a random code
+ * @param {String} - The length of the code to generate
+ * @returns {String} - Returns a random code
 */
-
+const generateRandomToken = async length => {
+  const token = crypto.randomBytes(length).toString('hex');
+  return token.slice(0, length).toUpperCase();
+}
 
 module.exports = {
-  createDirectory
+  generateRandomToken
 }

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const { jwt_expiry } = require('../configs').envConfig;
 const { tokenUtil } = require('../utils');
 const { validateLoginData, validateEmail } = require('../validators').userValidator;
+const { generateRandomToken } = require('../utils').mailUtil;
 
 const { addUser, checkIfUserExits } = require('../queries').authQueries;
 
@@ -198,6 +199,63 @@ const checkIfEmailExits = async (req, res, next) => {
     success: true,
     message: "Email address is available."
   });
+}
+
+/**
+ * @function forgotPassword
+ * @description A controller function to handle password reset
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const forgotPassword = async (req, res, next) => {
+  // Check if the payload is available in the request object
+  if (!req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
+
+  // Get payload from request body
+  const payload = req.body;
+
+  // Validate email data from the payload
+  const validatedObj = await validateEmail(payload);
+
+  // If validation returns an error
+  if (validatedObj.error) {
+    return res.status(400).send({
+      success: false,
+      message: validatedObj.error.message
+    });
+  }
+
+  // Check if user with that email exists
+  const {
+    user,
+    error
+  } = await checkIfUserExits(validatedObj.data.email)
+
+  // If error is not equal to undefined throw an error
+  if (error) {
+    return next(error);
+  }
+
+  // If no user is found, return 404(Not found)
+  if (!user) {
+    return res.status(404).send({
+      success: false,
+      message: "No user found using that email address!"
+    });
+  }
+
+  // Generate a token
+  const token = await generateRandomToken(6);
+
+  // Save the token to the database
+  
+
+  // Send the token to the user's email address
 }
 
 /**
