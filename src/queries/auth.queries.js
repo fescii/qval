@@ -142,7 +142,7 @@ const addOrEditCode = async data => {
     }
 
     // Add the code to the mail queue
-    mailQueue.add('mailJob', mailData);
+    await mailQueue.add('upvoteJob', mailData);
 
     await transaction.commit();
 
