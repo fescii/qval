@@ -323,5 +323,5 @@ const verifyUserCode = async (req, res, next) => {
  * Exporting all controllers
 */
 module.exports = {
-  signUp, signIn, checkIfEmailExits
+  signUp, signIn, checkIfEmailExits, forgotPassword, verifyUserCode
 }
