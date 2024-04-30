@@ -1010,6 +1010,11 @@ export default class LogonApp extends HTMLElement {
     if (currentEl) {
       currentEl.remove();
     }
+    // Select and remove server message
+    let serverMsg = form.querySelector('.server-status');
+    if (serverMsg) {
+      serverMsg.remove();
+    }
     this.nextStep('forgot', stagesContainer);
 
 
@@ -1108,6 +1113,12 @@ export default class LogonApp extends HTMLElement {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
+
+    // Select and remove server message
+    let serverMsg = form.querySelector('.server-status');
+    if (serverMsg) {
+      serverMsg.remove();
+    }
 
     // const inputGroups = inputField.querySelectorAll('.input-group');
     const password = inputField.querySelector('.input-group.password');
@@ -1210,9 +1221,9 @@ export default class LogonApp extends HTMLElement {
     }
     else {
       // Add email to the data object
-      this._data.register['email'] = input;
+      this._data.recovery['email'] = input;
 
-      const errorMsg = this.getServerMsg(result.message);
+      const errorMsg = this.getServerSuccessMsg(result.message);
       form.insertAdjacentHTML('afterbegin', errorMsg);
 
 
@@ -1287,11 +1298,13 @@ export default class LogonApp extends HTMLElement {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
 
+    console.log(outerThis._data.recovery);
+
     // After API call
     const {
       result,
       error
-    } = await this.apiVerify({ code: input, email: outerThis._data.register['email'] });
+    } = await this.apiVerify({ token: input, email: outerThis._data.recovery['email'] });
 
     // If error occurs
     if (error) {
@@ -1554,6 +1567,12 @@ export default class LogonApp extends HTMLElement {
   getServerMsg = text => {
     return `
       <p class="server-status">${text}</p>
+    `
+  }
+
+  getServerSuccessMsg = text => {
+    return `
+      <p class="server-status success">${text}</p>
     `
   }
 
@@ -2030,6 +2049,13 @@ export default class LogonApp extends HTMLElement {
           font-weight: 500;
           line-height: 1.4;
           font-size: 1.18rem;
+        }
+
+        p.server-status.success {
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
         }
 
         .logon-container > .finish  p,
