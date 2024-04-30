@@ -28,6 +28,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+// Set up HTML email template for password reset token
+const passResetTemplate = token => {
+  return /* html */`
+    <html>
+    <head>
+      <title>Password Reset</title>
+    </head>
+    <body>
+      <h1>Qval | Password Reset Request</h1>
+      <p>Use the following token to reset your password:</p>
+      <p style="color: #08b86f;" ><strong>${token}</strong></p>
+    </body>
+    </html>
+  `;
+}
+
 module.exports = {
-  emailConfig, transporter
+  emailConfig, transporter, passResetTemplate
 }
