@@ -34,4 +34,16 @@ module.exports = (app, url) => {
     `${url}/check-email`,
     authController.checkIfEmailExits
   );
+
+  // Reset password
+  app.post(
+    `${url}/forgot-password`,
+    authController.forgotPassword
+  );
+
+  // Verify token
+  app.post(
+    `${url}/verify-token`,
+    authController.verifyUserCode
+  );
 };

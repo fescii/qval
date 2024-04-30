@@ -1,8 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  joinApp, login, register
+  join, login, register, recover
 } = require('../content').logonApp;
-
 
 
 /**
@@ -23,11 +22,14 @@ module.exports = (app) => {
 
 
   // Route for handling logon page
-  app.get('/join', joinApp);
+  app.get('/join', join);
 
   // Route for handling login page
   app.get('/join/login', login);
 
   // Route for handling register page
   app.get('/join/register', register);
+
+  // Route for handling recover page
+  app.get('/join/recover', recover);
 }

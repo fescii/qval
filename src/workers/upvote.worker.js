@@ -19,5 +19,4 @@ upvoteWorker.on('failed', (job, err) => {
 
 console.log('Upvote worker process initialized');
 
-module.exports = upvoteWorker;
 
