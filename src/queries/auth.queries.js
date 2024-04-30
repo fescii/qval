@@ -4,6 +4,8 @@ const {hashConfig} = require("../configs");
 const { User, Code, sequelize } = require("../models").models;
 const { gen_hash } = require("../wasm");
 const { hash_secret } = require("../configs").envConfig;
+const { mailQueue } = require('../bull');
+const { emailConfig }  = require('../configs').mailConfig;
 
 /**
  * @function addUser
@@ -104,7 +106,7 @@ const addOrEditCode = async data => {
 
   try {
     // Check if a code exists
-    const code = await Code.findOne({
+    let code = await Code.findOne({
       where: {
         email: data.email
       }
@@ -123,7 +125,7 @@ const addOrEditCode = async data => {
     }
     // Else create a new code
     else {
-      await Code.create({
+      code = await Code.create({
         token: data.token,
         email: data.email,
         expires: expires
@@ -131,6 +133,18 @@ const addOrEditCode = async data => {
     }
 
     await transaction.commit();
+
+    // create data object to be sent to the mail queue
+    const mailData = {
+      from: emailConfig.user,
+      user: code.email,
+      token: code.token
+    }
+
+    // Add the code to the mail queue
+    mailQueue.add('resetEmailJob', mailData, {
+      delay: 1000
+    });
 
     return { code: code, error: null}
   }

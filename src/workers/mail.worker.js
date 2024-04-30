@@ -1,23 +1,22 @@
 const { redisConfig } = require('../configs').storageConfig;
 const { Worker } = require('bullmq');
-const { upvoteHook } = require('../hooks').upvoteHook;
+const { resetEmailHook } = require('../hooks').mailHook;
 
 
-// Initialize the Bull worker for the upvoteQueue
-const upvoteWorker = new Worker('upvoteQueue', async (job) => {
-  console.log('Processing upvote job:', job.data);
-  await upvoteHook(job.data); // Run the upvoteHook function for each job (upvote)
+// Initialize the Bull worker for the mailQueue
+const mailWorker = new Worker('mailQueue', async (job) => {
+  console.log('Processing email job:', job.data);
+  await resetEmailHook(job.data); // Run the resetEmailHook function for each job (upvote)
 }, { connection: redisConfig });
 
-upvoteWorker.on('completed', (job) => {
-  console.log(`Upvote job ${job.id} completed`);
+mailWorker.on('completed', (job) => {
+  console.log(`Mail job ${job.id} completed`);
 });
 
-upvoteWorker.on('failed', (job, err) => {
-  console.error(`Upvote job ${job.id} failed with error:`, err);
+mailWorker.on('failed', (job, err) => {
+  console.error(`Mail job ${job.id} failed with error:`, err);
 });
 
-console.log('Upvote worker process initialized');
+console.log('Mail worker process initialized');
 
-module.exports = upvoteWorker;
-
+module.exports = mailWorker;

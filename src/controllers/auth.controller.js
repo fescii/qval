@@ -7,7 +7,7 @@ const { tokenUtil } = require('../utils');
 const { validateLoginData, validateEmail } = require('../validators').userValidator;
 const { generateRandomToken } = require('../utils').mailUtil;
 
-const { addUser, checkIfUserExits } = require('../queries').authQueries;
+const { addUser, checkIfUserExits, addOrEditCode } = require('../queries').authQueries;
 
 /**
  * @function signUp
@@ -253,9 +253,17 @@ const forgotPassword = async (req, res, next) => {
   const token = await generateRandomToken(6);
 
   // Save the token to the database
-  
+  const codeData = await addOrEditCode({
+    email: user.email,
+    code: token
+  });
 
-  // Send the token to the user's email address
+  // If error is not equal to undefined throw an error
+  if (codeData.error) {
+    return next(codeData.error);
+  }
+
+  // Send the token to the user's email
 }
 
 /**
