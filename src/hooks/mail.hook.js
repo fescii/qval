@@ -20,6 +20,11 @@ const resetEmailHook = async (data) => {
 
     return;
   }
+
+  // Log the process initialization
+  console.log('Reset email hook process initialized');
+
+  // Set up email data
   const mailOptions = {
     from: data.from,
     to: data.user,
@@ -30,7 +35,14 @@ const resetEmailHook = async (data) => {
   // Use htmlToText plugin to provide a text alternative for HTML emails
   transporter.use('compile', htmlToText());
 
-  await transporter.sendMail(mailOptions);
+  // Send the email
+  try {
+    await transporter.sendMail(mailOptions);
+  }
+  catch (error) {
+    console.error('Error sending reset email:', error);
+    // TODO: Create a handler for handling this error
+  }
 }
 
 

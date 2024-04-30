@@ -72,5 +72,48 @@ module.exports = (sequelize, Sequelize) => {
 			]
 	});
 
-	return {User};
+
+	/**
+	 * @type {Model}
+	 * @name Code
+	 * @description - This model contains all reset password codes
+	 * @property {Number} id - Unique identifier for the code
+	 * @property {String} code - The reset password code
+	 * @property {String} email - Email of the user
+	 * @property {Date} expires - Expiry date of the code
+	*/
+	const Code = sequelize.define("codes", {
+		id: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		code: {
+			type: Sequelize.STRING,
+			allowNull: false
+		},
+		email: {
+			type: Sequelize.STRING,
+			allowNull: false
+		},
+		expires: {
+			type: Sequelize.DATE,
+			allowNull: false
+		}
+	},{
+		schema: 'account',
+		freezeTableName: true,
+		indexes: [
+			{
+				unique: true,
+				fields: ['id', 'code', 'email']
+			}
+		]
+	});
+
+	// Define associations
+	User.hasMany(Code, { foreignKey: 'email', sourceKey: 'email', onDelete: 'CASCADE' });
+	Code.belongsTo(User, { foreignKey: 'email', targetKey: 'email', as: 'user_code', onDelete: 'CASCADE' });
+
+	return {User, Code};
 }
