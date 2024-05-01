@@ -1,6 +1,12 @@
 const multer = require('multer');
 const { envConfig } = require('../configs');
 
+const {
+  host, port
+} = require('../configs').envConfig;
+
+const address = `${host}:${port}`;
+
 /**
  * @function errorHandler
  * @description Error handler middleware for capturing all errors and sends a response to the user
@@ -35,20 +41,29 @@ const errorHandler = (err, req, res, _next) => {
   }
 }
 
-
 /**
  * Not found middleware - Captures all requests to unknown routes
  * @param {Object} req - Request object
  * @param {Object} res - Response object
- * @param {Function} next - Next middleware function
+ * @param {Function} _next - Next middleware function
  * @returns {Object} - Returns response object
  */
 const notFound = (req, res, _next) => {
-  res.status(404).json({
-    success: false,
-    error: true,
-    message: "Resource not found!"
-  });
+  // Check if the url start with "/api/"
+  if (req.url.startsWith('/api/')){
+    res.status(404).json({
+      success: false,
+      error: true,
+      message: "Resource not found!"
+    });
+  }
+  else {
+    res.status(404).render('404', {
+      data: {
+        host: address,
+      }
+    })
+  }
 }
 
 /**

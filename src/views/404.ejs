@@ -7,41 +7,75 @@
     <link rel="shortcut icon" href="<%- data.host %>/static/img/favi.png" type="image/x-icon">
     <title>Qval | Page not found</title><meta name="description" content="The page you are looking for is not found!">
     <meta property="og:title" content="404 Page not found">
+    <style>
+	    body {
+		    display: flex;
+		    align-content: center;
+		    justify-content: center;
+		    align-items: center;
+	    }
+        .page_404 {
+          padding: 40px 0;
+          background: #fff;
+          font-family: var(--font-read), sans-serif;
+        }
+
+			.page_404  img {
+				width: 100%;
+			}
+
+			.four_zero_four_bg {
+				background-image: url(<%- data.host %>/static/img/404.gif);
+				height: 400px;
+				background-position: center;
+                display: flex;
+                align-items: start;
+                justify-content: center;
+                width: 400px;
+                min-width: 100%;
+			}
+
+			.four_zero_four_bg h1 {
+				font-size: 80px;
+                color: #1d2c38;
+                margin: -10px  0 0 0;
+			}
+
+			.four_zero_four_bg h3 {
+				font-size:80px;
+              color: #1d2c38;
+			}
+
+			.link_404 {
+				color: #fff!important;
+				padding: 10px 20px;
+				background: #39ac31;
+				margin: 20px 0;
+                display: flex;
+                flex-flow: column;
+                justify-content: center;
+                align-items: center;
+			}
+            p {
+              font-size: 18px;
+              color: #1d2c38;
+              margin: 5px 0;
+            }
+            a {
+              font-size: 17px;
+              font-weight: 500;
+              text-decoration: none;
+            }
+			.contant_box_404{
+              margin-top:-50px;
+              align-items: center;
+              justify-content: center;
+              display: flex;
+              flex-flow: column;
+            }
+    </style>
 </head>
-<style>
-	.page_404 {
-      padding:40px 0;
-      background:#fff;
-      font-family: var(--font-read), sans-serif;
-	}
 
-	.page_404  img {
-      width:100%;
-    }
-
-	.four_zero_four_bg {
-		background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
-		height: 400px;
-		background-position: center;
-	}
-
-	.four_zero_four_bg h1 {
-		font-size:80px;
-	}
-
-	.four_zero_four_bg h3 {
-		font-size:80px;
-	}
-
-	.link_404 {
-		color: #fff!important;
-		padding: 10px 20px;
-		background: #39ac31;
-		margin: 20px 0;
-		display: inline-block;
-    }
-	.contant_box_404{ margin-top:-50px;}
-</style>
 <body>
 <section class="page_404">
     <div class="container">
@@ -55,7 +89,7 @@
                         <h3 class="h2">
                             It looks like you're lost
                         </h3>
-                        <p>the page you are looking for is not available!</p>
+                        <p>The page you are looking for is not available!</p>
                         <a href="/home" class="link_404">Go to Home</a>
                     </div>
                 </div>
