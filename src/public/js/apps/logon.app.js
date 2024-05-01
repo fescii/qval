@@ -1,3 +1,5 @@
+// noinspection RegExpRedundantEscape
+
 export default class LogonApp extends HTMLElement {
   constructor() {
 
@@ -196,8 +198,7 @@ export default class LogonApp extends HTMLElement {
       forgotButton.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
-
-
+        
         contentContainer.insertAdjacentHTML('afterbegin', loader);
 
         const welcome = contentContainer.querySelector('.welcome');
@@ -210,7 +211,13 @@ export default class LogonApp extends HTMLElement {
           contentTitle.textContent = 'Recover';
           outerThis.changeStages('forgot', stagesContainer);
           outerThis.nextStep('forgot', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form)
+          stagesContainer.insertAdjacentHTML('afterend', form);
+          
+          // Updating History State
+          window.history.pushState(
+            { content: form, page: 'forgot' },
+            outerThis.getAttribute('forgot'), outerThis.getAttribute('forgot')
+          );
 
           contentContainer.querySelector('#loader-container').remove();
 
@@ -1808,7 +1815,8 @@ export default class LogonApp extends HTMLElement {
 
   getStyles() {
     return /*css*/`
-      <style>
+      <!--suppress ALL -->
+<style>
         * {
           box-sizing: border-box !important;
         }
@@ -1845,7 +1853,6 @@ export default class LogonApp extends HTMLElement {
           align-items: center;
           justify-content: center;
           background-position: 100%;
-          background-size: cover;
           background-size: 1rem 1rem;
           background-color: #f8f9fa;
           background-image: radial-gradient(circle, #dee2e6 1px, rgba(0, 0, 0, 0) 1px);
@@ -2158,8 +2165,7 @@ export default class LogonApp extends HTMLElement {
           color: var(--text-color);
           line-height: 1.4;
         }
-
-
+        
         .logon-container > .welcome > .info svg {
           margin: 0 0 -3px 0;
           color: var(--accent-color);
@@ -2422,7 +2428,6 @@ export default class LogonApp extends HTMLElement {
           pointer-events: none;
         }
 
-
         /* Logon Footer */
         .logon-container >.footer {
           border-top: var(--story-border);
@@ -2501,7 +2506,6 @@ export default class LogonApp extends HTMLElement {
             justify-content: center;
             background-color: var(--background);
             background-position: unset;
-            background-size: unset;
             background-size: unset;
             background-image: unset;
           }
@@ -2616,7 +2620,6 @@ export default class LogonApp extends HTMLElement {
             order: 5;
           }
         }
-
       </style>
     `;
   }
