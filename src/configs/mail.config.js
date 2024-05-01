@@ -37,9 +37,8 @@ const passResetTemplate = token => {
       <title>Password Reset</title>
     </head>
     <body>
-      <h1>Qval | Password Reset Request</h1>
-      <p>Use the following token to reset your password:</p>
-      <p style="color: #08b86f;" ><strong>${token}</strong></p>
+      <p style="font-size: 20px;">Use the following token to reset your password.</p>
+      <p style="color: #08b86f; font-size: 24px" ><strong>${token}</strong></p>
     </body>
     </html>
   `;
