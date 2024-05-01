@@ -1160,7 +1160,7 @@ export default class LogonApp extends HTMLElement {
           repeatStatus.textContent = '';
           repeatPassword.insertAdjacentHTML('beforeend', this._success);
 
-          this._data.register['password'] = input;
+          this._data.recovery['password'] = input;
 
           // console.log(this._data);
 
@@ -1298,11 +1298,38 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
+  apiResetPassword = async data => {
+    const outerThis = this;
+    const url = outerThis.getAttribute('api-reset-password');
+    try {
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
+  }
+
   checkCode = async (form, input, codeInput, codeStatus) => {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
 
-    console.log(outerThis._data.recovery);
+    // console.log(outerThis._data.recovery);
 
     // After API call
     const {
@@ -1381,16 +1408,48 @@ export default class LogonApp extends HTMLElement {
     const outerThis = this;
     const stagesContainer = contentContainer.querySelector('.stages');
     const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
-    const finish = this.getForgotSuccess();
     const form = contentContainer.querySelector('form');
 
-    setTimeout(() => {
-      form.remove();
-      outerThis.nextStep('forgot', stagesContainer);
-      stagesContainer.insertAdjacentHTML('afterend', finish)
+    // construct data for reset password
+    if(!outerThis._data.recovery.email || !outerThis._data.recovery.password) {
+      // Show error message
+      const errorMsg = outerThis.getServerMsg('Some fields are missing!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
 
-      outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-    }, 1000);
+    const resetData = {
+      email: outerThis._data.recovery.email,
+      password: outerThis._data.recovery.password
+    }
+
+    // Call the api for resetting the password
+    const {
+      result,
+      error
+    } = outerThis.apiResetPassword(resetData);
+
+
+    // If error occurs
+    if (error) {
+      const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
+
+    // If reset is successful
+    if (result.success) {
+      const finish = this.getForgotSuccess(result.user.name);
+      setTimeout(() => {
+        form.remove();
+        outerThis.nextStep('forgot', stagesContainer);
+        stagesContainer.insertAdjacentHTML('afterend', finish)
+
+        outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+      }, 1000);
+    }
+    else {
+      const errorMsg = outerThis.getServerMsg(result.message);
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
   }
 
   disableScroll() {
@@ -1540,12 +1599,12 @@ export default class LogonApp extends HTMLElement {
     `
   }
 
-  getForgotSuccess() {
+  getForgotSuccess(name) {
     return `
       <div class="finish">
         <h2 class="title">Success!</h2>
 				<p>
-					Your password has been successfully reset. Please log in into your account.
+					Dear ${name} your password has been successfully reset. Please log in into your account.
 				</p>
 				<a href="/join/login/" class="login">Login</a>
 			</div>
