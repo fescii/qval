@@ -372,5 +372,6 @@ const resetPassword = async (req, res, next) => {
  * Exporting all controllers
 */
 module.exports = {
-  signUp, signIn, checkIfEmailExits, forgotPassword, verifyUserCode
+  signUp, signIn, checkIfEmailExits, forgotPassword,
+  verifyUserCode, resetPassword
 }

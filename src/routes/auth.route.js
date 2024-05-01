@@ -46,4 +46,10 @@ module.exports = (app, url) => {
     `${url}/verify-token`,
     authController.verifyUserCode
   );
+
+  // Update password
+  app.patch(
+    `${url}/reset-password`,
+    authController.resetPassword
+  );
 };
