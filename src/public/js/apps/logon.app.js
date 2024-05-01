@@ -1404,7 +1404,7 @@ export default class LogonApp extends HTMLElement {
     }, 1000);
   }
 
-  activateForgotFinish(contentContainer) {
+  activateForgotFinish = async contentContainer => {
     const outerThis = this;
     const stagesContainer = contentContainer.querySelector('.stages');
     const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
@@ -1426,8 +1426,7 @@ export default class LogonApp extends HTMLElement {
     const {
       result,
       error
-    } = outerThis.apiResetPassword(resetData);
-
+    } = await outerThis.apiResetPassword(resetData);
 
     // If error occurs
     if (error) {
