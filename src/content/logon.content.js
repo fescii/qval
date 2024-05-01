@@ -1,3 +1,8 @@
+const {
+  host, port
+} = require('../configs').envConfig;
+
+const address = `${host}:${port}`;
 
 /**
  * @controller {get} /join Join
@@ -9,6 +14,7 @@ const join = async (req, res) => {
   const nextUrl = req.query.next || '/home';
   res.render('pages/logon', {
     data: {
+      host: address,
       name: 'join',
       next: nextUrl,
       forgot: '/join/recover',
@@ -33,6 +39,7 @@ const login = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
+      host: address,
       name: 'login',
       next: nextUrl,
       forgot: '/join/recover',
@@ -58,6 +65,7 @@ const register = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
+      host: address,
       name: 'register',
       next: nextUrl,
       forgot: '/join/recover',
@@ -72,11 +80,11 @@ const register = async (req, res) => {
 
 
 /**
- * @controller {get} /recover Recover/Reset password
+ * @controller {get} /recover/Reset password
  * @apiName Recover
  * @name Recover
  * @description This route will render the recover page for the app.
- * @returns {Page} Renders recover page
+ * @returns Page: Renders recover page
 */
 const recover = async (req, res) => {
   const url = req.originalUrl;
@@ -84,6 +92,7 @@ const recover = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
+      host: address,
       name: 'forgot',
       next: nextUrl,
       requested: url,

@@ -28,7 +28,7 @@ const resetEmailHook = async (data) => {
   const mailOptions = {
     from: data.from,
     to: data.user,
-    subject: 'Qval | Password Reset Request code:',
+    subject: 'Qval | Password Reset',
     html: passResetTemplate(data.token),
   };
 

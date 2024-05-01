@@ -9,7 +9,7 @@ const { generateRandomToken } = require('../utils').mailUtil;
 
 const {
   addUser, checkIfUserExits,
-  addOrEditCode, verifyCode
+  addOrEditCode, verifyCode, editPassword
 } = require('../queries').authQueries;
 
 /**
@@ -269,6 +269,11 @@ const forgotPassword = async (req, res, next) => {
   // Send success response to the user
   return res.status(200).send({
     success: true,
+    user: {
+      email: user.email,
+      username: user.username,
+      name: user.name
+    },
     message: "Password reset token has been sent to your email address."
   });
 }
@@ -315,13 +320,58 @@ const verifyUserCode = async (req, res, next) => {
     success: true,
     message: "Code is valid!"
   });
+}
 
+/**
+ * @function resetPassword
+ * @description A controller function to reset a password
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const resetPassword = async (req, res, next) => {
+  // Check if the payload is available in the request object
+  if (!req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
 
+  // Get payload from request body
+  const payload = req.body;
+
+  // If validation returns an error
+  if (!payload.email || !payload.password) {
+    return res.status(400).send({
+      success: false,
+      message: 'Email, or password is missing!'
+    });
+  }
+
+  // Update the password
+  const updatedData = await editPassword(payload.email, payload.password);
+
+  // If error is not equal to undefined throw an error
+  if (updatedData.error) {
+    return next(updatedData.error);
+  }
+
+  // Send success response to the user
+  return res.status(200).send({
+    success: true,
+    user: {
+      email: updatedData.user.email,
+      username: updatedData.user.username,
+      name: updatedData.user.name
+    },
+    message: "Password has been reset successfully!"
+  });
 }
 
 /**
  * Exporting all controllers
 */
 module.exports = {
-  signUp, signIn, checkIfEmailExits, forgotPassword, verifyUserCode
+  signUp, signIn, checkIfEmailExits, forgotPassword,
+  verifyUserCode, resetPassword
 }

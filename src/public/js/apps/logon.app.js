@@ -1,3 +1,5 @@
+// noinspection RegExpRedundantEscape
+
 export default class LogonApp extends HTMLElement {
   constructor() {
 
@@ -24,7 +26,8 @@ export default class LogonApp extends HTMLElement {
     this._data = {
       "register": {},
       "login": {},
-      "recovery": {}
+      "recovery": {},
+      "user": {}
     };
 
     this.render();
@@ -57,6 +60,7 @@ export default class LogonApp extends HTMLElement {
           break;
         case 'register':
           outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
+          break;
         default:
           outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
           outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
@@ -195,8 +199,7 @@ export default class LogonApp extends HTMLElement {
       forgotButton.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
-
-
+        
         contentContainer.insertAdjacentHTML('afterbegin', loader);
 
         const welcome = contentContainer.querySelector('.welcome');
@@ -209,7 +212,13 @@ export default class LogonApp extends HTMLElement {
           contentTitle.textContent = 'Recover';
           outerThis.changeStages('forgot', stagesContainer);
           outerThis.nextStep('forgot', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form)
+          stagesContainer.insertAdjacentHTML('afterend', form);
+          
+          // Updating History State
+          window.history.pushState(
+            { content: form, page: 'forgot' },
+            outerThis.getAttribute('forgot'), outerThis.getAttribute('forgot')
+          );
 
           contentContainer.querySelector('#loader-container').remove();
 
@@ -459,6 +468,7 @@ export default class LogonApp extends HTMLElement {
           break;
         case 'login':
           outerThis.validateLogin(form);
+          break;
         default:
           break;
       }
@@ -739,7 +749,7 @@ export default class LogonApp extends HTMLElement {
       }, 1000);
     }
 
-    // If email does not exists
+    // If email does not exist
     if (result.success) {
       // Add email to the data object
       this._data.register['email'] = input;
@@ -1010,6 +1020,11 @@ export default class LogonApp extends HTMLElement {
     if (currentEl) {
       currentEl.remove();
     }
+    // Select and remove server message
+    let serverMsg = form.querySelector('.server-status');
+    if (serverMsg) {
+      serverMsg.remove();
+    }
     this.nextStep('forgot', stagesContainer);
 
 
@@ -1109,6 +1124,12 @@ export default class LogonApp extends HTMLElement {
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
 
+    // Select and remove server message
+    let serverMsg = form.querySelector('.server-status');
+    if (serverMsg) {
+      serverMsg.remove();
+    }
+
     // const inputGroups = inputField.querySelectorAll('.input-group');
     const password = inputField.querySelector('.input-group.password');
     const repeatPassword = inputField.querySelector('.input-group.repeat-password');
@@ -1148,7 +1169,7 @@ export default class LogonApp extends HTMLElement {
           repeatStatus.textContent = '';
           repeatPassword.insertAdjacentHTML('beforeend', this._success);
 
-          this._data.register['password'] = input;
+          this._data.recovery['password'] = input;
 
           // console.log(this._data);
 
@@ -1197,7 +1218,7 @@ export default class LogonApp extends HTMLElement {
       }, 1000);
     }
 
-    // If email does not exists
+    // If email does not exist
     if (!result.success) {
       emailStatus.textContent = result.message;
       email.insertAdjacentHTML('beforeend', this._failed);
@@ -1210,9 +1231,12 @@ export default class LogonApp extends HTMLElement {
     }
     else {
       // Add email to the data object
-      this._data.register['email'] = input;
+      this._data.recovery['email'] = input;
 
-      const errorMsg = this.getServerMsg(result.message);
+      // Add returned user to the local object
+      this._data.user = result.user;
+
+      const errorMsg = this.getServerSuccessMsg(result.message);
       form.insertAdjacentHTML('afterbegin', errorMsg);
 
 
@@ -1283,15 +1307,44 @@ export default class LogonApp extends HTMLElement {
     }
   }
 
+  apiResetPassword = async data => {
+    const outerThis = this;
+    const url = outerThis.getAttribute('api-reset-password');
+    try {
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      return {
+        result: result,
+        error: null
+      }
+    }
+    catch (error) {
+      return {
+        result: null,
+        error: error
+      }
+    }
+  }
+
   checkCode = async (form, input, codeInput, codeStatus) => {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
+
+    // console.log(outerThis._data.recovery);
 
     // After API call
     const {
       result,
       error
-    } = await this.apiVerify({ code: input, email: outerThis._data.register['email'] });
+    } = await this.apiVerify({ token: input, email: outerThis._data.recovery['email'] });
 
     // If error occurs
     if (error) {
@@ -1360,20 +1413,51 @@ export default class LogonApp extends HTMLElement {
     }, 1000);
   }
 
-  activateForgotFinish(contentContainer) {
+  activateForgotFinish = async contentContainer => {
     const outerThis = this;
     const stagesContainer = contentContainer.querySelector('.stages');
     const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
-    const finish = this.getForgotSuccess();
     const form = contentContainer.querySelector('form');
 
-    setTimeout(() => {
-      form.remove();
-      outerThis.nextStep('forgot', stagesContainer);
-      stagesContainer.insertAdjacentHTML('afterend', finish)
+    // construct data for reset password
+    if(!outerThis._data.recovery.email || !outerThis._data.recovery.password) {
+      // Show error message
+      const errorMsg = outerThis.getServerMsg('Some fields are missing!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
 
-      outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-    }, 1000);
+    const resetData = {
+      email: outerThis._data.recovery.email,
+      password: outerThis._data.recovery.password
+    }
+
+    // Call the api for resetting the password
+    const {
+      result,
+      error
+    } = await outerThis.apiResetPassword(resetData);
+
+    // If error occurs
+    if (error) {
+      const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
+
+    // If reset is successful
+    if (result.success) {
+      const finish = this.getForgotSuccess(result.user.name);
+      setTimeout(() => {
+        form.remove();
+        outerThis.nextStep('forgot', stagesContainer);
+        stagesContainer.insertAdjacentHTML('afterend', finish)
+
+        outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+      }, 1000);
+    }
+    else {
+      const errorMsg = outerThis.getServerMsg(result.message);
+      form.insertAdjacentHTML('afterbegin', errorMsg);
+    }
   }
 
   disableScroll() {
@@ -1523,12 +1607,12 @@ export default class LogonApp extends HTMLElement {
     `
   }
 
-  getForgotSuccess() {
+  getForgotSuccess(name) {
     return `
       <div class="finish">
         <h2 class="title">Success!</h2>
 				<p>
-					Your password has been successfully reset. Please log in into your account.
+					Dear ${name} your password has been successfully reset. Please log in into your account.
 				</p>
 				<a href="/join/login/" class="login">Login</a>
 			</div>
@@ -1554,6 +1638,12 @@ export default class LogonApp extends HTMLElement {
   getServerMsg = text => {
     return `
       <p class="server-status">${text}</p>
+    `
+  }
+
+  getServerSuccessMsg = text => {
+    return `
+      <p class="server-status success">${text}</p>
     `
   }
 
@@ -1727,7 +1817,8 @@ export default class LogonApp extends HTMLElement {
 
   getStyles() {
     return /*css*/`
-      <style>
+      <!--suppress ALL -->
+<style>
         * {
           box-sizing: border-box !important;
         }
@@ -1764,7 +1855,6 @@ export default class LogonApp extends HTMLElement {
           align-items: center;
           justify-content: center;
           background-position: 100%;
-          background-size: cover;
           background-size: 1rem 1rem;
           background-color: #f8f9fa;
           background-image: radial-gradient(circle, #dee2e6 1px, rgba(0, 0, 0, 0) 1px);
@@ -2032,6 +2122,13 @@ export default class LogonApp extends HTMLElement {
           font-size: 1.18rem;
         }
 
+        p.server-status.success {
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
         .logon-container > .finish  p,
         .logon-container>.welcome  p {
           grid-column: 1/3;
@@ -2070,8 +2167,7 @@ export default class LogonApp extends HTMLElement {
           color: var(--text-color);
           line-height: 1.4;
         }
-
-
+        
         .logon-container > .welcome > .info svg {
           margin: 0 0 -3px 0;
           color: var(--accent-color);
@@ -2334,7 +2430,6 @@ export default class LogonApp extends HTMLElement {
           pointer-events: none;
         }
 
-
         /* Logon Footer */
         .logon-container >.footer {
           border-top: var(--story-border);
@@ -2413,7 +2508,6 @@ export default class LogonApp extends HTMLElement {
             justify-content: center;
             background-color: var(--background);
             background-position: unset;
-            background-size: unset;
             background-size: unset;
             background-image: unset;
           }
@@ -2528,7 +2622,6 @@ export default class LogonApp extends HTMLElement {
             order: 5;
           }
         }
-
       </style>
     `;
   }
