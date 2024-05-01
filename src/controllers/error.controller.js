@@ -11,7 +11,7 @@ const { envConfig } = require('../configs');
  * @returns {Object} - Returns response object
  *
  */
-const errorHandler = (err, _req, res, _next) => {
+const errorHandler = (err, req, res, _next) => {
   console.error(err.stack);
   const errorStatus = err.status || 500;
   const errorMsg = err.message || 'Something went wrong!'
@@ -43,7 +43,7 @@ const errorHandler = (err, _req, res, _next) => {
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
  */
-const notFound = (_req, res, _next) => {
+const notFound = (req, res, _next) => {
   res.status(404).json({
     success: false,
     error: true,
