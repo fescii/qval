@@ -60,6 +60,7 @@ export default class LogonApp extends HTMLElement {
           break;
         case 'register':
           outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
+          break;
         default:
           outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
           outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
@@ -467,6 +468,7 @@ export default class LogonApp extends HTMLElement {
           break;
         case 'login':
           outerThis.validateLogin(form);
+          break;
         default:
           break;
       }
@@ -747,7 +749,7 @@ export default class LogonApp extends HTMLElement {
       }, 1000);
     }
 
-    // If email does not exists
+    // If email does not exist
     if (result.success) {
       // Add email to the data object
       this._data.register['email'] = input;
@@ -1216,7 +1218,7 @@ export default class LogonApp extends HTMLElement {
       }, 1000);
     }
 
-    // If email does not exists
+    // If email does not exist
     if (!result.success) {
       emailStatus.textContent = result.message;
       email.insertAdjacentHTML('beforeend', this._failed);

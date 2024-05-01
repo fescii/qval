@@ -72,11 +72,11 @@ const register = async (req, res) => {
 
 
 /**
- * @controller {get} /recover Recover/Reset password
+ * @controller {get} /recover/Reset password
  * @apiName Recover
  * @name Recover
  * @description This route will render the recover page for the app.
- * @returns {Page} Renders recover page
+ * @returns Page: Renders recover page
 */
 const recover = async (req, res) => {
   const url = req.originalUrl;
