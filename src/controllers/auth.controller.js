@@ -269,6 +269,11 @@ const forgotPassword = async (req, res, next) => {
   // Send success response to the user
   return res.status(200).send({
     success: true,
+    user: {
+      email: user.email,
+      username: user.username,
+      name: user.name
+    },
     message: "Password reset token has been sent to your email address."
   });
 }

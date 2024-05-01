@@ -24,7 +24,8 @@ export default class LogonApp extends HTMLElement {
     this._data = {
       "register": {},
       "login": {},
-      "recovery": {}
+      "recovery": {},
+      "user": {}
     };
 
     this.render();
@@ -1222,6 +1223,9 @@ export default class LogonApp extends HTMLElement {
     else {
       // Add email to the data object
       this._data.recovery['email'] = input;
+
+      // Add returned user to the local object
+      this._data.user = result.user;
 
       const errorMsg = this.getServerSuccessMsg(result.message);
       form.insertAdjacentHTML('afterbegin', errorMsg);
