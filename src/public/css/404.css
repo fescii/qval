@@ -1,13 +1,18 @@
 body {
 	display: flex;
-	align-content: center;
 	justify-content: center;
 	align-items: center;
+	flex-flow: column;
 }
 
 html,
 body {
-	height: 100vh;
+	height: 100dvh;
+	max-height: 100%;
+	max-height: 100vh;
+	max-width: 100%;
+	width: 100%;
+	overflow: hidden;
 }
 
 html:before,
@@ -16,11 +21,11 @@ body:before,
 body:after {
 	content: "";
 	background: linear-gradient(#203075, #233581);
-	border-radius: 50%;
+	/* border-radius: 50%;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%); */
 }
 
 html:before,
@@ -33,7 +38,7 @@ html {
 	overflow: hidden;
 }
 
-html:before {
+/* html:before {
 	height: 105vmax;
 	width: 105vmax;
 	z-index: -4;
@@ -43,7 +48,7 @@ html:after {
 	height: 80vmax;
 	width: 80vmax;
 	z-index: -3;
-}
+} */
 
 body {
 	display: flex;
@@ -69,11 +74,18 @@ body:after {
 .main {
 	text-align: center;
 	z-index: 5;
+	height: max-content;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-flow: column;
 }
 
 p {
 	font-size: 24px;
 	margin: 5px 0 30px;
+	width: 100%;
 }
 
 h1 {
