@@ -79,6 +79,7 @@ p {
 h1 {
 	font-size: 95px;
 	margin: 0;
+	font-family: var(--font-mono), monospace;
 }
 
 a {
