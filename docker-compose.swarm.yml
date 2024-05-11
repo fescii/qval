@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  express:
+  qval-app:
     image: qval-app
     deploy:
       replicas: 3  # Number of replicas (containers) to deploy

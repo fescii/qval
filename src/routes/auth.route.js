@@ -28,4 +28,28 @@ module.exports = (app, url) => {
     `${url}/login`,
     authController.signIn
   );
+
+  // Check if email already exists
+  app.post(
+    `${url}/check-email`,
+    authController.checkIfEmailExits
+  );
+
+  // Reset password
+  app.post(
+    `${url}/forgot-password`,
+    authController.forgotPassword
+  );
+
+  // Verify token
+  app.post(
+    `${url}/verify-token`,
+    authController.verifyUserCode
+  );
+
+  // Update password
+  app.patch(
+    `${url}/reset-password`,
+    authController.resetPassword
+  );
 };

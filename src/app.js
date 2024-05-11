@@ -1,5 +1,6 @@
 const express = require("express");
-const http2 = require("http2");
+// const http2 = require("http2");
+const spdy = require('spdy');
 const fs = require("fs");
 const path = require("path");
 const dotenv = require('dotenv');
@@ -11,12 +12,15 @@ const app = express();
 
 app.use(cookieParser())
 
-app.use(express.static('public'))
+app.use('/static', express.static('public'))
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 
 let corsOptions = {
-  origin: "http://localhost:${process.env.PORT}"
+  origin: [`http://localhost:${process.env['PORT']}`, "https://192.168.68.24:${process.env['PORT']}"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 // Require method for a syncing database
@@ -48,10 +52,11 @@ const credentials = {
 }
 
 // Create a secure server
-const server = http2.createSecureServer(credentials, app);
+// const server = http2.createSecureServer(credentials, app);
+const server = spdy.createServer(credentials, app);
 
 // app listen port
 server.listen(PORT, ()=> {
-    console.log(`Server is listening on port ${PORT}.`);
+  console.log(`Server is listening on port https://localhost:${PORT}`);
   }
 );

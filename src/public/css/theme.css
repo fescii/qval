@@ -1,0 +1,139 @@
+/*
+
+Copyright: 2024 - Aduki Incorporation
+Name: Blog & Article Platform
+URL: https://github.com/fescii/femar.git
+Author: Fredrick Femar Ochieng
+Author URL: https://femar.co.ke
+
+
+/*
+
+  Fonts
+  =====
+
+*/
+
+
+/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap'); */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+/*
+
+  Variables
+  =========
+
+*/
+
+:root {
+  --font-main: "Inter";
+  --font-text: "DM Sans";
+  --font-mono: 'Jetbrains Mono';
+  --font-read: "Work Sans";
+  --scroll-bar-background: #DDDDD7;
+  --scroll-bar-linear: linear-gradient(#53595f, #627ea0);
+
+  --input-border: 1px solid #6b72805e;
+  --input-border-focus: 1px solid #18a5669a;
+  --input-border-error: 1px solid #ec4a1965;
+  --action-border: 1px solid #6b72803f;
+  --story-border: thin solid #6b72801a;
+
+  --label-focus-background: #eaf3ff;
+
+  --story-border-mobile: thin solid #6b728046;
+  --border-mobile: thin solid #6b728088;
+  --border-header: 0.002rem solid #6b72809a;
+
+  --background: #ffffff;
+  --vh-height: 100dvh;
+
+  --action-background: #1d2c38d2;
+
+  --author-background: #f1f3f4;
+  --user-background: #f8f8f8;
+  --dot-background: #6b7280c9;
+  --hover-background: #f8f8f8;
+
+  --accent-color: #08b86f;
+  --white-color: #ffffff;
+  --gray-color: #6b7280;
+  --text-color: #53595f;
+  --read-color: #333333;
+  --title-color: #1f2937;
+  --color-alt: #ff932f;
+  --error-color: #ec4b19;
+  --action-color: #1d2c38;
+  --anchor: #4b556321;
+  --anchor-active: #21D029;
+
+  --open-line: 2px solid #08b86f93;
+  --open-line-mobile: 2px solid #08b86fc5;
+  --close-line: 2px solid #6b72803a;
+
+  --modal-shadow: 0 12px 48px #6d758d33;
+  --modal-border: 1px solid #83858442;
+  --modal-overlay: #1d2534b3;
+
+  /* --option-background: linear-gradient(#53595f71, #627ea034); */
+
+  --second-linear: linear-gradient(0deg,#df791a 0%, #f09c4e 100%);
+
+  --accent-linear: linear-gradient(103.53deg, #18A565 -6.72%, #21D029 109.77%);
+  --alt-linear: linear-gradient(78deg, rgb(31, 6, 71) -50%, rgb(48, 0, 130) 28.67%, rgb(143, 0, 153) 57.79%, rgba(238, 0, 176, 0.85) 76.05%, rgb(247, 95, 98) 88.54%, rgb(255, 190, 20));
+  --loader-gradient: linear-gradient(-45deg, #ececec, #f8f8f8, #DDDDDD, #f8f8f8, #ececec);
+  --fade-linear-gradient: linear-gradient(
+    180deg, #ffffff02,
+    #ffffff2a,
+    #ffffff4d,
+    #ffffff69,
+    #ffffff83,
+    #ffffffa4,
+    #ffffffc2,
+    #ffffffe0,
+    #fffffff6,
+    #ffffff
+  );
+  --fade-picture-gradient: linear-gradient(180deg,
+  rgba(0, 0, 0, 0),
+  rgba(0, 0, 0, 0.8)
+  );
+
+
+  /* Logon */
+  --loader-background: #ffffff38;
+  --logon-background: #ffffffec;
+  --logon-shadow: 1px 1px 30px 0 #00000010;
+  --stage-done-linear: linear-gradient(0deg, #3938381a 0%, #3938384d 100%);
+  --stage-active-linear: linear-gradient(0deg, #df791a 0%, #f09c4e 100%);
+  --stage-no-linear: linear-gradient(0deg, #18A565 0%, #21D029 100%);
+}
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+  font-family: inherit;
+  -webkit-box-sizing: border-box;
+}
+
+*:focus {
+  outline: inherit !important;
+}
+
+*::-webkit-scrollbar {
+  width: 3px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scroll-bar-background);
+}
+
+*::-webkit-scrollbar-thumb {
+  width: 3px;
+  background: var(--scroll-bar-linear);
+  border-radius: 50px;
+}

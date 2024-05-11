@@ -2,42 +2,18 @@
 <html lang="en">
 
 <!--  Head/Meta  Start-->
-<% var title = " store home page" %>
-<% var image = "null" %>
-<% var description = "This is the homepage for this grocery store" %>
+<% var title = "Qval - " + data.about %>
+<% var image = "../img/fav.png" %>
+<% var description = "Explore, engage, and evolve your perspectives with our community." %>
 <%- include('../partials/meta', {
-  title: title, image: image, description:description
+  title: title, image: image, description: description
 }); %>
 <!--  Head/Meta  End-->
 
 <body>
-  <main class="main">
-
-    <!--Header Start-->
-    <%- include('../partials/header', {current: current}); %>
-    <!--Header End-->
-
-    <!--Section Slider Start-->
-    <%- include('../partials/home/sliders', {slidersArray: sliders}); %>
-    <!--Section Slider End-->
-
-
-    <!--Section Slider Start-->
-    <%- include('../partials/home/banners'); %>
-    <!--Section Slider End-->
-
-    <!--Section Featured Start-->
-    <%- include('../partials/home/featured', {categoryProductsObj: categoryProductsObj}); %>
-    <!--Section Featured End-->
-
-    <!-- Footer Start-->
-    <%- include('../partials/home/services'); %>
-    <!-- Footer End  -->
-  </main>
-
-  <!-- Footer Start-->
-  <%- include('../partials/footer'); %>
-  <!-- Footer End  -->
+  <!--App Logon page Start-->
+    <%- include('../partials/apps/logon', {data: data}); %>
+  <!--App Logon page End-->
 </body>
 
 </html>
