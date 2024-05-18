@@ -1,4 +1,4 @@
-// Importing Timestamp Function
+// Importing and exporting all configs
 const mpesaConfig = require('./mpesa.config');
 const storageConfig = require('./storage.config');
 const envConfig = require('./env.config');

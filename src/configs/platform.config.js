@@ -1,3 +1,4 @@
+// Define platform config
 module.exports = {
   RoleBase: {
     Owner: 'owner',
