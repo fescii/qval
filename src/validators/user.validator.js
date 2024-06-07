@@ -87,6 +87,17 @@ const validateLoginData = async (data) => {
       }
     }
 
+    // validate email
+    // noinspection RegExpRedundantEscape
+    let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    if (!data.email.match(validRegex)) {
+      return {
+        data: null,
+        error: new Error("Invalid email address!")
+      }
+    }
+
     const validatedData =  {
       email: await sanitizeUtil.sanitizeInput(data.email),
       password: await sanitizeUtil.sanitizeInput(data.password)

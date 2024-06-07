@@ -1,0 +1,22 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="<%- data.host %>/static/css/theme.css">
+  <link rel="stylesheet" href="<%- data.host %>/static/css/logon.css">
+
+  <link rel="shortcut icon" href="<%- data.host %>/static/img/favi.png" type="image/x-icon">
+
+  <title><%= title %></title>
+
+  <meta name="description" content="<%= description %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:image" content="<%= image %>">
+
+  <script type="module">
+    //Custom Elements
+    import LogonApp from "<%- data.host %>/static/js/apps/logon.app.js";
+
+    //Apps-modals
+    customElements.define("app-logon", LogonApp);
+  </script>
+</head>
