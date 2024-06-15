@@ -7,8 +7,6 @@
  * @returns {Object} - Returns object containing all the models
 */
 module.exports = (sequelize, Sequelize) => {
-	// noinspection JSUnresolvedFunction
-
 	/**
 	 * @type {Model}
 	 * @name User
@@ -21,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
 	 * @property {Object} contact - Contact info of the user
 	 * @property {String} bio - Bio of the user
 	 * @property {String} picture - Profile picture of the user
+	 * @property {Number} followers - Number of followers the user has
+	 * @property {Number} following - Number of users the user is following
+	 * @property {Number} stories - Number of stories the user has published.
 	*/
 	const User = sequelize.define("users", {
 		id: {
@@ -32,7 +33,7 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING,
 			allowNull: false
 		},
-		username: {
+		hash: {
 			type: Sequelize.STRING,
 			unique: true,
 			allowNull: true
@@ -57,17 +58,29 @@ module.exports = (sequelize, Sequelize) => {
 		picture: {
 			type: Sequelize.STRING,
 			allowNull: true
-		}
+		},
+		followers: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
+		following: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
+		stories: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
 	},{
 			schema: 'account',
 			freezeTableName: true,
 			indexes: [
 				{
 					unique: true,
-					fields: ['id', 'username']
-				},
-				{
-					fields: ['email']
+					fields: ['id', 'hash', 'email']
 				}
 			]
 	});
@@ -111,9 +124,60 @@ module.exports = (sequelize, Sequelize) => {
 		]
 	});
 
-	// Define associations
+
+	/**
+	 * @type {Model}
+	 * @name Connect
+	 * @description - This model contains all the user connections
+	 * @property {Number} id - Unique identifier for the connection
+	 * @property {String} from - The hash of the user who initiated the connection
+	 * @property {String} to - The hash of the user who received the connection
+	 * @property {Boolean} active - The status of the connection
+	 * @property {Date} deleatedAt - The date the connection was deleted
+	*/
+	const Connect = sequelize.define("connects", {
+		id: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		from: {
+			type: Sequelize.STRING,
+			allowNull: false
+		},
+		to: {
+			type: Sequelize.STRING,
+			allowNull: false
+		},
+		active: {
+			type: Sequelize.BOOLEAN,
+			defaultValue: false,
+			allowNull: false
+		},
+		deleatedAt: {
+			type: Sequelize.DATE,
+			allowNull: true
+		}
+	},{
+		schema: 'account',
+		freezeTableName: true,
+		indexes: [
+			{
+				unique: true,
+				fields: ['id', 'from', 'to']
+			}
+		]
+	});
+
+	// Define associations for the Code and User model
 	User.hasMany(Code, { foreignKey: 'email', sourceKey: 'email', onDelete: 'CASCADE' });
 	Code.belongsTo(User, { foreignKey: 'email', targetKey: 'email', as: 'user_code', onDelete: 'CASCADE' });
 
-	return {User, Code};
+	// Define associations for the Connect and User model
+	User.hasMany(Connect, { foreignKey: 'from', sourceKey: 'hash', onDelete: 'CASCADE' });
+	User.hasMany(Connect, { foreignKey: 'to', sourceKey: 'hash', onDelete: 'CASCADE' });
+	Connect.belongsTo(User, { foreignKey: 'from', targetKey: 'hash', as: 'from_user', onDelete: 'CASCADE' });
+	Connect.belongsTo(User, { foreignKey: 'to', targetKey: 'hash', as: 'to_user', onDelete: 'CASCADE' });
+
+	return {User, Code, Connect};
 }

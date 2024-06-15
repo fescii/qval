@@ -2,7 +2,6 @@ const { dbConfig } = require('../configs').storageConfig;
 const Sequelize = require("sequelize");
 
 
-// noinspection JSValidateTypes
 // Initialize Sequelize with the database configuration
 /**
  * @type {Sequelize}
@@ -47,7 +46,7 @@ let sequelize = new Sequelize(
  * @property {Object} Platform - The platform schema models
  * @property {Object} Content - The story schema models
  * @property {Object} TopicSchema - The topic schema models
- */
+*/
 const models = {};
 
 
@@ -68,7 +67,7 @@ const Content = require('./story.model')(Account.User, sequelize, Sequelize);
 Object.assign(models, Content)
 
 // Importing topic schema models
-const TopicSchema = require('./topic.model')(Account.User, sequelize, Sequelize);
+const TopicSchema = require('./topic.model')(Account.User, Content.Story, sequelize, Sequelize);
 Object.assign(models, TopicSchema);
 
 // Import database sync function
