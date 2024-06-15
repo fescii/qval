@@ -31,7 +31,7 @@ const validateTopicData = async (data) => {
       name: await sanitizeUtil.sanitizeInput(data.name),
       slug: slug_data.trim().replace(/\s+/g, ' ').
       toLowerCase().replace(/\s+/g, '-'),
-      about: await sanitizeUtil.sanitizeInput(data.about),
+      summery: await sanitizeUtil.sanitizeInput(data.summery),
     }
 
     return { data: validatedData, error: null };

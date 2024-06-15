@@ -22,12 +22,12 @@ const createTopic = async (req, res, next) => {
 
   // Get validated payload and user data from request object
   const data = req.topic_data;
-  const userId = req.user.id;
+  const userHash = req.user.hash;
 
   const {
     topic,
     error
-  } = await addTopic(userId, data);
+  } = await addTopic(userHash, data);
 
   // Passing the error to error middleware
   if (error) {
