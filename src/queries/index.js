@@ -1,6 +1,6 @@
 // Importing all routes and exporting them as a single object
 const authQueries = require('./auth.queries');
-const topicQueries = require('./topic.queries');
+const topicQueries = require('./topics')
 const roleQueries = require('./role.queries');
 const storyQueries = require('./story.queries');
 const opinionQueries = require('./opinion.queries');

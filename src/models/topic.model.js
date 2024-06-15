@@ -142,7 +142,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
 
   /**
    * @type {Model}
-   * @name Drafts
+   * @name Draft
    * @description - This model contains all the drafts of the sections of a topic
    * @property {Number} id - Unique identifier for the draft
    * @property {String} kind - The kind of draft, could be a new section or an update
@@ -153,7 +153,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @property {String} author - Author of the draft
    * @property {Boolean} approved - Approval status of the draft
   */
-  const Drafts = sequelize.define("drafts", {
+  const Draft = sequelize.define("drafts", {
    id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -353,14 +353,14 @@ module.exports = (User, Story, sequelize, Sequelize) => {
   Topic.hasMany(TopicSection, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_sections', onDelete: 'CASCADE' });
   TopicSection.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'section_topic', onDelete: 'CASCADE' });
 
-  // Defining the associations on the TopicSection and Drafts models
-  TopicSection.hasMany(Drafts, { foreignKey: 'section', sourceKey: 'id', as : 'section_drafts', onDelete: 'CASCADE' });
-  Drafts.belongsTo(TopicSection, { foreignKey: 'section', targetKey: 'id', as: 'draft_section', onDelete: 'CASCADE' });
+  // Defining the associations on the TopicSection and Draft models
+  TopicSection.hasMany(Draft, { foreignKey: 'section', sourceKey: 'id', as : 'section_drafts', onDelete: 'CASCADE' });
+  Draft.belongsTo(TopicSection, { foreignKey: 'section', targetKey: 'id', as: 'draft_section', onDelete: 'CASCADE' });
 
-  // Defining the associations on the User and Drafts models
-  User.hasMany(Drafts, { foreignKey: 'author', sourceKey: 'hash', as : 'user_drafts', onDelete: 'CASCADE' });
-  Drafts.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'draft_author', onDelete: 'CASCADE' });
+  // Defining the associations on the User and Draft models
+  User.hasMany(Draft, { foreignKey: 'author', sourceKey: 'hash', as : 'user_drafts', onDelete: 'CASCADE' });
+  Draft.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'draft_author', onDelete: 'CASCADE' });
 
   // Returning the models
-  return { Topic, Tagged, Subscribe, Follow, TopicSection, Drafts };
+  return { Topic, Tagged, Subscribe, Follow, TopicSection, Draft };
 }

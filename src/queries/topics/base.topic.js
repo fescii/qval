@@ -1,11 +1,11 @@
-const { hashConfig} = require('../configs');
+const { hashConfig} = require('../../configs');
 const {Op} = require("sequelize");
-const { sequelize, Topic, Section, Role } = require('../models').models;
-const { RoleBase } = require('../configs').platformConfig;
+const { sequelize, Topic, Section, Role } = require('../../models').models;
+const { RoleBase } = require('../../configs').platformConfig;
 
 // Imports for gen_hash
-const { gen_hash } = require("../wasm");
-const  { hash_secret } = require("../configs").envConfig;
+const { gen_hash } = require("../../wasm");
+const  { hash_secret } = require("../../configs").envConfig;
 
 /**
  * @function addTopic
