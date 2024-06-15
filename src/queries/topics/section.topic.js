@@ -1,12 +1,5 @@
-const { hashConfig} = require('../../configs');
-const {Op} = require("sequelize");
+// import the sequelize models
 const { sequelize, Topic, TopicSection, Draft } = require('../../models').models;
-
-// Imports for gen_hash
-const { gen_hash } = require("../../wasm");
-const { auth } = require('../../configs/mpesa.config');
-const  { hash_secret } = require("../../configs").envConfig;
-
 
 /**
  * @function addTopicSection
