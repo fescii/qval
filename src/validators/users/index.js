@@ -1,8 +1,13 @@
 // Import and export all users validators
-const userBaseValidators = require('./base.user');
-const userInfoValidators = require('./info.user');
+const {validateLogin, validateUser} = require('./base.user');
+const {
+  validateBio, validateContact, validateEmail,
+  validateName, validatePassword
+} = require('./info.user');
 
 
 module.exports = {
-  userBaseValidators, userInfoValidators
+  validateLogin, validateUser, validateBio,
+  validateContact, validateEmail,
+  validateName, validatePassword
 };

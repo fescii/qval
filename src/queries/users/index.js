@@ -1,8 +1,13 @@
 // Impoert all the queries from the users and export them
-const userEditQueries = require('./edit.user');
-const userActionQueries = require('./action.user');
-const userBaseQueries = require('./base.user');
+const {
+  editBio, editContact, editPassword,
+  editEmail, editName, editPicture
+} = require('./edit.user');
+const { connectToUser } = require('./action.user');
+const { addUser, checkIfUserExits} = require('./base.user');
 
 module.exports = {
-  userEditQueries, userActionQueries, userBaseQueries
+  editBio, editContact, editPassword,
+  editEmail, editName, editPicture,
+  connectToUser, addUser, checkIfUserExits
 };

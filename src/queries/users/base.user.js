@@ -32,7 +32,7 @@ const addUser = async (data) => {
       password: await bcrypt.hash(data.password, salt_rounds)
     }, {transaction});
 
-    // Generate the username - hash
+    // Generate the user - hash
     const {
       hash,
       error
@@ -43,15 +43,23 @@ const addUser = async (data) => {
       throw error;
     }
 
-    // Else set the username to the hash
-    user.username = hash;
+    // Else set the user.hash to the hash
+    user.hash = hash;
 
     await user.save({transaction});
 
     await transaction.commit();
 
     // On success return data
-    return { user: user, error: null}
+    return { 
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        hash: user.hash
+      }, 
+      error: null
+    }
   } catch (err) {
     // console.log(err)
     await transaction.rollback();

@@ -1,10 +1,22 @@
 // import all topic queries
-const topicBaseQueries = require('./base.topic');
-const topicSectionQueries = require('./section.topic');
-const actionTopicQueries = require('./action.topic');
+const {
+  addTopic, checkIfTopicExists,
+  editTopic, findTopic, removeTopic
+} = require('./base.topic');
+const {
+  addTopicSection, getTopicSections, updateTopicSection,
+  addDraft, approveDraft, updateDraft
+} = require('./section.topic');
+const {
+  followTopic, subscribeTopic, tagStory
+} = require('./action.topic');
 
 
 // Export all topic queries
 module.exports = {
-  topicBaseQueries, topicSectionQueries, actionTopicQueries
+  addTopic, checkIfTopicExists,
+  editTopic, findTopic, removeTopic,
+  addTopicSection, getTopicSections, updateTopicSection,
+  addDraft, approveDraft, updateDraft,
+  followTopic, subscribeTopic, tagStory
 }

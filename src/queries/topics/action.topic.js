@@ -22,11 +22,18 @@ const followTopic = async (user, topic) => {
       }
     });
 
-    // if the follow object was created: return follow: true, else return follow: false
-    return { followed: created, error: null };
+    // if the follow object was created: return follow: true
+    if (created) {
+      return { followed: true, error: null };
+    }
+    else {
+      // if the follow object was not created: delete it
+      await follow.destroy();
+      return { followed: false, error: null };
+    }
   }
   catch (error) {
-    return { follow: null, error };
+    return { followed: null, error };
   }
 }
 
@@ -51,11 +58,18 @@ const subscribeTopic = async (user, topic) => {
       }
     });
 
-    // if the subscribe object was created: return subscribe: true, else return subscribe: false
-    return { subscribed: created, error: null };
+    // if the subscribe object was created: return subscribe: true
+    if (created) {
+      return { subscribed: true, error: null };
+    }
+    else {
+      // if the subscribe object was not created: delete it
+      await subscribe.destroy();
+      return { subscribed: false, error: null };
+    }
   }
   catch (error) {
-    return { subscribe: null, error };
+    return { subscribed: null, error };
   }
 }
 
