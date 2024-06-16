@@ -1,14 +1,14 @@
 // Import necessary packages and modules
-const upload = require('../middlewares').upload;
+const upload = require('../../middlewares').upload;
 const {
   editPicture, editBio, editContact,
   editPassword, editEmail, editName
-} = require('../queries').userQueries;
+} = require('../../queries').userQueries;
 
 const {
   validateBio, validateContact, validateName,
   validateEmail, validatePassword,
-} = require('../validators').userValidator;
+} = require('../../validators').userValidator;
 
 
 /**
