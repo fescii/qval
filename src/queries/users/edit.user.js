@@ -1,6 +1,6 @@
 // Import all the necessary modules and dependencies
 const bcrypt = require("bcryptjs");
-const { User, sequelize } = require('../models').models;
+const { User, sequelize } = require('../../models').models;
 
 /**
  * @name editPassword
