@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 // import hashConfig
 const {hashConfig} = require("../../configs");
+const { salt_rounds } = require("../../configs/env.config");
 
 // import gen_hash
 const { gen_hash } = require("../../wasm");
@@ -14,8 +15,7 @@ const { gen_hash } = require("../../wasm");
  * @function addUser
  * @description Query to add a new user
  * @param {Object} data - The user data
- * @param {String} data.first_name - The first name of the user
- * @param {String} data.last_name - The last name of the user
+ * @param {String} data.name - The name of the user
  * @param {String} data.email - The email of the user
  * @param {String} data.password - The password of the user
  * @returns {Object} - The user object or null, and the error if any
@@ -27,11 +27,10 @@ const addUser = async (data) => {
   try {
     // Trying to create new user to the database
     const user = await User.create({
-      username: data.username,
-      name: `${data.first_name} ${data.last_name}`,
+      name: data.name,
       email: data.email,
-      password: bcrypt.hashSync(data.password, 8)
-    }, {transaction})
+      password: await bcrypt.hash(data.password, salt_rounds)
+    }, {transaction});
 
     // Generate the username - hash
     const {

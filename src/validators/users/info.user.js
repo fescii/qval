@@ -31,11 +31,11 @@ const validatePassword = async (data) => {
 }
 
 /**
- * @function validateUsername
- * @name validateUsername
- * @description A validator function to validate username before being passed controllers or middlewares
+ * @function validateEmail
+ * @name validateEmail
+ * @description A validator function to validate Email before being passed controllers or middlewares
  * @param {Object} data - The input data from client request
- * @returns {Object} - The validated username object
+ * @returns {Object} - The validated Email object
  * @returns {Error} - The error object
 */
 const validateEmail = async (data) => {

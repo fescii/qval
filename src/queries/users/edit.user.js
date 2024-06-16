@@ -2,6 +2,9 @@
 const bcrypt = require("bcryptjs");
 const { User, sequelize } = require('../../models').models;
 
+// import envConfig
+const { salt_rounds } = require("../../configs").envConfig;
+
 /**
  * @name editPassword
  * @function editPassword
@@ -24,7 +27,7 @@ const editPassword = async (password, username) => {
     }
 
     // hash the password using bcrypt
-    const hashPassword = await bcrypt.hash(password, 8);
+    const hashPassword = await bcrypt.hash(password, salt_rounds);
 
     // edit the user password
     user.password = hashPassword;
