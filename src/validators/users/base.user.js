@@ -1,4 +1,4 @@
-const { sanitizeUtil } = require('../utils')
+const { sanitizeUtil } = require('../../utils')
 
 /**
  * @function validateUserData
