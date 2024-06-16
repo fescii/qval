@@ -316,6 +316,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       ]
     });
 
+
   // Defining the associations on the User and Topic models
   User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash' , as : 'user_topics', onDelete: 'CASCADE' });
   Topic.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'topic_author', onDelete: 'CASCADE' });

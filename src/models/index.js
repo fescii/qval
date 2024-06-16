@@ -53,22 +53,34 @@ const models = {};
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
+
 // Importing from account schema models
-const Account = require('./user.model')(sequelize, Sequelize);
-// const { User } = require('./user.model')(sequelize, Sequelize);
-Object.assign(models, Account)
+const {
+  User, Code, Connect
+} = require('./user.model')(sequelize, Sequelize);
+
 
 // Importing from platform schema models
-const Platform = require('./platform.model')(Account.User, sequelize, Sequelize);
-Object.assign(models, Platform)
+const {
+  System, Section, Approval, Role, Log
+} = require('./platform.model')(User, sequelize, Sequelize);
 
 // Importing story schema models
-const Content = require('./story.model')(Account.User, sequelize, Sequelize);
-Object.assign(models, Content)
+const {
+  Story
+} = require('./story.model')(User, sequelize, Sequelize);
 
 // Importing topic schema models
-const TopicSchema = require('./topic.model')(Account.User, Content.Story, sequelize, Sequelize);
-Object.assign(models, TopicSchema);
+const {
+  Topic, Tagged, Subscribe, Follow, TopicSection, Draft
+} = require('./topic.model')(User, Story, sequelize, Sequelize);
+
+// assign the models to the models object
+Object.assign(models, {
+  User, Code, Connect, System, Section, Approval, Role, Log, 
+  Story, // other story models
+  Topic, Tagged, Subscribe, Follow, TopicSection, Draft
+});
 
 // Import database sync function
 const { syncDb } = require('./sync.models')(sequelize);

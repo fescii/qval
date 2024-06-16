@@ -133,7 +133,7 @@ module.exports = (sequelize, Sequelize) => {
 	 * @property {String} from - The hash of the user who initiated the connection
 	 * @property {String} to - The hash of the user who received the connection
 	 * @property {Boolean} active - The status of the connection
-	 * @property {Date} deleatedAt - The date the connection was deleted
+	 * @property {Date} deletedAt - The date the connection was deleted
 	*/
 	const Connect = sequelize.define("connects", {
 		id: {
@@ -154,7 +154,7 @@ module.exports = (sequelize, Sequelize) => {
 			defaultValue: false,
 			allowNull: false
 		},
-		deleatedAt: {
+		deletedAt: {
 			type: Sequelize.DATE,
 			allowNull: true
 		}

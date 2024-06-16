@@ -262,17 +262,17 @@ module.exports = (User, sequelize, Sequelize) => {
   /**
    * This is the association between the models
   */
-  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity' });
+  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
   Role.belongsTo(Section, { foreignKey: 'section', targetKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
 
-  User.hasMany(Role, { foreignKey: 'user' });
-  Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles', onDelete: 'CASCADE' });
+  User.hasMany(Role, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
+  Role.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
 
-  User.hasMany(Log, { foreignKey: 'user' });
-  Log.belongsTo(User, { foreignKey: 'user', as: 'user_logs', onDelete: 'CASCADE' });
+  User.hasMany(Log, { foreignKey: 'user' , sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
+  Log.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
 
   /**
    * This is the object containing all the models
   */
-  return { System, Section, Role, Approval, Log }
+  return { System, Section, Approval, Role, Log }
 }
