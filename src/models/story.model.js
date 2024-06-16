@@ -243,29 +243,29 @@ module.exports = (User, sequelize, Sequelize) => {
     });
 
   // Defining the associations
-  User.hasMany(Story, { foreignKey: 'author' });
-  Story.belongsTo(User, { foreignKey: 'author', as: 'user_stories', onDelete: 'CASCADE' });
+  // User.hasMany(Story, { foreignKey: 'author' });
+  // Story.belongsTo(User, { foreignKey: 'author', as: 'user_stories', onDelete: 'CASCADE' });
 
-  User.hasMany(Upvote, { foreignKey: 'author' });
-  Upvote.belongsTo(User, { foreignKey: 'author', as: 'user_upvotes', onDelete: 'CASCADE' });
+  // User.hasMany(Upvote, { foreignKey: 'author' });
+  // Upvote.belongsTo(User, { foreignKey: 'author', as: 'user_upvotes', onDelete: 'CASCADE' });
 
-  Story.hasMany(Upvote, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Upvote.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_upvotes', onDelete: 'CASCADE' });
+  // Story.hasMany(Upvote, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
+  // Upvote.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_upvotes', onDelete: 'CASCADE' });
 
-  Story.hasMany(Opinion, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Opinion.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_opinions', onDelete: 'CASCADE' });
+  // Story.hasMany(Opinion, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
+  // Opinion.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_opinions', onDelete: 'CASCADE' });
 
-  User.hasMany(Opinion, { foreignKey: 'author' });
-  Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
+  // User.hasMany(Opinion, { foreignKey: 'author' });
+  // Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
 
-  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
+  // Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
+  // Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
 
-  Opinion.hasMany(Like, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Like.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_likes', onDelete: 'CASCADE' });
+  // Opinion.hasMany(Like, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
+  // Like.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_likes', onDelete: 'CASCADE' });
 
-  User.hasMany(Like, { foreignKey: 'author' });
-  Upvote.belongsTo(Story, { foreignKey: 'author', as: 'user_likes', onDelete: 'CASCADE' });
+  // User.hasMany(Like, { foreignKey: 'author' });
+  // Upvote.belongsTo(Story, { foreignKey: 'author', as: 'user_likes', onDelete: 'CASCADE' });
 
   // Returning the models
   return { Story, Opinion, Upvote, Like }
