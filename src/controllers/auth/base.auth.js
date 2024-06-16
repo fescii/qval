@@ -2,7 +2,7 @@
 const bcrypt = require("bcryptjs");
 
 // Importing within the app
-const { jwt_expiry } = require('../../configs').envConfig;
+const { cookie_age } = require('../../configs').envConfig;
 const { tokenUtil } = require('../../utils');
 const { validateLogin } = require('../../validators').userValidator;
 
@@ -80,7 +80,7 @@ const login = async (req, res, next) => {
 
   // Add cookie to the response object
   let options = {
-    maxAge: jwt_expiry,
+    maxAge: cookie_age,
     httpOnly: true,
     secure: true,
     sameSite: 'none',
@@ -88,9 +88,10 @@ const login = async (req, res, next) => {
   }
 
   // Set cookie
-  res.cookie('x-access-token', token, options) // options is optional
+  res.cookie('x-access-token', token, options)
 
 
+  // Return a successful response
   return res.status(200).send({
     success: true,
     user: {
@@ -99,7 +100,7 @@ const login = async (req, res, next) => {
       username: user.username
     },
     accessToken: token,
-    message: "You're logged in successful!"
+    message: "You were successfully logged in!"
   });
 }
 

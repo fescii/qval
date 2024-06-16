@@ -2,14 +2,14 @@
 const { addUser, checkIfUserExits } = require('../../queries').userQueries;
 
 /**
- * @function signUp
+ * @function register
  * @description Controller to register a new user
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
 */
-const signUp = async (req, res, next) => {
+const register = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.reg_data) {
     const error = new Error('Payload data is not defined in the req object!');
@@ -93,6 +93,6 @@ const checkIfEmailExits = async (req, res, next) => {
 }
 
 module.exports = {
-  signUp,
+  register,
   checkIfEmailExits
 };

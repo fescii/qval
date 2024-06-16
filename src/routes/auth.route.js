@@ -1,6 +1,6 @@
-const { authController } = require('../controllers');
-const { authMiddleware } = require('../middlewares');
-
+const { login, forgotPassword, verifyUserCode, resetPassword } = require('../controllers').authController;
+const { register, checkIfEmailExits } = require('../controllers/').userController;
+const { checkDuplicateEmail } = require('../middlewares').authMiddleware;
 /**
  * @function authRoutes
  * @description a modular function that registers all the auth routes
@@ -19,37 +19,37 @@ module.exports = (app, url) => {
   // Register route
   app.put(
     `${url}/register`,
-    authMiddleware.checkDuplicateEmail,
-    authController.signUp
+    checkDuplicateEmail,
+    register
   );
 
   //Login route
   app.post(
     `${url}/login`,
-    authController.signIn
+    login
   );
 
   // Check if email already exists
   app.post(
     `${url}/check-email`,
-    authController.checkIfEmailExits
+    checkIfEmailExits
   );
 
   // Reset password
   app.post(
     `${url}/forgot-password`,
-    authController.forgotPassword
+    forgotPassword
   );
 
   // Verify token
   app.post(
     `${url}/verify-token`,
-    authController.verifyUserCode
+    verifyUserCode
   );
 
   // Update password
   app.patch(
     `${url}/reset-password`,
-    authController.resetPassword
+    resetPassword
   );
 };
