@@ -8,7 +8,7 @@ const { checkDuplicateEmail } = require('../middlewares').authMiddleware;
  * @param {String} url - The base url, usually '/api/v1' or '/api/v1/auth'
 */
 module.exports = (app, url) => {
-  app.use((_req, res, next) => {
+  app.use((req, res, next) => {
     res.header(
       "Access-Control-Allow-Headers",
       "x-access-token, Origin, Content-Type, Accept"
