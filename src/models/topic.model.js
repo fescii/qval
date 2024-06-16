@@ -248,7 +248,6 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @description - This model contains all the subscribers to a topic
    * @property {Number} id - Unique identifier for the subscriber record
    * @property {Number} author - Author who subscribed to the topic
-   * @property {String} email - Email of the subscriber
    * @property {String} topic - The hash of the topic being subscribed to
   */
   const Subscribe = sequelize.define("subscribers", {
@@ -259,10 +258,6 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       },
       author: {
         type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      email: {
-        type: Sequelize.STRING,
         allowNull: false
       },
       topic: {
