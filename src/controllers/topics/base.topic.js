@@ -1,5 +1,6 @@
 // Importing within the app
 const { addTopic, editTopic, removeTopic } = require('../../queries').topicQueries;
+const { validateTopic } = require('../../validators').topicValidator;
 
 /**
  * @function createTopic
@@ -11,7 +12,7 @@ const { addTopic, editTopic, removeTopic } = require('../../queries').topicQueri
 */
 const createTopic = async (req, res, next) => {
   // Check if the user or payload is available
-  if (!req.topic) {
+  if (!req.user || !req.topic) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
@@ -47,13 +48,29 @@ const createTopic = async (req, res, next) => {
  * @returns {Object} - Returns response object
 */
 const updateTopic = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.body || !req.user || !req.params) {
+    const error = new Error('Payload data or user data is undefined!');
+    return next(error)
+  }
   const { hash } = req.params;
-  const topicData = req.topic;
+
+   // validate the topic data 
+   const valObj = await validateTopic(req.body);
+
+  // If there is an error, return the error
+  if (valObj.error) {
+    return res.status(400).send({
+      success: false,
+      message: valObj.error.message
+    });
+  }
+
 
   const {
     topic,
     error
-  } = await editTopic(hash, topicData);
+  } = await editTopic(hash, valObj.data);
 
   // Passing the error to error middleware
   if (error) {

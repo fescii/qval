@@ -1,7 +1,5 @@
 // Importing within the app
-const { validateTopic } = require('../validators').topicValidator;
 const { checkIfTopicExists } = require('../queries').topicQueries;
-// const { Privileges } = require('../configs').platformConfig;
 const { mapRequestMethod } = require('../configs');
 const { checkAuthority } = require('../utils').roleUtil;
 
@@ -90,20 +88,6 @@ const checkTopicActionPrivilege = async (req, res, next) => {
   // get topic hash from request params
   const hash = req.params.hash;
 
-  // validate the topic data 
-  const {
-    topic,
-    error
-  } = await validateTopic(req.body);
-
-  // If there is an error, return the error
-  if (error) {
-    return res.status(400).send({
-      success: false,
-      message: error.message
-    });
-  }
-
   // Create access data - (For authorizing user)
   const access = {
     section: hash,
@@ -117,8 +101,6 @@ const checkTopicActionPrivilege = async (req, res, next) => {
 
   // If the user has the privilege, proceed to the next middleware
   if (hasAccess) {
-    // add topic data to the request object
-    req.topic = topic;
     return next();
   }
 

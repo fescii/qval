@@ -196,3 +196,49 @@ const createDraft = async (req, res, next) => {
     message: "Draft was created successfully!"
   });
 };
+
+/**
+ * @function updateDraft
+ * @description Controller for updating a topic draft
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object 
+*/
+const updateDraft = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.body || !req.user) {
+    const error = new Error('Payload data or user data is undefined!');
+    return next(error)
+  }
+
+  // validate the request body
+  const valObj = await validateDraft(req.body);
+
+  // Handling data validation error
+  if (valObj.error) {
+    return res.status(400).send({
+      success: false,
+      message: valObj.error.message
+    });
+  }
+
+  // Get user data from request object
+  const userHash = req.user.hash;
+
+  const {
+    draft,
+    error
+  } = await editDraft(userHash, valObj.data);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  return res.status(200).send({
+    success: true,
+    draft,
+    message: "Draft was updated successfully!"
+  });
+};
