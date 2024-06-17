@@ -39,7 +39,11 @@ const editPassword = async (password, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+        picture: user.picture
+      },
       error: null,
     };
   }
@@ -85,7 +89,10 @@ const editEmail = async (email, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+      },
       error: null,
     };
   }
@@ -130,7 +137,11 @@ const editContact = async (contact, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+        contact: user.contact
+      },
       error: null,
     };
   }
@@ -176,7 +187,11 @@ const editBio = async (bio, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+        bio: user.bio
+      },
       error: null,
     };
   }
@@ -224,7 +239,11 @@ const editPicture = async (picture, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+        picture: user.picture
+      },
       error: null,
     };
   }
@@ -270,7 +289,11 @@ const editName = async (name, hash) => {
     await transaction.commit();
 
     return {
-      user,
+      user: {
+        hash: user.hash,
+        email: user.email,
+        name: user.name
+      },
       error: null,
     };
   }

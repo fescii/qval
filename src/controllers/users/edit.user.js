@@ -68,13 +68,7 @@ const updateProfilePicture = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
-        user: {
-          id: user.id,
-          hash: user.hash,
-          email: user.email,
-          picture: user.picture,
-          bio: user.bio,
-        },
+        user,
         message: 'Profile picture updated successfully',
       });
     });
@@ -139,13 +133,7 @@ const updateProfileBio = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      hash: user.hash,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-    },
+    user,
     message: 'Profile bio updated successfully',
   });
 };
@@ -205,14 +193,7 @@ const updateProfileContact = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      hash: user.hash,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile contact updated successfully',
   });
 };
@@ -271,14 +252,7 @@ const updateProfileEmail = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      hash: user.hash,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile email updated successfully',
   });
 };
@@ -337,14 +311,7 @@ const updateProfilePassword = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      hash: user.hash,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile password updated successfully',
   });
 }
@@ -403,15 +370,7 @@ const updateProfileName = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      hash: user.hash,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-      name: user.name,
-    },
+    user,
     message: 'Profile name updated successfully',
   });
 }

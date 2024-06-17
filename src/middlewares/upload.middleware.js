@@ -10,9 +10,9 @@ const storage = multer.diskStorage({
     cb(null, 'public/users/');
   },
   filename: (req, file, cb) => {
-    const username = req.user.username || Date.now();
+    const hash = req.user.hash || Date.now();
     const fileExtension = file.originalname.split('.').pop();
-    const fileName = username + '.' + fileExtension;
+    const fileName = hash + '.' + fileExtension;
     cb(null, fileName);
   }
 });
