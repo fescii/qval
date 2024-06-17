@@ -157,10 +157,6 @@ const actionHook = async data => {
           // Update the topic followers
           await updateTopicFollowers(topic, data.value);
         }
-        else if (data.action === 'subscribe') {
-          // Update the topic subscribers
-          await updateTopicSubscribers(topic, data.value);
-        }
         break;
       default:
         // Log the error

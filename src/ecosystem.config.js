@@ -16,8 +16,8 @@ module.exports = {
       }
     },
     {
-      name: 'upvote-worker',
-      script: './workers/upvote.worker.js', // Replace with your Bull worker file
+      name: 'action-worker',
+      script: './workers/action.worker.js', // Replace with your Bull worker file
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {

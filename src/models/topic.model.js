@@ -1,4 +1,6 @@
-// Desc: This file contains the model for the topic module / schema
+// Import action Queue from the bull module
+const { actionQueue } = require('../bull');
+
 /**
  * @name - topic.model
  * @module models/topic.model
@@ -279,6 +281,39 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       ]
     });
 
+    // add a hook to the Subscribe model to add a job to the queue
+    Subscribe.afterCreate(async subscribe => {
+      // construct the job payload
+      const payload = {
+        kind: 'topic',
+        hashes: {
+          topic: subscribe.topic,
+        },
+        action: 'subscribe',
+        value: 1
+      };
+
+      // add the job to the queue
+      actionQueue.add(payload);
+    });
+
+    // add a hook to the Subscribe model to add a job to the queue
+    Subscribe.afterDestroy(async subscribe => {
+      // construct the job payload
+      const payload = {
+        kind: 'topic',
+        hashes: {
+          topic: subscribe.topic,
+        },
+        action: 'subscribe',
+        value: -1
+      };
+
+      // add the job to the queue
+      actionQueue.add(payload);
+    });
+
+
     /**
      * @type {Model}
      * @name Follow
@@ -316,6 +351,37 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       ]
     });
 
+    // add a hook to the Follow model to add a job to the queue
+    Follow.afterCreate(async follow => {
+      // construct the job payload
+      const payload = {
+        kind: 'topic',
+        hashes: {
+          topic: follow.topic,
+        },
+        action: 'follow',
+        value: 1
+      };
+
+      // add the job to the queue
+      actionQueue.add(payload);
+    });
+
+    // add a hook to the Follow model to add a job to the queue
+    Follow.afterDestroy(async follow => {
+      // construct the job payload
+      const payload = {
+        kind: 'topic',
+        hashes: {
+          topic: follow.topic,
+        },
+        action: 'follow',
+        value: -1
+      };
+
+      // add the job to the queue
+      actionQueue.add(payload);
+    });
 
   // Defining the associations on the User and Topic models
   User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash' , as : 'user_topics', onDelete: 'CASCADE' });
