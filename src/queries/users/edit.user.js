@@ -18,7 +18,7 @@ const editPassword = async (password, hash) => {
   const transaction = await sequelize.transaction();
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -67,7 +67,7 @@ const editEmail = async (email, hash) => {
   const transaction = await sequelize.transaction();
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -112,7 +112,7 @@ const editContact = async (contact, hash) => {
   const transaction = await sequelize.transaction();
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -158,7 +158,7 @@ const editBio = async (bio, hash) => {
 
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -206,7 +206,7 @@ const editPicture = async (picture, hash) => {
 
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -252,7 +252,7 @@ const editName = async (name, hash) => {
 
   try {
     // Find the user by hash
-    const user = await User.findOne({ where: { hash: hash } }, { transaction });
+    const user = await User.findOne({ where: { hash } }, { transaction });
     if (!user) {
       return {
         user: null,

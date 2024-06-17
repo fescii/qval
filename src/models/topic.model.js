@@ -237,7 +237,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
           fields: ['id']
         },
         {
-          fields: ['topic', 'target']
+          fields: ['topic', 'story']
         }
       ]
     });

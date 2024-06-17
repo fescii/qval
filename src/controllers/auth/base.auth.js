@@ -9,7 +9,7 @@ const { validateLogin } = require('../../validators').userValidator;
 const { checkIfUserExits } = require('../../queries').userQueries;
 
 /**
- * @function signIn
+ * @function login
  * @description Controller to login a user
  * @param {Object} req - Request object
  * @param {Object} res - Response object
@@ -75,8 +75,8 @@ const login = async (req, res, next) => {
 
   let token = await tokenUtil.generateToken({
     id: user.id, email: user.email,
-    username: user.username, name: user.name
-  })
+    hash: user.hash, name: user.name
+  });
 
   // Add cookie to the response object
   let options = {
