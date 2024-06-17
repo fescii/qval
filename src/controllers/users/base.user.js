@@ -1,6 +1,9 @@
 // Import base user queries
 const { addUser, checkIfUserExits } = require('../../queries').userQueries;
 
+// Import email validator
+const { validateEmail } = require('../../validators').userValidator;
+
 /**
  * @function register
  * @description Controller to register a new user
