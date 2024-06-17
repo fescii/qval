@@ -25,3 +25,6 @@ src/node_modules/
 # key & cert
 key.pem
 cert.pem
+
+# static files: images
+src/public/users/
