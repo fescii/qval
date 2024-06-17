@@ -236,7 +236,12 @@ const approveDraft = async (draftId, data) => {
   }
 }
 
-
+/**
+ * @function removeDraft
+ * @description Query to remove a draft
+ * @param {Number} draftId - The id of the draft to remove
+ * @returns {Object} - The draft object or null, and the error if any
+*/
 
 
 // Export the module
