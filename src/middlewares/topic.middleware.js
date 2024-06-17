@@ -133,5 +133,5 @@ const checkTopicActionPrivilege = async (req, res, next) => {
  * Exporting all the middlewares as an object
 */
 module.exports = {
-  checkDuplicateTopic, checkTopicUpdatePrivilege
+  checkDuplicateTopic, checkTopicActionPrivilege
 };

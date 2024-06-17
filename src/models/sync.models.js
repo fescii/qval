@@ -18,9 +18,7 @@ module.exports = (sequelize) => {
     for (const schema of schemas) {
       await sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${schema};`);
     }
-    //Drop the table sequence if any for platform.sections_id_seq
-    await sequelize.query(`DROP SEQUENCE IF EXISTS sections.id_seq CASCADE;`);
-
+   
     // Sync the database
     try {
       if (data.alter) {

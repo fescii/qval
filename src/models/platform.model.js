@@ -9,7 +9,7 @@
  * @param {Object} Sequelize - Sequelize module
  * @returns {Object} - Returns object containing all the models
 */
-module.exports = (User, sequelize, Sequelize) => {
+module.exports = async (User, sequelize, Sequelize) => {
   /**
    * @type {Model}
    * @name System
@@ -38,16 +38,16 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -59,7 +59,7 @@ module.exports = (User, sequelize, Sequelize) => {
    * @property {String} name - The section name
    * @property {String} description - The section description
   */
-  const Section = sequelize.define("sections", {
+  const Section = sequelize.define("system_sections", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -83,17 +83,16 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id', 'identity']
-      }
-    ]
-  });
-
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id', 'identity']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -145,19 +144,19 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: false,
     }
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['section', 'user', 'base']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['section', 'user', 'base']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -193,19 +192,19 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     }
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['target', 'name', 'approved']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['target', 'name', 'approved']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -245,19 +244,19 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['audit', 'user', 'target', 'action']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['audit', 'user', 'target', 'action']
+        }
+      ]
+    });
 
   /**
    * This is the association between the models
@@ -268,7 +267,7 @@ module.exports = (User, sequelize, Sequelize) => {
   User.hasMany(Role, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
   Role.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
 
-  User.hasMany(Log, { foreignKey: 'user' , sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
+  User.hasMany(Log, { foreignKey: 'user', sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
   Log.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
 
   /**

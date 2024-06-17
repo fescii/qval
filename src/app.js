@@ -27,7 +27,7 @@ let corsOptions = {
 const { syncDb } = require("./models");
 
 // SyncDb - take true or false for when altering the database or not
-syncDb({alter: false}).then(() => {
+syncDb({ alter: false }).then(() => {
   console.log('Database Synchronized!')
 })
 
@@ -47,7 +47,7 @@ const PORT = process.env.PORT || 8080;
 
 const credentials = {
   key: fs.readFileSync(path.join(__dirname, 'ssl_certs', 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname,'ssl_certs',  'cert.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'ssl_certs', 'cert.pem')),
   allowHTTP1: true
 }
 
@@ -56,7 +56,7 @@ const credentials = {
 const server = spdy.createServer(credentials, app);
 
 // app listen port
-server.listen(PORT, ()=> {
+server.listen(PORT, () => {
   console.log(`Server is listening on port https://localhost:${PORT}`);
-  }
+}
 );
