@@ -10,4 +10,22 @@ const envConfig = {
   host: process.env['HOST']
 };
 
-module.exports = envConfig;
+const mapRequestMethod = async method => {
+  switch (method) {
+    case 'PUT':
+      return 'create';
+    case 'GET':
+      return 'read';
+    case 'PATCH':
+      return 'update';
+    case 'DELETE':
+      return 'delete';
+    default:
+      return 'read';
+  }
+}
+
+module.exports = {
+  envConfig,
+  mapRequestMethod
+};

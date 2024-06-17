@@ -29,12 +29,12 @@ const addTopicSection = async (authors, topicHash, data) => {
 }
 
 /**
- * @function getTopicSections
+ * @function fetchTopicSections
  * @description Query to get all sections of a topic
  * @param {String} topicHash - The hash of the topic to get sections from
  * @returns {Object} - The topic sections object or null, and the error if any
 */
-const getTopicSections = async (topicHash) => {
+const fetchTopicSections = async (topicHash) => {
   try {
     // Get all sections of a topic
     const sections = await TopicSection.findAll({
@@ -52,14 +52,14 @@ const getTopicSections = async (topicHash) => {
 }
 
 /**
- * @function updateTopicSection
- * @description Query to update a section of a topic
+ * @function editTopicSection
+ * @description Query to edit a section of a topic
  * @param {Array} authors - The authors of the section
- * @param {Number} sectionId - The id of the section to update
+ * @param {Number} sectionId - The id of the section to edit
  * @param {Object} data - The data of the section
  * @returns {Object} - The section object or null, and the error if any
 */
-const updateTopicSection = async (authors, sectionId, data) => {
+const editTopicSection = async (authors, sectionId, data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
@@ -71,7 +71,7 @@ const updateTopicSection = async (authors, sectionId, data) => {
       }
     });
 
-    // If the section exists, update the section
+    // If the section exists, edit the section
     if (section) {
       section.order = data.order;
       section.title = data.title;
@@ -94,6 +94,34 @@ const updateTopicSection = async (authors, sectionId, data) => {
   catch (error) {
     await transaction.rollback();
     return { section: null, error };
+  }
+}
+
+/**
+ * @function removeTopicSection
+ * @description Query to remove a section of a topic
+ * @param {Number} sectionId - The id of the section to remove
+ * @returns {Object} - The section object or null, and the error if any
+*/
+const removeTopicSection = async (sectionId) => {
+  try {
+    // destroy the section
+    const result = await TopicSection.destroy({
+      where: {
+        id: sectionId
+      }
+    });
+
+    // check if the section was destroyed
+    if (result === 1) {
+      return { deleted: true, error: null };
+    }
+    else {
+      return { deleted: false, error: null };
+    }
+  }
+  catch (error) {
+    return { deleted: null, error };
   }
 }
 
@@ -127,13 +155,13 @@ const addDraft = async (sectionId, author, data) => {
 }
 
 /**
- * @function updateDraft
- * @description Query to update a draft
- * @param {Number} draftId - The id of the draft to update
+ * @function editDraft
+ * @description Query to edit a draft
+ * @param {Number} draftId - The id of the draft to edit
  * @param {Object} data - The data of the draft
  * @returns {Object} - The draft object or null, and the error if any
 */
-const updateDraft = async (draftId, data) => {
+const editDraft = async (draftId, data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
@@ -145,7 +173,7 @@ const updateDraft = async (draftId, data) => {
       }
     });
 
-    // If the draft exists, update the draft
+    // If the draft exists, edit the draft
     if (draft) {
       draft.order = data.order;
       draft.title = data.title;
@@ -213,6 +241,6 @@ const approveDraft = async (draftId, data) => {
 
 // Export the module
 module.exports = {
-  addTopicSection, getTopicSections, updateTopicSection,
-  addDraft, updateDraft, approveDraft
+  addTopicSection, fetchTopicSections, editTopicSection,
+  addDraft, editDraft, approveDraft
 }

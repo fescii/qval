@@ -259,7 +259,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         autoIncrement: true,
       },
       author: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
       },
       topic: {

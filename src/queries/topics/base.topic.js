@@ -70,7 +70,16 @@ const addTopic = async (userHash, data) => {
     await transaction.commit();
 
     // On success return data
-    return { topic: topic, error: null}
+    return { 
+      topic: {
+        author: topic.author,
+        hash: topic.hash,
+        name: topic.name,
+        slug: topic.slug,
+        summery: topic.summery
+      },
+      error: null
+    }
   } catch (error) {
     // Rollback the transaction
     await transaction.rollback();
@@ -101,7 +110,16 @@ const checkIfTopicExists = async (name, slug) => {
     if (topic) {
       // console.log(topic)
       // On success return data
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -142,7 +160,16 @@ const editTopic = async (hash, data) => {
 
       await transaction.commit();
 
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -172,7 +199,16 @@ const findTopic = async (hash) => {
 
     // If a topic exists, return the topic
     if (topic) {
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -193,14 +229,19 @@ const findTopic = async (hash) => {
 const removeTopic = async (hash) => {
   // Check if a topic exists
   try {
-    await Topic.destroy({
+    const result = await Topic.destroy({
       where: {
         hash: hash
       }
     });
 
-    // If operation is successful, return deleted true
-    return { deleted: true, error: null}
+    // check if the topic was destroyed
+    if (result === 1) {
+      return { deleted: true, error: null };
+    }
+    else {
+      return { deleted: false, error: null };
+    }
   }
   catch (error) {
     return { deleted: false, error: error}
