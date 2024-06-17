@@ -1,8 +1,14 @@
-// const { authMiddleware, topicMiddleware } = require('../middlewares');
-// const {
-//   createTopic, updateTopic,
-//   deleteTopic
-// } = require('../controllers').topicController;
+const { verifyToken } = require('../middlewares').authMiddleware;
+const {
+  createTopic, updateTopic, deleteTopic,
+  createDraft, createTopicSection, updateDraft,
+  updateTopicSection, deleteDraft, deleteTopicSection,
+  acceptDraft
+} = require('../controllers').topicController;
+
+const {
+  checkDuplicateTopic, checkTopicActionPrivilege
+} = require('../middlewares').topicMiddleware;
 
 /**
  * @function topicRoutes
@@ -19,21 +25,62 @@ module.exports = (app, url) => {
     next();
   });
 
-  // // Creating a new topic
-  // app.put(`${url}/add`,
-  //   [authMiddleware.verifyToken, topicMiddleware.checkDuplicateTopic],
-  //   createTopic
-  // );
+  // Creating a new topic
+  app.put(`${url}/add`,
+    [verifyToken, checkDuplicateTopic],
+    createTopic
+  );
 
-  // // Updating existing topic
-  // app.patch(`${url}/:topicHash/edit`,
-  //   authMiddleware.verifyToken,
-  //   updateTopic
-  // );
+  // Updating existing topic
+  app.patch(`${url}/:hash/edit`,
+    [verifyToken, checkTopicActionPrivilege],
+    updateTopic
+  );
 
-  // // Deleting an existing topic
-  // app.delete(`${url}/:topicHash/remove`,
-  //   authMiddleware.verifyToken,
-  //   deleteTopic
-  // );
+  // Deleting an existing topic
+  app.delete(`${url}/:hash/remove`,
+    [verifyToken, checkTopicActionPrivilege],
+    deleteTopic
+  );
+
+  // creating a new topic section
+  app.put(`${url}/:hash/section/add`,
+    [verifyToken, checkTopicActionPrivilege],
+    createTopicSection
+  );
+
+  // updating a topic section
+  app.patch(`${url}/:hash/section/:sectionId/edit`,
+    [verifyToken, checkTopicActionPrivilege],
+    updateTopicSection
+  );
+
+  // deleting a topic section
+  app.delete(`${url}/:hash/section/:sectionId/remove`,
+    [verifyToken, checkTopicActionPrivilege],
+    deleteTopicSection
+  );
+
+  // creating a new draft
+  app.put(`${url}/:hash/draft/add`,
+    verifyToken, createDraft
+  );
+
+  // updating a draft
+  app.patch(`${url}/:hash/draft/edit`,
+    [verifyToken, checkTopicActionPrivilege],
+    updateDraft
+  );
+
+  // deleting a draft
+  app.delete(`${url}/:hash/draft/remove`,
+    [verifyToken, checkTopicActionPrivilege],
+    deleteDraft
+  );
+
+  // accepting a draft
+  app.patch(`${url}/:hash/draft/accept`,
+    [verifyToken, checkTopicActionPrivilege],
+    acceptDraft
+  );
 };
