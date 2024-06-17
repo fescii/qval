@@ -10,15 +10,15 @@ const { salt_rounds } = require("../../configs").envConfig;
  * @function editPassword
  * @description - A function query to edit the user's password
  * @param {String} password - New password of the user
- * @param {String} username - Username of the user
+ * @param {String} hash - The hash of the user
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editPassword = async (password, username) => {
+const editPassword = async (password, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -59,15 +59,15 @@ const editPassword = async (password, username) => {
  * @function editEmail
  * @description - A function query to edit the user's email
  * @param {String} email - New email of the user
- * @param {String} username - Username of the user
+ * @param {String} hash - The hash of the user
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editEmail = async (email, username) => {
+const editEmail = async (email, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -104,15 +104,15 @@ const editEmail = async (email, username) => {
  * @function editContact
  * @description - A function query to edit the user's contact
  * @param {String} contact - New contact of the user
- * @param {String} username - Username of the user
+ * @param {String} hash - The 
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editContact = async (contact, username) => {
+const editContact = async (contact, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -149,16 +149,16 @@ const editContact = async (contact, username) => {
  * @function editBio
  * @description - A function query to edit the user's bio
  * @param {String} bio - New bio of the user
- * @param {String} username - Username of the user
+ * @param {String} hash - The hash of the user
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editBio = async (bio, username) => {
+const editBio = async (bio, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -191,13 +191,22 @@ const editBio = async (bio, username) => {
 }
 
 
-const editPicture = async (picture, username) => {
+/**
+ * @name editPicture
+ * @function editPicture
+ * @description - A function query to edit the user's picture
+ * @param {String} picture - New picture of the user
+ * @param {String} hash - Hash of the user
+ * @returns {Object} - Returns the edited user object or null or error if the user is not found
+*/
+
+const editPicture = async (picture, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
@@ -234,16 +243,16 @@ const editPicture = async (picture, username) => {
  * @name editName
  * @description - A function query to edit the user's name
  * @param {String} name - New name of the user
- * @param {String} username - Username of the user
+ * @param {String} hash - The hash of the user
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editName = async (name, username) => {
+const editName = async (name, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
 
   try {
-    // Find the user by username
-    const user = await User.findOne({ where: { username } }, { transaction });
+    // Find the user by hash
+    const user = await User.findOne({ where: { hash: hash } }, { transaction });
     if (!user) {
       return {
         user: null,
