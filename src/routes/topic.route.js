@@ -1,8 +1,8 @@
-const { authMiddleware, topicMiddleware } = require('../middlewares');
-const {
-  createTopic, updateTopic,
-  deleteTopic
-} = require('../controllers').topicController;
+// const { authMiddleware, topicMiddleware } = require('../middlewares');
+// const {
+//   createTopic, updateTopic,
+//   deleteTopic
+// } = require('../controllers').topicController;
 
 /**
  * @function topicRoutes
@@ -19,21 +19,21 @@ module.exports = (app, url) => {
     next();
   });
 
-  // Creating a new topic
-  app.put(`${url}/add`,
-    [authMiddleware.verifyToken, topicMiddleware.checkDuplicateTopic],
-    createTopic
-  );
+  // // Creating a new topic
+  // app.put(`${url}/add`,
+  //   [authMiddleware.verifyToken, topicMiddleware.checkDuplicateTopic],
+  //   createTopic
+  // );
 
-  // Updating existing topic
-  app.patch(`${url}/:topicHash/edit`,
-    authMiddleware.verifyToken,
-    updateTopic
-  );
+  // // Updating existing topic
+  // app.patch(`${url}/:topicHash/edit`,
+  //   authMiddleware.verifyToken,
+  //   updateTopic
+  // );
 
-  // Deleting an existing topic
-  app.delete(`${url}/:topicHash/remove`,
-    authMiddleware.verifyToken,
-    deleteTopic
-  );
+  // // Deleting an existing topic
+  // app.delete(`${url}/:topicHash/remove`,
+  //   authMiddleware.verifyToken,
+  //   deleteTopic
+  // );
 };
