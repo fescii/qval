@@ -157,10 +157,11 @@ const addDraft = async (author, data) => {
  * @function editDraft
  * @description Query to edit a draft
  * @param {Number} draftId - The id of the draft to edit
+ * @param {String} author - The hash of the author
  * @param {Object} data - The data of the draft
  * @returns {Object} - The draft object or null, and the error if any
 */
-const editDraft = async (draftId, data) => {
+const editDraft = async (author, draftId, data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
@@ -168,7 +169,8 @@ const editDraft = async (draftId, data) => {
     // Find the draft
     const draft = await Draft.findOne({
       where: {
-        id: draftId
+        id: draftId,
+        author: author
       }
     });
 
@@ -210,7 +212,8 @@ const approveDraft = async (draftId, data) => {
     // Find the draft
     const draft = await Draft.findOne({
       where: {
-        id: draftId
+        id: draftId, 
+        author: userHash
       }
     });
 

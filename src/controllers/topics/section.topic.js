@@ -95,6 +95,14 @@ const updateTopicSection = async (req, res, next) => {
     return next(error);
   }
 
+  // if section is not found
+  if (!section) {
+    return res.status(404).send({
+      success: false,
+      message: "Section you are trying to update was not found!"
+    });
+  }
+
   return res.status(200).send({
     success: true,
     section,
@@ -236,9 +244,121 @@ const updateDraft = async (req, res, next) => {
     return next(error);
   }
 
+  // if draft is not found
+  if (!draft) {
+    return res.status(404).send({
+      success: false,
+      message: "Draft you are trying to update was not found!"
+    });
+  }
+
+  // return success response
   return res.status(200).send({
     success: true,
     draft,
     message: "Draft was updated successfully!"
   });
+};
+
+
+/**
+ * @function approveDraft
+ * @description Controller for approving a topic draft
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const approveDraft = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.body || !req.user) {
+    const error = new Error('Payload data or user data is undefined!');
+    return next(error)
+  }
+
+  // get draft id from request body
+  const draftId = req.body.draft;
+
+  // check if draft id is available
+  if (!draftId) {
+    const error = new Error('Draft is not defined!');
+    return next(error);
+  }
+
+  const {
+    draft,
+    error
+  } = await approveDraft(draftId);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // check if draft was approved
+  if (!draft) {
+    return res.status(404).send({
+      success: false,
+      message: "Draft not found!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    message: "Draft was approved successfully!"
+  });
+};
+
+/**
+ * @function deleteDraft
+ * @description Controller for deleting a topic draft
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const deleteDraft = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.body || !req.user) {
+    const error = new Error('Payload data or user data is undefined!');
+    return next(error)
+  }
+
+  // get draft id from request body
+  const draftId = req.body.draft;
+
+  // check if draft id is available
+  if (!draftId) {
+    const error = new Error('Draft is not defined!');
+    return next(error);
+  }
+
+  const {
+    deleted,
+    error
+  } = await removeDraft(draftId);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // check if draft was deleted
+  if (!deleted) {
+    return res.status(404).send({
+      success: false,
+      message: "Draft not found!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    message: "Draft was deleted successfully!"
+  });
+};
+
+// Export the module
+module.exports = {
+  createTopicSection, updateTopicSection, deleteTopicSection,
+  createDraft, updateDraft, approveDraft, deleteDraft
 };
