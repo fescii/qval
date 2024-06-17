@@ -36,11 +36,8 @@ const addUser = async (data) => {
     const {
       hash,
       error
-<<<<<<< Updated upstream
-    } = await gen_hash(hashConfig.user, user.id.toString());
-=======
     } = await gen_hash(hashConfig.user, hashConfig.user, user.id.toString());
->>>>>>> Stashed changes
+
 
     // If error is not equal to undefined throw an error
     if (error) {
