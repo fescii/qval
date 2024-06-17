@@ -64,7 +64,7 @@ const checkDuplicateTopic = async (req, res, next) => {
 
   // Add the validated data to the request object for the next() function
   req.topic = valObj.data;
-  next();
+  return next();
 };
 
 
@@ -79,7 +79,7 @@ const checkDuplicateTopic = async (req, res, next) => {
 */
 const checkTopicActionPrivilege = async (req, res, next) => {
   // Check if the user is available in the request object
-  if (!req.user && !req.params && !req.body) {
+  if (!req.user || !req.params || !req.body) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }
