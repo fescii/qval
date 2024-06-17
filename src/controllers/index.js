@@ -4,7 +4,6 @@ const errorController = require('./error.controller');
 const topicController = require('./topic.controller');
 const storyController = require('./story.controller');
 const opinionController = require('./opinion.controller');
-const upvoteController = require('./upvote.controller');
 const userController = require('./users')
 
 /**
@@ -13,6 +12,5 @@ const userController = require('./users')
 module.exports = {
   authController, topicController,
   errorController, storyController,
-  opinionController, upvoteController,
-  userController
+  opinionController, userController
 };

@@ -1,3 +1,6 @@
+// Import action Queue from the bull module
+const { actionQueue } = require('../bull');
+
 
 /**
  * @module models/user.model
@@ -167,6 +170,38 @@ module.exports = (sequelize, Sequelize) => {
 				fields: ['id', 'from', 'to']
 			}
 		]
+	});
+
+	// add hook to connect model: afterCreate
+	Connect.afterCreate(async (connect, _options) => {
+		// construct queue payload
+		const payload = {
+			kind: 'user',
+			hashes: {
+				from: connect.from,
+				to: connect.to
+			},
+			value: 1
+		};
+
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', payload);
+	});
+
+	// add hook to connect model: afterDestroy
+	Connect.afterDestroy(async (connect, _options) => {
+		// construct queue payload
+		const payload = {
+			kind: 'user',
+			hashes: {
+				from: connect.from,
+				to: connect.to
+			},
+			value: -1
+		};
+
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', payload);
 	});
 
 	// Define associations for the Code and User model
