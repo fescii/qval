@@ -11,7 +11,7 @@ const { addTopic, editTopic, removeTopic } = require('../../queries').topicQueri
 */
 const createTopic = async (req, res, next) => {
   // Check if the user or payload is available
-  if (!req.topic || !req.user) {
+  if (!req.topic) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
@@ -99,8 +99,8 @@ const deleteTopic = async (req, res, next) => {
   }
 
   if(!deleted){
-    const error = new Error('Something went insanely wrong!');
-    return next(error)
+    const error = new Error('Topic was not found!');
+    return next(error);
   }
 
   // Handling when the topic was deleted

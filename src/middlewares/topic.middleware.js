@@ -18,7 +18,7 @@ const { checkAuthority } = require('../utils').roleUtil;
 */
 const checkDuplicateTopic = async (req, res, next) => {
   // Check if the payload is available in the request object
-  if (!req.body) {
+  if (!req.body || !req.user) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }

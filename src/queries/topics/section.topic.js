@@ -128,17 +128,16 @@ const removeTopicSection = async (sectionId) => {
 /**
  * @function addDraft
  * @description Query to add a draft to a section
- * @param {Number} sectionId - The id of the section if available to add the draft to
  * @param {String} author - The author of the draft: the hash of the author
  * @param {Object} data - The data of the draft
  * @returns {Object} - The draft object or null, and the error if any
 */
-const addDraft = async (sectionId, author, data) => {
+const addDraft = async (author, data) => {
   try {
     // Trying to create a draft to the database
     const draft = await Draft.create({
       kind: data.kind,
-      section: sectionId,
+      section: data.section,
       order: data.order,
       author: author,
       title: data.title,
@@ -268,5 +267,6 @@ const removeDraft = async (draftId) => {
 // Export the module
 module.exports = {
   addTopicSection, fetchTopicSections, editTopicSection,
-  addDraft, editDraft, approveDraft, removeDraft, removeTopicSection
+  removeTopicSection, addDraft,
+  editDraft, approveDraft, removeDraft
 }
