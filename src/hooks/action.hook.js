@@ -124,6 +124,7 @@ const actionHook = async data => {
     // Log the error
     console.error('Data is undefined. Cannot initialize action hook process');
 
+    console.log('Data:', data);
     return;
   }
 
@@ -139,7 +140,7 @@ const actionHook = async data => {
         const {from, to} = data.hashes;
 
         // Check action from data
-        if (data.action === 'follow') {
+        if (data.action === 'connect') {
           // Update the user followers and following
           await updateUserFollowers(to, data.value);
           await updateUserFollowing(from, data.value);

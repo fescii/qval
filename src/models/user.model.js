@@ -181,6 +181,7 @@ module.exports = (sequelize, Sequelize) => {
 				from: connect.from,
 				to: connect.to
 			},
+			action: 'connect',
 			value: 1
 		};
 
@@ -197,6 +198,7 @@ module.exports = (sequelize, Sequelize) => {
 				from: connect.from,
 				to: connect.to
 			},
+			action: 'connect',
 			value: -1
 		};
 

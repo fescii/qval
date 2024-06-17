@@ -33,7 +33,10 @@ module.exports = (sequelize) => {
         });
       }
       else {
-        console.log('No Db Changes detected, Everything is Synced!');
+        console.log('Syncing Db...');
+        sequelize.sync().then(() => {
+          console.log('Database synchronized...');
+        });
       }
     }
     catch (e) {

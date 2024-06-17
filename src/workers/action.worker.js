@@ -5,9 +5,9 @@ const { actionHook } = require('../hooks').actionHook;
 
 // Initialize the Bull worker for the upvoteQueue
 const actionWorker = new Worker('actionQueue', async (job) => {
-  console.log('========Processing upvote job=====================');
+  console.log('========Processing action job =====================');
   console.log(job.data);
-  console.log('====================================');
+  console.log('==================================================');
   await actionHook(job.data); // Run the action hook
 }, {connection: redisConfig});
 

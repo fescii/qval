@@ -4,11 +4,9 @@ const topicQueries = require('./topics')
 const roleQueries = require('./role.queries');
 const storyQueries = require('./story.queries');
 const opinionQueries = require('./opinion.queries');
-const upvoteQueries = require('./upvote.queries');
 const userQueries = require('./users');
 
 module.exports = {
   authQueries, topicQueries, roleQueries,
-  storyQueries, opinionQueries,
-  upvoteQueries, userQueries,
+  storyQueries, opinionQueries, userQueries,
 }
