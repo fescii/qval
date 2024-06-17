@@ -2,7 +2,7 @@
 const { verifyToken } = require('../middlewares').authMiddleware;
 const {
   updateProfilePicture, updateProfileBio, updateProfileName,
-  updateProfileContact, updateProfilePassword,
+  updateProfileContact, updateProfilePassword, followUser
 } = require('../controllers').userController;
 
 
@@ -49,5 +49,11 @@ module.exports = (app, url) => {
   app.patch(`${url}/edit/name`,
     verifyToken,
     updateProfileName
+  );
+
+  // Follow user route
+  app.patch(`${url}/follow/:hash`,
+    verifyToken,
+    followUser
   );
 };

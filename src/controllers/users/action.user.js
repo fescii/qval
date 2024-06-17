@@ -11,16 +11,19 @@ const { connectToUser } = require('../../queries/users');
 */
 const followUser = async (req, res, next) => {
   // Check if the payload is available in the request object
-  if (!req.body && !req.user) {
-    const error = new Error('Payload data is not defined in the req object!');
+  if (!req.params && !req.user) {
+    const error = new Error('Payload data is not defined in the request!');
     return next(error);
   }
 
   // Get the user hash from the request object
   const userHash = req.user.hash;
 
-  // Get the user hash to follow from body
-  const followHash = req.body.hash;
+  // Get the user hash to follow url params
+  let followHash = req.params.hash;
+
+  // convert the follow hash to uppercase
+  followHash = followHash.toUpperCase();
 
   // If the user hash and follow hash are null
   if (!userHash && !followHash) {
