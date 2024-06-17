@@ -269,7 +269,7 @@ const updateDraft = async (req, res, next) => {
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
 */
-const approveDraft = async (req, res, next) => {
+const acceptDraft = async (req, res, next) => {
   // Check if the user or payload is available
   if (!req.body || !req.user) {
     const error = new Error('Payload data or user data is undefined!');
@@ -277,25 +277,23 @@ const approveDraft = async (req, res, next) => {
   }
 
   // get draft id from request body
-  const draftId = req.body.draft;
-
-  // check if draft id is available
-  if (!draftId) {
-    const error = new Error('Draft is not defined!');
+  const payload = req.body;
+  if(!payload.draft || !payload.accepted) {
+    const error = new Error('Draft or accepted is not defined!');
     return next(error);
   }
 
   const {
     draft,
     error
-  } = await approveDraft(draftId);
+  } = await approveDraft(payload);
 
   // Passing the error to error middleware
   if (error) {
     return next(error);
   }
 
-  // check if draft was approved
+  // check if draft not found
   if (!draft) {
     return res.status(404).send({
       success: false,
@@ -305,7 +303,7 @@ const approveDraft = async (req, res, next) => {
 
   return res.status(200).send({
     success: true,
-    message: "Draft was approved successfully!"
+    message: payload.approved ? "Draft was approved successfully!" : "Draft was rejected successfully!"
   });
 };
 
@@ -360,5 +358,5 @@ const deleteDraft = async (req, res, next) => {
 // Export the module
 module.exports = {
   createTopicSection, updateTopicSection, deleteTopicSection,
-  createDraft, updateDraft, approveDraft, deleteDraft
+  createDraft, updateDraft, acceptDraft, deleteDraft
 };

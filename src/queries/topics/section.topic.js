@@ -204,7 +204,7 @@ const editDraft = async (author, draftId, data) => {
  * @returns {Object} data - The payload data
  * @returns {Object} - The draft object or null, and the error if any
 */
-const approveDraft = async (draftId, data) => {
+const approveDraft = async (data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
@@ -212,8 +212,7 @@ const approveDraft = async (draftId, data) => {
     // Find the draft
     const draft = await Draft.findOne({
       where: {
-        id: draftId, 
-        author: userHash
+        id: data.draft
       }
     });
 
