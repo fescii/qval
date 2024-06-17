@@ -44,13 +44,13 @@ const updateProfilePicture = async (req, res, next) => {
         });
       }
 
-      const username = req.user.username;
+      const userHash = req.user.hash;
       const { path } = req.file;
 
       const {
         user,
         error
-      } = await editPicture(path, username);
+      } = await editPicture(path, userHash);
 
       // Check if there was an error updating the user's profile picture
       if (error) {
@@ -70,7 +70,7 @@ const updateProfilePicture = async (req, res, next) => {
         success: true,
         user: {
           id: user.id,
-          username: user.username,
+          hash: user.hash,
           email: user.email,
           picture: user.picture,
           bio: user.bio,
@@ -105,7 +105,7 @@ const updateProfileBio = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the bio
   const validatedData = await validateBio(payload);
@@ -121,7 +121,7 @@ const updateProfileBio = async (req, res, next) => {
   const {
     user,
     error
-  } = await editBio(validatedData.data.bio, username);
+  } = await editBio(validatedData.data.bio, userHash);
 
   // Check if there was an error updating the user's profile bio
   if (error) {
@@ -141,7 +141,7 @@ const updateProfileBio = async (req, res, next) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username,
+      hash: user.hash,
       email: user.email,
       picture: user.picture,
       bio: user.bio,
@@ -171,7 +171,7 @@ const updateProfileContact = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the contact
   const validatedData = await validateContact(payload);
@@ -187,7 +187,7 @@ const updateProfileContact = async (req, res, next) => {
   const {
     user,
     error
-  } = await editContact(validatedData.data.contact, username);
+  } = await editContact(validatedData.data.contact, userHash);
 
   // Check if there was an error updating the user's profile contact
   if (error) {
@@ -207,7 +207,7 @@ const updateProfileContact = async (req, res, next) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username,
+      hash: user.hash,
       email: user.email,
       picture: user.picture,
       bio: user.bio,
@@ -237,7 +237,7 @@ const updateProfileEmail = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the email
   const validatedData = await validateEmail(payload);
@@ -253,7 +253,7 @@ const updateProfileEmail = async (req, res, next) => {
   const {
     user,
     error
-  } = await editEmail(validatedData.data.email, username);
+  } = await editEmail(validatedData.data.email, userHash);
 
   // Check if there was an error updating the user's profile email
   if (error) {
@@ -273,7 +273,7 @@ const updateProfileEmail = async (req, res, next) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username,
+      hash: user.hash,
       email: user.email,
       picture: user.picture,
       bio: user.bio,
@@ -303,7 +303,7 @@ const updateProfilePassword = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the password
   const validatedData = await validatePassword(payload);
@@ -319,7 +319,7 @@ const updateProfilePassword = async (req, res, next) => {
   const {
     user,
     error
-  } = await editPassword(validatedData.data.password, username);
+  } = await editPassword(validatedData.data.password, userHash);
 
   // Check if there was an error updating the user's profile password
   if (error) {
@@ -339,7 +339,7 @@ const updateProfilePassword = async (req, res, next) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username,
+      hash: user.hash,
       email: user.email,
       picture: user.picture,
       bio: user.bio,
@@ -369,7 +369,7 @@ const updateProfileName = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the name
   const validatedData = await validateName(payload);
@@ -385,7 +385,7 @@ const updateProfileName = async (req, res, next) => {
   const {
     user,
     error
-  } = await editName(validatedData.data.name, username);
+  } = await editName(validatedData.data.name, userHash);
 
   // Check if there was an error updating the user's profile name
   if (error) {
@@ -405,7 +405,7 @@ const updateProfileName = async (req, res, next) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username,
+      hash: user.hash,
       email: user.email,
       picture: user.picture,
       bio: user.bio,
