@@ -242,10 +242,31 @@ const approveDraft = async (draftId, data) => {
  * @param {Number} draftId - The id of the draft to remove
  * @returns {Object} - The draft object or null, and the error if any
 */
+const removeDraft = async (draftId) => {
+  try {
+    // destroy the draft
+    const result = await Draft.destroy({
+      where: {
+        id: draftId
+      }
+    });
+
+    // check if the draft was destroyed
+    if (result === 1) {
+      return { deleted: true, error: null };
+    }
+    else {
+      return { deleted: false, error: null };
+    }
+  }
+  catch (error) {
+    return { deleted: null, error };
+  }
+}
 
 
 // Export the module
 module.exports = {
   addTopicSection, fetchTopicSections, editTopicSection,
-  addDraft, editDraft, approveDraft
+  addDraft, editDraft, approveDraft, removeDraft, removeTopicSection
 }
