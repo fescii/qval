@@ -16,15 +16,12 @@ module.exports = (sequelize) => {
   const syncDb = async (data) => {
     const schemas = ['topic', 'account', 'platform', 'story'];
     for (const schema of schemas) {
-      await sequelize.createSchema(schema).catch((error) => {
-        if (error.code === "42P06") {
-          console.log(`Schema ${schema} already exists`);
-        }
-        else {
-          console.error(`Error creating schemas ${schema}: exits`);
-        }
-      });
+      await sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${schema};`);
     }
+    //Drop the table sequence if any for platform.sections_id_seq
+    await sequelize.query(`DROP SEQUENCE IF EXISTS ${schema}.id_seq CASCADE;`);
+
+    // Sync the database
     try {
       if (data.alter) {
         console.log('Altering Db Changes...');
