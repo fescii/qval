@@ -65,6 +65,7 @@ const {
   System, Section, Approval, Role, Log
 } = require('./platform.model')(User, sequelize, Sequelize);
 
+
 // Importing story schema models
 const {
   Story
@@ -77,7 +78,8 @@ const {
 
 // assign the models to the models object
 Object.assign(models, {
-  User, Code, Connect, System, Section, Approval, Role, Log, 
+  User, Code, Connect, 
+  System, Section, Approval, Role, Log,
   Story, // other story models
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
 });

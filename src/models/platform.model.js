@@ -9,7 +9,7 @@
  * @param {Object} Sequelize - Sequelize module
  * @returns {Object} - Returns object containing all the models
 */
-module.exports = async (User, sequelize, Sequelize) => {
+module.exports = (User, sequelize, Sequelize) => {
   /**
    * @type {Model}
    * @name System

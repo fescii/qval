@@ -10,18 +10,18 @@ const  { hash_secret } = require("../../configs").envConfig;
 /**
  * @function addTopic
  * @description Query to add a new topic
- * @param {String} userHash - The hash of the user who's creating the topic
+ * @param {String} user - The hash of the user who's creating the topic
  * @param {Object} data - The data of the topic
  * @returns {Object} - The topic object or null, and the error if any
 */
-const addTopic = async (userHash, data) => {
+const addTopic = async (user, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
 
   try {
     // Trying to create a topic to the database
     const topic = await Topic.create({
-      author: userHash,
+      author: user.hash,
       name: data.name,
       slug: data.slug,
       summery: data.summery,
@@ -44,6 +44,8 @@ const addTopic = async (userHash, data) => {
     // Save the topic with the hash
     await topic.save({transaction});
 
+    // console.log('Section', Section);
+
     // Create a section for the topic created
     const section = await Section.create({
       identity: topic.hash,
@@ -53,9 +55,9 @@ const addTopic = async (userHash, data) => {
     }, {transaction});
 
     // Create a role for the user who created the topic
-    await Role.create({
+    const role = await Role.create({
       section: section.identity,
-      user: userId,
+      user: user.id,
       base: RoleBase.Owner,
       name: `This is a role for section - ${topic.name}`,
       privileges: {

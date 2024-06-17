@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 // import hashConfig
 const {hashConfig} = require("../../configs");
-const { salt_rounds } = require("../../configs/env.config");
+const { salt_rounds } = require("../../configs").envConfig;
 
 // import gen_hash
 const { gen_hash } = require("../../wasm");

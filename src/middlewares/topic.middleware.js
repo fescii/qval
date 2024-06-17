@@ -2,6 +2,7 @@
 const { checkIfTopicExists } = require('../queries').topicQueries;
 const { mapRequestMethod } = require('../configs');
 const { checkAuthority } = require('../utils').roleUtil;
+const { validateTopic } = require('../validators').topicValidator;
 
 
 /**
@@ -86,7 +87,10 @@ const checkTopicActionPrivilege = async (req, res, next) => {
   const user = req.user;
 
   // get topic hash from request params
-  const hash = req.params.hash;
+  let hash = req.params.hash;
+
+  // convert hash to uppercase
+  hash = hash.toUpperCase()
 
   // Create access data - (For authorizing user)
   const access = {
