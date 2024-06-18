@@ -44,8 +44,6 @@ const createTopicSection = async (req, res, next) => {
     error
   } = await addTopicSection(userHash, req.topic, valObj.data);
 
-
-
   // Passing the error to error middleware
   if (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
@@ -93,13 +91,19 @@ const updateTopicSection = async (req, res, next) => {
     });
   }
 
-  // Get user data from request object
-  const userHash = req.user.hash;
+  // check if section id is available
+  if (!valObj.data.section) {
+    // Return error response
+    return res.status(400).send({
+      success: false,
+      message: "Section is not defined!"
+    });
+  }
 
   const {
     section,
     error
-  } = await editTopicSection(userHash, valObj.data);
+  } = await editTopicSection(valObj.data);
 
   // Passing the error to error middleware
   if (error) {

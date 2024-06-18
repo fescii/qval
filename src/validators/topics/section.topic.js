@@ -34,6 +34,19 @@ const validateSection = async data => {
       title = await sanitizeUtil.sanitizeInput(title);
     }
 
+    // get section
+    let section = data.section;
+
+    // validate section
+    if (section) {
+      if (typeof section !== 'number' || section < 1) {
+        return {
+          data: null,
+          error: new Error("Section section should be a number and greater than 0!")
+        }
+      }
+    }
+
     // validate content
     if (typeof data.content !== 'string' || data.content.length < 30) {
       return {
@@ -44,6 +57,7 @@ const validateSection = async data => {
 
     const validatedData = {
       order: data.order,
+      section: section,
       title: title,
       content: await sanitizeUtil.sanitizeInput(data.content),
     }

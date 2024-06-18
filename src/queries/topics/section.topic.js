@@ -1,6 +1,10 @@
 // import the sequelize models
 const { sequelize, TopicSection, Draft } = require('../../models').models;
 
+// import op from sequelize
+const { Op, Sequelize} = require('sequelize');
+
+
 /**
  * @function addTopicSection
  * @description Query to add a new section to a topic
@@ -97,6 +101,7 @@ const editTopicSection = async (data) => {
   }
   catch (error) {
     await transaction.rollback();
+    console.log(error);
     return { section: null, error };
   }
 }
@@ -113,15 +118,15 @@ const editTopicSection = async (data) => {
 const adjustSectionOrders = async (topic, start, transaction, exclude) => {
   // update the order of the sections from the start : order = order + 1
   await TopicSection.update(
-    { order: sequelize.literal('order + 1')}, 
+    { order: Sequelize.literal('"order" + 1')},
     {
       where: {
         topic: topic,
         order: {
-          [sequelize.Op.gte]: start
+          [Op.gte]: start
         },
         id: {
-          [sequelize.Op.ne]: exclude
+          [Op.ne]: exclude
         }
       }
     }, {transaction}
