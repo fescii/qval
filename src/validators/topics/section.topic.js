@@ -150,6 +150,84 @@ const validateDraft = async data => {
   }
 }
 
+/**
+ * @name validateEditDraft
+ * @function validateEditDraft
+ * @description a function that validates draft data before being passed to the controllers or middlewares
+ * @param {Object} data - The  payload draft data object
+ * @returns {Object} - The validated draft data object: and error if any
+*/
+const validateEditDraft = async data => {
+  if (data.order && data.draft && data.content) {
+    // validate order
+    if (typeof data.order !== 'number' || data.order < 1) {
+      return {
+        data: null,
+        error: new Error("Draft order should be a number and greater than 0!")
+      }
+    }
+    // get title
+    let title = data.title;
+
+    // Check if title is provided, if provided validate it
+    if (title) {
+      // validate title
+      if (typeof title !== 'string' || title.length < 2) {
+        return {
+          data: null,
+          error: new Error("Draft title should have 2 chars or more and must be a string!")
+        }
+      }
+
+      title = await sanitizeUtil.sanitizeInput(title);
+    }
+
+    // get draft
+    // validate draft
+    if (typeof data.draft !== 'number' || data.draft < 1) {
+      return {
+        data: null,
+        error: new Error("Draft draft should be a number and greater than 0!")
+      }
+    }
+
+    // get section
+    let section = data.section;
+    if (section) {
+      // validate section
+      if (typeof section !== 'number' || section < 1) {
+        return {
+          data: null,
+          error: new Error("Draft section should be a number and greater than 0!")
+        }
+      }
+    }
+
+    // validate content
+    if (typeof data.content !== 'string' || data.content.length < 30) {
+      return {
+        data: null,
+        error: new Error("Draft content should have 30 chars or more and must be a string!")
+      }
+    }
+
+    const validatedData = {
+      order: data.order,
+      draft: data.draft,
+      title: title,
+      content: await sanitizeUtil.sanitizeInput(data.content)
+    }
+
+    return { data: validatedData, error: null };
+  }
+  else {
+    return {
+      data: null,
+      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (order, draft, content)")
+    }
+  }
+}
+
 module.exports = {
-  validateSection, validateDraft
+  validateSection, validateDraft, validateEditDraft
 }

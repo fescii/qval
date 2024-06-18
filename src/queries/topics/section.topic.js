@@ -232,11 +232,10 @@ const getDraftData = async (data) => {
  * @function editDraft
  * @description Query to edit a draft
  * @param {Number} draftId - The id of the draft to edit
- * @param {String} author - The hash of the author
  * @param {Object} data - The data of the draft
  * @returns {Object} - The draft object or null, and the error if any
 */
-const editDraft = async (author, draftId, data) => {
+const editDraft = async (data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
@@ -244,8 +243,8 @@ const editDraft = async (author, draftId, data) => {
     // Find the draft
     const draft = await Draft.findOne({
       where: {
-        id: draftId,
-        author: author
+        id: data.draft,
+        author: data.author
       }
     });
 
@@ -291,26 +290,155 @@ const approveDraft = async (data) => {
       }
     });
 
-    // If the draft exists, approve the draft
-    if (draft) {
-      draft.approved = data.approved;
+    // check if the draft does not exist
+    if (!draft) {
+      return { result: null, error: null };
+    }
 
-      await draft.save({transaction});
+    // check if the kind is update and section is not null
+    if (draft.kind === 'update' && draft.section) {
+      // If the draft exists, merge the draft to the section
+      const { section, error } = await mergeDraftToSection(draft, transaction);
 
+      // check for error
+      if (error) {
+        // throw the error
+        throw error;
+      }
+
+      // destroy the draft
+      await draft.destroy({ transaction });
+
+      // commit the transaction
       await transaction.commit();
 
-      return { draft, error: null };
+      return { result: section, error: null };
     }
-    else {
-      // If the draft doesn't exist, return both null
-      return { draft: null, error: null };
+
+    // create a new section using the draft data
+    const { section, error } = await createSectionFromDraft(draft, data.authorizer, transaction);
+
+    // check for error
+    if (error) {
+      // throw the error
+      throw error;
     }
+
+    // destroy the draft
+    await draft.destroy({ transaction });
+
+    // commit the transaction
+    await transaction.commit();
+
+    return { result: section, error: null };
   }
   catch (error) {
     await transaction.rollback();
     return { draft: null, error };
   }
 }
+
+
+/**
+ * @function mergeDraftToSection
+ * @description Query to merge a draft to a section
+ * @param {Object} draft - The data of the draft
+ * @param {Object} transaction - The transaction object
+ * @returns {Object} - The section object or null, and the error if any
+*/
+const mergeDraftToSection = async (draft, transaction) => {
+  try {
+    // fetch the section
+    const section = await TopicSection.findOne({
+      where: {
+        id: draft.section,
+        topic: draft.topic
+      }
+    }, { transaction });
+
+    // check if the section does not exist
+    if (!section) {
+      // throw an error
+      throw new Error('Section you\'re trying to update does not exist');
+    }
+
+    // check if order is not the same
+    if (section.order !== draft.order) {
+      // adjust the order of the sections
+      await adjustSectionOrders(section.topic, draft.order, transaction, section.id);
+    }
+
+    // update the section using the draft data
+    section.order = draft.order;
+    section.content = draft.content;
+
+    // merge section authors: append draft author to section authors and it has to be unique
+    const authors = section.authors;
+    const author = draft.author;
+    if (!authors.includes(author)) {
+      authors.push(author);
+    }
+
+    // update the authors
+    section.authors = authors;
+
+    // check if the title is not null
+    if (draft.title !== null) {
+      section.title = draft.title;
+    }
+
+    // save the section
+    await section.save({ transaction });
+
+    // return the section
+    return { section, error: null };
+  
+  } catch (error) {
+    // return the error
+    return { section: null, error };
+  }
+}
+
+/**
+ * @function createSectionFromDraft
+ * @description Query to create a section from a draft
+ * @param {Object} draft - The data of the draft
+ * @param {Object} authorizer - The authorizer hash
+ * @param {Object} transaction - The transaction object
+ * @returns {Object} - The section object or null, and the error if any
+*/
+const createSectionFromDraft = async (draft, authorizer, transaction) => {
+  try {
+    // create author array from the draft author and authorizer
+    const authors = [];
+    if (draft.author === authorizer) {
+      authors.push(draft.author);
+    }
+    else {
+      authors.push(draft.author, authorizer);
+    }
+
+    // create a new section using the draft data
+    const section = await TopicSection.create({
+      topic: draft.topic,
+      order: draft.order,
+      title: draft.title,
+      authors:  authors,
+      content: draft.content
+    }, { transaction });
+
+    // adjust the order of the sections
+    await adjustSectionOrders(section.topic, draft.order, transaction, section.id);
+
+    // return the section
+    return { section, error: null };
+  }
+  catch (error) {
+    return { section: null, error };
+  }
+}
+
+
 
 /**
  * @function removeDraft

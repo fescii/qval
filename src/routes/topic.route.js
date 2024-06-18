@@ -68,8 +68,7 @@ module.exports = (app, url) => {
 
   // updating a draft
   app.patch(`${url}/:hash/draft/edit`,
-    [verifyToken, checkTopicActionPrivilege],
-    updateDraft
+    verifyToken, updateDraft
   );
 
   // deleting a draft
@@ -79,7 +78,7 @@ module.exports = (app, url) => {
   );
 
   // accepting a draft
-  app.patch(`${url}/:hash/draft/accept`,
+  app.patch(`${url}/:hash/draft/merge`,
     [verifyToken, checkTopicActionPrivilege],
     acceptDraft
   );

@@ -7,7 +7,7 @@ const {
 
 // importing validators
 const {
-  validateDraft, validateSection
+  validateDraft, validateSection, validateEditDraft
 } = require('../../validators').topicValidator;
 
 /** 
@@ -239,13 +239,21 @@ const createDraft = async (req, res, next) => {
 */
 const updateDraft = async (req, res, next) => {
   // Check if the user or payload is available
-  if (!req.body || !req.user) {
+  if (!req.body || !req.user || !req.params) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
 
+  // check if draft id is available in the request body
+  if (!req.body.draft) {
+    return res.status(400).send({
+      success: false,
+      message: "Draft is not defined!"
+    });
+  }
+
   // validate the request body
-  const valObj = await validateDraft(req.body);
+  const valObj = await validateEditDraft(req.body);
 
   // Handling data validation error
   if (valObj.error) {
@@ -255,13 +263,21 @@ const updateDraft = async (req, res, next) => {
     });
   }
 
-  // Get user data from request object
+  // Get user data from request object, and topic hash
   const userHash = req.user.hash;
+  let topic = req.params.hash;
+
+  // convert hash to uppercase
+  topic = topic.toUpperCase();
+
+  // add user and topic to the data
+  valObj.data.author = userHash;
+  valObj.data.topic = topic;
 
   const {
     draft,
     error
-  } = await editDraft(userHash, valObj.data);
+  } = await editDraft(valObj.data);
 
   // Passing the error to error middleware
   if (error) {
@@ -302,13 +318,16 @@ const acceptDraft = async (req, res, next) => {
 
   // get draft id from request body
   const payload = req.body;
-  if(!payload.draft || !payload.accepted) {
+  if(!payload.draft) {
     const error = new Error('Draft or accepted is not defined!');
     return next(error);
   }
 
+  // add user to the payload
+  payload.authorizer = req.user.hash;
+
   const {
-    draft,
+    result,
     error
   } = await approveDraft(payload);
 
@@ -318,7 +337,7 @@ const acceptDraft = async (req, res, next) => {
   }
 
   // check if draft not found
-  if (!draft) {
+  if (!result) {
     return res.status(404).send({
       success: false,
       message: "Draft not found!"
@@ -327,7 +346,8 @@ const acceptDraft = async (req, res, next) => {
 
   return res.status(200).send({
     success: true,
-    message: payload.approved ? "Draft was approved successfully!" : "Draft was rejected successfully!"
+    section: result,
+    message: "Draft was merged successfully!"
   });
 };
 
