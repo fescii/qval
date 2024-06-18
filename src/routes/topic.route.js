@@ -50,13 +50,13 @@ module.exports = (app, url) => {
   );
 
   // updating a topic section
-  app.patch(`${url}/:hash/section/:sectionId/edit`,
+  app.patch(`${url}/:hash/section/edit`,
     [verifyToken, checkTopicActionPrivilege],
     updateTopicSection
   );
 
   // deleting a topic section
-  app.delete(`${url}/:hash/section/:sectionId/remove`,
+  app.delete(`${url}/:hash/section/remove`,
     [verifyToken, checkTopicActionPrivilege],
     deleteTopicSection
   );

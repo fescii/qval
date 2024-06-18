@@ -20,7 +20,7 @@ const {
 */
 const createTopicSection = async (req, res, next) => {
   // Check if the user or payload is available
-  if (!req.body || !req.user) {
+  if (!req.body || !req.user || !req.topic) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
@@ -42,11 +42,22 @@ const createTopicSection = async (req, res, next) => {
   const {
     section,
     error
-  } = await addTopicSection(userHash, valObj.data);
+  } = await addTopicSection(userHash, req.topic, valObj.data);
+
+
 
   // Passing the error to error middleware
   if (error) {
-    return next(error);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).send({
+        success: false,
+        message: "Order number must be unique!"
+      });
+    }
+    else {
+      // pass the error to the error middleware
+      return next(error);
+    }
   }
 
   return res.status(201).send({

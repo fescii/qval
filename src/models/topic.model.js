@@ -113,7 +113,8 @@ module.exports = (User, Story, sequelize, Sequelize) => {
     },
     order: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     title: {
       type: Sequelize.STRING,
@@ -134,10 +135,10 @@ module.exports = (User, Story, sequelize, Sequelize) => {
     indexes: [
       {
         unique: true,
-        fields: ['id']
+        fields: ['id', 'order']
       },
       {
-        fields: ['topic', 'order']
+        fields: ['topic']
       }
     ]
   });

@@ -105,6 +105,7 @@ const checkTopicActionPrivilege = async (req, res, next) => {
 
   // If the user has the privilege, proceed to the next middleware
   if (hasAccess) {
+    req.topic = hash;
     return next();
   }
 

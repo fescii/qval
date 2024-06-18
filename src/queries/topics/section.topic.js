@@ -1,32 +1,33 @@
 // import the sequelize models
-const { sequelize, Topic, TopicSection, Draft } = require('../../models').models;
+const { sequelize, TopicSection, Draft } = require('../../models').models;
 
 /**
  * @function addTopicSection
  * @description Query to add a new section to a topic
- * @param {Authors} authors - The authors of the section
+ * @param {Authors} author - The authors of the section
  * @param {String} topicHash - The hash of the topic to add the section to
  * @param {Object} data - The data of the topic
  * @returns {Object} - The topic object or null, and the error if any
 */
-const addTopicSection = async (authors, topicHash, data) => {
+const addTopicSection = async (author, topicHash, data) => {
   try {
     // Trying to create a topic to the database
-    const topic = await Topic.create({
+    const section = await TopicSection.create({
       topic: topicHash,
       order: data.order,
       title: data.title,
       content: data.content,
-      authors: authors
-    }, {transaction});
+      authors: [author]
+    });
 
     // return the topic created
-    return { topic, error: null };
+    return { section, error: null };
   }
   catch (error) {
-    return { topic: null, error };
+    return { section: null, error };
   }
 }
+
 
 /**
  * @function fetchTopicSections
@@ -54,48 +55,79 @@ const fetchTopicSections = async (topicHash) => {
 /**
  * @function editTopicSection
  * @description Query to edit a section of a topic
- * @param {Array} authors - The authors of the section
  * @param {Number} sectionId - The id of the section to edit
  * @param {Object} data - The data of the section
  * @returns {Object} - The section object or null, and the error if any
 */
-const editTopicSection = async (authors, sectionId, data) => {
+const editTopicSection = async (data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
   try {
-    // Find the section
+    // find the section
     const section = await TopicSection.findOne({
-      where: {
-        id: sectionId
-      }
-    });
+      where: {  id: data.section }
+    }, {transaction});
 
-    // If the section exists, edit the section
-    if (section) {
-      section.order = data.order;
-      section.title = data.title;
-      section.content = data.content;
-
-      // save unique authors in the authors array: don't repeat authors
-      section.authors = [...new Set([...section.authors, ...authors])];
-
-      await section.save({transaction});
-
-      await transaction.commit();
-
-      return { section, error: null };
-    }
-    else {
-      // If the section doesn't exist, return both null
+    // check if the section exists
+    if (!section) {
       return { section: null, error: null };
     }
+
+    // check if the order of the section is not the same
+    if (section.order !== data.order) {
+      // adjust the order of the sections
+      await adjustSectionOrders(section.topic, data.order, transaction, section.id);
+    }
+
+    // edit the section
+    section.order = data.order;
+    section.title = data.title;
+    section.content = data.content;
+
+    // save the section
+    await section.save({transaction});
+
+    // commit the transaction
+    await transaction.commit();
+
+    // return the section
+    return { section, error: null };
+
   }
   catch (error) {
     await transaction.rollback();
     return { section: null, error };
   }
 }
+
+/**
+ * @function adjustSectionOrders
+ * @description Query to adjust the order of sections
+ * @param {String} topicHash - The hash of the topic to adjust the sections
+ * @param {Number} start - The start order of the section
+ * @param {Object} transaction - The transaction object
+ * @param {Number} exclude - The id of the section to exclude
+ * @returns {Object} - The sections object or null, and the error if any
+*/
+const adjustSectionOrders = async (topic, start, transaction, exclude) => {
+  // update the order of the sections from the start : order = order + 1
+  await TopicSection.update(
+    { order: sequelize.literal('order + 1')}, 
+    {
+      where: {
+        topic: topic,
+        order: {
+          [sequelize.Op.gte]: start
+        },
+        id: {
+          [sequelize.Op.ne]: exclude
+        }
+      }
+    }, {transaction}
+  );
+}
+
 
 /**
  * @function removeTopicSection
