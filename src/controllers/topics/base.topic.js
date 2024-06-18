@@ -102,7 +102,10 @@ const updateTopic = async (req, res, next) => {
 */
 const deleteTopic = async (req, res, next) => {
   // Check if the user or payload is available
-  const { hash } = req.params;
+  let hash = req.params.hash;
+
+  // change the hash to uppercase
+  hash = hash.toUpperCase();
 
   const {
     deleted,
@@ -115,8 +118,10 @@ const deleteTopic = async (req, res, next) => {
   }
 
   if(!deleted){
-    const error = new Error('Topic was not found!');
-    return next(error);
+    return res.status(404).send({
+      success: false,
+      message: "The topic you're trying to delete was not found!"
+    });
   }
 
   // Handling when the topic was deleted
