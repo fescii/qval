@@ -163,7 +163,7 @@ const deleteTopicSection = async (req, res, next) => {
   if (!deleted) {
     return res.status(404).send({
       success: false,
-      message: "Section not found!"
+      message: "Section you are trying to delete was not found!"
     });
   }
 
@@ -389,7 +389,7 @@ const deleteDraft = async (req, res, next) => {
   if (!deleted) {
     return res.status(404).send({
       success: false,
-      message: "Draft not found!"
+      message: "Draft you are trying to delete was not found!"
     });
   }
 
