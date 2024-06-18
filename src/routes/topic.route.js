@@ -3,7 +3,8 @@ const {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
-  acceptDraft, getTopicDrafts, getTopicSections
+  acceptDraft, getTopicDrafts, getTopicSections,
+  searchTopics, getTopicByHash
 } = require('../controllers').topicController;
 
 const {
@@ -41,6 +42,16 @@ module.exports = (app, url) => {
   app.delete(`${url}/:hash/remove`,
     [verifyToken, checkTopicActionPrivilege],
     deleteTopic
+  );
+
+  // searching for topics
+  app.get(`${url}/search`,
+    searchTopics
+  );
+
+  // getting a topic by hash
+  app.get(`${url}/:hash`,
+    getTopicByHash
   );
 
   // creating a new topic section

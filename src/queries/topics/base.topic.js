@@ -223,6 +223,85 @@ const findTopic = async (hash) => {
 }
 
 /**
+ * @function findTopicBySlug
+ * @description Query to find a topic by slug
+ * @param {String} slug - The slug of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicBySlug = async (slug) => {
+  // Check if a topic exists
+  try {
+    const topic = await Topic.findOne({
+      where: {
+        slug: slug
+      }
+    });
+
+    // if topic doesn't exist
+    if (!topic) {
+      return { topic: null, error: null}
+    }
+
+    // If topic exists, return the topic
+    return {topic: topic, error: null}
+  }
+  catch (error) {
+    return { topic: null, error: error}
+  }
+}
+
+/**
+ * @function findTopicsByQuery
+ * @description Query to finding topics by query: using vector search for name or slug
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicsByQuery = async (query) => {
+  // Check if a topic exists
+  try {
+    // trim the query
+    query = query.trim();
+
+    // refine the query: make the query to match containing, starting or ending with the query
+    // query = query.split(' ').map((q) => `${q} | ${q}:* | *:${q}`).join(' & ');
+
+    // create tsquery that starts with the query
+    const tsQueryStarts = query.split(' ').map((q) => `${q}:*`).join(' & ');
+
+    // create tsquery that ends with the query
+    const tsQueryEnds = query.split(' ').map((q) => `*:${q}`).join(' & ');
+
+    // create tsquery that contains the query
+    const tsQueryContains = query.split(' ').map((q) => `${q}`).join(' & ');
+
+    // combine the tsquery strings for starting, ending and containing
+    const tsQuery = sequelize.literal(`${tsQueryStarts} | ${tsQueryEnds} | ${tsQueryContains}`);
+
+    // // construct the tsquery using the sequelize.fn
+    // const tsQuery = sequelize.fn('to_tsquery','english',queryString);
+
+    
+    // build the query(vector search)
+    const topics = await Topic.search(tsQuery);
+
+    console.log('Topics', topics);
+
+    // if no topics found
+    if (!topics) {
+      return { topics: null, error: null}
+    }
+
+    // If topics exist, return the topics
+    return { topics: topics, error: null}
+
+  }
+  catch (error) {
+    console.log('Error', error)
+    return { topics: null, error: error}
+  }
+}
+
+/**
  * @function removeTopic
  * @description Query to remove a topic
  * @param {String} hash - The hash of the topic
@@ -253,5 +332,6 @@ const removeTopic = async (hash) => {
 // Export the query functions
 module.exports = {
   addTopic, checkIfTopicExists, editTopic,
-  findTopic, removeTopic
+  findTopic, removeTopic, findTopicsByQuery,
+  findTopicBySlug
 }

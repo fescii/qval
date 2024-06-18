@@ -75,6 +75,24 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         defaultValue: 0,
         allowNull: true
       },
+
+      // add tsvector column for full text search: for columns(name, slug)
+      name_slug_search: {
+        type: Sequelize.TSVECTOR,
+        allowNull: true,
+        get(){
+          return sequelize.fn('to_tsvector', 'english', this.getDataValue('name') + ' ' + this.getDataValue('slug'));
+        }
+      },
+
+      // add tsvector column for full text search: for columns(name, slug, summery)
+      full_search: {
+        type: Sequelize.TSVECTOR,
+        allowNull: true,
+        get(){
+          return sequelize.fn('to_tsvector', 'english', this.getDataValue('name') + ' ' + this.getDataValue('slug') + ' ' + this.getDataValue('summery'));
+        }
+      }
     },
     {
       schema: 'topic',
@@ -89,6 +107,52 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         }
       ]
     });
+
+  // add afterSync hook to update the name_slug_search: and full_search column and create the GIN index
+  Topic.afterSync(() => {
+    // create the GIN index for the name_slug_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS name_slug_search_idx ON topic.topics USING GIN(name_slug_search)`);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS full_search_idx ON topic.topics USING GIN(full_search)`);
+  });
+
+  // update vector columns before saving
+  Topic.beforeSave(async topic => {
+    // update the name_slug_search column
+    topic.name_slug_search = sequelize.fn('to_tsvector', 'english', topic.name + ' ' + topic.slug);
+
+    // update the full_search column
+    topic.full_search = sequelize.fn('to_tsvector', 'english', topic.name + ' ' + topic.slug + ' ' + topic.summery);
+
+
+    // update the name_slug_search column
+    // await sequelize.query(`UPDATE topic.topics SET name_slug_search = to_tsvector('english', name || ' ' || slug) WHERE id = ${topic.id}`);
+
+    // // update the full search column
+    // await sequelize.query(`UPDATE topic.topics SET full_search = to_tsvector('english', name || ' ' || slug || ' ' || coalesce(summery, '')) WHERE id = ${topic.id}`);
+  });
+
+  // add prototype to search: name_slug_search
+  Topic.search = async query => {
+    // search the query in the name_slug_search column
+    // refine the query: make the query to match containing, starting or ending with the query
+    // return await sequelize.query(`SELECT * FROM topic.topics WHERE name_slug_search @@ ${query}`, {replacement: {query: `${query}:*`}, model: Topic });
+
+    return await Topic.findAll({
+      where: sequelize.where(
+        sequelize.fn('to_tsvector', 'english',  sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'))),
+        '@@', query
+      ),
+      // order: sequelize.literal(`ts_rank_cd(name_slug_search, to_tsquery('english', '${query}')) DESC`)
+    })
+  }
+
+  // add prototype to search: full_search
+  Topic.fullSearch = async query => {
+    // search the query in the full_search column: adding score to the result
+    return await sequelize.query(`SELECT *, ts_rank_cd(full_search, to_tsquery('english', '${query}')) as score FROM topic.topics WHERE full_search @@ to_tsquery('english', '${query}') ORDER BY score DESC`,{replacements: [query], model: Topic });
+  }
 
   /**
    * @type {Model}

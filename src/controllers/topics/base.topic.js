@@ -1,5 +1,5 @@
 // Importing within the app
-const { addTopic, editTopic, removeTopic } = require('../../queries').topicQueries;
+const { addTopic, editTopic, removeTopic, findTopic, findTopicsByQuery } = require('../../queries').topicQueries;
 const { validateTopic } = require('../../validators').topicValidator;
 
 /**
@@ -64,7 +64,6 @@ const updateTopic = async (req, res, next) => {
       message: valObj.error.message
     });
   }
-
 
   const {
     topic,
@@ -132,8 +131,105 @@ const deleteTopic = async (req, res, next) => {
 };
 
 /**
+ * @function searchTopics
+ * @description Controller for getting topics by query
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const searchTopics = async (req, res, next) => {
+  // Get the query parameter: such as ...t/search?q=topic
+  let query = req.query.q;
+
+  // Check if the query is available
+  if (!query) {
+    // Return a 400 status code and a message
+    return res.status(400).send({
+      success: false,
+      message: "Query parameter is required!"
+    });
+  }
+  
+
+  const {
+    topics,
+    error
+  } = await findTopicsByQuery(query);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  if(!topics){
+    return res.status(404).send({
+      success: false,
+      message: "No topic matched the query!"
+    });
+  }
+
+  // Handling when the topic was found
+  return res.status(200).send({
+    success: true,
+    topics: topics,
+    message: `Topics were found successfully!`
+  });
+};
+
+/**
+ * @function getTopicByHash
+ * @description Controller for getting a topic by hash
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getTopicByHash = async (req, res, next) => {
+  // Get the hash parameter
+  let hash = req.params.hash;
+
+  // Check if the hash is available
+  if (!hash) {
+    // Return a 400 status code and a message
+    return res.status(400).send({
+      success: false,
+      message: "Topic parameter was not provided!"
+    });
+  }
+
+  // change the hash to uppercase
+  hash = hash.toUpperCase();
+
+  const {
+    topic,
+    error
+  } = await findTopic(hash);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  if(!topic){
+    return res.status(404).send({
+      success: false,
+      message: "The topic you're trying to get was not found!"
+    });
+  }
+
+  // Handling when the topic was found
+  return res.status(200).send({
+    success: true,
+    topic,
+    message: `Topic - ${hash} was found successfully!`
+  });
+};
+
+/**
  * Exporting all controllers as a single object
 */
 module.exports = {
-  createTopic, updateTopic, deleteTopic
+  createTopic, updateTopic, deleteTopic,
+  searchTopics, getTopicByHash
 }

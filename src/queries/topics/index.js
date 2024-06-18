@@ -1,7 +1,8 @@
 // import all topic queries
 const {
   addTopic, checkIfTopicExists,
-  editTopic, findTopic, removeTopic
+  editTopic, findTopic, removeTopic,
+  findTopicBySlug, findTopicsByQuery
 } = require('./base.topic');
 const {
   addTopicSection, fetchTopicSections, editTopicSection,
@@ -19,5 +20,6 @@ module.exports = {
   editTopic, findTopic, removeTopic, removeDraft,
   addTopicSection, fetchTopicSections, fetchDrafts,
   addDraft, approveDraft, editDraft, removeTopicSection,
-  followTopic, subscribeTopic, tagStory
+  followTopic, subscribeTopic, tagStory, findTopicsByQuery,
+  findTopicBySlug
 }

@@ -1,7 +1,7 @@
 // import all the topic controllers
 const {
   createTopic, updateTopic,
-  deleteTopic
+  deleteTopic, searchTopics, getTopicByHash
 } = require('./base.topic');
 
 const {
@@ -15,5 +15,6 @@ module.exports = {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
-  acceptDraft, getTopicSections, getTopicDrafts
+  acceptDraft, getTopicSections, getTopicDrafts,
+  searchTopics, getTopicByHash
 }
