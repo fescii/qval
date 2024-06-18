@@ -38,7 +38,6 @@ const addTopicSection = async (author, topic, data) => {
   }
   catch (error) {
     await transaction.rollback();
-    console.log(error)
     return { section: null, error };
   }
 }
@@ -52,12 +51,20 @@ const addTopicSection = async (author, topic, data) => {
 */
 const fetchTopicSections = async (topic) => {
   try {
-    // Get all sections of a topic
+    // Get all sections of a topic: order by order
     const sections = await TopicSection.findAll({
       where: {
         topic: topic
-      }
+      },
+      order: [
+        ['order', 'ASC']
+      ]
     });
+
+    // check if the sections are empty
+    if (sections.length === 0) {
+      return { sections: null, error: null };
+    }
 
     // return the sections
     return { sections, error: null };
@@ -438,6 +445,37 @@ const createSectionFromDraft = async (draft, authorizer, transaction) => {
   }
 }
 
+/**
+ * @function fetchDrafts
+ * @description Query to get all drafts of a topic
+ * @param {String} topic - The hash of the topic to get drafts from
+ * @returns {Object} - The drafts object or null, and the error if any
+*/
+const fetchDrafts = async (topic) => {
+  try {
+    // Get all drafts of a topic: order by order
+    const drafts = await Draft.findAll({
+      where: {
+        topic: topic
+      },
+      order: [
+        ['order', 'ASC']
+      ]
+    });
+
+    // check if the drafts are empty
+    if (drafts.length === 0) {
+      return { drafts: null, error: null };
+    }
+
+    // return the drafts
+    return { drafts, error: null };
+  }
+  catch (error) {
+    return { drafts: null, error };
+  }
+}
+
 
 
 /**
@@ -472,6 +510,6 @@ const removeDraft = async (draftId) => {
 // Export the module
 module.exports = {
   addTopicSection, fetchTopicSections, editTopicSection,
-  removeTopicSection, addDraft,
+  removeTopicSection, addDraft, fetchDrafts,
   editDraft, approveDraft, removeDraft
 }

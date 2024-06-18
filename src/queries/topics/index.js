@@ -5,7 +5,7 @@ const {
 } = require('./base.topic');
 const {
   addTopicSection, fetchTopicSections, editTopicSection,
-  removeTopicSection, addDraft,
+  removeTopicSection, addDraft, fetchDrafts,
   editDraft, approveDraft, removeDraft
 } = require('./section.topic');
 const {
@@ -17,7 +17,7 @@ const {
 module.exports = {
   addTopic, checkIfTopicExists, editTopicSection,
   editTopic, findTopic, removeTopic, removeDraft,
-  addTopicSection, fetchTopicSections,
+  addTopicSection, fetchTopicSections, fetchDrafts,
   addDraft, approveDraft, editDraft, removeTopicSection,
   followTopic, subscribeTopic, tagStory
 }

@@ -6,8 +6,8 @@ const {
 
 const {
   createDraft, createTopicSection, updateDraft,
-  updateTopicSection, deleteDraft,
-  deleteTopicSection, acceptDraft
+  updateTopicSection, deleteDraft, getTopicSections,
+  deleteTopicSection, acceptDraft, getTopicDrafts
 } = require('./section.topic');
 
 // Export all topic controllers
@@ -15,5 +15,5 @@ module.exports = {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
-  acceptDraft
+  acceptDraft, getTopicSections, getTopicDrafts
 }

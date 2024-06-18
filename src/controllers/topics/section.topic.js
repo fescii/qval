@@ -1,7 +1,8 @@
 // import the necessary queries
 const {
   addTopicSection, editTopicSection, removeTopicSection,
-  addDraft, editDraft, approveDraft, removeDraft
+  addDraft, editDraft, approveDraft, removeDraft,
+  fetchTopicSections, fetchDrafts
 } = require('../../queries').topicQueries;
 
 
@@ -399,8 +400,102 @@ const deleteDraft = async (req, res, next) => {
   });
 };
 
+
+/**
+ * @function getTopicSections
+ * @description Controller for fetching all topic sections
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getTopicSections = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.params) {
+    const error = new Error('Topic data is undefined!');
+    return next(error)
+  }
+
+  // get topic hash from request object
+  let topic = req.params.hash;
+
+  // convert hash to uppercase
+  topic = topic.toUpperCase();
+
+  const {
+    sections,
+    error
+  } = await fetchTopicSections(topic);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // check if sections are not found
+  if (!sections) {
+    return res.status(404).send({
+      success: false,
+      message: "The topic has no sections yet!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    sections,
+    message: "Sections fetched successfully!"
+  });
+};
+
+/**
+ * @function getTopicDrafts
+ * @description Controller for fetching all topic drafts
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getTopicDrafts = async (req, res, next) => {
+  // Check if the user or payload is available
+  if (!req.params) {
+    const error = new Error('Topic data is undefined!');
+    return next(error)
+  }
+
+  // get topic hash from request object
+  let topic = req.params.hash;
+
+  // convert hash to uppercase
+  topic = topic.toUpperCase();
+
+  const {
+    drafts,
+    error
+  } = await fetchDrafts(topic);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // check if drafts are not found
+  if (!drafts) {
+    return res.status(404).send({
+      success: false,
+      message: "The topic has no drafts yet!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    drafts,
+    message: "Drafts fetched successfully!"
+  });
+};
+
 // Export the module
 module.exports = {
   createTopicSection, updateTopicSection, deleteTopicSection,
-  createDraft, updateDraft, acceptDraft, deleteDraft
+  createDraft, updateDraft, acceptDraft, deleteDraft,
+  getTopicSections, getTopicDrafts
 };

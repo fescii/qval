@@ -3,7 +3,7 @@ const {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
-  acceptDraft
+  acceptDraft, getTopicDrafts, getTopicSections
 } = require('../controllers').topicController;
 
 const {
@@ -81,5 +81,15 @@ module.exports = (app, url) => {
   app.patch(`${url}/:hash/draft/merge`,
     [verifyToken, checkTopicActionPrivilege],
     acceptDraft
+  );
+
+  // getting all drafts
+  app.get(`${url}/:hash/drafts`,
+    verifyToken, getTopicDrafts
+  );
+
+  // getting all sections
+  app.get(`${url}/:hash/sections`,
+    getTopicSections
   );
 };
