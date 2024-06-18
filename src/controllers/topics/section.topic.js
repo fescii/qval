@@ -184,7 +184,7 @@ const deleteTopicSection = async (req, res, next) => {
 */
 const createDraft = async (req, res, next) => {
   // Check if the user or payload is available
-  if (!req.body || !req.user) {
+  if (!req.body || !req.user || !req.params) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
@@ -202,17 +202,26 @@ const createDraft = async (req, res, next) => {
 
   // Get user data from request object
   const userHash = req.user.hash;
+  let topic = req.params.hash;
+
+  // convert hash to uppercase
+  topic = topic.toUpperCase();
+
+  // add user and topic to the data
+  valObj.data.author = userHash;
+  valObj.data.topic = topic;
 
   const {
     draft,
     error
-  } = await addDraft(userHash, valObj.data);
+  } = await addDraft(valObj.data);
 
   // Passing the error to error middleware
   if (error) {
     return next(error);
   }
 
+  // return success response
   return res.status(201).send({
     success: true,
     draft,

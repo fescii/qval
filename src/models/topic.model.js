@@ -161,6 +161,10 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
+    topic: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     kind: {
       type: Sequelize.ENUM('new', 'update'),
       allowNull: false
@@ -200,7 +204,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['author', 'kind']
+        fields: ['author', 'kind', 'topic']
       }
     ]
   });
@@ -414,6 +418,10 @@ module.exports = (User, Story, sequelize, Sequelize) => {
   // Defining the associations on the Topic and TopicSection models
   Topic.hasMany(TopicSection, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_sections', onDelete: 'CASCADE' });
   TopicSection.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'section_topic', onDelete: 'CASCADE' });
+
+  // Defining the associations on the Topic and Draft models
+  Topic.hasMany(Draft, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_drafts', onDelete: 'CASCADE' });
+  Draft.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'draft_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the TopicSection and Draft models
   TopicSection.hasMany(Draft, { foreignKey: 'section', sourceKey: 'id', as : 'section_drafts', onDelete: 'CASCADE' });

@@ -9,25 +9,36 @@ const { Op, Sequelize} = require('sequelize');
  * @function addTopicSection
  * @description Query to add a new section to a topic
  * @param {Authors} author - The authors of the section
- * @param {String} topicHash - The hash of the topic to add the section to
+ * @param {String} topic - The hash of the topic to add the section to
  * @param {Object} data - The data of the topic
  * @returns {Object} - The topic object or null, and the error if any
 */
-const addTopicSection = async (author, topicHash, data) => {
+const addTopicSection = async (author, topic, data) => {
+  // initialize transaction
+  const transaction = await sequelize.transaction();
+
   try {
     // Trying to create a topic to the database
     const section = await TopicSection.create({
-      topic: topicHash,
+      topic: topic,
       order: data.order,
       title: data.title,
       content: data.content,
       authors: [author]
-    });
+    }, {transaction});
+
+    // adjust the order of the sections
+    await adjustSectionOrders(section.topic, data.order, transaction, section.id);
+
+    // commit the transaction
+    await transaction.commit();
 
     // return the topic created
     return { section, error: null };
   }
   catch (error) {
+    await transaction.rollback();
+    console.log(error)
     return { section: null, error };
   }
 }
@@ -36,15 +47,15 @@ const addTopicSection = async (author, topicHash, data) => {
 /**
  * @function fetchTopicSections
  * @description Query to get all sections of a topic
- * @param {String} topicHash - The hash of the topic to get sections from
+ * @param {String} topic - The hash of the topic to get sections from
  * @returns {Object} - The topic sections object or null, and the error if any
 */
-const fetchTopicSections = async (topicHash) => {
+const fetchTopicSections = async (topic) => {
   try {
     // Get all sections of a topic
     const sections = await TopicSection.findAll({
       where: {
-        topic: topicHash
+        topic: topic
       }
     });
 
@@ -137,15 +148,15 @@ const adjustSectionOrders = async (topic, start, transaction, exclude) => {
 /**
  * @function removeTopicSection
  * @description Query to remove a section of a topic
- * @param {Number} sectionId - The id of the section to remove
+ * @param {Number} section - The id of the section to remove
  * @returns {Object} - The section object or null, and the error if any
 */
-const removeTopicSection = async (sectionId) => {
+const removeTopicSection = async (section) => {
   try {
     // destroy the section
     const result = await TopicSection.destroy({
       where: {
-        id: sectionId
+        id: section
       }
     });
 
@@ -165,28 +176,55 @@ const removeTopicSection = async (sectionId) => {
 /**
  * @function addDraft
  * @description Query to add a draft to a section
- * @param {String} author - The author of the draft: the hash of the author
  * @param {Object} data - The data of the draft
  * @returns {Object} - The draft object or null, and the error if any
 */
-const addDraft = async (author, data) => {
+const addDraft = async (data) => {
   try {
-    // Trying to create a draft to the database
-    const draft = await Draft.create({
-      kind: data.kind,
-      section: data.section,
-      order: data.order,
-      author: author,
-      title: data.title,
-      content: data.content,
-      approved: false
-    });
+    // get draft data
+    const draftData = await getDraftData(data);
+
+    // Trying to create a draft using the draft data
+    const draft = await Draft.create(draftData);
 
     // return the draft created
     return { draft, error: null };
   }
   catch (error) {
     return { draft: null, error };
+  }
+}
+
+/**
+ * @function getDraftData
+ * @description A function to get the data of a draft
+ * @param {Object} data - The id of the draft
+ * @returns {Object} - The draft object
+*/
+const getDraftData = async (data) => {
+  // check if kind new and section is not null
+  if (data.kind === 'update' && data.section) {
+    
+    return {
+      kind: data.kind,
+      author: data.author,
+      topic: data.topic,
+      section: data.section,
+      order: data.order,
+      title: data.title,
+      content: data.content
+    };
+  }
+  else {
+    return {
+      kind: data.kind,
+      topic: data.topic,
+      author: data.author,
+      section: null,
+      order: data.order,
+      title: data.title,
+      content: data.content
+    };
   }
 }
 
