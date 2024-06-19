@@ -115,7 +115,7 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: false
     },
     parent: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: true
     },
     hash: {
@@ -152,7 +152,7 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id', 'hash']
         },
         {
-          fields: ['reply', 'author', 'parent']
+          fields: ['content', 'author', 'parent']
         }
       ]
     });
@@ -176,7 +176,7 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: false
     },
     item: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: false
     },
   },
@@ -213,7 +213,7 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
     item: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: false
     },
   },
@@ -233,8 +233,8 @@ module.exports = (User, sequelize, Sequelize) => {
 
   //--- Defining the associations ---//
   // User <--> Story
-  User.hasMany(Story, { foreignKey: 'author' });
-  Story.belongsTo(User, { foreignKey: 'author', as: 'user_stories', onDelete: 'CASCADE' });
+  User.hasMany(Story, { foreignKey: 'author', as: 'authored_stories' });
+  Story.belongsTo(User, { foreignKey: 'author', as: 'author_user', onDelete: 'CASCADE' });
 
   // User <--> Reply association
   User.hasMany(Reply, { foreignKey: 'author' });
@@ -249,24 +249,24 @@ module.exports = (User, sequelize, Sequelize) => {
   View.belongsTo(User, { foreignKey: 'author', as: 'user_views', onDelete: 'CASCADE' });
 
   // Story <--> Reply association
-  Story.hasMany(Reply, { foreignKey: 'parent' });
-  Reply.belongsTo(Story, { foreignKey: 'parent', as: 'story_replies', onDelete: 'CASCADE' });
+  Story.hasMany(Reply, { foreignKey: 'parent', as: 'story_replies' });
+  Reply.belongsTo(Story, { foreignKey: 'parent', as: 'parent_story', onDelete: 'CASCADE' });
 
   // Story <--> Like association
-  Story.hasMany(Like, { foreignKey: 'item' });
-  Like.belongsTo(Story, { foreignKey: 'item', as: 'story_likes', onDelete: 'CASCADE' });
+  Story.hasMany(Like, { foreignKey: 'item', as: 'story_likes' });
+  Like.belongsTo(Story, { foreignKey: 'item', as: 'story_like', onDelete: 'CASCADE' });
 
   // Story <--> View association
-  Story.hasMany(View, { foreignKey: 'item' });
-  View.belongsTo(Story, { foreignKey: 'item', as: 'story_views', onDelete: 'CASCADE' });
+  Story.hasMany(View, { foreignKey: 'item', as: 'story_views' });
+  View.belongsTo(Story, { foreignKey: 'item', as: 'viewed_story', onDelete: 'CASCADE' });
 
   // Reply <--> Like association
-  Reply.hasMany(Like, { foreignKey: 'item' });
-  Like.belongsTo(Reply, { foreignKey: 'item', as: 'reply_likes', onDelete: 'CASCADE' });
+  Reply.hasMany(Like, { foreignKey: 'item', as: 'reply_likes' });
+  Like.belongsTo(Reply, { foreignKey: 'item', as: 'liked_reply', onDelete: 'CASCADE' });
 
   // Reply <--> View association
-  Reply.hasMany(View, { foreignKey: 'item' });
-  View.belongsTo(Reply, { foreignKey: 'item', as: 'reply_views', onDelete: 'CASCADE' });
+  Reply.hasMany(View, { foreignKey: 'item', as: 'reply_views' });
+  View.belongsTo(Reply, { foreignKey: 'item', as: 'viewed_reply', onDelete: 'CASCADE' });
 
   return { Story, Reply, Like, View }
 }
