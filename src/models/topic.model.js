@@ -51,7 +51,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         unique: true,
         allowNull: false
       },
-      summery: {
+      summary: {
         type: Sequelize.TEXT,
         allowNull: true
       },
@@ -90,7 +90,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
         type: Sequelize.TSVECTOR,
         allowNull: true,
         get(){
-          return sequelize.fn('to_tsvector', 'english', this.getDataValue('name') + ' ' + this.getDataValue('slug') + ' ' + this.getDataValue('summery'));
+          return sequelize.fn('to_tsvector', 'english', this.getDataValue('name') + ' ' + this.getDataValue('slug') + ' ' + this.getDataValue('summary'));
         }
       }
     },
