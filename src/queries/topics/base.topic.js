@@ -1,30 +1,30 @@
-const { hashConfig} = require('../configs');
+const { hashConfig} = require('../../configs');
 const {Op} = require("sequelize");
-const { sequelize, Topic, Section, Role } = require('../models').models;
-const { RoleBase } = require('../configs').platformConfig;
+const { sequelize, Topic, Section, Role } = require('../../models').models;
+const { RoleBase } = require('../../configs').platformConfig;
 
 // Imports for gen_hash
-const { gen_hash } = require("../wasm");
-const  { hash_secret } = require("../configs").envConfig;
+const { gen_hash } = require("../../wasm");
+const  { hash_secret } = require("../../configs").envConfig;
 
 /**
  * @function addTopic
  * @description Query to add a new topic
- * @param {String} userId - The id of the user
+ * @param {String} user - The hash of the user who's creating the topic
  * @param {Object} data - The data of the topic
  * @returns {Object} - The topic object or null, and the error if any
 */
-const addTopic = async (userId, data) => {
+const addTopic = async (user, data) => {
   // Start a new transaction
   const transaction = await sequelize.transaction();
 
   try {
     // Trying to create a topic to the database
     const topic = await Topic.create({
-      author: userId,
+      author: user.hash,
       name: data.name,
       slug: data.slug,
-      about: data.about
+      summery: data.summery,
     }, {transaction})
 
     // Generate a hash for the topic created
@@ -44,6 +44,8 @@ const addTopic = async (userId, data) => {
     // Save the topic with the hash
     await topic.save({transaction});
 
+    // console.log('Section', Section);
+
     // Create a section for the topic created
     const section = await Section.create({
       identity: topic.hash,
@@ -53,14 +55,15 @@ const addTopic = async (userId, data) => {
     }, {transaction});
 
     // Create a role for the user who created the topic
-    await Role.create({
+    const role = await Role.create({
       section: section.identity,
-      user: userId,
+      user: user.id,
       base: RoleBase.Owner,
       name: `This is a role for section - ${topic.name}`,
       privileges: {
         'action': ["create", "read", "update", "delete"],
-        'authors': ["create", "read", "update", "delete"]
+        'authors': ["create", "read", "update", "delete"],
+        'sections': ["create", "update", "assign", "remove", "approve", "reject"],
       },
       expired: false
     }, {transaction});
@@ -69,7 +72,16 @@ const addTopic = async (userId, data) => {
     await transaction.commit();
 
     // On success return data
-    return { topic: topic, error: null}
+    return { 
+      topic: {
+        author: topic.author,
+        hash: topic.hash,
+        name: topic.name,
+        slug: topic.slug,
+        summery: topic.summery
+      },
+      error: null
+    }
   } catch (error) {
     // Rollback the transaction
     await transaction.rollback();
@@ -100,7 +112,16 @@ const checkIfTopicExists = async (name, slug) => {
     if (topic) {
       // console.log(topic)
       // On success return data
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -141,7 +162,16 @@ const editTopic = async (hash, data) => {
 
       await transaction.commit();
 
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -171,7 +201,16 @@ const findTopic = async (hash) => {
 
     // If a topic exists, return the topic
     if (topic) {
-      return { topic: topic, error: null}
+      return {
+        topic: {
+          author: topic.author,
+          hash: topic.hash,
+          name: topic.name,
+          slug: topic.slug,
+          summery: topic.summery
+        }, 
+        error: null
+      }
     }
     else {
       // If a topic doesn't exist, returns both null
@@ -184,6 +223,85 @@ const findTopic = async (hash) => {
 }
 
 /**
+ * @function findTopicBySlug
+ * @description Query to find a topic by slug
+ * @param {String} slug - The slug of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicBySlug = async (slug) => {
+  // Check if a topic exists
+  try {
+    const topic = await Topic.findOne({
+      where: {
+        slug: slug
+      }
+    });
+
+    // if topic doesn't exist
+    if (!topic) {
+      return { topic: null, error: null}
+    }
+
+    // If topic exists, return the topic
+    return {topic: topic, error: null}
+  }
+  catch (error) {
+    return { topic: null, error: error}
+  }
+}
+
+/**
+ * @function findTopicsByQuery
+ * @description Query to finding topics by query: using vector search for name or slug
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicsByQuery = async (query) => {
+  // Check if a topic exists
+  try {
+    // trim the query
+    query = query.trim();
+
+    // refine the query: make the query to match containing, starting or ending with the query
+    // query = query.split(' ').map((q) => `${q} | ${q}:* | *:${q}`).join(' & ');
+
+    // create tsquery that starts with the query
+    const tsQueryStarts = query.split(' ').map((q) => `${q}:*`).join(' & ');
+
+    // create tsquery that ends with the query
+    const tsQueryEnds = query.split(' ').map((q) => `*:${q}`).join(' & ');
+
+    // create tsquery that contains the query
+    const tsQueryContains = query.split(' ').map((q) => `${q}`).join(' & ');
+
+    // combine the tsquery strings for starting, ending and containing
+    const tsQuery = sequelize.literal(`${tsQueryStarts} | ${tsQueryEnds} | ${tsQueryContains}`);
+
+    // // construct the tsquery using the sequelize.fn
+    // const tsQuery = sequelize.fn('to_tsquery','english',queryString);
+
+    
+    // build the query(vector search)
+    const topics = await Topic.search(tsQuery);
+
+    console.log('Topics', topics);
+
+    // if no topics found
+    if (!topics) {
+      return { topics: null, error: null}
+    }
+
+    // If topics exist, return the topics
+    return { topics: topics, error: null}
+
+  }
+  catch (error) {
+    console.log('Error', error)
+    return { topics: null, error: error}
+  }
+}
+
+/**
  * @function removeTopic
  * @description Query to remove a topic
  * @param {String} hash - The hash of the topic
@@ -192,14 +310,19 @@ const findTopic = async (hash) => {
 const removeTopic = async (hash) => {
   // Check if a topic exists
   try {
-    await Topic.destroy({
+    const result = await Topic.destroy({
       where: {
         hash: hash
       }
     });
 
-    // If operation is successful, return deleted true
-    return { deleted: true, error: null}
+    // check if the topic was destroyed
+    if (result === 1) {
+      return { deleted: true, error: null };
+    }
+    else {
+      return { deleted: false, error: null };
+    }
   }
   catch (error) {
     return { deleted: false, error: error}
@@ -209,5 +332,6 @@ const removeTopic = async (hash) => {
 // Export the query functions
 module.exports = {
   addTopic, checkIfTopicExists, editTopic,
-  findTopic, removeTopic
+  findTopic, removeTopic, findTopicsByQuery,
+  findTopicBySlug
 }

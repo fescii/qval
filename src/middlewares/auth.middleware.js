@@ -1,7 +1,7 @@
 // Importing within the app
 const { validateToken } = require('../utils').tokenUtil;
-const { validateUserData } = require('../validators').userValidator;
-const { checkIfUserExits } = require('../queries').authQueries;
+const { validateUser } = require('../validators').userValidator;
+const { checkIfUserExits } = require('../queries').userQueries;
 
 
 /**
@@ -23,7 +23,7 @@ const checkDuplicateEmail = async (req, res, next) => {
   // Get user data from request body
   const payload = req.body;
 
-  const valueObj = await validateUserData(payload);
+  const valueObj = await validateUser(payload);
 
   // Handling data validation error
   if (valueObj.error) {
@@ -100,9 +100,7 @@ const verifyToken = async (req, res, next) => {
 };
 
 
-/**
- * Exporting all the middlewares as a single object
- */
+// Exporting all the middlewares as a single object
 module.exports = {
   checkDuplicateEmail,
   verifyToken

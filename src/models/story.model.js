@@ -29,63 +29,59 @@ module.exports = (User, sequelize, Sequelize) => {
    * @property {Number} total_opinions - The total number of opinions the story has
   */
   const Story = sequelize.define("stories", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      kind: {
-        type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
-        defaultValue: 'post',
-        allowNull: false
-      },
-      author: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      hash: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: true
-      },
-      title: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      slug: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: true
-      },
-      content: {
-        type: Sequelize.TEXT,
-        allowNull: false
-      },
-      body: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      topics: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: true,
-        defaultValue: []
-      },
-      views: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      total_upvotes: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      total_opinions: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
+    kind: {
+      type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
+      defaultValue: 'post',
+      allowNull: false
+    },
+    author: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    hash: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: true
+    },
+    title: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    content: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    slug: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: true
+    },
+    topics: {
+      type: Sequelize.ARRAY(Sequelize.STRING),
+      allowNull: true,
+      defaultValue: []
+    },
+    views: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    likes: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    replies: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+  },
     {
       schema: 'story',
       freezeTableName: true,
@@ -100,97 +96,53 @@ module.exports = (User, sequelize, Sequelize) => {
       ]
     });
 
-
   /**
    * @type {Model}
-   * @name Upvote
-   * @description - This model contains all the upvotes info
-   * @property {Number} id - Unique identifier for the upvote
-   * @property {Number} author - The author who has made the upvote
-   * @property {String} story - The story the upvote is made on
-  */
-  const Upvote = sequelize.define("upvotes", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      author: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      story: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-    },
-    {
-      schema: 'story',
-      freezeTableName: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'story']
-        }
-      ]
-    });
-
-
-  /**
-   * @type {Model}
-   * @name Opinion
-   * @description - This model contains all the opinion info
-   * @property {Number} id - Unique identifier for the opinion
-   * @property {String} story - The story the opinion is made on
-   * @property {String} opinion - The opinion which the opinion is made on
-   * @property {Number} author - The author who has made the opinion
+   * @name Reply
+   * @description - This model contains all the Reply info
+   * @property {Number} id - Unique identifier for the Reply
+   * @property {String} parent - The story/reply the Reply is made on
+   * @property {Number} author - The author who has made the Reply
    */
-  const Opinion = sequelize.define("opinions", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      story: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      opinion: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      author: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      hash: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: true
-      },
-      body: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      views: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      total_upvotes: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      total_opinions: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
+  const Reply = sequelize.define("replies", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
+    author: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    parent: {
+      type: Sequelize.INTEGER,
+      allowNull: true
+    },
+    hash: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: true
+    },
+    content: {
+      type: Sequelize.TEXT,
+      allowNull: true
+    },
+    views: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    likes: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    replies: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+  },
     {
       schema: 'story',
       freezeTableName: true,
@@ -200,7 +152,7 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id', 'hash']
         },
         {
-          fields: ['opinion', 'author', 'story']
+          fields: ['content', 'author', 'parent']
         }
       ]
     });
@@ -210,24 +162,24 @@ module.exports = (User, sequelize, Sequelize) => {
    * @name Like
    * @description - This model contains all the likes info
    * @property {Number} id - Unique identifier for the like
-   * @property {Number} author - The author who has made the like
-   * @property {String} opinion - The opinion the like is made on
+   * @property {Number} author - The user who has made the like
+   * @property {String} item - The story/reply hash the like is made on
   */
   const Like = sequelize.define("likes", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      author: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      opinion: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
+    author: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    item: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+  },
     {
       schema: 'story',
       freezeTableName: true,
@@ -237,36 +189,84 @@ module.exports = (User, sequelize, Sequelize) => {
           fields: ['id']
         },
         {
-          fields: ['author', 'opinion']
+          fields: ['author', 'item']
         }
       ]
     });
 
-  // Defining the associations
-  User.hasMany(Story, { foreignKey: 'author' });
-  Story.belongsTo(User, { foreignKey: 'author', as: 'user_stories', onDelete: 'CASCADE' });
+  /**
+* @type {Model}
+* @name View
+* @description - This model contains all the Views info
+* @property {Number} id - Unique identifier for the View
+* @property {Number} author - The user who has made the View
+* @property {String} item - The story/reply hash the View is made on
+*/
+  const View = sequelize.define("views", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    author: {
+      type: Sequelize.INTEGER,
+      allowNull: true
+    },
+    item: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+  },
+    {
+      schema: 'story',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['author', 'item']
+        }
+      ]
+    });
 
-  User.hasMany(Upvote, { foreignKey: 'author' });
-  Upvote.belongsTo(User, { foreignKey: 'author', as: 'user_upvotes', onDelete: 'CASCADE' });
+  //--- Defining the associations ---//
+  // User <--> Story
+  User.hasMany(Story, { foreignKey: 'author', as: 'authored_stories' });
+  Story.belongsTo(User, { foreignKey: 'author', as: 'author_user', onDelete: 'CASCADE' });
 
-  Story.hasMany(Upvote, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Upvote.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_upvotes', onDelete: 'CASCADE' });
+  // User <--> Reply association
+  User.hasMany(Reply, { foreignKey: 'author' });
+  Reply.belongsTo(User, { foreignKey: 'author', as: 'user_replies', onDelete: 'CASCADE' });
 
-  Story.hasMany(Opinion, { foreignKey: 'story', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Opinion.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_opinions', onDelete: 'CASCADE' });
-
-  User.hasMany(Opinion, { foreignKey: 'author' });
-  Opinion.belongsTo(User, { foreignKey: 'author', as: 'user_opinions', onDelete: 'CASCADE' });
-
-  Opinion.hasMany(Opinion, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Opinion.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_replies', onDelete: 'CASCADE' });
-
-  Opinion.hasMany(Like, { foreignKey: 'opinion', sourceKey: 'hash', onDelete: 'CASCADE'});
-  Like.belongsTo(Opinion, { foreignKey: 'opinion', targetKey: 'hash', as: 'opinion_likes', onDelete: 'CASCADE' });
-
+  // User <--> Like association
   User.hasMany(Like, { foreignKey: 'author' });
-  Upvote.belongsTo(Story, { foreignKey: 'author', as: 'user_likes', onDelete: 'CASCADE' });
+  Like.belongsTo(User, { foreignKey: 'author', as: 'user_likes', onDelete: 'CASCADE' });
 
-  // Returning the models
-  return { Story, Opinion, Upvote, Like }
+  // User <-->> View association
+  User.hasMany(View, { foreignKey: 'author' });
+  View.belongsTo(User, { foreignKey: 'author', as: 'user_views', onDelete: 'CASCADE' });
+
+  // Story <--> Reply association
+  Story.hasMany(Reply, { foreignKey: 'parent', as: 'story_replies' });
+  Reply.belongsTo(Story, { foreignKey: 'parent', as: 'parent_story', onDelete: 'CASCADE' });
+
+  // Story <--> Like association
+  Story.hasMany(Like, { foreignKey: 'item', as: 'story_likes' });
+  Like.belongsTo(Story, { foreignKey: 'item', as: 'story_like', onDelete: 'CASCADE' });
+
+  // Story <--> View association
+  Story.hasMany(View, { foreignKey: 'item', as: 'story_views' });
+  View.belongsTo(Story, { foreignKey: 'item', as: 'viewed_story', onDelete: 'CASCADE' });
+
+  // Reply <--> Like association
+  Reply.hasMany(Like, { foreignKey: 'item', as: 'reply_likes' });
+  Like.belongsTo(Reply, { foreignKey: 'item', as: 'liked_reply', onDelete: 'CASCADE' });
+
+  // Reply <--> View association
+  Reply.hasMany(View, { foreignKey: 'item', as: 'reply_views' });
+  View.belongsTo(Reply, { foreignKey: 'item', as: 'viewed_reply', onDelete: 'CASCADE' });
+
+  return { Story, Reply, Like, View }
 }

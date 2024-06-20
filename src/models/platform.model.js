@@ -38,16 +38,16 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -59,7 +59,7 @@ module.exports = (User, sequelize, Sequelize) => {
    * @property {String} name - The section name
    * @property {String} description - The section description
   */
-  const Section = sequelize.define("sections", {
+  const Section = sequelize.define("system_sections", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -83,17 +83,16 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id', 'identity']
-      }
-    ]
-  });
-
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id', 'identity']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -145,19 +144,19 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: false,
     }
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['section', 'user', 'base']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['section', 'user', 'base']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -193,19 +192,19 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     }
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['target', 'name', 'approved']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['target', 'name', 'approved']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -245,34 +244,34 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'platform',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['audit', 'user', 'target', 'action']
-      }
-    ]
-  });
+    {
+      schema: 'platform',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['audit', 'user', 'target', 'action']
+        }
+      ]
+    });
 
   /**
    * This is the association between the models
   */
-  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity' });
+  Section.hasMany(Role, { foreignKey: 'section', sourceKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
   Role.belongsTo(Section, { foreignKey: 'section', targetKey: 'identity', as: 'section_roles', onDelete: 'CASCADE' });
 
-  User.hasMany(Role, { foreignKey: 'user' });
-  Role.belongsTo(User, { foreignKey: 'user', as: 'user_roles', onDelete: 'CASCADE' });
+  User.hasMany(Role, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
+  Role.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_roles', onDelete: 'CASCADE' });
 
-  User.hasMany(Log, { foreignKey: 'user' });
-  Log.belongsTo(User, { foreignKey: 'user', as: 'user_logs', onDelete: 'CASCADE' });
+  User.hasMany(Log, { foreignKey: 'user', sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
+  Log.belongsTo(User, { foreignKey: 'user', sourceKey: 'id', as: 'user_logs', onDelete: 'CASCADE' });
 
   /**
    * This is the object containing all the models
   */
-  return { System, Section, Role, Approval, Log }
+  return { System, Section, Approval, Role, Log }
 }

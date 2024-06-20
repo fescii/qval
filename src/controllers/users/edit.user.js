@@ -1,14 +1,14 @@
 // Import necessary packages and modules
-const upload = require('../middlewares').upload;
+const upload = require('../../middlewares').upload;
 const {
   editPicture, editBio, editContact,
   editPassword, editEmail, editName
-} = require('../queries').userQueries;
+} = require('../../queries').userQueries;
 
 const {
   validateBio, validateContact, validateName,
   validateEmail, validatePassword,
-} = require('../validators').userValidator;
+} = require('../../validators').userValidator;
 
 
 /**
@@ -44,13 +44,13 @@ const updateProfilePicture = async (req, res, next) => {
         });
       }
 
-      const username = req.user.username;
+      const userHash = req.user.hash;
       const { path } = req.file;
 
       const {
         user,
         error
-      } = await editPicture(path, username);
+      } = await editPicture(path, userHash);
 
       // Check if there was an error updating the user's profile picture
       if (error) {
@@ -68,13 +68,7 @@ const updateProfilePicture = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          picture: user.picture,
-          bio: user.bio,
-        },
+        user,
         message: 'Profile picture updated successfully',
       });
     });
@@ -105,7 +99,7 @@ const updateProfileBio = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the bio
   const validatedData = await validateBio(payload);
@@ -121,7 +115,7 @@ const updateProfileBio = async (req, res, next) => {
   const {
     user,
     error
-  } = await editBio(validatedData.data.bio, username);
+  } = await editBio(validatedData.data.bio, userHash);
 
   // Check if there was an error updating the user's profile bio
   if (error) {
@@ -139,13 +133,7 @@ const updateProfileBio = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-    },
+    user,
     message: 'Profile bio updated successfully',
   });
 };
@@ -171,7 +159,7 @@ const updateProfileContact = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the contact
   const validatedData = await validateContact(payload);
@@ -187,7 +175,7 @@ const updateProfileContact = async (req, res, next) => {
   const {
     user,
     error
-  } = await editContact(validatedData.data.contact, username);
+  } = await editContact(validatedData.data.contact, userHash);
 
   // Check if there was an error updating the user's profile contact
   if (error) {
@@ -205,14 +193,7 @@ const updateProfileContact = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile contact updated successfully',
   });
 };
@@ -237,7 +218,7 @@ const updateProfileEmail = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the email
   const validatedData = await validateEmail(payload);
@@ -253,7 +234,7 @@ const updateProfileEmail = async (req, res, next) => {
   const {
     user,
     error
-  } = await editEmail(validatedData.data.email, username);
+  } = await editEmail(validatedData.data.email, userHash);
 
   // Check if there was an error updating the user's profile email
   if (error) {
@@ -271,14 +252,7 @@ const updateProfileEmail = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile email updated successfully',
   });
 };
@@ -303,7 +277,7 @@ const updateProfilePassword = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the password
   const validatedData = await validatePassword(payload);
@@ -319,7 +293,7 @@ const updateProfilePassword = async (req, res, next) => {
   const {
     user,
     error
-  } = await editPassword(validatedData.data.password, username);
+  } = await editPassword(validatedData.data.password, userHash);
 
   // Check if there was an error updating the user's profile password
   if (error) {
@@ -337,14 +311,7 @@ const updateProfilePassword = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-    },
+    user,
     message: 'Profile password updated successfully',
   });
 }
@@ -369,7 +336,7 @@ const updateProfileName = async (req, res, next) => {
   }
 
   const payload = req.body;
-  const username = req.user.username;
+  const userHash = req.user.hash;
 
   // Validate the name
   const validatedData = await validateName(payload);
@@ -385,7 +352,7 @@ const updateProfileName = async (req, res, next) => {
   const {
     user,
     error
-  } = await editName(validatedData.data.name, username);
+  } = await editName(validatedData.data.name, userHash);
 
   // Check if there was an error updating the user's profile name
   if (error) {
@@ -403,15 +370,7 @@ const updateProfileName = async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      picture: user.picture,
-      bio: user.bio,
-      contact: user.contact,
-      name: user.name,
-    },
+    user,
     message: 'Profile name updated successfully',
   });
 }

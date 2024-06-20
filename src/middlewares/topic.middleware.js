@@ -1,6 +1,8 @@
 // Importing within the app
-const { validateTopicData } = require('../validators').topicValidator;
 const { checkIfTopicExists } = require('../queries').topicQueries;
+const { mapRequestMethod } = require('../configs');
+const { checkAuthority } = require('../utils').roleUtil;
+const { validateTopic } = require('../validators').topicValidator;
 
 
 /**
@@ -15,7 +17,7 @@ const { checkIfTopicExists } = require('../queries').topicQueries;
 */
 const checkDuplicateTopic = async (req, res, next) => {
   // Check if the payload is available in the request object
-  if (!req.body) {
+  if (!req.body || !req.user) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }
@@ -23,7 +25,7 @@ const checkDuplicateTopic = async (req, res, next) => {
   // Get user data from request body
   const payload = req.body;
 
-  const valObj = await validateTopicData(payload);
+  const valObj = await validateTopic(payload);
 
   // Handling data validation error
   if (valObj.error) {
@@ -60,13 +62,63 @@ const checkDuplicateTopic = async (req, res, next) => {
   }
 
   // Add the validated data to the request object for the next() function
-  req.topic_data = valObj.data;
-  next();
+  req.topic = valObj.data;
+  return next();
+};
+
+
+/**
+ * @function checkTopicUpdatePrivilege
+ * @name checkTopicUpdatePrivilege
+ * @description This middleware checks if a user has the privilege to update a topic
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const checkTopicActionPrivilege = async (req, res, next) => {
+  // Check if the user is available in the request object
+  if (!req.user || !req.params || !req.body) {
+    const error = new Error('Payload data is not defined in the req object!');
+    return next(error);
+  }
+
+  // Get user data from request object
+  const user = req.user;
+
+  // get topic hash from request params
+  let hash = req.params.hash;
+
+  // convert hash to uppercase
+  hash = hash.toUpperCase()
+
+  // Create access data - (For authorizing user)
+  const access = {
+    section: hash,
+    privilege: await mapRequestMethod(req.method),
+    user: user.id,
+    key: 'action'
+  }
+
+  // Check if the user has the privilege to update the topic
+  const hasAccess = await checkAuthority(access);
+
+  // If the user has the privilege, proceed to the next middleware
+  if (hasAccess) {
+    req.topic = hash;
+    return next();
+  }
+
+  // If user is not authorized return unauthorized
+  return res.status(403).send({
+    success: false,
+    message: "You are not authorized to update this topic!"
+  });
 };
 
 /**
  * Exporting all the middlewares as an object
 */
 module.exports = {
-  checkDuplicateTopic
+  checkDuplicateTopic, checkTopicActionPrivilege
 };

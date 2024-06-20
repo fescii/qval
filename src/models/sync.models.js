@@ -16,15 +16,10 @@ module.exports = (sequelize) => {
   const syncDb = async (data) => {
     const schemas = ['topic', 'account', 'platform', 'story'];
     for (const schema of schemas) {
-      await sequelize.createSchema(schema).catch((error) => {
-        if (error.code === "42P06") {
-          console.log(`Schema ${schema} already exists`);
-        }
-        else {
-          console.error(`Error creating schemas ${schema}: exits`);
-        }
-      });
+      await sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${schema};`);
     }
+   
+    // Sync the database
     try {
       if (data.alter) {
         console.log('Altering Db Changes...');
@@ -33,7 +28,10 @@ module.exports = (sequelize) => {
         });
       }
       else {
-        console.log('No Db Changes detected, Everything is Synced!');
+        console.log('Syncing Db...');
+        sequelize.sync().then(() => {
+          console.log('Database synchronized...');
+        });
       }
     }
     catch (e) {

@@ -3,10 +3,10 @@ const { Queue } = require('bullmq');
 
 
 // Initialize queues
-const upvoteQueue = new Queue('upvoteQueue', { connection: redisConfig });
+const actionQueue = new Queue('actionQueue', { connection: redisConfig });
 const mailQueue = new Queue('mailQueue', { connection: redisConfig });
 
 module.exports = {
-  upvoteQueue,
+  actionQueue,
   mailQueue,
 };

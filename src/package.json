@@ -11,6 +11,7 @@
   "author": "Fredrick Femar Ochieng",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "bullmq": "^5.7.1",
@@ -25,11 +26,11 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
     "nodemailer-html-to-text": "^3.2.0",
-    "pg": "^8.10.0",
+    "pg": "^8.12.0",
     "pg-hstore": "^2.3.4",
     "pm2": "^5.3.1",
     "postgres": "^3.3.4",
-    "sequelize": "^6.35.2",
+    "sequelize": "^6.37.3",
     "spdy": "^4.0.2"
   }
 }
