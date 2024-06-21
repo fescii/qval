@@ -1,6 +1,4 @@
-// noinspection RegExpRedundantEscape
-
-export default class AppLogon extends HTMLElement {
+export default class LogonContainer extends HTMLElement {
   constructor() {
 
     // We are not even going to touch this.
@@ -26,8 +24,7 @@ export default class AppLogon extends HTMLElement {
     this._data = {
       "register": {},
       "login": {},
-      "recovery": {},
-      "user": {}
+      "recovery": {}
     };
 
     this.render();
@@ -39,73 +36,54 @@ export default class AppLogon extends HTMLElement {
   }
 
   connectedCallback() {
-    const outerThis = this;
-    const initialName = this.getAttribute('name');
     const contentContainer = this.shadowObj.querySelector('.logon-container');
     if (contentContainer) {
       const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action')
       const stagesContainer = contentContainer.querySelector('.stages');
-
-      switch (initialName) {
-        case 'join':
-          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-          this.activateForgot(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'login':
-          outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'forgot':
-          outerThis.forgotLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'register':
-          outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        default:
-          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-          this.activateForgot(contentContainer, stagesContainer, contentTitle);
-          break;
-      }
+      this.activateRegister(contentContainer, stagesContainer, contentTitle);
+      this.activateLogin(contentContainer, stagesContainer, contentTitle);
+      this.activateForgot(contentContainer, stagesContainer, contentTitle);
     }
+
   }
 
   disconnectedCallback() {
     // console.log('We are inside disconnectedCallback');
   }
 
-  loginLoaded = (contentContainer, stagesContainer, contentTitle) => {
+  activateForgot(contentContainer, stagesContainer, contentTitle) {
+    const loader = this.getLoader();
+    const form = this.getForgotForm();
     const outerThis = this;
 
-    contentTitle.textContent = 'Login';
-    outerThis.changeStages('login', stagesContainer);
-    outerThis.nextStep('login', stagesContainer);
+    const forgotButton = contentContainer.querySelector('.welcome  a.forgot');
+    if (forgotButton) {
+      forgotButton.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
 
 
-    outerThis.submitEvent('login', contentContainer.querySelector('form'));
-    outerThis.prevStep('login', stagesContainer, contentContainer)
-  }
+        contentContainer.insertAdjacentHTML('afterbegin', loader);
 
-  registerLoaded = (contentContainer, stagesContainer, contentTitle) => {
-    const outerThis = this;
+        const welcome = contentContainer.querySelector('.welcome');
 
-    contentTitle.textContent = 'Register';
-    outerThis.changeStages('register', stagesContainer);
-    outerThis.nextStep('register', stagesContainer);
+        setTimeout(() => {
+          if (welcome) {
+            welcome.remove()
+          }
+          welcome.remove();
+          contentTitle.textContent = 'Recover';
+          outerThis.changeStages('forgot', stagesContainer);
+          outerThis.nextStep('forgot', stagesContainer);
+          stagesContainer.insertAdjacentHTML('afterend', form)
 
-    outerThis.submitEvent('register', contentContainer.querySelector('form'));
-    outerThis.prevStep('register', stagesContainer, contentContainer)
-  }
+          contentContainer.querySelector('#loader-container').remove();
 
-  forgotLoaded = (contentContainer, stagesContainer, contentTitle) => {
-    const outerThis = this;
-
-    contentTitle.textContent = 'Recover';
-    outerThis.changeStages('forgot', stagesContainer);
-    outerThis.nextStep('forgot', stagesContainer);
-
-    outerThis.submitEvent('forgot', contentContainer.querySelector('form'));
-    outerThis.prevStep('forgot', stagesContainer, contentContainer)
+          outerThis.submitEvent('forgot', contentContainer.querySelector('form'));
+          outerThis.prevStep('forgot', stagesContainer, contentContainer)
+        }, 1000);
+      })
+    }
   }
 
   activateRegister(contentContainer, stagesContainer, contentTitle) {
@@ -127,13 +105,7 @@ export default class AppLogon extends HTMLElement {
           contentTitle.textContent = 'Register';
           outerThis.changeStages('register', stagesContainer);
           outerThis.nextStep('register', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form);
-
-          // Updating History State
-          window.history.pushState(
-            { content: form, page: 'register' },
-            outerThis.getAttribute('register'), outerThis.getAttribute('register')
-          );
+          stagesContainer.insertAdjacentHTML('afterend', form)
 
           contentContainer.querySelector('#loader-container').remove();
 
@@ -170,61 +142,14 @@ export default class AppLogon extends HTMLElement {
           contentTitle.textContent = 'Login';
           outerThis.changeStages('login', stagesContainer);
           outerThis.nextStep('login', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form);
+          stagesContainer.insertAdjacentHTML('afterend', form)
 
-          // Remove the loader
           contentContainer.querySelector('#loader-container').remove();
-
-          // Updating History State
-          window.history.pushState(
-            { content: form, page: 'login' },
-            outerThis.getAttribute('login'), outerThis.getAttribute('login')
-          );
 
           outerThis.submitEvent('login', contentContainer.querySelector('form'));
           outerThis.prevStep('login', stagesContainer, contentContainer)
         }, 1000);
 
-      })
-    }
-  }
-
-  activateForgot(contentContainer, stagesContainer, contentTitle) {
-    const loader = this.getLoader();
-    const form = this.getForgotForm();
-    const outerThis = this;
-
-    const forgotButton = contentContainer.querySelector('.welcome  a.forgot');
-    if (forgotButton) {
-      forgotButton.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        contentContainer.insertAdjacentHTML('afterbegin', loader);
-
-        const welcome = contentContainer.querySelector('.welcome');
-
-        setTimeout(() => {
-          if (welcome) {
-            welcome.remove()
-          }
-          welcome.remove();
-          contentTitle.textContent = 'Recover';
-          outerThis.changeStages('forgot', stagesContainer);
-          outerThis.nextStep('forgot', stagesContainer);
-          stagesContainer.insertAdjacentHTML('afterend', form);
-          
-          // Updating History State
-          window.history.pushState(
-            { content: form, page: 'forgot' },
-            outerThis.getAttribute('forgot'), outerThis.getAttribute('forgot')
-          );
-
-          contentContainer.querySelector('#loader-container').remove();
-
-          outerThis.submitEvent('forgot', contentContainer.querySelector('form'));
-          outerThis.prevStep('forgot', stagesContainer, contentContainer)
-        }, 1000);
       })
     }
   }
@@ -263,7 +188,7 @@ export default class AppLogon extends HTMLElement {
         stagesContainer.classList.add('login');
 
         stages.forEach((stage, index) => {
-          if (index >= 2) {
+          if(index >= 2) {
             stage.style.display = 'none';
           }
         });
@@ -306,19 +231,19 @@ export default class AppLogon extends HTMLElement {
         }
         break;
       case "forgot":
-        // console.log(this._step);
+        console.log(this._step);
         stages[this._step + 1].classList.add('active');
         this._step += 1;
         break;
       case "login":
-        if (this._step >= 3) {
+        if(this._step >= 3) {
           stages[4].classList.remove('active');
           stages[3].classList.remove('active');
           stages[2].classList.remove('active');
           stages[1].classList.add('active');
           this._step = 1;
         }
-        else if ((this._step + 1) === 2) {
+        else if((this._step + 1) === 2) {
           stages[stages.length - 1].classList.add('active');
           this._step = (stages.length - 1);
         }
@@ -350,7 +275,6 @@ export default class AppLogon extends HTMLElement {
       switch (stageType) {
         case "register":
           if (outerThis._step <= 1) {
-            contentTitle.textContent = "Join";
             setTimeout(() => {
               stages[1].classList.remove('active');
               form.remove();
@@ -362,7 +286,7 @@ export default class AppLogon extends HTMLElement {
               outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
             }, 1500);
           }
-          else if (outerThis._step === 2) {
+          else if(outerThis._step === 2) {
             setTimeout(() => {
               stages[outerThis._step].classList.remove('active');
               outerThis._step -= 1;
@@ -376,8 +300,8 @@ export default class AppLogon extends HTMLElement {
           }
           break;
         case "forgot":
+          console.log(outerThis._step);
           if (outerThis._step <= 1) {
-            contentTitle.textContent = "Join";
             setTimeout(() => {
               stages[1].classList.remove('active');
               form.remove();
@@ -416,7 +340,6 @@ export default class AppLogon extends HTMLElement {
           break;
         case "login":
           if (this._step <= 1) {
-            contentTitle.textContent = "Join";
             setTimeout(() => {
               stages[1].classList.remove('active');
               form.remove();
@@ -462,13 +385,12 @@ export default class AppLogon extends HTMLElement {
           else if (outerThis._step === 2) {
             outerThis.validateForgotCode(form);
           }
-          else if (outerThis._step === 3) {
+          else if(outerThis._step === 3) {
             outerThis.validateForgotPassword(form);
           }
           break;
         case 'login':
           outerThis.validateLogin(form);
-          break;
         default:
           break;
       }
@@ -491,17 +413,9 @@ export default class AppLogon extends HTMLElement {
 
     let svg = userKeyGroup.querySelector('svg');
     let passwordSvg = passwordGroup.querySelector('svg');
-    let serverMsg = form.querySelector('.server-status');
-    if (svg) {
+    if (svg && passwordSvg) {
       svg.remove();
-    }
-
-    if(passwordSvg) {
       passwordSvg.remove();
-    }
-
-    if (serverMsg) {
-      serverMsg.remove();
     }
 
     const userKeyValue = userKeyGroup.querySelector('input').value.trim();
@@ -526,8 +440,7 @@ export default class AppLogon extends HTMLElement {
       setTimeout(() => {
         userKeyGroup.classList.add('success');
       }, 2000);
-
-      data['email'] = userKeyValue;
+      data['user-key'] = userKeyValue;
     }
 
     if (passwordValue === '') {
@@ -548,78 +461,97 @@ export default class AppLogon extends HTMLElement {
       data['password'] = passwordValue;
     }
 
-    if (data['email'] && data['password']) {
+    if (data['user-key'] && data['password']) {
       //API CALL
       outerThis.performLogin(form, data)
     }
   }
 
-  performLogin = async (form, data) => {
+  performLogin(form, data) {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next ');
 
-    // Call login API
-    const {
-      result,
-      error
-    } = await outerThis.apiLogin(data);
+    // After API call
+    let _msg = 'Username is available' // From API
 
-    // If error occurs
-    if (error) {
-      const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
+    setTimeout(() => {
+      submitButton.innerHTML = `<span class="text">Continue</span>`
+      submitButton.style.setProperty("pointer-events", 'auto');
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Login</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
+      outerThis.activateLoginFinish(form.parentElement, 'Fredrick');
+    }, 3000);
+  }
+
+  validateUsername(form) {
+    const outerThis = this;
+    const submitButton = form.querySelector('.actions > .action.next ');
+    const inputField = form.querySelector('.field.username');
+    const inputGroup = inputField.querySelector('.input-group');
+
+    submitButton.innerHTML = outerThis.getButtonLoader();
+    submitButton.style.setProperty("pointer-events", 'none');
+    inputGroup.classList.remove('success', 'failed');
+    let svg = inputGroup.querySelector('svg');
+    if (svg) {
+      svg.remove();
     }
 
-    // If login is successful
-    if (result.success) {
+    const inputValue = inputGroup.querySelector('input').value.trim();
+    // console.log(inputValue);
+    const status = inputGroup.querySelector('span.status');
+
+    let msg = 'Username is required!'
+
+    if (inputValue === '') {
+      status.textContent = msg;
+      inputGroup.insertAdjacentHTML('beforeend', outerThis._failed);
+      inputGroup.classList.add('failed');
+
       setTimeout(() => {
         submitButton.innerHTML = `<span class="text">Continue</span>`
         submitButton.style.setProperty("pointer-events", 'auto');
-
-        outerThis.activateLoginFinish(form.parentElement, result.user.name);
-      }, 3000);
+      }, 1000);
     }
-    else {
-      const errorMsg = outerThis.getServerMsg(result.message);
-      form.insertAdjacentHTML('afterbegin', errorMsg);
+    else if (inputValue.length < 5) {
+      msg = 'Username must be 5 characters or more!'
+      status.textContent = msg;
+      inputGroup.insertAdjacentHTML('beforeend', outerThis._failed);
+      inputGroup.classList.add('failed');
 
       setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Login</span>`
+        submitButton.innerHTML = `<span class="text">Continue</span>`
         submitButton.style.setProperty("pointer-events", 'auto');
       }, 1000);
     }
+
+    else {
+      // Call API
+      outerThis.checkUsername(form, inputValue, inputGroup, status);
+    }
   }
 
-  apiLogin = async data => {
-    const outerThis = this;
-    const loginUrl = outerThis.getAttribute('api-login');
-    try {
-      const response = await fetch(loginUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+  checkUsername(form, inputValue, inputGroup, status) {
+    const submitButton = form.querySelector('.actions > .action.next ');
 
-      const result = await response.json();
+    // After API call
+    let msg = 'Username is available' // From API
 
-      return  {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
-      }
-    }
+    //Add user to the data object
+    this._data.register['username'] = inputValue;
+
+
+    status.textContent = msg;
+    inputGroup.insertAdjacentHTML('beforeend', this._success);
+
+    setTimeout(() => {
+      inputGroup.classList.add('success');
+    }, 2000);
+
+    setTimeout(() => {
+      submitButton.innerHTML = `<span class="text">Continue</span>`
+      submitButton.style.setProperty("pointer-events", 'auto');
+      this.activateBio(form)
+    }, 3000);
   }
 
   activateBio(form) {
@@ -688,7 +620,7 @@ export default class AppLogon extends HTMLElement {
     }
   }
 
-  validateName = (nameElement, submitButton) => {
+  validateName(nameElement, submitButton) {
     const outerThis = this;
     const inputElement = nameElement.querySelector('input')
     const input = nameElement.querySelector('input').value.trim();
@@ -717,10 +649,10 @@ export default class AppLogon extends HTMLElement {
       nameElement.insertAdjacentHTML('beforeend', this._success);
 
       if (inputElement.dataset.name === "firstname") {
-        this._data.register['first_name'] = input;
+        this._data.register['firstname'] = input;
       }
       else {
-        this._data.register['last_name'] = input;
+        this._data.register['lastname'] = input;
       }
 
       nameElement.classList.add('success');
@@ -729,55 +661,33 @@ export default class AppLogon extends HTMLElement {
     }
   }
 
-  checkEmail = async (form, input, email, emailStatus) =>  {
+  checkEmail(form, input, email, emailStatus) {
     const submitButton = form.querySelector('.actions > .action.next');
 
     // After API call
-    const {
-      result,
-      error
-    } = await this.checkIfEmailExists({ email: input });
+    let msg = 'Username is available' // From API
 
-    // If error occurs
-    if (error) {
-      const errorMsg = this.getServerMsg('Something went wrong, try again!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
+    //Add user to the data object
+    this._data.register['username'] = input;
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
+    emailStatus.textContent = msg;
+    email.insertAdjacentHTML('beforeend', this._success);
 
-    // If email does not exist
-    if (result.success) {
-      // Add email to the data object
-      this._data.register['email'] = input;
+    this._data.register['email'] = input;
 
-      emailStatus.textContent = result.message;
-      email.insertAdjacentHTML('beforeend', this._success);
-
+    setTimeout(() => {
       email.classList.add('success');
+    }, 1000);
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Register</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-        this.activatePassword(form)
-      }, 2000);
-    }
-    else {
-      emailStatus.textContent = result.message;
-      email.insertAdjacentHTML('beforeend', this._failed);
-      email.classList.add('failed');
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
+    setTimeout(() => {
+      submitButton.innerHTML = `<span class="text">Register</span>`
+      submitButton.style.setProperty("pointer-events", 'auto');
+      this.activatePassword(form)
+    }, 2000);
   }
 
-  activatePassword = form => {
+  activatePassword(form) {
     const stagesContainer = form.parentElement.querySelector('.stages');
     form.firstElementChild.remove()
     this.nextStep('register', stagesContainer);
@@ -787,7 +697,7 @@ export default class AppLogon extends HTMLElement {
     form.insertAdjacentHTML('afterbegin', this.getPasswordFields())
   }
 
-  validatePassword = async form => {
+  validatePassword(form) {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
@@ -806,16 +716,9 @@ export default class AppLogon extends HTMLElement {
     repeatPassword.classList.remove('success', 'failed');
     let svg = password.querySelector('svg');
     let svgRepeat = repeatPassword.querySelector('svg');
-    let serverMsg = form.querySelector('.server-status');
-    if(svg){
+    if (svg && svgRepeat) {
       svg.remove();
-    }
-    if (svgRepeat) {
       svgRepeat.remove();
-    }
-
-    if (serverMsg) {
-      serverMsg.remove();
     }
 
 
@@ -845,34 +748,7 @@ export default class AppLogon extends HTMLElement {
           repeatPassword.classList.add('success');
 
           // API Call
-
-          const {
-            result,
-            error
-          } = await outerThis.performRegistration(outerThis._data.register);
-
-          if (error) {
-            const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
-            form.insertAdjacentHTML('afterbegin', errorMsg);
-
-            setTimeout(() => {
-              submitButton.innerHTML = `<span class="text">Continue</span>`
-              submitButton.style.setProperty("pointer-events", 'auto');
-            }, 1000);
-          }
-
-          if (result.success) {
-            this.activateFinish(form.parentElement, result.user);
-          }
-          else {
-            const errorMsg = outerThis.getServerMsg(result.message);
-            form.insertAdjacentHTML('afterbegin', errorMsg);
-
-            setTimeout(() => {
-              submitButton.innerHTML = `<span class="text">Continue</span>`
-              submitButton.style.setProperty("pointer-events", 'auto');
-            }, 1000);
-          }
+          this.activateFinish(form.parentElement);
         }
         else {
           repeatStatus.textContent = 'Passwords must match be equal!';
@@ -890,60 +766,6 @@ export default class AppLogon extends HTMLElement {
           submitButton.innerHTML = `<span class="text">Continue</span>`
           submitButton.style.setProperty("pointer-events", 'auto');
         }, 1000);
-      }
-    }
-  }
-
-  performRegistration = async data => {
-    const outerThis = this;
-    const registerUrl = outerThis.getAttribute('api-register');
-    try {
-      const response = await fetch(registerUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      return  {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
-      }
-    }
-  }
-
-  checkIfEmailExists = async data => {
-    const outerThis = this;
-    const checkEmailUrl = outerThis.getAttribute('api-check-email');
-    try {
-      const response = await fetch(checkEmailUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      return {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
       }
     }
   }
@@ -1019,11 +841,6 @@ export default class AppLogon extends HTMLElement {
     const currentEl = form.querySelector('.field.forgot.code')
     if (currentEl) {
       currentEl.remove();
-    }
-    // Select and remove server message
-    let serverMsg = form.querySelector('.server-status');
-    if (serverMsg) {
-      serverMsg.remove();
     }
     this.nextStep('forgot', stagesContainer);
 
@@ -1124,12 +941,6 @@ export default class AppLogon extends HTMLElement {
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
 
-    // Select and remove server message
-    let serverMsg = form.querySelector('.server-status');
-    if (serverMsg) {
-      serverMsg.remove();
-    }
-
     // const inputGroups = inputField.querySelectorAll('.input-group');
     const password = inputField.querySelector('.input-group.password');
     const repeatPassword = inputField.querySelector('.input-group.repeat-password');
@@ -1169,7 +980,7 @@ export default class AppLogon extends HTMLElement {
           repeatStatus.textContent = '';
           repeatPassword.insertAdjacentHTML('beforeend', this._success);
 
-          this._data.recovery['password'] = input;
+          this._data.register['password'] = input;
 
           // console.log(this._data);
 
@@ -1198,196 +1009,79 @@ export default class AppLogon extends HTMLElement {
     }
   }
 
-  checkForgotEmail = async (form, input, email, emailStatus) => {
+  checkForgotEmail(form, input, email, emailStatus) {
     const submitButton = form.querySelector('.actions > .action.next');
 
     // After API call
-    const {
-      result,
-      error
-    } = await this.apiForget({ email: input });
+    let msg = 'Username is available' // From API
 
-    // If error occurs
-    if (error) {
-      const errorMsg = this.getServerMsg('Something went wrong, try again!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
+    //Add user to the data object
+    this._data.register['username'] = input;
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
+    emailStatus.textContent = msg;
+    email.insertAdjacentHTML('beforeend', this._success);
 
-    // If email does not exist
-    if (!result.success) {
-      emailStatus.textContent = result.message;
-      email.insertAdjacentHTML('beforeend', this._failed);
-      email.classList.add('failed');
+    this._data.register['email'] = input;
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
-    else {
-      // Add email to the data object
-      this._data.recovery['email'] = input;
-
-      // Add returned user to the local object
-      this._data.user = result.user;
-
-      const errorMsg = this.getServerSuccessMsg(result.message);
-      form.insertAdjacentHTML('afterbegin', errorMsg);
-
-
-      emailStatus.textContent = result.message;
-      email.insertAdjacentHTML('beforeend', this._success);
-
+    setTimeout(() => {
       email.classList.add('success');
+    }, 1000);
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-        this.activateForgotCode(form)
-      }, 2000);
-    }
+
+    setTimeout(() => {
+      submitButton.innerHTML = `<span class="text">Continue</span>`
+      submitButton.style.setProperty("pointer-events", 'auto');
+      this.activateForgotCode(form)
+    }, 2000);
   }
 
-  apiForget = async data => {
-    const outerThis = this;
-    const url = outerThis.getAttribute('api-forgot-password');
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      return {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
-      }
-    }
-  }
-
-  apiVerify = async data => {
-    const outerThis = this;
-    const url = outerThis.getAttribute('api-verify-token');
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      return {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
-      }
-    }
-  }
-
-  apiResetPassword = async data => {
-    const outerThis = this;
-    const url = outerThis.getAttribute('api-reset-password');
-    try {
-      const response = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      return {
-        result: result,
-        error: null
-      }
-    }
-    catch (error) {
-      return {
-        result: null,
-        error: error
-      }
-    }
-  }
-
-  checkCode = async (form, input, codeInput, codeStatus) => {
-    const outerThis = this;
+  checkCode(form, input, codeInput, codeStatus) {
     const submitButton = form.querySelector('.actions > .action.next');
 
-    // console.log(outerThis._data.recovery);
-
     // After API call
-    const {
-      result,
-      error
-    } = await this.apiVerify({ token: input, email: outerThis._data.recovery['email'] });
+    let msg = 'Username is available' // From API
 
-    // If error occurs
-    if (error) {
-      const errorMsg = this.getServerMsg('Something went wrong, try again!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
+    //Add user to the data object
+    this._data.register['username'] = input;
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
+    codeStatus.textContent = msg;
+    codeInput.insertAdjacentHTML('beforeend', this._success);
 
-    // If verification is successful
-    if (result.success) {
-      codeStatus.textContent = result.message;
-      codeInput.insertAdjacentHTML('beforeend', this._success);
+    this._data.register['email'] = input;
 
-      setTimeout(() => {
-        codeInput.classList.add('success');
-      }, 1000);
+    setTimeout(() => {
+      codeInput.classList.add('success');
+    }, 1000);
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-        this.activateForgotPassword(form)
-      }, 2000);
-    }
-    else {
-      codeStatus.textContent = result.message;
-      codeInput.insertAdjacentHTML('beforeend', this._failed);
 
-      setTimeout(() => {
-        submitButton.innerHTML = `<span class="text">Continue</span>`
-        submitButton.style.setProperty("pointer-events", 'auto');
-      }, 1000);
-    }
+    setTimeout(() => {
+      submitButton.innerHTML = `<span class="text">Continue</span>`
+      submitButton.style.setProperty("pointer-events", 'auto');
+      this.activateForgotPassword(form)
+    }, 2000);
   }
 
-  activateFinish(contentContainer, data) {
+  activateForgotFinish(contentContainer) {
     const outerThis = this;
     const stagesContainer = contentContainer.querySelector('.stages');
     const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
-    const finish = this.getRegSuccess(data);
+    const finish = this.getForgotSuccess();
+    const form = contentContainer.querySelector('form');
+
+    setTimeout(() => {
+      form.remove();
+      outerThis.nextStep('forgot', stagesContainer);
+      stagesContainer.insertAdjacentHTML('afterend', finish)
+
+      outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+    }, 1000);
+  }
+
+  activateFinish(contentContainer) {
+    const outerThis = this;
+    const stagesContainer = contentContainer.querySelector('.stages');
+    const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
+    const finish = this.getRegSuccess();
     const form = contentContainer.querySelector('form');
 
     setTimeout(() => {
@@ -1413,53 +1107,6 @@ export default class AppLogon extends HTMLElement {
     }, 1000);
   }
 
-  activateForgotFinish = async contentContainer => {
-    const outerThis = this;
-    const stagesContainer = contentContainer.querySelector('.stages');
-    const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
-    const form = contentContainer.querySelector('form');
-
-    // construct data for reset password
-    if(!outerThis._data.recovery.email || !outerThis._data.recovery.password) {
-      // Show error message
-      const errorMsg = outerThis.getServerMsg('Some fields are missing!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
-    }
-
-    const resetData = {
-      email: outerThis._data.recovery.email,
-      password: outerThis._data.recovery.password
-    }
-
-    // Call the api for resetting the password
-    const {
-      result,
-      error
-    } = await outerThis.apiResetPassword(resetData);
-
-    // If error occurs
-    if (error) {
-      const errorMsg = outerThis.getServerMsg('Something went wrong, try again!');
-      form.insertAdjacentHTML('afterbegin', errorMsg);
-    }
-
-    // If reset is successful
-    if (result.success) {
-      const finish = this.getForgotSuccess(result.user.name);
-      setTimeout(() => {
-        form.remove();
-        outerThis.nextStep('forgot', stagesContainer);
-        stagesContainer.insertAdjacentHTML('afterend', finish)
-
-        outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-      }, 1000);
-    }
-    else {
-      const errorMsg = outerThis.getServerMsg(result.message);
-      form.insertAdjacentHTML('afterbegin', errorMsg);
-    }
-  }
-
   disableScroll() {
     // Get the current page scroll position
     let scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -1478,32 +1125,16 @@ export default class AppLogon extends HTMLElement {
   }
 
   getTemplate() {
-    return `
+    return /* html */`
       <div class="logon-container">
         ${this.getHeader()}
         ${this.getStages()}
-        ${this.initialInterface(this.getAttribute('name'))}
+        ${this.getWelcome()}
         ${this.getFooter()}
       </div>
 
       ${this.getStyles()}
     `
-  }
-
-  initialInterface = (startName) => {
-    const outerThis = this;
-    switch (startName) {
-      case 'join':
-        return outerThis.getWelcome()
-      case 'login':
-        return outerThis.getLoginForm();
-      case 'register':
-        return outerThis.getRegistrationForm();
-      case 'forgot':
-        return outerThis.getForgotForm();
-      default:
-        return outerThis.getWelcome();
-    }
   }
 
   getLoader() {
@@ -1558,14 +1189,15 @@ export default class AppLogon extends HTMLElement {
   }
 
   getWelcome() {
-    return `
+    return /* html */`
       <div class="welcome">
 				<p>
 					Connect with your audience, amplify collaborations, and share your knowledge without limits.
 					Build a vibrant project hub where ideas ignite and progress shines.
 				</p>
 				<a href=${this.getAttribute('login')} class="login">Login</a>
-				<a href=${this.getAttribute('register')} class="register">Register</a>
+				<a href="${this.getAttribute('register')}" class="register">Register</a>
+
         <p class="forgot">
           Forgot your password? <a href="${this.getAttribute('forgot')}" class="forgot">Click here</a>
         </p>
@@ -1582,14 +1214,26 @@ export default class AppLogon extends HTMLElement {
     `
   }
 
-  getRegSuccess(data) {
+  getRegSuccess() {
     return `
       <div class="finish">
         <h2 class="title">Welcome!</h2>
 				<p>
-					Dear ${data.name} your account has been created successfully. Please log in into your account to start sharing great ideas.
+					Your account has been created successfully. Please log in into your account to start sharing great ideas.
 				</p>
-				<a href="/login/" class="login">Login</a>
+				<a href="/join/login/" class="login">Login</a>
+			</div>
+    `
+  }
+
+  getForgotSuccess() {
+    return `
+      <div class="finish">
+        <h2 class="title">Success!</h2>
+				<p>
+					Your password has been successfully reset. Please log in into your account.
+				</p>
+				<a href="/join/login/" class="login">Login</a>
 			</div>
     `
   }
@@ -1607,20 +1251,8 @@ export default class AppLogon extends HTMLElement {
     `
   }
 
-  getForgotSuccess(name) {
-    return `
-      <div class="finish">
-        <h2 class="title">Success!</h2>
-				<p>
-					Dear ${name} your password has been successfully reset. Please log in into your account.
-				</p>
-				<a href="/join/login/" class="login">Login</a>
-			</div>
-    `
-  }
-
   getRegistrationForm() {
-    return /* html */`
+    return `
       <form class="fields initial">
 				${this.getBioFields()}
 				<div class="actions">
@@ -1635,37 +1267,22 @@ export default class AppLogon extends HTMLElement {
     `
   }
 
-  getServerMsg = text => {
-    return `
-      <p class="server-status">${text}</p>
-    `
-  }
-
-  getServerSuccessMsg = text => {
-    return `
-      <p class="server-status success">${text}</p>
-    `
-  }
-
   getBioFields() {
     return `
       <div class="field bio">
 				<div class="input-group firstname">
 					<label for="firstname" class="center">First name</label>
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-						<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-					</svg>
-					<input data-name="firstname" type="text" name="firstname" id="firstname" placeholder="e.g John" required>
+					<input data-name="firstname" type="text" name="firstname" id="firstname" placeholder="Enter your first name" required>
 					<span class="status">First name is required</span>
 				</div>
 				<div class="input-group lastname">
 					<label for="lastname" class="center">Last name</label>
-					<input data-name="lastname" type="text" name="lastname" id="lastname" placeholder="e.g Doe" required>
+					<input data-name="lastname" type="text" name="lastname" id="lastname" placeholder="Enter your last name" required>
 					<span class="status">Last name is required</span>
 				</div>
 				<div class="input-group email">
 					<label for="email" class="center">Email</label>
-					<input data-name="Email" type="email" name="email" id="email" placeholder="e.g john@example.com" required>
+					<input data-name="Email" type="email" name="email" id="email" placeholder="Enter your email" required>
 					<span class="status">Email is required</span>
 				</div>
 			</div>
@@ -1751,12 +1368,12 @@ export default class AppLogon extends HTMLElement {
       <form class="fields initial bio">
 				<div class="field login bio">
 					<div class="input-group user-key">
-						<label for="email" class="center">Email</label>
+						<label for="user-key" class="center">Username or email</label>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 							<path
 								d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
 						</svg>
-						<input data-name="email" type="email" name="email" id="email" placeholder="e.g john@example.com"
+						<input data-name="user-key" type="text" name="user-key" id="user-key" placeholder="Enter username or email"
 							required>
 						<span class="status">Username or email is required</span>
 					</div>
@@ -1766,7 +1383,7 @@ export default class AppLogon extends HTMLElement {
 							<path
 								d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
 						</svg>
-						<input data-name="password" type="password" name="password" id="password" placeholder="Your password"
+						<input data-name="password" type="password" name="password" id="password" placeholder="Enter password"
 							required>
 						<span class="status">Password is required</span>
 					</div>
@@ -1817,8 +1434,7 @@ export default class AppLogon extends HTMLElement {
 
   getStyles() {
     return /*css*/`
-      <!--suppress ALL -->
-<style>
+      <style>
         * {
           box-sizing: border-box !important;
         }
@@ -1855,6 +1471,7 @@ export default class AppLogon extends HTMLElement {
           align-items: center;
           justify-content: center;
           background-position: 100%;
+          background-size: cover;
           background-size: 1rem 1rem;
           background-color: #f8f9fa;
           background-image: radial-gradient(circle, #dee2e6 1px, rgba(0, 0, 0, 0) 1px);
@@ -2110,27 +1727,8 @@ export default class AppLogon extends HTMLElement {
           font-size: 1.5rem;
         }
 
-        p.server-status {
-          grid-column: 1/3;
-          margin: 0;
-          order: 0;
-          text-align: center;
-          font-family: var(--font-read), sans-serif;
-          color: var(--error-color);
-          font-weight: 500;
-          line-height: 1.4;
-          font-size: 1.18rem;
-        }
-
-        p.server-status.success {
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
         .logon-container > .finish  p,
-        .logon-container>.welcome  p {
+        .logon-container > .welcome  p {
           grid-column: 1/3;
           margin: 0;
           text-align: center;
@@ -2167,7 +1765,8 @@ export default class AppLogon extends HTMLElement {
           color: var(--text-color);
           line-height: 1.4;
         }
-        
+
+
         .logon-container > .welcome > .info svg {
           margin: 0 0 -3px 0;
           color: var(--accent-color);
@@ -2183,25 +1782,23 @@ export default class AppLogon extends HTMLElement {
           font-weight: 400;
         }
 
-        .logon-container>.welcome>.info a {
+        .logon-container > .welcome > .info a {
           color: var(--gray-color);
           /* font-style: italic; */
           font-size: 1em;
         }
 
-        .logon-container>.welcome>.info a:hover {
+        .logon-container > .welcome > .info a:hover {
           color: transparent;
           text-decoration: underline;
           background: var(--stage-active-linear);
           background-clip: text;
           -webkit-background-clip: text;
-
         }
 
         .logon-container >.welcome > p.forgot {
           grid-column: 1/3;
           text-align: center;
-          margin: 0 0 10px 0;
           color: var(--text-color);
           line-height: 1.4;
         }
@@ -2229,7 +1826,7 @@ export default class AppLogon extends HTMLElement {
           gap: 20px;
         }
 
-        .logon-container > .fields .field.bio{
+        .logon-container > .fields .field.bio {
           display: grid;
           grid-template-columns: 1fr 1fr;
           justify-content: center;
@@ -2430,9 +2027,10 @@ export default class AppLogon extends HTMLElement {
           pointer-events: none;
         }
 
+
         /* Logon Footer */
         .logon-container >.footer {
-          border-top: var(--story-border);
+          border-top: var(--border);
           margin: 10px 0 0 0;
           width: 100%;
           padding: 10px 0 10px 0;
@@ -2500,6 +2098,7 @@ export default class AppLogon extends HTMLElement {
         @media screen and (max-width:700px) {
 
           :host {
+        font-size: 16px;
             width: 100%;
             min-height: 100vh;
             height: 100%;
@@ -2508,6 +2107,7 @@ export default class AppLogon extends HTMLElement {
             justify-content: center;
             background-color: var(--background);
             background-position: unset;
+            background-size: unset;
             background-size: unset;
             background-image: unset;
           }
@@ -2622,6 +2222,7 @@ export default class AppLogon extends HTMLElement {
             order: 5;
           }
         }
+
       </style>
     `;
   }
