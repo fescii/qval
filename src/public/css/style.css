@@ -1,0 +1,359 @@
+/*
+
+Copyright: 2024 - Aduki Incorporation
+Name: Blog & Article Platform
+URL: https://github.com/fescii/femar.git
+Author: Fredrick Femar Ochieng
+Author URL: https://femar.co.ke
+
+*/
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+  font-family: inherit;
+  -webkit-box-sizing: border-box;
+}
+
+*:focus {
+  outline: inherit !important;
+}
+
+*::-webkit-scrollbar {
+  width: 3px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scroll-bar-background);
+}
+
+*::-webkit-scrollbar-thumb {
+  width: 3px;
+  background: var(--scroll-bar-linear);
+  border-radius: 50px;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  width: 100%;
+  height: max-content;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+body {
+  /* border: 1px solid blue; */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  font-size: 16px;
+  margin: 0;
+  height: max-content;
+  width: 100%;
+  min-height: var(--vh-height, 100vh);
+  font-family: var(--font-main), sans-serif;
+
+  /* padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px)
+    env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px); */
+}
+
+body.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}
+
+/*
+
+Typography
+==========
+
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+ul,
+ol {
+  padding: 0;
+  margin: 0;
+}
+
+/* ul li,
+ol li {
+  list-style-type: none;
+} */
+
+a {
+  text-decoration: none;
+}
+
+/*
+
+Typography End
+==============
+
+*/
+
+
+/* Toast Message */
+body > .toast {
+  position: fixed;
+  bottom: 10px;
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--accent-linear);
+  color: var(--white-color);
+  padding: 8px 15px;
+  width: max-content;
+  max-width: 95%;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+body > .toast.false {
+  background: var(--error-linear);
+}
+
+body > .toast > p {
+  margin: 0;
+  padding: 0;
+}
+
+body > .toast > svg {
+  height: 20px;
+  width: 20px;
+}
+
+/* End Toast Message */
+
+
+/*Footer*/
+footer.footer {
+  border-top: thin solid #4b5563bd;
+  padding-top: 20px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 30px;
+  font-family: var(--font-text), sans-serif;
+}
+
+footer.footer > section {
+  /* border: 1px solid #1f2937; */
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 500px;
+}
+
+footer.footer > section > .title {
+  color: var(--text-color);
+  font-family: var(--font-text), sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+footer.footer > section > ul.footer-list {
+  /* border: 1px solid #1f2937; */
+  margin: 0;
+  margin: 0;
+  list-style-type: none;
+  padding: 0 0 0 1px;
+  padding: 0 0 0 1px;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+footer.footer > section > ul.footer-list > li.item {
+  margin: 0 10px 0 0;
+  padding: 0;
+  width: max-content;
+  position: relative;
+  /* border: 1px solid #808080; */
+}
+
+footer.footer > section > ul.footer-list > li.item > .dot {
+  display: inline-block;
+  background: var(--accent-linear);
+  width: 5px;
+  height: 5px;
+  position: absolute;
+  right: -9px;
+  top: 3px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+footer.footer > section > ul.footer-list > li.item > a.item-link {
+  color: var(--gray-color);
+  /* font-size: 0.98rem; */
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+footer.footer > section > ul.footer-list > li.item > a.item-link:hover {
+  /* color: var(--accent-color); */
+  color: transparent;
+  background: var(--accent-linear);
+  background-clip: text;
+  -webkit-background-clip: text;
+  border-bottom: 1px solid var(--accent-color);
+}
+
+footer.footer > section.newsletter {
+  /* border: 1px solid #1f2937; */
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  max-width: 500px;
+}
+
+footer.footer > section.newsletter > .text {
+  padding-left: 3px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-color);
+}
+
+footer.footer > section.newsletter > form {
+  padding: 5px;
+  width: 100%;
+  position: relative;
+}
+
+footer.footer > section.newsletter > form > input[type="email"] {
+  width: 100%;
+  outline: none;
+  color: #53595f;
+  font-family: var(--font-main);
+  padding: 12px 15px;
+  font-size: 1rem;
+  /* border: 2px solid #4949bc; */
+  border-top-color: #21d029;
+  border-top-width: 2px;
+  border-right-color: #54df5b;
+  border-right-width: 2px;
+  border-bottom-color: #21d029;
+  border-bottom-width: 2px;
+  border-left-color: #18a565;
+  border-left-width: 2px;
+  border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+}
+
+footer.footer > section.newsletter > form > input[type="submit"] {
+  outline: none;
+  position: absolute;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-family: var(--font-main);
+  right: 30px;
+  top: 14px;
+  font-size: 1rem;
+  padding: 5px 15px;
+  background: var(--accent-linear);
+  color: var(--white-color);
+  border: none;
+  border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+}
+
+footer.footer > .copy {
+  border-top: 1px solid #6b728037;
+  padding: 8px 10px;
+  grid-column: 1/5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+footer.footer > .copy > .copyright {
+  display: flex;
+  gap: 2px;
+}
+
+footer.footer > .copy > .copyright > .company {
+  display: inline-block;
+  margin: -5px 10px 0 0;
+  margin: -5px 10px 0 0;
+  font-size: 1.35rem;
+  font-weight: bold;
+  color: var(--text-color);
+  font-family: "Segoe UI", Tahoma, var(--font-main), Verdana, sans-serif !important;
+}
+
+footer.footer > .copy > .copyright > i {
+  color: var(--gray-color);
+  font-style: normal;
+  font-family: inherit;
+  /* font-size: 1.2rem; */
+}
+
+footer.footer > .copy > .copyright > a {
+  /* border: 1px solid #80808040; */
+  color: var(--gray-color);
+  text-decoration: none;
+  text-align: center;
+}
+
+footer.footer > .copy > .copyright > a:hover {
+  color: transparent;
+  background: var(--accent-linear);
+  background-clip: text;
+  -webkit-background-clip: text;
+  border-bottom: 1px solid var(--accent-color);
+}
+
+footer.footer > .copy > .legal {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  gap: 0;
+}
+
+footer.footer > .copy > .legal > a {
+  color: #6b7280;
+  padding: 0 15px;
+  text-decoration: none;
+  border-right: 1px solid #6b728027;
+}
+
+footer.footer > .copy > .legal > a:last-of-type {
+  border-right: none;
+}
+
+footer.footer > .copy > .legal > a:hover {
+  color: transparent;
+  background: var(--accent-linear);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
