@@ -14,11 +14,14 @@ const getTopic = async (req, res) => {
   //get the params from the request
   let param = req.params.topic;
 
+  // get user from the request object
+  const user = req.user;
+
   // convert the topic to lowercase
   param = param.toLowerCase();
 
   // query the database for the topic
-  const { topic, error } = await findTopicBySlugOrHash(param);
+  const { topic, error } = await findTopicBySlugOrHash(param, user.hash);
 
   // if there is an error, render the error page
   if (error) {

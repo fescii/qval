@@ -254,39 +254,124 @@ const findTopicBySlug = async (slug) => {
  * function findTopicBySlugOrHash
  * @description Query to find a topic by slug or hash
  * @param {String} query - The query of the topic
+ * @param {String} user - The user hash
  * @returns {Object} - The topic object or null, and the error if any
 */
-const findTopicBySlugOrHash = async (query) => {
+const findTopicBySlugOrHash = async (query, user) => {
   // Check if a topic exists
   try {
-    const topic = await Topic.findOne({
-      attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt'],
-      where: {
-        [Op.or]: [
-          {slug: query},
-          {hash: query}
-        ]
-      },
-      include: [
-        {
-          model: User,
-          as: 'topic_author',
-          attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt'],
-        }
-      ]
-    });
-
-    // if topic doesn't exist
-    if (!topic) {
-      return { topic: null, error: null}
+    // check if user is logged in
+    if (user) {
+      return await findTopicWhenLoggedIn(query, user);
     }
-
-    // If topic exists, return the topic
-    return {topic: topic, error: null}
+    else {
+      return await findTopicWhenLoggedOut(query);
+    }
   }
   catch (error) {
     return { topic: null, error: error}
   }
+}
+
+/**
+ * @function findTopicWhenLoggedIn
+ * @description Query to find a topic when logged in
+ * @param {String} query - The query of the topic
+ * @param {String} user - The user hash
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicWhenLoggedIn = async (query, user) => {
+  const topic = await Topic.findOne({
+    // attributes including a subquery to check whether the user is following the topic and is subscribed to the topic
+    attributes: { 
+      include: [ 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM "topic.followers"
+            WHERE "followers"."topic" = "topic"."hash"
+            AND "followers"."author" = '${user}'
+          )`),
+          'is_following'
+        ],
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM "topic.ubscribers"
+            WHERE "subscribers"."topic" = "topic"."hash"
+            AND "subscribers"."author" = '${user}'
+          )`),
+          'is_subscribed'
+        ]
+      ]
+    },
+    where: {
+      [Op.or]: [
+        {slug: query},
+        {hash: query.toUpperCase()}
+      ]
+    },
+    include: [
+      {
+        model: User,
+        as: 'topic_author',
+        attributes: {
+          include: [ 'hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories',
+            [
+              sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM "account.connects"
+                WHERE "connects"."to" = "topic_author"."hash"
+                AND "connects"."from" = '${user}'
+              )`),
+              'is_following'
+            ]
+          ]
+        },
+      }
+    ]
+  });
+
+  // if topic doesn't exist
+  if (!topic) {
+    return { topic: null, error: null}
+  }
+
+  // If topic exists, return the topic
+  return {topic: topic, error: null}
+}
+
+/**
+ * @functionn findTopicWhenLoggedOut
+ * @description Query to find a topic when logged out
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicWhenLoggedOut = async (query) => {
+  const topic = await Topic.findOne({
+    attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt'],
+    where: {
+      [Op.or]: [
+        {slug: query},
+        {hash: query.toUpperCase()}
+      ]
+    },
+    include: [
+      {
+        model: User,
+        as: 'topic_author',
+        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt'],
+      }
+    ]
+  });
+
+  // if topic doesn't exist
+  if (!topic) {
+    return { topic: null, error: null}
+  }
+
+  // If topic exists, return the topic
+  return {topic: topic, error: null}
 }
 
 /**

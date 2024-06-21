@@ -1,7 +1,11 @@
 // Import necessary modules, middlewares, and controllers
 const {
   getTopic
-} = require('../../content').topicContent
+} = require('../../content').topicContent;
+
+const {
+  checkToken
+} = require('../../middlewares').authMiddleware;
 
 
 /**
@@ -22,5 +26,5 @@ module.exports = (app) => {
 
 
   // Route for handling topic page
-  app.get('/t/:topic', getTopic);
+  app.get('/t/:topic', checkToken, getTopic);
 }
