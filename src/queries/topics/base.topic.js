@@ -24,7 +24,7 @@ const addTopic = async (user, data) => {
       author: user.hash,
       name: data.name,
       slug: data.slug,
-      summery: data.summery,
+      summary: data.summary,
     }, {transaction})
 
     // Generate a hash for the topic created
@@ -78,7 +78,7 @@ const addTopic = async (user, data) => {
         hash: topic.hash,
         name: topic.name,
         slug: topic.slug,
-        summery: topic.summery
+        summary: topic.summary
       },
       error: null
     }
@@ -118,7 +118,7 @@ const checkIfTopicExists = async (name, slug) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -168,7 +168,7 @@ const editTopic = async (hash, data) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -207,7 +207,7 @@ const findTopic = async (hash) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -263,40 +263,23 @@ const findTopicsByQuery = async (query) => {
     query = query.trim();
 
     // refine the query: make the query to match containing, starting or ending with the query
-    // query = query.split(' ').map((q) => `${q} | ${q}:* | *:${q}`).join(' & ');
-
-    // create tsquery that starts with the query
-    const tsQueryStarts = query.split(' ').map((q) => `${q}:*`).join(' & ');
-
-    // create tsquery that ends with the query
-    const tsQueryEnds = query.split(' ').map((q) => `*:${q}`).join(' & ');
-
-    // create tsquery that contains the query
-    const tsQueryContains = query.split(' ').map((q) => `${q}`).join(' & ');
-
-    // combine the tsquery strings for starting, ending and containing
-    const tsQuery = sequelize.literal(`${tsQueryStarts} | ${tsQueryEnds} | ${tsQueryContains}`);
-
-    // // construct the tsquery using the sequelize.fn
-    // const tsQuery = sequelize.fn('to_tsquery','english',queryString);
-
+    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
     
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+
     // build the query(vector search)
     const topics = await Topic.search(tsQuery);
 
-    console.log('Topics', topics);
-
     // if no topics found
-    if (!topics) {
-      return { topics: null, error: null}
+    if (topics.length < 1) {
+      return {topics: null, error: null}
     }
 
     // If topics exist, return the topics
     return { topics: topics, error: null}
-
   }
   catch (error) {
-    console.log('Error', error)
     return { topics: null, error: error}
   }
 }

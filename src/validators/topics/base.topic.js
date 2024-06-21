@@ -8,7 +8,7 @@ const { sanitizeUtil } = require('../../utils')
  * @returns {Object} - The validated topic data object
 */
 const validateTopic = async data => {
-  if (data.name && data.slug && data.summery)  {
+  if (data.name && data.slug && data.summary)  {
     // validate first name
     if (typeof data.name !== 'string' || data.name.length < 2) {
       return {
@@ -18,7 +18,7 @@ const validateTopic = async data => {
     }
 
     // validate last name
-    if (typeof data.summery !== 'string' || data.summery < 30) {
+    if (typeof data.summary !== 'string' || data.summary < 30) {
       return {
         data: null,
         error: new Error("About topic should have 30 chars or more and must be a string!")
@@ -30,7 +30,7 @@ const validateTopic = async data => {
     const validatedData = {
       name: await sanitizeUtil.sanitizeInput(data.name),
       slug: slug_data.trim().replace(/\s+/g, ' ').toLowerCase().replace(/\s+/g, '-'),
-      summery: await sanitizeUtil.sanitizeInput(data.summery),
+      summary: await sanitizeUtil.sanitizeInput(data.summary),
     }
 
     return { data: validatedData, error: null };
@@ -38,7 +38,7 @@ const validateTopic = async data => {
   else {
     return {
       data: null,
-      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (name, summery, slug)")
+      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (name, summary, slug)")
     }
   }
 }
