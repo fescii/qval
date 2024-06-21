@@ -107,22 +107,6 @@ module.exports = (User, Story, sequelize, Sequelize) => {
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_idx ON topic.topics USING GIN(search)`);
   });
 
-  // update vector columns before saving
-  // Topic.beforeSave(async topic => {
-  //   // update the name_slug_search column
-  //   topic.name_slug_search = sequelize.fn('to_tsvector', 'english', topic.name + ' ' + topic.slug);
-
-  //   // update the full_search column
-  //   topic.full_search = sequelize.fn('to_tsvector', 'english', topic.name + ' ' + topic.slug + ' ' + topic.summary);
-
-
-  //   // update the name_slug_search column
-  //   // await sequelize.query(`UPDATE topic.topics SET name_slug_search = to_tsvector('english', name || ' ' || slug) WHERE id = ${topic.id}`);
-
-  //   // // update the full search column
-  //   // await sequelize.query(`UPDATE topic.topics SET full_search = to_tsvector('english', name || ' ' || slug || ' ' || coalesce(summary, '')) WHERE id = ${topic.id}`);
-  // });
-
   // add prototype to search: name_slug_search
   Topic.search = async tsQuery => {
     return await Topic.findAll({
@@ -350,7 +334,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       };
 
       // add the job to the queue
-      actionQueue.add(payload);
+      await actionQueue.add('actionJob', payload);
     });
 
     // add a hook to the Subscribe model to add a job to the queue
@@ -366,7 +350,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       };
 
       // add the job to the queue
-      actionQueue.add(payload);
+      await actionQueue.add('actionJob', payload);
     });
 
 
@@ -420,7 +404,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       };
 
       // add the job to the queue
-      actionQueue.add(payload);
+      await actionQueue.add('actionJob', payload);
     });
 
     // add a hook to the Follow model to add a job to the queue
@@ -436,7 +420,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       };
 
       // add the job to the queue
-      actionQueue.add(payload);
+      await actionQueue.add('actionJob', payload);
     });
 
   // Defining the associations on the User and Topic models

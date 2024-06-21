@@ -8,7 +8,7 @@ const { sequelize, Topic, Follow, Subscribe, Tagged } = require('../../models').
  * @param {String} topic - The hash of the topic to follow
  * @returns {Object} - The follow object or null, and the error if any
 */
-const followTopic = async (user, topic) => {
+const follow = async (user, topic) => {
   try {
     // get or create the follow object
     const [follow, created] = await Follow.findOrCreate({
@@ -44,7 +44,7 @@ const followTopic = async (user, topic) => {
  * @param {String} topic - The hash of the topic to subscribe
  * @returns {Object} - The subscribe object or null, and the error if any
 */
-const subscribeTopic = async (user, topic) => {
+const subscribe = async (user, topic) => {
   try {
     // get or create the subscribe object
     const [subscribe, created] = await Subscribe.findOrCreate({
@@ -115,5 +115,5 @@ const tagStory = async (story, topicsArray) => {
 }
 
 module.exports = {
-  followTopic, subscribeTopic, tagStory
+  follow, subscribe, tagStory
 }

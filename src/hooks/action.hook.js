@@ -1,5 +1,5 @@
 // import user Model from models
-const { User, sequelize, Sequelize } = require('../models').models;
+const { User,Topic, sequelize, Sequelize } = require('../models').models;
 
 /**
  * @function updateUserFollowers

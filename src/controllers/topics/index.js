@@ -10,11 +10,15 @@ const {
   deleteTopicSection, acceptDraft, getTopicDrafts
 } = require('./section.topic');
 
+const {
+  followTopic, subscribeTopic
+} = require('./action.topic');
+
 // Export all topic controllers
 module.exports = {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
   acceptDraft, getTopicSections, getTopicDrafts,
-  searchTopics, getTopicByHash
+  searchTopics, getTopicByHash, followTopic, subscribeTopic
 }
