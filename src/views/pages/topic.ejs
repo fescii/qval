@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!--  Head/Meta  Start-->
+  <% var title = "Topic | " + data.name %>
+  <% var image = "/static/img/fav.png" %>
+  <!-- Trancate summary to 160 characters and add ... -->
+  <% var description = data.summary.length > 90 ? data.summary.substring(0, 90) + "..." : data.summary %>
+  <%- include('../partials/meta', {
+    title: title, image: image, description: description
+  }); %>
+  <!--  Head/Meta  End-->
+
+  <body>
+    <!--App Logon page Start-->
+      <%- include('../partials/apps/logon', {data: data}); %>
+    <!--App Logon page End-->
+  </body>
+
+</html>
