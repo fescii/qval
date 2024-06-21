@@ -1,12 +1,6 @@
 const multer = require('multer');
 const { envConfig } = require('../configs');
 
-const {
-  host, port
-} = require('../configs').envConfig;
-
-const address = `${host}:${port}`;
-
 /**
  * @function errorHandler
  * @description Error handler middleware for capturing all errors and sends a response to the user
