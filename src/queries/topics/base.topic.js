@@ -1,6 +1,6 @@
 const { hashConfig} = require('../../configs');
 const {Op} = require("sequelize");
-const { sequelize, Topic, Section, Role } = require('../../models').models;
+const { sequelize, Topic, Section, Role, User } = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
 
 // Imports for gen_hash
@@ -251,6 +251,45 @@ const findTopicBySlug = async (slug) => {
 }
 
 /**
+ * function findTopicBySlugOrHash
+ * @description Query to find a topic by slug or hash
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicBySlugOrHash = async (query) => {
+  // Check if a topic exists
+  try {
+    const topic = await Topic.findOne({
+      attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt'],
+      where: {
+        [Op.or]: [
+          {slug: query},
+          {hash: query}
+        ]
+      },
+      include: [
+        {
+          model: User,
+          as: 'topic_author',
+          attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt'],
+        }
+      ]
+    });
+
+    // if topic doesn't exist
+    if (!topic) {
+      return { topic: null, error: null}
+    }
+
+    // If topic exists, return the topic
+    return {topic: topic, error: null}
+  }
+  catch (error) {
+    return { topic: null, error: error}
+  }
+}
+
+/**
  * @function findTopicsByQuery
  * @description Query to finding topics by query: using vector search for name or slug
  * @param {String} query - The query of the topic
@@ -316,5 +355,5 @@ const removeTopic = async (hash) => {
 module.exports = {
   addTopic, checkIfTopicExists, editTopic,
   findTopic, removeTopic, findTopicsByQuery,
-  findTopicBySlug
+  findTopicBySlug, findTopicBySlugOrHash
 }

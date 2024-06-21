@@ -2,7 +2,8 @@
 const {
   addTopic, checkIfTopicExists,
   editTopic, findTopic, removeTopic,
-  findTopicBySlug, findTopicsByQuery
+  findTopicBySlug, findTopicsByQuery,
+  findTopicBySlugOrHash
 } = require('./base.topic');
 const {
   addTopicSection, fetchTopicSections, editTopicSection,
@@ -21,5 +22,5 @@ module.exports = {
   addTopicSection, fetchTopicSections, fetchDrafts,
   addDraft, approveDraft, editDraft, removeTopicSection,
   follow, subscribe, tagStory, findTopicsByQuery,
-  findTopicBySlug
+  findTopicBySlug, findTopicBySlugOrHash
 }

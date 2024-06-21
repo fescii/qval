@@ -1,0 +1,14 @@
+<% var url = "/t/" + data.hash.toLowercase() %>
+<% author = data.topic_author %>
+
+<!-- This is the topic component -->
+<app-topic tab="<%- data.tab %>" subscribers="<%- data.subscribers %>" followers="<%- data.followers %>"
+  stories="67259" hash="<%- data.hash %>"  subscribed="false" 
+  name="<%- data.name %>" url="<%- url %>" stories-url="<%- url %>/stories"
+  contributers-url="<%- url %>/contributers" followers-url="<%- url %>/followers"
+  description="<%- data.summary %>"
+  author-username="<%- data.author %>"
+  author-picture="/static/users/<% author.picture %>" author-verified="true" author-name="<%- author.name %>" 
+  author-followers="<%- author.followers %>" author-following="<%- author.following %>" author-follow="false"
+  author-bio="<%- author.bio %>">
+</app-topic>

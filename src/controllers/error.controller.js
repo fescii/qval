@@ -23,21 +23,31 @@ const errorHandler = (err, req, res, _next) => {
   const errorMsg = err.message || 'Something went wrong!'
 
   if (err instanceof multer.MulterError) {
-    res.status(400).json({
-      success: false,
-      error: true,
-      message: err.message,
-      stack: envConfig.node_env === 'development' ? err.stack : {}
-    });
+    if (req.url.startsWith('/api/')){
+      return res.status(errorStatus).json({
+        success: false,
+        error: true,
+        message: err.message,
+        stack: envConfig.node_env === 'development' ? err.stack : {}
+      });
+    }
+    else {
+      return res.status(errorStatus).render('500')
+    }
   }
   else {
-    return res.status(errorStatus).send({
-    success: false,
-    error: true,
-    stack_message: errorMsg,
-    message: "Something went wrong!",
-    stack: envConfig.node_env === 'development' ? err.stack : {}
-  });
+    if (req.url.startsWith('/api/')){
+      return res.status(errorStatus).send({
+        success: false,
+        error: true,
+        stack_message: errorMsg,
+        message: "Something went wrong!",
+        stack: envConfig.node_env === 'development' ? err.stack : {}
+      });
+    }
+    else {
+      return res.status(errorStatus).render('500')
+    }
   }
 }
 
@@ -51,18 +61,14 @@ const errorHandler = (err, req, res, _next) => {
 const notFound = (req, res, _next) => {
   // Check if the url start with "/api/"
   if (req.url.startsWith('/api/')){
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       error: true,
       message: "Resource not found!"
     });
   }
   else {
-    res.status(404).render('404', {
-      data: {
-        host: address,
-      }
-    })
+    return res.status(404).render('404')
   }
 }
 
