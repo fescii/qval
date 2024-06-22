@@ -62,6 +62,11 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING,
 			allowNull: true
 		},
+		verified: {
+			type: Sequelize.BOOLEAN,
+			defaultValue: false,
+			allowNull: true
+		},
 		followers: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,

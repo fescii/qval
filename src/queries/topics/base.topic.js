@@ -311,7 +311,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
       {
         model: User,
         as: 'topic_author',
-        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories',
+        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
           [
             sequelize.literal(`(
             SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
@@ -347,6 +347,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
       hash: topic.topic_author.hash,
       bio: topic.topic_author.bio,
       name: topic.topic_author.name,
+      verified: topic.topic_author.verified,
       picture: topic.topic_author.picture,
       followers: topic.topic_author.followers,
       following: topic.topic_author.following,
