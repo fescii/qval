@@ -76,7 +76,7 @@ const verifyToken = async (req, res, next) => {
     return res.status(403).send({
       success: false,
       unverified: true,
-      message: "No token provided!, login to continue"
+      message: "No are not authorized!, login to continue"
     })
   }
 

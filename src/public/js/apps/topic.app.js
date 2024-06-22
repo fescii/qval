@@ -3,6 +3,9 @@ export default class AppTopic extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    // check if the user is authenticated
+    this._authenticated = this.isLoggedIn('x-random-token');
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -14,11 +17,11 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
-    // Scroll to the top of the page
-    window.scrollTo(0, 0);
-
     // onpopstate event
     this.onpopEvent();
+
+    // perform actions
+    this.performActions();
 
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
@@ -33,7 +36,367 @@ export default class AppTopic extends HTMLElement {
 
       // call onpopstate event
       this.onpopEvent();
+
+      // perform actions
+      this.performActions();
     });
+  }
+
+  isLoggedIn = name => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+
+    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+    
+    if (!cookie) {
+      return false; // Cookie does not exist
+    }
+    
+    // if cookie exists, check if it is valid
+    if (cookie) {
+      // check if the cookie is valid
+      return true;
+    }
+  }
+
+  // perfom actions
+  performActions = () => {
+    const outerThis = this;
+    // get body 
+    const body = document.querySelector('body');
+
+    // get url to 
+    let hash = this.getAttribute('hash');
+    // trim and convert to lowercase
+    hash = hash.trim().toLowerCase();
+
+    // base api
+    const url = '/api/v1/t/' + hash;
+
+    // Get the follow action and subscribe action
+    const followBtn = this.shadowObj.querySelector('.actions>.action#follow-action');
+    const subscribeBtn = this.shadowObj.querySelector('.actions>.action#subscribe-action');
+
+    // add event listener to the follow action
+    if (followBtn && subscribeBtn) {
+      // construct options
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        }
+      }
+
+      followBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let action = false;
+
+        // Check if the user is authenticated
+        if (!this._authenticated) {
+          // Open the join popup
+          this.openJoin(body);
+        } 
+        else {
+          // Update the follow button
+          if (followBtn.classList.contains('following')) {
+            action = true;
+            outerThis.updateFollowBtn(false, followBtn);
+          }
+          else {
+            outerThis.updateFollowBtn(true, followBtn);
+          }
+
+          // Follow the topic
+          this.followTopic(`${url}/follow`, options, followBtn, action);
+        }
+      });
+
+      subscribeBtn.addEventListener('click', e=> {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let action = false;
+
+        // Check if the user is authenticated
+        if (!this._authenticated) {
+          // Open the join popup
+          this.openJoin(body);
+        } 
+        else {
+          // Update the subscribe button
+          if (subscribeBtn.classList.contains('subscribed')) {
+            action = true;
+            outerThis.updateSubscribeBtn(false, subscribeBtn);
+          }
+          else {
+            outerThis.updateSubscribeBtn(true, subscribeBtn);
+          }
+
+          // Subscribe to the topic
+          this.subscribeToTopic(`${url}/subscribe`, options, subscribeBtn, action);
+        }
+      });
+    }
+  }
+
+  followTopic = (url, options, followBtn, followed) => {
+    const outerThis = this;
+    this.fetchWithTimeout(url, options)
+      .then(response => {
+        response.json()
+        .then(data => {
+          // If data has unverified, open the join popup
+          if (data.unverified) {
+            // Get body
+            const body = document.querySelector('body');
+
+            // Open the join popup
+            outerThis.openJoin(body);
+
+            // revert the follow button
+            outerThis.updateFollowBtn(followed, followBtn);
+          }
+
+          // if success is false, show toast message
+          if (!data.success) {
+            outerThis.showToast(data.message, false);
+
+            // revert the follow button
+            outerThis.updateFollowBtn(followed, followBtn);
+          }
+          else {
+            // Show toast message
+            outerThis.showToast(data.message, true);
+
+            // Check for followed boolean
+            outerThis.updateFollowBtn(data.followed, followBtn);
+
+            // Update the followers
+            outerThis.updateFollowers(data.followed);
+          }
+        });
+      })
+      .catch(_error => {
+        // console.log(_error);
+        // show toast message
+        outerThis.showToast('An error occurred while following the topic', false);
+
+        // revert the follow button
+        outerThis.updateFollowBtn(followed, followBtn);
+      });
+  }
+
+  subscribeToTopic = (url, options, subscribeBtn, subscribed) => {
+    this.fetchWithTimeout(url, options)
+      .then(response => {
+        response.json()
+        .then(data => {
+          // Check if the user is unverified
+          if (data.unverified) {
+            // Get body
+            const body = document.querySelector('body');
+
+            // Open the join popup
+            this.openJoin(body);
+
+            // revert the subscribe button
+            this.updateSubscribeBtn(subscribed, subscribeBtn);
+          }
+
+          // if success is false, show toast message
+          if (!data.success) {
+            this.showToast(data.message, false);
+
+            // revert the subscribe button
+            this.updateSubscribeBtn(subscribed, subscribeBtn);
+          }
+          else {
+            // Show toast message
+            this.showToast(data.message, true);
+
+            // Check for subscribed boolean
+            this.updateSubscribeBtn(data.subscribed, subscribeBtn);
+
+            // update the subscribers attribute
+            const value = data.subscribed ? 1 : -1;
+
+            // Get subscribers attribute
+            let subscribers = this.parseToNumber(this.getAttribute('subscribers')) + value;
+
+            // if subscribers is less than 0, set it to 0
+            subscribers = subscribers < 0 ? 0 : subscribers;
+
+            // Set the subscribers attribute
+            this.setAttribute('subscribers', subscribers.toString());
+          }
+        })
+       })
+      .catch(_error => {
+        // show toast message
+        this.showToast('An error occurred while subscribing to the topic', false);
+
+        // revert the subscribe button
+        this.updateSubscribeBtn(subscribed, subscribeBtn);
+      });
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // reject(new Error('Request timed out'));
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  updateSubscribeBtn = (subscribed, btn) => {
+    if (subscribed) {
+      // Change the text to subscribed
+      btn.textContent = 'subscribed';
+
+      // remove the subscribe class
+      btn.classList.remove('subscribe');
+
+      // add the subscribed class
+      btn.classList.add('subscribed');
+    }
+    else {
+      // Change the text to subscribe
+      btn.textContent = 'subscribe';
+
+      // remove the subscribed class
+      btn.classList.remove('subscribed');
+
+      // add the subscribe class
+      btn.classList.add('subscribe');
+    }
+  }
+
+  updateFollowBtn = (following, btn) => {
+    if (following) {
+      // Change the text to following
+      btn.textContent = 'following';
+
+      // remove the follow class
+      btn.classList.remove('follow');
+
+      // add the following class
+      btn.classList.add('following');
+    }
+    else {
+      // Change the text to follow
+      btn.textContent = 'follow';
+
+      // remove the following class
+      btn.classList.remove('following');
+
+      // add the follow class
+      btn.classList.add('follow');
+    }
+  }
+
+  showToast = (text, success) => {
+    // Get the toast element
+    const toast = this.getToast(text, success);
+
+    // Get body element
+    const body = document.querySelector('body');
+
+    // Insert the toast into the DOM
+    body.insertAdjacentHTML('beforeend', toast);
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+      // Select the toast element
+      const toast = body.querySelector('.toast');
+
+      // Remove the toast
+      if(toast) {
+        toast.remove();
+      }
+    }, 3000);
+  }
+
+  getToast = (text, success) => {
+    if (success) {
+      return /* html */`
+        <div class="toast true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    else {
+      return /* html */`
+      <div class="toast false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    
+  }
+
+  openJoin = body => {
+    // Insert getJoin beforeend
+    body.insertAdjacentHTML('beforeend', this.getJoin());
+  }
+
+  getJoin = () => {
+    // get url from the : only the path
+    const url = window.location.pathname;
+
+    return /* html */`
+      <join-popup register="/join/register" login="/join/login" next="${url}"></join-popup>
+    `
+  }
+
+  updateFollowers = (followed) => {
+    const outerThis = this;
+    let value = followed ? 1 : -1;
+    // Get followers attribute : concvert to number then add value
+
+    let followers = this.parseToNumber(this.getAttribute('followers')) + value;
+
+    // if followers is less than 0, set it to 0
+    followers = followers < 0 ? 0 : followers;
+
+    // Set the followers attribute
+    this.setAttribute('followers', followers.toString());
+
+    // select the followers element
+    const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');
+    if (followersStat) {
+      // select no element
+      const no = followersStat.querySelector('.no');
+      const text = followersStat.querySelector('.text');
+
+      // Update the followers
+      no.textContent = this.formatNumber(followers);
+
+      // Update the text
+      text.textContent = followers === 1 ? 'follower' : 'followers';
+    }
   }
 
   onpopEvent = () => {
@@ -260,7 +623,6 @@ export default class AppTopic extends HTMLElement {
   }
 
   getStats = () => {
-
     // Get followers
     let followers = this.parseToNumber(this.getAttribute('followers'));
 
@@ -277,7 +639,7 @@ export default class AppTopic extends HTMLElement {
 
     return /*html*/`
       <div class="stats">
-        <span class="followers">
+        <span class="followers followers-stat">
           <span class="no">${formattedFollowers}</span>
           <span class="text">${followersText}</span>
         </span>

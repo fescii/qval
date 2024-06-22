@@ -1818,7 +1818,7 @@ export default class AppLogon extends HTMLElement {
   getStyles() {
     return /*css*/`
       <!--suppress ALL -->
-<style>
+      <style>
         * {
           box-sizing: border-box !important;
         }

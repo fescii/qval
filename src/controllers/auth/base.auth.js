@@ -73,9 +73,16 @@ const login = async (req, res, next) => {
     });
   }
 
+  // generate token
   let token = await tokenUtil.generateToken({
     id: user.id, email: user.email,
     hash: user.hash, name: user.name
+  });
+
+  // generate a random token ( thsi is will be used to check if user is logeed in the frontend)
+  let randomToken = await tokenUtil.generateToken({
+    // contact user hash with random string
+    hash: user.hash + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   });
 
   // Add cookie to the response object
@@ -87,8 +94,17 @@ const login = async (req, res, next) => {
     path: '/'
   }
 
+  // add options for the random token
+  let randomOptions = {
+    maxAge: cookie_age,
+    httpOnly: false,
+    secure: true,
+    sameSite: 'none',
+  }
+
   // Set cookie
-  res.cookie('x-access-token', token, options)
+  res.cookie('x-access-token', token, options);
+  res.cookie('x-random-token', randomToken, randomOptions);
 
 
   // Return a successful response
