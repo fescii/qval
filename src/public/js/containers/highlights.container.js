@@ -132,7 +132,7 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            <span class="numbers" id="followers">${followersFormatted}</span> people follows fredrick
+            <span class="numbers" id="followers">${followersFormatted}</span> ${followers === 1 ? 'person' : 'people'} follows fredrick
           </span>
         </li>
         <li class="item">

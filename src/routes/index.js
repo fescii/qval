@@ -14,8 +14,8 @@ module.exports = (app) => {
   auth(app, '/api/v1/a');
   topic(app, '/api/v1/t');
   story(app, '/api/v1/s');
-  opinion(app, '/api/v1');
   user(app, '/api/v1/u');
+  opinion(app, '/api/v1');
 
   // public routes
   joinPages(app);

@@ -292,7 +292,7 @@ export default class HoverAuthor extends HTMLElement {
 
   getLink = () => {
     // Get username
-    let username = this.getAttribute('username');
+    let username = this.getAttribute('hash');
 
     // GET url
     let url = this.getAttribute('url');
@@ -310,7 +310,7 @@ export default class HoverAuthor extends HTMLElement {
 
   getHeader = () => {
     // Get username
-    let username = this.getAttribute('username');
+    let username = this.getAttribute('hash');
 
     // trim username and convert to uppercase
     username = username.trim().toUpperCase();
@@ -483,7 +483,7 @@ export default class HoverAuthor extends HTMLElement {
     return /* html */`
       <app-profile you="${this.getAttribute('you')}" url="${url}" tab="stories"
         stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
-        username="${this.getAttribute('username')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
+        hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
         name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
         following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
       </app-profile>

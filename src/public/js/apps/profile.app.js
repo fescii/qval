@@ -171,7 +171,7 @@ export default class AppProfile extends HTMLElement {
     // trim white spaces and convert to lowercase
     let formattedUrl = url.toLowerCase();
     return /* html */`
-      <profile-wrapper name="${this.getAttribute('name')}" username="${this.getAttribute('username')}" you="${this._you}"
+      <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}"
         url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}"
         bio="${this.getAttribute('bio')}">
@@ -181,7 +181,7 @@ export default class AppProfile extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <profile-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" username="${this.getAttribute('username')}"
+      <profile-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" hash="${this.getAttribute('hash')}"
         stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
         followers-url="${this.getAttribute('followers-url')}"
         following-url="${this.getAttribute('following-url')}">

@@ -4,7 +4,7 @@ export default class HeaderWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = false;
+    this._authenticated = this.isLoggedIn('x-random-token');
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
@@ -15,6 +15,23 @@ export default class HeaderWrapper extends HTMLElement {
   // add attribute to watch for changes
   static get observedAttributes() {
     return ['section', 'type'];
+  }
+
+  isLoggedIn = name => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+
+    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+    
+    if (!cookie) {
+      return false; // Cookie does not exist
+    }
+    
+    // if cookie exists, check if it is valid
+    if (cookie) {
+      // check if the cookie is valid
+      return true;
+    }
   }
 
   render() {
@@ -109,7 +126,7 @@ export default class HeaderWrapper extends HTMLElement {
     if (authenticated) {
       return /* html */ `
         <div class="links">
-          <a href="${this.getAttribute('user-url').toLowerCase()}" class="link profile">
+          <a href="/profile" class="link profile">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
             </svg>
