@@ -138,8 +138,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', 'max-content');
               actions.style.setProperty('max-height', 'max-content');
 
-              actions.style.setProperty('padding', '5px 0 15px');
-              actions.style.setProperty('border-bottom', 'var(--border-mobile)');
+              // actions.style.setProperty('padding', '5px 0 15px');
+              // actions.style.setProperty('border-bottom', 'var(--border-mobile)');
 
               // Collapse the content container
               svg.style.transform = 'rotate(180deg)';
@@ -154,8 +154,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', '0');
               stats.style.setProperty('max-height', '0');
 
-              actions.style.setProperty('padding', '0');
-              actions.style.setProperty('border-bottom', 'none');
+              // actions.style.setProperty('padding', '0');
+              // actions.style.setProperty('border-bottom', 'none');
 
               // Expand the content container
               svg.style.transform = 'rotate(0deg)';
@@ -499,7 +499,6 @@ export default class AuthorWrapper extends HTMLElement {
         }
 
         .top > .avatar > .icon {
-          /* background: var(--background); */
           background: #e3ffe7;
           position: absolute;
           bottom: -1px;
@@ -664,12 +663,14 @@ export default class AuthorWrapper extends HTMLElement {
           :host {
             font-size: 16px;
             border-bottom: none;
+            border-top: var(--border-mobile);
+            border-bottom: var(--border-mobile);
           }
 
           .content-container {
             border: none;
             position: relative;
-            padding: 5px 0;
+            padding: 15px 0;
             width: 100%;
             max-height: max-content;
             display: flex;
@@ -694,13 +695,24 @@ export default class AuthorWrapper extends HTMLElement {
             overflow: hidden;
           }
 
+          .actions {
+            border: none;
+            display: flex;
+            font-family: var(--font-main), sans-serif;
+            width: 100%;
+            flex-flow: row;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 0 0;
+          }
+
           .top {
             display: flex;
             width: 100%;
             flex-flow: row;
             align-items: center;
-            padding: 12px 5px;
-            background: linear-gradient(90deg, #fcff9e 0%, #f09c4ecc 100%);
+            padding: 0;
+            background: none;
             border-radius: 10px;
             gap: 5px;
           }
@@ -725,7 +737,7 @@ export default class AuthorWrapper extends HTMLElement {
             position: absolute;
             top: 25px;
             right: 5px;
-            color: var(--white-color);
+            color: var(--gray-color);
             cursor: default !important;
             width: 22px;
             height: 22px;

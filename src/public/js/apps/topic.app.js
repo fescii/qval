@@ -14,6 +14,9 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
+
     // onpopstate event
     this.onpopEvent();
 
@@ -261,8 +264,12 @@ export default class AppTopic extends HTMLElement {
     // Get followers
     let followers = this.parseToNumber(this.getAttribute('followers'));
 
+    const followersText = followers === 1 ? 'follower' : 'followers';
+
     // Get stories
     let stories = this.parseToNumber(this.getAttribute('stories'));
+
+    const storiesText = stories === 1 ? 'story' : 'stories';
 
     // Format the number
     let formattedStories = this.formatNumber(stories);
@@ -272,12 +279,12 @@ export default class AppTopic extends HTMLElement {
       <div class="stats">
         <span class="followers">
           <span class="no">${formattedFollowers}</span>
-          <span class="text">followers</span>
+          <span class="text">${followersText}</span>
         </span>
         <span class="sp">•</span>
         <span class="stories">
           <span class="no">${formattedStories}</span>
-          <span class="text">stories</span>
+          <span class="text">${storiesText}</span>
         </span>
       </div>
     `
@@ -287,7 +294,7 @@ export default class AppTopic extends HTMLElement {
     return /* html */`
 			<author-wrapper username="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}" you="${this.getAttribute('author-you')}"
+       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
@@ -577,6 +584,11 @@ export default class AppTopic extends HTMLElement {
             justify-content: space-between;
             gap: 0;
 					}
+
+          
+          .text-content > .topic-head {
+            padding: 15px 0 0 0;
+          }
 
           .text-content > .actions {
             border-bottom: none;
