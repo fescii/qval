@@ -269,7 +269,7 @@ export default class AuthorWrapper extends HTMLElement {
             <span class="name">${displayName}</span>
           </h4>
           <a href="${url.toLowerCase()}" class="username" id="username">
-            <span class="text">${this.getAttribute('username')}</span>
+            <span class="text">${this.getAttribute('hash')}</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M4.53 4.75A.75.75 0 0 1 5.28 4h6.01a.75.75 0 0 1 .75.75v6.01a.75.75 0 0 1-1.5 0v-4.2l-5.26 5.261a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L9.48 5.5h-4.2a.75.75 0 0 1-.75-.75Z" />
             </svg>
@@ -312,7 +312,7 @@ export default class AuthorWrapper extends HTMLElement {
       <div class="stats">
         <span class="stat">
           <span class="number">${followersFormatted}</span>
-          <span class="label">Followers</span>
+          <span class="label">${totalFollowers === 1 ? 'follower' : 'followers'}</span>
         </span>
         <span class="sp">•</span>
         <span class="stat">
@@ -397,7 +397,7 @@ export default class AuthorWrapper extends HTMLElement {
    return /* html */`
      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
        stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
-       username="${this.getAttribute('username')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
+       hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
        following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
      </app-profile>

@@ -307,7 +307,7 @@ export default class AppStory extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper username="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
        bio="${this.getAttribute('author-bio')}">
@@ -324,7 +324,7 @@ export default class AppStory extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <post-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Story" username="${this.getAttribute('author-hash')}"
+      <post-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Story" hash="${this.getAttribute('author-hash')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">
       </post-section>
     `

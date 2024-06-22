@@ -31,6 +31,14 @@ const followUser = async (req, res, next) => {
     return next(error);
   }
 
+  // Check if the follow hash and user hash are equal
+  if (userHash === followHash) {
+    return res.status(409).send({
+      success: false,
+      message: "You cannot follow yourself!"
+    })
+  }
+
   // Get the user data from db;
   const {
     followed,

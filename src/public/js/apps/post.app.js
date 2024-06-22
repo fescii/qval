@@ -127,7 +127,7 @@ export default class AppPost extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <post-section  url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" username="${this.getAttribute('author-hash')}"
+      <post-section  url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" hash="${this.getAttribute('author-hash')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">
       </post-section>
     `
@@ -144,7 +144,7 @@ export default class AppPost extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper you="${this.getAttribute('author-you')}" username="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
        bio="${this.getAttribute('author-bio')}">

@@ -952,7 +952,7 @@ export default class PollPost extends HTMLElement {
     let url = this.getAttribute('author-url');
     url = url.trim().toLowerCase();
     return /* html */`
-			<hover-author url="${url}" you="${this.getAttribute('author-you')}" username="${this.getAttribute('author-hash')}"
+			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
         picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>

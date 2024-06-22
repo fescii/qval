@@ -292,8 +292,9 @@ export default class AppTopic extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper username="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
+       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" 
+       user-follow="${this.getAttribute('author-follow')}" you="${this.getAttribute('author-you')}"
        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
