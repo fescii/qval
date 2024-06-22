@@ -208,7 +208,7 @@ export default class TopicWrapper extends HTMLElement {
       name="${this.getAttribute('name')}" url="${url}" stories-url="${url}/stories" subscribed="${this.getAttribute('subscribed')}" 
       topic-follow="${this.getAttribute('topic-follow')}" contributers-url="${url}/contributers" followers-url="${url}/followers"
       description="${this.getAttribute('description')}"
-      author-username="${this.getAttribute('author-username')}" author-picture="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}"
+      author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}"
       author-name="${this.getAttribute('author-name')}" author-followers="${this.getAttribute('author-followers')}"
       author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-user-follow')}" author-bio="${this.getAttribute('author-bio')}">
     </app-topic>

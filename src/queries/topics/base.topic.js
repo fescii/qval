@@ -332,7 +332,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
   }
 
   const data =  {
-    author: topic.data,
+    author: topic.author,
     hash: topic.hash,
     name: topic.name,
     slug: topic.slug,

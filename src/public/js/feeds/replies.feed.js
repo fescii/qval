@@ -56,7 +56,7 @@ export default class RepliesFeed extends HTMLElement {
     return /* html */`
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="120" replies="450" liked="false"
         views="512" time="2019-08-17T14:30:00+03:00"
-        author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -66,7 +66,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="75" replies="210" liked="true"
         views="380" time="2019-08-18T10:15:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -76,7 +76,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="89" replies="340" liked="false"
         views="420" time="2019-08-19T09:45:00+03:00"
-        author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -86,7 +86,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="102" replies="390" liked="true"
         views="485" time="2019-08-20T11:20:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -96,7 +96,7 @@ export default class RepliesFeed extends HTMLElement {
   
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="140" replies="520" liked="false"
         views="600" time="2019-08-21T12:30:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -106,7 +106,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="64" replies="310" liked="true"
         views="405" time="2019-08-22T14:00:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -116,7 +116,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="110" replies="470" liked="false"
         views="520" time="2019-08-23T15:45:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -126,7 +126,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="95" replies="360" liked="true"
         views="450" time="2019-08-24T16:10:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -136,7 +136,7 @@ export default class RepliesFeed extends HTMLElement {
   
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="80" replies="400" liked="false"
         views="490" time="2019-08-25T10:50:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -146,7 +146,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="87" replies="280" liked="true"
         views="430" time="2019-08-26T11:35:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -156,7 +156,7 @@ export default class RepliesFeed extends HTMLElement {
 
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="77" replies="320" liked="false"
         views="370" time="2019-08-27T13:20:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
@@ -165,7 +165,7 @@ export default class RepliesFeed extends HTMLElement {
       </quick-post>
       <quick-post story="reply" hash="R0B5HB2N2QCA" url="/r/R0B5HB2N2QCA" topics="engineering, programming, technology" likes="92" replies="350" liked="true"
         views="480" time="2019-08-28T14:40:00+03:00"
-        author-username="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
+        author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
         author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">

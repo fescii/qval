@@ -952,7 +952,7 @@ export default class PollPost extends HTMLElement {
     let url = this.getAttribute('author-url');
     url = url.trim().toLowerCase();
     return /* html */`
-			<hover-author url="${url}" you="${this.getAttribute('author-you')}" username="${this.getAttribute('author-username')}"
+			<hover-author url="${url}" you="${this.getAttribute('author-you')}" username="${this.getAttribute('author-hash')}"
         picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
@@ -969,7 +969,7 @@ export default class PollPost extends HTMLElement {
         end-time="${this.getAttribute('end-time')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-you="${this.getAttribute('author-you')}"
-        author-username="${this.getAttribute('author-username')}" author-url="${this.getAttribute('author-url')}"
+        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">

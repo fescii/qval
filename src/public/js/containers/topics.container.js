@@ -88,7 +88,7 @@ export default class TopicsContainer extends HTMLElement {
 			<topic-wrapper hash="T0BC98H63AB1" name="health-care" description="Health care is the maintenance or improvement of health via the prevention, diagnosis, treatment, recovery, or cure of disease, illness, injury, and other physical and mental impairments in people."
 				topic-follow="true" subscribed="false" url="/t/T0BC98H63AB1"
 				subscribers="236" followers="9734" stories="75624"
-				author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+				author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
 				author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
 				author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
 					I love to write about technology and software development.">
@@ -97,7 +97,7 @@ export default class TopicsContainer extends HTMLElement {
 			<topic-wrapper hash="T0YZ92G78LM1" name="technology-is-the-key-to-many-solutions-but-not-definate" description="Technology is the application of scientific knowledge for practical purposes, especially in industry."
 				topic-follow="false" subscribed="true" url="/t/T0BC98H63AB1"
 				subscribers="987" followers="15632"  stories="75724"
-				author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+				author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
 				author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
 				author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
 					I love to write about technology and software development.">
@@ -106,7 +106,7 @@ export default class TopicsContainer extends HTMLElement {
 			<topic-wrapper hash="T0JQ75H45FD2" name="sports" description="Sports involve physical exertion and skill in which an individual or team competes against another or others for entertainment."
 				topic-follow="true" subscribed="false" url="/t/T0BC98H63AB1"
 				subscribers="512" followers="8341"  stories="85624"
-				author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+				author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
 				author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
 				author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
 					I love to write about technology and software development.">
@@ -115,7 +115,7 @@ export default class TopicsContainer extends HTMLElement {
 			<topic-wrapper hash="T0PL84D56GH3" name="education" description="Education is the process of facilitating learning, or the acquisition of knowledge, skills, values, beliefs, and habits."
 				topic-follow="false" subscribed="true" url="/t/T0BC98H63AB1"
 				subscribers="674" followers="12098"  stories="5624"
-				author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+				author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
 				author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
 				author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
 					I love to write about technology and software development.">
@@ -124,7 +124,7 @@ export default class TopicsContainer extends HTMLElement {
 			<topic-wrapper hash="T0RK39J23NM4" name="science" description="Science is the pursuit and application of knowledge and understanding of the natural and social world following a systematic methodology based on evidence."
 				topic-follow="true" subscribed="false" url="/t/T0BC98H63AB1"
 				subscribers="856" followers="21045"  stories="15624"
-				author-username="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
+				author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
 				author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
 				author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
 					I love to write about technology and software development.">
