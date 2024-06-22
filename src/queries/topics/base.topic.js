@@ -1,7 +1,7 @@
 const { hashConfig} = require('../../configs');
-const {Op} = require("sequelize");
-const { sequelize, Topic, Section, Role, User } = require('../../models').models;
+const { sequelize, Sequelize, Topic, Section, Role, User } = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
+const Op = Sequelize.Op;
 
 // Imports for gen_hash
 const { gen_hash } = require("../../wasm");
@@ -258,11 +258,11 @@ const findTopicBySlug = async (slug) => {
  * @returns {Object} - The topic object or null, and the error if any
 */
 const findTopicBySlugOrHash = async (query, user) => {
-  // Check if a topic exists
+  // console.log('User:', user, 'Query:', query, 'Find Topic By Slug Or Hash')
   try {
     // check if user is logged in
-    if (user) {
-      return await findTopicWhenLoggedIn(query, user);
+    if (user !== null) {
+      return await findTopicWhenLoggedIn(query, user.toUpperCase());
     }
     else {
       return await findTopicWhenLoggedOut(query);
@@ -283,63 +283,84 @@ const findTopicBySlugOrHash = async (query, user) => {
 const findTopicWhenLoggedIn = async (query, user) => {
   const topic = await Topic.findOne({
     // attributes including a subquery to check whether the user is following the topic and is subscribed to the topic
-    attributes: { 
-      include: [ 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
-        [
-          sequelize.literal(`(
-            SELECT COUNT(*)
-            FROM "topic.followers"
-            WHERE "followers"."topic" = "topic"."hash"
-            AND "followers"."author" = '${user}'
-          )`),
-          'is_following'
-        ],
-        [
-          sequelize.literal(`(
-            SELECT COUNT(*)
-            FROM "topic.ubscribers"
-            WHERE "subscribers"."topic" = "topic"."hash"
-            AND "subscribers"."author" = '${user}'
-          )`),
-          'is_subscribed'
-        ]
+    attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 
+      [
+        Sequelize.fn('EXISTS', Sequelize.literal(`(
+          SELECT 1 FROM "topic"."followers" AS t_followers
+          WHERE t_followers.topic = topics.hash
+          AND t_followers.author = '${user}'
+        )`)),
+        'is_following'
+      ],
+      [
+        Sequelize.fn('EXISTS', Sequelize.literal(`(
+          SELECT 1 FROM "topic"."subscribers" AS t_subscribers
+          WHERE t_subscribers.topic = topics.hash
+          AND t_subscribers.author = '${user}'
+        )`)),
+        'is_subscribed'
       ]
-    },
+    ],
     where: {
       [Op.or]: [
-        {slug: query},
-        {hash: query.toUpperCase()}
+        { slug: query },
+        { hash: query.toUpperCase() }
       ]
     },
     include: [
       {
         model: User,
         as: 'topic_author',
-        attributes: {
-          include: [ 'hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories',
-            [
-              sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM "account.connects"
-                WHERE "connects"."to" = "topic_author"."hash"
-                AND "connects"."from" = '${user}'
-              )`),
-              'is_following'
-            ]
+        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories',
+          [
+            sequelize.literal(`(
+            SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+            FROM account.connects
+            WHERE connects.to = topic_author.hash
+            AND connects.from = '${user}'
+            )`),
+            'is_following'
           ]
-        },
+        ],
       }
     ]
   });
 
   // if topic doesn't exist
   if (!topic) {
-    return { topic: null, error: null}
+    return { topic: null, error: null }
+  }
+
+  const data =  {
+    author: topic.data,
+    hash: topic.hash,
+    name: topic.name,
+    slug: topic.slug,
+    summary: topic.summary,
+    followers: topic.followers,
+    subscribers: topic.subscribers,
+    stories: topic.stories,
+    views: topic.views,
+    is_following: topic.dataValues.is_following,
+    is_subscribed: topic.dataValues.is_subscribed,
+    topic_author: {
+      hash: topic.topic_author.hash,
+      bio: topic.topic_author.bio,
+      name: topic.topic_author.name,
+      picture: topic.topic_author.picture,
+      followers: topic.topic_author.followers,
+      following: topic.topic_author.following,
+      stories: topic.topic_author.stories,
+      is_following: topic.topic_author.dataValues.is_following
+    },
+    you: topic.topic_author.hash === user,
+    authenticated: true
   }
 
   // If topic exists, return the topic
-  return {topic: topic, error: null}
+  return { topic: data, error: null }
 }
+
 
 /**
  * @functionn findTopicWhenLoggedOut
@@ -369,6 +390,9 @@ const findTopicWhenLoggedOut = async (query) => {
   if (!topic) {
     return { topic: null, error: null}
   }
+
+  // add login status to the topic
+  topic.authenticated = false;
 
   // If topic exists, return the topic
   return {topic: topic, error: null}

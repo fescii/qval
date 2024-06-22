@@ -14,9 +14,6 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
-    // Scroll to the top of the page
-    window.scrollTo(0, 0);
-
     // onpopstate event
     this.onpopEvent();
 
@@ -290,7 +287,7 @@ export default class AppTopic extends HTMLElement {
     return /* html */`
 			<author-wrapper username="${this.getAttribute('author-username')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-username').toLowerCase()}"
+       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-username').toLowerCase()}" you="${this.getAttribute('author-you')}"
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
