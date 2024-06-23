@@ -22,7 +22,6 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
    * @property {String} name - Name of the topic
    * @property {String} slug - Unique slug for the topic
    * @property {String} summary - summary of the topic in text
-   * @property {String} search - Search vector for the topic
    * @property {Number} followers - Number of followers the topic has
    * @property {Number} subscribers - Number of subscribers to the topic
    * @property {Number} stories - Number of stories tagged to the topic
@@ -54,10 +53,6 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     summary: {
       type: Sequelize.TEXT,
-      allowNull: true
-    },
-    search: {
-      type: Sequelize.TSVECTOR,
       allowNull: true
     },
     followers: {
@@ -95,15 +90,17 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     ]
   });
 
-  // add afterSync hook to update the name_slug_search: and full_search column and create the GIN index
+
+  // add afterSync hook to create the search column and create the GIN index
   Topic.afterSync(() => {
     // Run the raw SQL query to add the `ts` column
     sequelize.query(`
-      ALTER TABLE topic.topics MODIFY COLUMN search tsvector
-      GENERATED ALWAYS AS (setweight(to_tsvector('english', coalesce(name, '')), 'A') || setweight(to_tsvector('english', coalesce(slug, '')), 'B') || setweight(to_tsvector('english', coalesce(summary, '')), 'C')) STORED;
-
-      CREATE INDEX IF NOT EXISTS search_idx ON topic.topics USING GIN(search)
+      ALTER TABLE topic.topics ADD COLUMN IF NOT EXISTS search tsvector
+      GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(name, '')), 'A') || setweight(to_tsvector('english', coalesce(slug, '')), 'B') || setweight(to_tsvector('english', coalesce(summary, '')), 'C')) STORED;
     `);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS search_topic_idx ON topic.topics USING GIN(search)`);
   });
 
   // add prototype to search: name_slug_search

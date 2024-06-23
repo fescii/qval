@@ -81,7 +81,7 @@ const {
 Object.assign(models, {
   User, Code, Connect, 
   System, Section, Approval, Role, Log,
-  Story, // other story models
+  Story, Reply, View, Like,
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
 });
 

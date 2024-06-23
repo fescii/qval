@@ -18,14 +18,13 @@ module.exports = (User, sequelize, Sequelize) => {
    * @description - This model contains all the story info
    * @property {Number} id - Unique identifier for the story
    * @property {String} kind - The kind of story (story, post, poll, article, blog, news, journal)
-   * @property {Number} author - The author of the story
+   * @property {Number} author - The author of the story: hash of the author
    * @property {String} hash - The hash of the story/ usually a unique identifier generated from hash algorithms(sha256)
    * @property {String} title - The title of the story
    * @property {String} slug - The slug of the story, a unique identifier for the story
    * @property {String} content - The content of the story
    * @property {String} body - The body of the story
    * @property {Array} topics - The topics of the story. an array of strings
-   * @property {String} search - The search column for the story
    * @property {Number} views - The number of views the story has
    * @property {Number} likes - The total number of likes the story has
    * @property {Number} replies - The total number of replies the story has
@@ -42,7 +41,7 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: false
     },
     author: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: false
     },
     hash: {
@@ -68,10 +67,6 @@ module.exports = (User, sequelize, Sequelize) => {
       allowNull: true,
       defaultValue: []
     },
-    search: {
-      type: Sequelize.TSVECTOR,
-      allowNull: true
-    },
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
@@ -79,7 +74,6 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     likes: {
       type: Sequelize.INTEGER,
-      defaultValue: 0,
       allowNull: true
     },
     replies: {
@@ -101,19 +95,20 @@ module.exports = (User, sequelize, Sequelize) => {
     ]
   });
 
-  // add afterSync hook to alter search column(title, content, slug) and create the GIN index
-  Story.afterSync(() => {
-    sequelize.query(`
-      ALTER TABLE story.stories MODIFY COLUMN search TSVECTOR
-      GENERATED ALWAYS AS (setweight(to_tsvector('pg_catalog.english', coalesce(title, '')), 'A') || setweight(to_tsvector('pg_catalog.english', coalesce(content, '')), 'B') || setweight(to_tsvector('pg_catalog.english', coalesce(slug, '')), 'C'));
-
-      CREATE INDEX search_idx ON story.stories USING GIN(search);
+   // add afterSync hook to create the search column and create the GIN index
+   Story.afterSync(() => {
+    // Run the raw SQL query to add the `ts` column
+    sequelize.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS search TSVECTOR
+      GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(title, '')), 'A') || setweight(to_tsvector('english', coalesce(slug, '')), 'B') || setweight(to_tsvector('english', coalesce(content, '')), 'C')) STORED;
     `);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS search_story_idx ON story.stories USING GIN(search)`);
   });
 
 
   // add search property to the story model
-  Strory.search = async tsQuery => {
+  Story.search = async tsQuery => {
     return await Story.findAll({
       attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies'],
       where: sequelize.where(
@@ -135,7 +130,6 @@ module.exports = (User, sequelize, Sequelize) => {
    * @property {Number} author - The author who has made the Reply
    * @property {String} hash - The hash of the Reply/ usually a unique identifier generated from hash algorithms(sha256)
    * @property {String} content - The content of the Reply
-   * @property {String} search - The search column for the Reply
    * @property {Number} views - The number of views the Reply has
    * @property {Number} likes - The total number of likes the Reply has
    * @property {Number} replies - The total number of replies the Reply has
@@ -165,10 +159,6 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     content: {
       type: Sequelize.TEXT,
-      allowNull: true
-    },
-    search: {
-      type: Sequelize.TSVECTOR,
       allowNull: true
     },
     views: {
@@ -201,14 +191,15 @@ module.exports = (User, sequelize, Sequelize) => {
     ]
   });
 
-  // add afterSync hook to alter search column(content) and create the GIN index
+  // add afterSync hook to create the search column and create the GIN index
   Reply.afterSync(() => {
-    sequelize.query(`
-      ALTER TABLE story.replies MODIFY COLUMN search TSVECTOR
-      GENERATED ALWAYS AS (setweight(to_tsvector('pg_catalog.english', coalesce(content, '')), 'A'));
-
-      CREATE INDEX search_idx ON story.replies USING GIN(search);
+    // Run the raw SQL query to add the `ts` column
+    sequelize.query(`ALTER TABLE story.replies ADD COLUMN IF NOT EXISTS search TSVECTOR
+      GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(content, '')), 'A')) STORED;
     `);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS search_reply_idx ON story.replies USING GIN(search)`);
   });
 
   // add search property to the reply model
@@ -370,7 +361,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['author', 'item']
+        fields: ['author', 'target']
       }
     ]
   });
@@ -401,7 +392,7 @@ module.exports = (User, sequelize, Sequelize) => {
   Reply.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'reply_author', onDelete: 'CASCADE' });
 
   // User <--> Like association
-  User.hasMany(Like, { foreignKey: 'author', sourceKey: 'hasj', as: 'authored_likes', onDelete: 'CASCADE' });
+  User.hasMany(Like, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_likes', onDelete: 'CASCADE' });
   Like.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'like_author', onDelete: 'CASCADE' });
 
   // User <--> View association
@@ -417,19 +408,19 @@ module.exports = (User, sequelize, Sequelize) => {
 
   // Story --> Like association
   Story.hasMany(Like, { foreignKey: 'target', sourceKey: 'hash', as: 'story_likes', onDelete: 'CASCADE' });
-  // Like.belongsTo(Story, { foreignKey: 'item', as: 'story_like', onDelete: 'CASCADE' });
+  // Like.belongsTo(Story, { foreignKey: 'target', as: 'story_like', onDelete: 'CASCADE' });
 
   // Story --> View association
   Story.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'story_views', onDelete: 'CASCADE' });
-  // View.belongsTo(Story, { foreignKey: 'item', as: 'viewed_story', onDelete: 'CASCADE' });
+  // View.belongsTo(Story, { foreignKey: 'target', as: 'viewed_story', onDelete: 'CASCADE' });
 
   // Reply --> Like association
   Reply.hasMany(Like, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_likes', onDelete: 'CASCADE' });
-  // Like.belongsTo(Reply, { foreignKey: 'item', as: 'liked_reply', onDelete: 'CASCADE' });
+  // Like.belongsTo(Reply, { foreignKey: 'target', as: 'liked_reply', onDelete: 'CASCADE' });
 
   // Reply --> View association
   Reply.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_views', onDelete: 'CASCADE' });
-  // View.belongsTo(Reply, { foreignKey: 'item', as: 'viewed_reply', onDelete: 'CASCADE' });
+  // View.belongsTo(Reply, { foreignKey: 'target', as: 'viewed_reply', onDelete: 'CASCADE' });
 
   return { Story, Reply, Like, View }
 }
