@@ -50,7 +50,7 @@ export default class PostSection extends HTMLElement {
     // Select tab with active class
     const tab = this.shadowObj.querySelector(`ul#tab > li.${active}`);
     // select line
-    const line = tabContainer.querySelector('span.line');
+    const line = this.shadowObj.querySelector('ul#tab span.line');
 
     if (tab && line) {
       tab.classList.add('active');

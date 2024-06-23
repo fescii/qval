@@ -250,6 +250,7 @@ const findTopicBySlug = async (slug) => {
   }
 }
 
+
 /**
  * function findTopicBySlugOrHash
  * @description Query to find a topic by slug or hash

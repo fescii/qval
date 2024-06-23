@@ -6,7 +6,7 @@ const story = require('./story.route');
 const opinion = require('./opinion.route');
 const user = require('./user.route');
 const {
-  joinPages, topicPages
+  joinPages, topicPages, userPages
 } = require('./pages');
 
 module.exports = (app) => {
@@ -20,6 +20,7 @@ module.exports = (app) => {
   // public routes
   joinPages(app);
   topicPages(app);
+  userPages(app);
 
   // error routes
   errors(app);
