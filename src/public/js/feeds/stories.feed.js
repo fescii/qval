@@ -57,7 +57,7 @@ export default class StoryFeed extends HTMLElement {
 			<story-post story="story" url="/s/P0A43PBA64AB" hash="P0AJ59AB43PBA" views="609" time="2024-03-13T13:00:00+03:00"
         story-title="The US Senate called on the law markers" topics="engineering, programming, technology" read-time="6"
         author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
       </story-post>
@@ -66,7 +66,7 @@ export default class StoryFeed extends HTMLElement {
 	      views="4369" time="2019-01-07T23:53:01+03:00"
 	      story-title="The US Senate called on the law markers"
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img2.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
@@ -80,7 +80,7 @@ export default class StoryFeed extends HTMLElement {
 	      views="4369" time="2024-06-04T23:53:01+03:00"
 	      story-title="The US Senate called on the law markers"
         author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img3.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.</p>
@@ -91,7 +91,7 @@ export default class StoryFeed extends HTMLElement {
         liked="false" likes="36987" replies="7872" voted="false" selected="null"
         options='[{"name":"control","text":"Control room","votes":11780},{"name":"bth","text":"Beyond the horizon","votes":3367},{"name":"tuku","text":"Tuku","votes":3478},{"name":"kid","text":"The kid","votes":4198}]'
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img4.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>Which of this comics do find yourself immersed in?</p>
@@ -101,7 +101,7 @@ export default class StoryFeed extends HTMLElement {
         views="369" time="2019-08-16T13:00:00+03:00"
         story-title="The US Senate called on the law markers"
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img5.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
@@ -113,7 +113,7 @@ export default class StoryFeed extends HTMLElement {
         likes="6367" replies="872" voted="false" selected="null"
         options='[{"name":"java","text":"Java","votes":367},{"name":"python","text":"Python","votes":986},{"name":"javascript","text":"JavaScript","votes":879},{"name":"csharp","text":"C#","votes":117}]'
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img2.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>Which is the best programming language?</p>
@@ -122,7 +122,7 @@ export default class StoryFeed extends HTMLElement {
       <story-post story="story" url="/s/P0A43PBA64AB" topics="engineering, programming, technology" hash="P0A4BVC63PBA" views="1369" time="2024-03-13T13:00:00+03:00"
         story-title="The US Senate called on the law markers" read-time="6"
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img3.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
       </story-post>
@@ -130,7 +130,7 @@ export default class StoryFeed extends HTMLElement {
       <quick-post story="quick" url="/s/P0A43PBA64AB" topics="engineering, programming, technology" likes="9" replies="3872" hash="P0A4HAS653PBA" liked="false"
 	      views="4369" time="2022-01-03T13:00:00+03:00"
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img4.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
         <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
@@ -143,7 +143,7 @@ export default class StoryFeed extends HTMLElement {
       <story-post story="story" url="/s/P0A43PBA64AB" topics="engineering, programming, technology" hash="P0A65HBA43PBA" views="85469" time="2024-03-13T13:00:00+03:00"
         story-title="How to create bootable disk in ubuntu 21.10" read-time="6"
         author-hash="U0A43PBAH6A" author-you="false" author-url="/u/U0A43PBAH6A"
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
+        author-img="/static/img/img5.png" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
         author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
           I love to write about technology and software development.">
       </story-post>
