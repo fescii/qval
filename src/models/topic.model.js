@@ -104,7 +104,10 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
   });
 
   // add prototype to search: name_slug_search
-  Topic.search = async tsQuery => {
+  Topic.search = async query => {
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+
     return await Topic.findAll({
       attributes: ['id', 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt', 'updatedAt'],
       where: sequelize.where(
@@ -112,7 +115,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
         '@@',
         tsQuery
       ),
-      order: sequelize.literal(`ts_rank_cd(search, ${tsQuery}) DESC`)
+      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
     })
   }
 

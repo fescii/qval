@@ -108,7 +108,10 @@ module.exports = (User, sequelize, Sequelize) => {
 
 
   // add search property to the story model
-  Story.search = async tsQuery => {
+  Story.search = async query => {
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+
     return await Story.findAll({
       attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies'],
       where: sequelize.where(
@@ -116,7 +119,7 @@ module.exports = (User, sequelize, Sequelize) => {
         '@@',
         tsQuery,
       ),
-      order: sequelize.literal(`ts_rank_cd(search, ${tsQuery}) DESC`),
+      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
     })
   }
 
@@ -203,7 +206,10 @@ module.exports = (User, sequelize, Sequelize) => {
   });
 
   // add search property to the reply model
-  Reply.search = async tsQuery => {
+  Reply.search = async query => {
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+    
     return await Reply.findAll({
       attributes: ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
       where: sequelize.where(
@@ -211,7 +217,7 @@ module.exports = (User, sequelize, Sequelize) => {
         '@@',
         tsQuery,
       ),
-      order: sequelize.literal(`ts_rank_cd(search, ${tsQuery}) DESC`),
+      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
     })
   }
 

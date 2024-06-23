@@ -415,11 +415,8 @@ const findTopicsByQuery = async (query) => {
     // refine the query: make the query to match containing, starting or ending with the query
     query = query.split(' ').map((q) => `${q}:*`).join(' | ');
     
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
     // build the query(vector search)
-    const topics = await Topic.search(tsQuery);
+    const topics = await Topic.search(query);
 
     // if no topics found
     if (topics.length < 1) {
