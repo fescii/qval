@@ -229,7 +229,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing
     const payload = {
       kind: reply.kind,
-      action: 'create',
       hashes: {
         target: reply.parent,
       },
@@ -246,7 +245,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing
     const payload = {
       kind: reply.kind,
-      action: 'destroy',
       hashes: {
         target: reply.parent,
       },
@@ -306,7 +304,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing
     const payload = {
       kind: like.kind,
-      action: 'create',
       hashes: {
         target: like.target,
       },
@@ -324,7 +321,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing
     const payload = {
       kind: like.kind,
-      action: 'destroy',
       hashes: {
         target: like.target,
       },
@@ -384,7 +380,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing
     const payload = {
       kind: view.kind,
-      action: 'create',
       hashes: {
         target: view.target,
       },

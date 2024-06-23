@@ -301,8 +301,8 @@ const updateReplyReplies = async (replyHash, value) => {
 
 // Export the hook functions
 module.exports = {
-  updateUserFollowers,
-  updateUserFollowing,
-  updateTopicFollowers,
-  updateTopicSubscribers
+  updateUserFollowers, updateUserFollowing,
+  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
+  updateStoryLikes, updateStoryViews, updateStoryReplies,
+  updateReplyLikes, updateReplyViews, updateReplyReplies
 };

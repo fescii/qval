@@ -389,7 +389,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     const payload = {
       kind: 'topic',
       hashes: {
-        topic: follow.topic,
+        target: follow.topic,
       },
       action: 'follow',
       value: 1
@@ -405,7 +405,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     const payload = {
       kind: 'topic',
       hashes: {
-        topic: follow.topic,
+        target: follow.topic,
       },
       action: 'follow',
       value: -1
