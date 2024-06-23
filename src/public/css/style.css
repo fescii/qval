@@ -114,7 +114,7 @@ body > .toast {
   transform: translateX(50%);
   background: var(--accent-linear);
   color: var(--white-color);
-  padding: 8px 15px;
+  padding: 8px 15px 8px 10px;
   width: max-content;
   max-width: 95%;
   border-radius: 10px;

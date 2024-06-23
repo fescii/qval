@@ -10,7 +10,7 @@ const { actionQueue } = require('../bull');
  * @param {Object} Sequelize - Sequelize module
  * @returns {Object} - Returns object containing all the models
  */
-module.exports = (User, Story, sequelize, Sequelize) => {
+module.exports = (User, Story, View, sequelize, Sequelize) => {
 
   /**
    * @type {Model}
@@ -22,89 +22,88 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @property {String} name - Name of the topic
    * @property {String} slug - Unique slug for the topic
    * @property {String} summary - summary of the topic in text
+   * @property {String} search - Search vector for the topic
    * @property {Number} followers - Number of followers the topic has
    * @property {Number} subscribers - Number of subscribers to the topic
    * @property {Number} stories - Number of stories tagged to the topic
    * @property {Number} views - Number of views the topic has
   */
   const Topic = sequelize.define("topics", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      author: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      hash: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: true
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      slug: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: false
-      },
-      summary: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      followers: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      subscribers: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      stories: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
-      views: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: true
-      },
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      schema: 'topic',
-      freezeTableName: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['id', 'slug', 'hash']
-        },
-        {
-          fields: ['name', 'author']
-        }
-      ]
-    });
+    author: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    hash: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: true
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    slug: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false
+    },
+    summary: {
+      type: Sequelize.TEXT,
+      allowNull: true
+    },
+    search: {
+      type: Sequelize.TSVECTOR,
+      allowNull: true
+    },
+    followers: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    subscribers: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    stories: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+    views: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: true
+    },
+  },
+  {
+    schema: 'topic',
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id', 'slug', 'hash']
+      },
+      {
+        fields: ['name', 'author']
+      }
+    ]
+  });
 
   // add afterSync hook to update the name_slug_search: and full_search column and create the GIN index
   Topic.afterSync(() => {
     // Run the raw SQL query to add the `ts` column
     sequelize.query(`
-      ALTER TABLE topic.topics ADD COLUMN IF NOT EXISTS search tsvector
-      GENERATED ALWAYS AS
-      (
-        setweight(to_tsvector('english', coalesce(name, '')), 'A') ||
-        setweight(to_tsvector('english', coalesce(slug, '')), 'B') ||
-        setweight(to_tsvector('english', coalesce(summary, '')), 'C')
-      ) STORED;
-    `);
+      ALTER TABLE topic.topics MODIFY COLUMN search tsvector
+      GENERATED ALWAYS AS (setweight(to_tsvector('english', coalesce(name, '')), 'A') || setweight(to_tsvector('english', coalesce(slug, '')), 'B') || setweight(to_tsvector('english', coalesce(summary, '')), 'C')) STORED;
 
-    // create the GIN index for the full_search column
-    sequelize.query(`CREATE INDEX IF NOT EXISTS search_idx ON topic.topics USING GIN(search)`);
+      CREATE INDEX IF NOT EXISTS search_idx ON topic.topics USING GIN(search)
+    `);
   });
 
   // add prototype to search: name_slug_search
@@ -112,18 +111,12 @@ module.exports = (User, Story, sequelize, Sequelize) => {
     return await Topic.findAll({
       attributes: ['id', 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt', 'updatedAt'],
       where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'),' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
+        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
         '@@',
         tsQuery
-      )
-      // order: sequelize.literal(`ts_rank_cd(name_slug_search, to_tsquery('english', '${query}')) DESC`)
+      ),
+      order: sequelize.literal(`ts_rank_cd(search, ${tsQuery}) DESC`)
     })
-  }
-
-  // add prototype to search: full_search
-  Topic.fullSearch = async query => {
-    // search the query in the full_search column: adding score to the result
-    return await sequelize.query(`SELECT *, ts_rank_cd(full_search, to_tsquery('english', '${query}')) as score FROM topic.topics WHERE full_search @@ to_tsquery('english', '${query}') ORDER BY score DESC`,{replacements: [query], model: Topic });
   }
 
   /**
@@ -164,19 +157,19 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       allowNull: true
     },
   },
-  {
-    schema: 'topic',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id',]
-      },
-      {
-        fields: ['topic', 'order']
-      }
-    ]
-  });
+    {
+      schema: 'topic',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id',]
+        },
+        {
+          fields: ['topic', 'order']
+        }
+      ]
+    });
 
   /**
    * @type {Model}
@@ -192,7 +185,7 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @property {Boolean} approved - Approval status of the draft
   */
   const Draft = sequelize.define("drafts", {
-   id: {
+    id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -231,19 +224,19 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       allowNull: false
     },
   },
-  {
-    schema: 'topic',
-    freezeTableName: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['author', 'kind', 'topic']
-      }
-    ]
-  });
+    {
+      schema: 'topic',
+      freezeTableName: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['id']
+        },
+        {
+          fields: ['author', 'kind', 'topic']
+        }
+      ]
+    });
 
 
   /**
@@ -255,34 +248,33 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @property {String} story - Target hash, A target model instance hash where the topic is tagged
   */
   const Tagged = sequelize.define("tagged", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      topic: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      story: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      // timestamps: false,
-      schema: 'topic',
-      freezeTableName: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['topic', 'story']
-        }
-      ]
-    });
+    topic: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    story: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+  },{
+    // timestamps: false,
+    schema: 'topic',
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['topic', 'story']
+      }
+    ]
+  });
 
   /**
    * @type {Model}
@@ -293,20 +285,20 @@ module.exports = (User, Story, sequelize, Sequelize) => {
    * @property {String} topic - The hash of the topic being subscribed to
   */
   const Subscribe = sequelize.define("subscribers", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      author: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      topic: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
+    author: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    topic: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+  },
     {
       schema: 'topic',
       freezeTableName: true,
@@ -321,62 +313,62 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       ]
     });
 
-    // add a hook to the Subscribe model to add a job to the queue
-    Subscribe.afterCreate(async subscribe => {
-      // construct the job payload
-      const payload = {
-        kind: 'topic',
-        hashes: {
-          topic: subscribe.topic,
-        },
-        action: 'subscribe',
-        value: 1
-      };
-
-      // add the job to the queue
-      await actionQueue.add('actionJob', payload);
-    });
-
-    // add a hook to the Subscribe model to add a job to the queue
-    Subscribe.afterDestroy(async subscribe => {
-      // construct the job payload
-      const payload = {
-        kind: 'topic',
-        hashes: {
-          topic: subscribe.topic,
-        },
-        action: 'subscribe',
-        value: -1
-      };
-
-      // add the job to the queue
-      await actionQueue.add('actionJob', payload);
-    });
-
-
-    /**
-     * @type {Model}
-     * @name Follow
-     * @description - This model contains all the followers of a topic
-     * @property {Number} id - Unique identifier for the follower record
-     * @property {String} topic - The hash of the topic being followed
-     * @property {String} author - The hash of the user following the topic.
-    */
-    const Follow = sequelize.define("followers", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+  // add a hook to the Subscribe model to add a job to the queue
+  Subscribe.afterCreate(async subscribe => {
+    // construct the job payload
+    const payload = {
+      kind: 'topic',
+      hashes: {
+        topic: subscribe.topic,
       },
-      topic: {
-        type: Sequelize.STRING,
-        allowNull: false
+      action: 'subscribe',
+      value: 1
+    };
+
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
+
+  // add a hook to the Subscribe model to add a job to the queue
+  Subscribe.afterDestroy(async subscribe => {
+    // construct the job payload
+    const payload = {
+      kind: 'topic',
+      hashes: {
+        topic: subscribe.topic,
       },
-      author: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
+      action: 'subscribe',
+      value: -1
+    };
+
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
+
+
+  /**
+   * @type {Model}
+   * @name Follow
+   * @description - This model contains all the followers of a topic
+   * @property {Number} id - Unique identifier for the follower record
+   * @property {String} topic - The hash of the topic being followed
+   * @property {String} author - The hash of the user following the topic.
+  */
+  const Follow = sequelize.define("followers", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
+    topic: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    author: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+  },
     {
       schema: 'topic',
       freezeTableName: true,
@@ -391,81 +383,84 @@ module.exports = (User, Story, sequelize, Sequelize) => {
       ]
     });
 
-    // add a hook to the Follow model to add a job to the queue
-    Follow.afterCreate(async follow => {
-      // construct the job payload
-      const payload = {
-        kind: 'topic',
-        hashes: {
-          topic: follow.topic,
-        },
-        action: 'follow',
-        value: 1
-      };
+  // add a hook to the Follow model to add a job to the queue
+  Follow.afterCreate(async follow => {
+    // construct the job payload
+    const payload = {
+      kind: 'topic',
+      hashes: {
+        topic: follow.topic,
+      },
+      action: 'follow',
+      value: 1
+    };
 
-      // add the job to the queue
-      await actionQueue.add('actionJob', payload);
-    });
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
 
-    // add a hook to the Follow model to add a job to the queue
-    Follow.afterDestroy(async follow => {
-      // construct the job payload
-      const payload = {
-        kind: 'topic',
-        hashes: {
-          topic: follow.topic,
-        },
-        action: 'follow',
-        value: -1
-      };
+  // add a hook to the Follow model to add a job to the queue
+  Follow.afterDestroy(async follow => {
+    // construct the job payload
+    const payload = {
+      kind: 'topic',
+      hashes: {
+        topic: follow.topic,
+      },
+      action: 'follow',
+      value: -1
+    };
 
-      // add the job to the queue
-      await actionQueue.add('actionJob', payload);
-    });
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
 
   // Defining the associations on the User and Topic models
-  User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash' , as : 'user_topics', onDelete: 'CASCADE' });
+  User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash', as: 'user_topics', onDelete: 'CASCADE' });
   Topic.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'topic_author', onDelete: 'CASCADE' });
 
   // Defining the associations on the Topic and Tagged models
-  Topic.hasMany(Tagged, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_tags', onDelete: 'CASCADE' });
+  Topic.hasMany(Tagged, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_tags', onDelete: 'CASCADE' });
   Tagged.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'tagged_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the Story and Tagged models
-  Story.hasMany(Tagged, { foreignKey: 'story', sourceKey: 'hash', as : 'story_tags', onDelete: 'CASCADE' });
+  Story.hasMany(Tagged, { foreignKey: 'story', sourceKey: 'hash', as: 'story_tags', onDelete: 'CASCADE' });
   Tagged.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'tagged_story', onDelete: 'CASCADE' });
 
   // Defining the associations on the Topic and Subscribe models
-  Topic.hasMany(Subscribe, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_subscribers', onDelete: 'CASCADE' });
+  Topic.hasMany(Subscribe, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_subscribers', onDelete: 'CASCADE' });
   Subscribe.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'subscribed_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the User and Subscribe models
-  User.hasMany(Subscribe, { foreignKey: 'author', sourceKey: 'hash', as : 'user_subscriptions', onDelete: 'CASCADE' });
+  User.hasMany(Subscribe, { foreignKey: 'author', sourceKey: 'hash', as: 'user_subscriptions', onDelete: 'CASCADE' });
   Subscribe.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'subscribed_user', onDelete: 'CASCADE' });
 
   // Defining the associations on the Topic and Follow models
-  Topic.hasMany(Follow, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_followers', onDelete: 'CASCADE' });
+  Topic.hasMany(Follow, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_followers', onDelete: 'CASCADE' });
   Follow.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'followed_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the User and Follow models
-  User.hasMany(Follow, { foreignKey: 'author', sourceKey: 'hash', as : 'user_follows', onDelete: 'CASCADE' });
+  User.hasMany(Follow, { foreignKey: 'author', sourceKey: 'hash', as: 'user_follows', onDelete: 'CASCADE' });
   Follow.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'followed_user', onDelete: 'CASCADE' });
 
   // Defining the associations on the Topic and TopicSection models
-  Topic.hasMany(TopicSection, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_sections', onDelete: 'CASCADE' });
+  Topic.hasMany(TopicSection, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_sections', onDelete: 'CASCADE' });
   TopicSection.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'section_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the Topic and Draft models
-  Topic.hasMany(Draft, { foreignKey: 'topic', sourceKey: 'hash', as : 'topic_drafts', onDelete: 'CASCADE' });
+  Topic.hasMany(Draft, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_drafts', onDelete: 'CASCADE' });
   Draft.belongsTo(Topic, { foreignKey: 'topic', targetKey: 'hash', as: 'draft_topic', onDelete: 'CASCADE' });
 
   // Defining the associations on the TopicSection and Draft models
-  TopicSection.hasMany(Draft, { foreignKey: 'section', sourceKey: 'id', as : 'section_drafts', onDelete: 'CASCADE' });
+  TopicSection.hasMany(Draft, { foreignKey: 'section', sourceKey: 'id', as: 'section_drafts', onDelete: 'CASCADE' });
   Draft.belongsTo(TopicSection, { foreignKey: 'section', targetKey: 'id', as: 'draft_section', onDelete: 'CASCADE' });
 
   // Defining the associations on the User and Draft models
-  User.hasMany(Draft, { foreignKey: 'author', sourceKey: 'hash', as : 'user_drafts', onDelete: 'CASCADE' });
+  User.hasMany(Draft, { foreignKey: 'author', sourceKey: 'hash', as: 'user_drafts', onDelete: 'CASCADE' });
   Draft.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'draft_author', onDelete: 'CASCADE' });
+
+  // Defining the associations on the Topic --> View 
+  Topic.hasMany(View, { foreignKey: 'topic', sourceKey: 'hash', as: 'topic_views', onDelete: 'CASCADE' });
 
   // Returning the models
   return { Topic, Tagged, Subscribe, Follow, TopicSection, Draft };
