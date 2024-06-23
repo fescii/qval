@@ -1,7 +1,7 @@
 const { hashConfig} = require('../../configs');
-const {Op} = require("sequelize");
-const { sequelize, Topic, Section, Role } = require('../../models').models;
+const { sequelize, Sequelize, Topic, Section, Role, User } = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
+const Op = Sequelize.Op;
 
 // Imports for gen_hash
 const { gen_hash } = require("../../wasm");
@@ -24,7 +24,7 @@ const addTopic = async (user, data) => {
       author: user.hash,
       name: data.name,
       slug: data.slug,
-      summery: data.summery,
+      summary: data.summary,
     }, {transaction})
 
     // Generate a hash for the topic created
@@ -78,7 +78,7 @@ const addTopic = async (user, data) => {
         hash: topic.hash,
         name: topic.name,
         slug: topic.slug,
-        summery: topic.summery
+        summary: topic.summary
       },
       error: null
     }
@@ -118,7 +118,7 @@ const checkIfTopicExists = async (name, slug) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -168,7 +168,7 @@ const editTopic = async (hash, data) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -207,7 +207,7 @@ const findTopic = async (hash) => {
           hash: topic.hash,
           name: topic.name,
           slug: topic.slug,
-          summery: topic.summery
+          summary: topic.summary
         }, 
         error: null
       }
@@ -250,6 +250,156 @@ const findTopicBySlug = async (slug) => {
   }
 }
 
+
+/**
+ * function findTopicBySlugOrHash
+ * @description Query to find a topic by slug or hash
+ * @param {String} query - The query of the topic
+ * @param {String} user - The user hash
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicBySlugOrHash = async (query, user) => {
+  // console.log('User:', user, 'Query:', query, 'Find Topic By Slug Or Hash')
+  try {
+    // check if user is logged in
+    if (user !== null) {
+      return await findTopicWhenLoggedIn(query, user.toUpperCase());
+    }
+    else {
+      return await findTopicWhenLoggedOut(query);
+    }
+  }
+  catch (error) {
+    return { topic: null, error: error}
+  }
+}
+
+/**
+ * @function findTopicWhenLoggedIn
+ * @description Query to find a topic when logged in
+ * @param {String} query - The query of the topic
+ * @param {String} user - The user hash
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicWhenLoggedIn = async (query, user) => {
+  const topic = await Topic.findOne({
+    // attributes including a subquery to check whether the user is following the topic and is subscribed to the topic
+    attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 
+      [
+        Sequelize.fn('EXISTS', Sequelize.literal(`(
+          SELECT 1 FROM "topic"."followers" AS t_followers
+          WHERE t_followers.topic = topics.hash
+          AND t_followers.author = '${user}'
+        )`)),
+        'is_following'
+      ],
+      [
+        Sequelize.fn('EXISTS', Sequelize.literal(`(
+          SELECT 1 FROM "topic"."subscribers" AS t_subscribers
+          WHERE t_subscribers.topic = topics.hash
+          AND t_subscribers.author = '${user}'
+        )`)),
+        'is_subscribed'
+      ]
+    ],
+    where: {
+      [Op.or]: [
+        { slug: query },
+        { hash: query.toUpperCase() }
+      ]
+    },
+    include: [
+      {
+        model: User,
+        as: 'topic_author',
+        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+          [
+            sequelize.literal(`(
+            SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+            FROM account.connects
+            WHERE connects.to = topic_author.hash
+            AND connects.from = '${user}'
+            )`),
+            'is_following'
+          ]
+        ],
+      }
+    ]
+  });
+
+  // if topic doesn't exist
+  if (!topic) {
+    return { topic: null, error: null }
+  }
+
+  const data =  {
+    author: topic.author,
+    hash: topic.hash,
+    name: topic.name,
+    slug: topic.slug,
+    summary: topic.summary,
+    followers: topic.followers,
+    subscribers: topic.subscribers,
+    stories: topic.stories,
+    views: topic.views,
+    is_following: topic.dataValues.is_following,
+    is_subscribed: topic.dataValues.is_subscribed,
+    topic_author: {
+      hash: topic.topic_author.hash,
+      bio: topic.topic_author.bio,
+      name: topic.topic_author.name,
+      verified: topic.topic_author.verified,
+      picture: topic.topic_author.picture,
+      followers: topic.topic_author.followers,
+      following: topic.topic_author.following,
+      stories: topic.topic_author.stories,
+      is_following: topic.topic_author.dataValues.is_following
+    },
+    you: topic.topic_author.hash === user,
+    authenticated: true
+  }
+
+  // If topic exists, return the topic
+  return { topic: data, error: null }
+}
+
+
+/**
+ * @functionn findTopicWhenLoggedOut
+ * @description Query to find a topic when logged out
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The topic object or null, and the error if any
+*/
+const findTopicWhenLoggedOut = async (query) => {
+  const topic = await Topic.findOne({
+    attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt'],
+    where: {
+      [Op.or]: [
+        {slug: query},
+        {hash: query.toUpperCase()}
+      ]
+    },
+    include: [
+      {
+        model: User,
+        as: 'topic_author',
+        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt'],
+      }
+    ]
+  });
+
+  // if topic doesn't exist
+  if (!topic) {
+    return { topic: null, error: null}
+  }
+
+  // add login status to the topic
+  topic.authenticated = false;
+
+  // If topic exists, return the topic
+  return {topic: topic, error: null}
+}
+
 /**
  * @function findTopicsByQuery
  * @description Query to finding topics by query: using vector search for name or slug
@@ -263,40 +413,20 @@ const findTopicsByQuery = async (query) => {
     query = query.trim();
 
     // refine the query: make the query to match containing, starting or ending with the query
-    // query = query.split(' ').map((q) => `${q} | ${q}:* | *:${q}`).join(' & ');
-
-    // create tsquery that starts with the query
-    const tsQueryStarts = query.split(' ').map((q) => `${q}:*`).join(' & ');
-
-    // create tsquery that ends with the query
-    const tsQueryEnds = query.split(' ').map((q) => `*:${q}`).join(' & ');
-
-    // create tsquery that contains the query
-    const tsQueryContains = query.split(' ').map((q) => `${q}`).join(' & ');
-
-    // combine the tsquery strings for starting, ending and containing
-    const tsQuery = sequelize.literal(`${tsQueryStarts} | ${tsQueryEnds} | ${tsQueryContains}`);
-
-    // // construct the tsquery using the sequelize.fn
-    // const tsQuery = sequelize.fn('to_tsquery','english',queryString);
-
+    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
     
     // build the query(vector search)
-    const topics = await Topic.search(tsQuery);
-
-    console.log('Topics', topics);
+    const topics = await Topic.search(query);
 
     // if no topics found
-    if (!topics) {
-      return { topics: null, error: null}
+    if (topics.length < 1) {
+      return {topics: null, error: null}
     }
 
     // If topics exist, return the topics
     return { topics: topics, error: null}
-
   }
   catch (error) {
-    console.log('Error', error)
     return { topics: null, error: error}
   }
 }
@@ -333,5 +463,5 @@ const removeTopic = async (hash) => {
 module.exports = {
   addTopic, checkIfTopicExists, editTopic,
   findTopic, removeTopic, findTopicsByQuery,
-  findTopicBySlug
+  findTopicBySlug, findTopicBySlugOrHash
 }

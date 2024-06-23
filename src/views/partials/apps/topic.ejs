@@ -1,0 +1,54 @@
+<% var url = "/t/" + data.hash.toLowerCase() %>
+<% author = data.topic_author %>
+
+<%# Separate the name into first and last name %> 
+<% var name = author.name.split(" ") %>
+
+<%#  check if the profile picture is null and overwrite it with the default picture  %> 
+<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + author.picture %>
+
+<%# Check you %>
+<% var you = data.you ? "true" : "false" %>
+
+<%# Check if user is subscribed to the topic and overwrite it with the default value %> 
+<%  var subscribed = data.is_subscribed ? "true" : "false" %>
+
+<%# Check if user is following the topic and overwrite it with the default value %>
+<%  var topic_follow = data.is_following ? "true" : "false" %>
+
+<%# Check if the user is verified and overwrite it with the default value %> 
+<%  var author_verified = author.verified ? "true" : "false" %>
+
+<%# Check if the user is following the author and overwrite it with the default value %> 
+<%  var author_follow = author.is_following ? "true" : "false" %>
+
+<%# Check if bio is null and overwrite it with the default bio %> 
+<% var bio = author.bio === null ? "This user has not added a bio yet." : author.bio %>
+
+<%#  Check if the user is logged in  %> 
+<% if (data.authenticated) { %>
+  <%#  This is the topic component  %> 
+  <app-topic tab="<%= data.tab %>" subscribers="<%= data.subscribers %>" followers="<%= data.followers %>"
+    stories="<%= data.stories %>" hash="<%= data.hash %>" subscribed="<%= subscribed %>"
+    name="<%= data.name %>" url="<%= url %>" stories-url="<%= url %>/stories"
+    contributers-url="<%= url %>/contributers" followers-url="<%= url %>/followers"
+    description="<%= data.summary %>" topic-follow="<%= topic_follow %>"
+    author-hash="<%= author.hash %>" author-you="<%= you %>"
+    author-picture="<%= picture %>" author-follow="<%= author_follow %>"
+    author-name="<%= author.name %>" author-followers="<%= author.followers %>" author-following="<%= author.following %>"
+    author-verified="<%= author_verified %>" author-bio="<%= bio %>">
+  </app-topic>
+  <%#  Add else if the user is not logged in  %> 
+<% } else { %>
+  <%#  This is the topic component  %> 
+  <app-topic tab="<%= data.tab %>" subscribers="<%= data.subscribers %>" followers="<%= data.followers %>"
+    stories="<%= data.stories %>" hash="<%= data.hash %>"  subscribed="false" 
+    name="<%= data.name %>" url="<%= url %>" stories-url="<%= url %>/stories"
+    contributers-url="<%= url %>/contributers" followers-url="<%= url %>/followers"
+    description="<%= data.summary %>" topic-follow="false"
+    author-hash="<%= author.hash %>" author-you="<%= you %>"
+    author-picture="<%= picture %>" author-verified="<%= author_verified %>" author-name="<%= author.name %>" 
+    author-followers="<%= author.followers %>" author-following="<%= author.following %>" author-follow="false"
+    author-bio="<%= bio %>">
+  </app-topic>
+<% } -%>

@@ -4,10 +4,10 @@ const {
   editEmail, editName, editPicture
 } = require('./edit.user');
 const { connectToUser } = require('./action.user');
-const { addUser, checkIfUserExits} = require('./base.user');
+const { addUser, checkIfUserExits, getUserByHash} = require('./base.user');
 
 module.exports = {
   editBio, editContact, editPassword,
-  editEmail, editName, editPicture,
+  editEmail, editName, editPicture, getUserByHash,
   connectToUser, addUser, checkIfUserExits
 };

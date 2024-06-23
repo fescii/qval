@@ -86,9 +86,114 @@ const checkIfUserExits = async email => {
   }
 }
 
+/**
+ * @function getUserByHash
+ * @description Query to get a user by hash
+ * @param {String} hash - The hash of the user
+ * @param {String} currentUser - The hash of the current user
+ * @returns {Object} - The user object or null, and the error if any
+*/
+const getUserByHash = async (hash, currentUser) => {
+  // check if the current user is logged in
+  if (currentUser) {
+    return getUserWhenLoggedIn(hash, currentUser);
+  }
+  else {
+    return getUser(hash);
+  }
+}
+
+/**
+ * @function getUser
+ * @description Query to get a user by hash
+ * @param {String} hash - The hash of the user
+ * @returns {Object} - The user object or null, and the error if any
+*/
+const getUser = async (hash, you=false, authenticated=false) => {
+  try {
+    // Find the user by hash
+    const user = await User.findOne({ 
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified'],
+      where: { hash } 
+    });
+
+    // If user is not found return null
+    if (!user) {
+      return { user: null, error: null };
+    }
+
+    // Return the user
+    const data  = user.dataValues;
+
+    // add is following to the user
+    data.is_following = false;
+
+    // if you are the user
+    data.you = you;
+
+    // add authenticated to the user
+    data.authenticated = authenticated;
+
+    return { user: data, error: null };
+  }
+  catch (error) {
+    return { user: null, error };
+  }
+}
+
+/**
+ * @function getUserWhenLoggedIn
+ * @description Query to get a user by hash
+ * @param {String} hash - The hash of the user to get
+ * @param {String} currentUser - The hash of the current user
+*/
+const getUserWhenLoggedIn = async (hash, currentUser) => {
+  try {
+    // check if hash and current user are the same
+    if (hash === currentUser) {
+      return getUser(hash, true, true);
+    }
+    // Find the user by hash
+    const user = await User.findOne({ 
+      attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+        [
+          sequelize.literal(`(
+          SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+          FROM account.connects
+          WHERE connects.to = users.hash
+          AND connects.from = '${currentUser}'
+          )`),
+          'is_following'
+        ]
+      ],
+      where: { hash }
+    });
+
+
+    // If user is not found return null
+    if (!user) {
+      return { user: null, error: null };
+    }
+
+    // Return the user
+    const data  = user.dataValues;
+
+    // if you are the user
+    data.you = false;
+
+    // add authenticated to the user
+    data.authenticated = true;
+
+    return { user: data, error: null };
+  }
+  catch (error) {
+    return { user: null, error };
+  }
+}
+
 
 // Export the queries
 module.exports = {
-  addUser,
+  addUser, getUserByHash,
   checkIfUserExits
 };

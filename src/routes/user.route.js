@@ -52,7 +52,7 @@ module.exports = (app, url) => {
   );
 
   // Follow user route
-  app.patch(`${url}/follow/:hash`,
+  app.patch(`${url}/:hash/follow`,
     verifyToken,
     followUser
   );

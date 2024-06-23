@@ -1,7 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
   join, login, register, recover
-} = require('../content').logonApp;
+} = require('../../content').logonContent;
 
 
 /**

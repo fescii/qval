@@ -1,8 +1,3 @@
-const {
-  host, port
-} = require('../configs').envConfig;
-
-const address = `${host}:${port}`;
 
 /**
  * @controller {get} /join Join
@@ -14,7 +9,6 @@ const join = async (req, res) => {
   const nextUrl = req.query.next || '/home';
   res.render('pages/logon', {
     data: {
-      host: address,
       name: 'join',
       next: nextUrl,
       forgot: '/join/recover',
@@ -39,7 +33,6 @@ const login = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
-      host: address,
       name: 'login',
       next: nextUrl,
       forgot: '/join/recover',
@@ -65,7 +58,6 @@ const register = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
-      host: address,
       name: 'register',
       next: nextUrl,
       forgot: '/join/recover',
@@ -92,7 +84,6 @@ const recover = async (req, res) => {
 
   res.render('pages/logon', {
     data: {
-      host: address,
       name: 'forgot',
       next: nextUrl,
       requested: url,

@@ -1,114 +1,10 @@
-// import user Model from models
-const { User, sequelize, Sequelize } = require('../models').models;
-
-/**
- * @function updateUserFollowers
- * @name updateUserFollowers
- * @description A function that updates the user followers data
- * @param {String} userHash 
- * @param {Number} value 
-*/
-const updateUserFollowers = async (userHash, value) => {
-  if (!userHash || !value || typeof value !== 'number') {
-    // throw an error
-    throw new Error('User hash and value are required!, value must be a number');
-  }
-
-  // value can be -1 or 1
-  if (value !== -1 && value !== 1) {
-    // throw an error
-    throw new Error('Value can only be -1 or 1');
-  }
-
-  // Update the user followers by the value: followers + 1 or followers - 1
-  await User.update(
-    { followers: Sequelize.literal(`followers + ${value}`)}, 
-    { where: { hash: userHash } 
-  });
-}
-
-
-/**
- * @function updateUserFollowing
- * @name updateUserFollowing
- * @description A function that updates the user following data
- * @param {String} userHash
- * @param {Number} value
- * @returns {Promise<void>} - Returns a promise of void data
-*/
-const updateUserFollowing = async (userHash, value) => {
-  if (!userHash || !value || typeof value !== 'number') {
-    // throw an error
-    throw new Error('User hash and value are required!, value must be a number');
-  }
-
-  // value can be -1 or 1
-  if (value !== -1 && value !== 1) {
-    // throw an error
-    throw new Error('Value can only be -1 or 1');
-  }
-
-  // Update the user following by the value: following + 1 or following - 1
-  await User.update(
-    { following: Sequelize.literal(`following + ${value}`)}, 
-    { where: { hash: userHash } 
-  });
-}
-
-/**
- * @function updateTopicFollowers
- * @name updateTopicFollowers
- * @description A function that updates the topic followers data
- * @param {String} topicHash
- * @param {Number} value
- * @returns {Promise<void>} - Returns a promise of void data
-*/
-const updateTopicFollowers = async (topicHash, value) => {
-  if (!topicHash || !value || typeof value !== 'number') {
-    // throw an error
-    throw new Error('Topic hash and value are required!, value must be a number');
-  }
-
-  // value can be -1 or 1
-  if (value !== -1 && value !== 1) {
-    // throw an error
-    throw new Error('Value can only be -1 or 1');
-  }
-
-  // Update the topic followers by the value: followers + 1 or followers - 1
-  await Topic.update(
-    { followers: Sequelize.literal(`followers + ${value}`)}, 
-    { where: { hash: topicHash } 
-  });
-}
-
-
-/**
- * @function updateTopicSubscribers
- * @name updateTopicSubscribers
- * @description A function that updates the topic subscribers data
- * @param {String} topicHash
- * @param {Number} value
- * @returns {Promise<void>} - Returns a promise of void data
-*/
-const updateTopicSubscribers = async (topicHash, value) => {
-  if (!topicHash || !value || typeof value !== 'number') {
-    // throw an error
-    throw new Error('Topic hash and value are required!, value must be a number');
-  }
-
-  // value can be -1 or 1
-  if (value !== -1 && value !== 1) {
-    // throw an error
-    throw new Error('Value can only be -1 or 1');
-  }
-
-  // Update the topic subscribers by the value: subscribers + 1 or subscribers - 1
-  await Topic.update(
-    { subscribers: Sequelize.literal(`subscribers + ${value}`)}, 
-    { where: { hash: topicHash } 
-  });
-}
+// hook fns: functions to udate hooks data in the database
+const {
+  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
+  updateUserFollowers, updateUserFollowing,
+  updateStoryViews, updateStoryLikes, updateStoryReplies,
+  updateReplyViews, updateReplyReplies, updateReplyLikes,
+} = require('./fns.hook');
 
 /**
  * @function actionHook
@@ -136,28 +32,21 @@ const actionHook = async data => {
     // switch the kind of data
     switch (data.kind) {
       case 'user':
-        // Get the the hashes
         const {from, to} = data.hashes;
-
-        // Check action from data
-        if (data.action === 'connect') {
-          // Update the user followers and following
-          await updateUserFollowers(to, data.value);
-          await updateUserFollowing(from, data.value);
-        }
-        // other actions can be added here
+        // call the user updator
+        await userUpdator(data.action, from, to, data.value);
         break;
       case 'topic':
-        const {topic} = data.hashes;
-        // Check action from data
-        if (data.action === 'subscribe') {
-          // Update the topic subscribers
-          await updateTopicSubscribers(topic, data.value);
-        }
-        else if (data.action === 'follow') {
-          // Update the topic followers
-          await updateTopicFollowers(topic, data.value);
-        }
+        // call the topic updator
+        await topicUpdator(data.action, data.hashes.target, data.value);
+        break;
+      case 'story':
+        // call the story updator
+        await storyUpdator(data.action, data.hashes.target, data.value);
+        break;
+      case 'reply':
+        // call the reply updator
+        await replyUpdator(data.action, data.hashes.target, data.value);
         break;
       default:
         // Log the error
@@ -172,6 +61,92 @@ const actionHook = async data => {
     console.error('Error initializing action hook process:', error);
 
     // !TODO: Create a handler for handling this error
+  }
+}
+
+/**
+ * @function userUpdator
+ * @name userUpdator
+ * @description A function that updates the user followers data
+ * @param {String} action - The action to perform
+ * @param {String} from - The from user hash
+ * @param {String} to - The to user hash
+ * @param {Number} value - The value to update
+*/
+const userUpdator = async (action, from, to, value) => {
+  if (action === 'connect') {
+    // Update the user followers and following
+    await updateUserFollowers(to, value);
+    await updateUserFollowing(from, value);
+  }
+}
+
+/**
+ * @function topicUpdator
+ * @name topicUpdator
+ * @description A function that updates the topic followers data
+ * @param {String} action - The action to perform
+ * @param {String} topicHash - The topic hash
+ * @param {Number} value - The value to update
+*/
+const topicUpdator = async (action, topicHash, value) => {
+  if (action === 'subscribe') {
+    // Update the topic subscribers
+    await updateTopicSubscribers(topicHash, value);
+  }
+  else if (action === 'follow') {
+    // Update the topic followers
+    await updateTopicFollowers(topicHash, value);
+  }
+  else if (action === 'view') {
+    // Update the topic views
+    await updateTopicViews(topicHash, value);
+  }
+}
+
+/**
+ * @function storyUpdator
+ * @name storyUpdator
+ * @description A function that updates the story views data
+ * @param {String} action - The action to perform
+ * @param {String} storyHash - The story hash
+ * @param {Number} value - The value to update
+*/
+const storyUpdator = async (action, storyHash, value) => {
+  if (action === 'view') {
+    // Update the story views
+    await updateStoryViews(storyHash, value);
+  }
+  else if (action === 'like') {
+    // Update the story likes
+    await updateStoryLikes(storyHash, value);
+  }
+  else if (action === 'reply') {
+    // Update the story replies
+    await updateStoryReplies(storyHash, value);
+  }
+}
+
+/**
+ * @function replyUpdator
+ * @name replyUpdator
+ * @description A function that updates the reply views data
+ * @param {String} action - The action to perform
+ * @param {String} replyHash - The reply hash
+ * @param {Number} value - The value to update
+*/
+const replyUpdator = async (action, replyHash, value) => {
+  if (action === 'view') {
+    // Update the reply views
+    await updateReplyViews(replyHash, value);
+  }
+  else if (action === 'like') {
+    // Update the reply likes
+    await updateReplyLikes(replyHash, value);
+  }
+  else if (action === 'reply') {
+    // Update the reply replies
+    await updateReplyReplies(replyHash, value);
   }
 }
 

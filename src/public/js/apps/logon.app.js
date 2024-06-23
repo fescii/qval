@@ -1,10 +1,13 @@
 // noinspection RegExpRedundantEscape
 
-export default class LogonApp extends HTMLElement {
+export default class AppLogon extends HTMLElement {
   constructor() {
 
     // We are not even going to touch this.
     super();
+
+    // check if the user is authenticated
+    this._authenticated = this.isLoggedIn('x-random-token');
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: 'open' });
@@ -46,27 +49,54 @@ export default class LogonApp extends HTMLElement {
       const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action')
       const stagesContainer = contentContainer.querySelector('.stages');
 
-      switch (initialName) {
-        case 'join':
-          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-          this.activateForgot(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'login':
-          outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'forgot':
-          outerThis.forgotLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        case 'register':
-          outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
-          break;
-        default:
-          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-          this.activateForgot(contentContainer, stagesContainer, contentTitle);
-          break;
+      // Check if the user is authenticated
+      if (outerThis._authenticated) {
+        // activate the login
+        outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+
+        //set content title
+        contentTitle.textContent = 'Welcome';
       }
+      else {
+        switch (initialName) {
+          case 'join':
+            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+            this.activateForgot(contentContainer, stagesContainer, contentTitle);
+            break;
+          case 'login':
+            outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
+            break;
+          case 'forgot':
+            outerThis.forgotLoaded(contentContainer, stagesContainer, contentTitle);
+            break;
+          case 'register':
+            outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
+            break;
+          default:
+            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+            this.activateForgot(contentContainer, stagesContainer, contentTitle);
+            break;
+        }
+      }
+    }
+  }
+
+  isLoggedIn = name => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+
+    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+    
+    if (!cookie) {
+      return false; // Cookie does not exist
+    }
+    
+    // if cookie exists, check if it is valid
+    if (cookie) {
+      // check if the cookie is valid
+      return true;
     }
   }
 
@@ -80,7 +110,6 @@ export default class LogonApp extends HTMLElement {
     contentTitle.textContent = 'Login';
     outerThis.changeStages('login', stagesContainer);
     outerThis.nextStep('login', stagesContainer);
-
 
     outerThis.submitEvent('login', contentContainer.querySelector('form'));
     outerThis.prevStep('login', stagesContainer, contentContainer)
@@ -1401,6 +1430,9 @@ export default class LogonApp extends HTMLElement {
 
   activateLoginFinish(contentContainer, name) {
     const outerThis = this;
+    // get the next attribute
+    const next = this.getAttribute('next') || '/home';
+
     const stagesContainer = contentContainer.querySelector('.stages');
     // const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
     const finish = this.getLoginSuccess(name);
@@ -1410,7 +1442,17 @@ export default class LogonApp extends HTMLElement {
       form.remove();
       outerThis.nextStep('login', stagesContainer);
       stagesContainer.insertAdjacentHTML('afterend', finish)
+
+      // redirect user after 5 seconds
+      outerThis.redirectUser(next);
     }, 1000);
+  }
+
+  redirectUser = url => {
+    // set 5 seconds timeout before redirecting
+    setTimeout(() => {
+      window.location.replace(url);
+    }, 5000);
   }
 
   activateForgotFinish = async contentContainer => {
@@ -1492,6 +1534,11 @@ export default class LogonApp extends HTMLElement {
 
   initialInterface = (startName) => {
     const outerThis = this;
+    // check if the user is already logged in
+    if (this._authenticated) {
+      return outerThis.getAlreadyLoggedIn('You are already logged in!');
+    }
+
     switch (startName) {
       case 'join':
         return outerThis.getWelcome()
@@ -1561,8 +1608,8 @@ export default class LogonApp extends HTMLElement {
     return `
       <div class="welcome">
 				<p>
-					Connect with your audience, amplify collaborations, and share your knowledge without limits.
-					Build a vibrant project hub where ideas ignite and progress shines.
+					Connect with vibrant minds and share or contribute to ideas that can change the world.
+          Join our community today, and start sharing your thoughts.
 				</p>
 				<a href=${this.getAttribute('login')} class="login">Login</a>
 				<a href=${this.getAttribute('register')} class="register">Register</a>
@@ -1594,20 +1641,40 @@ export default class LogonApp extends HTMLElement {
     `
   }
 
-  getLoginSuccess(name) {
+  getLoginSuccess = name => {
+    // get the next attribute
+    const next = this.getAttribute('next') || '/home';
+
+    const display = next.length > 30 ? next.substring(0, 30) + '..' : next;
+
     return `
       <div class="finish login-success">
         <p>Welcome</p>
         <h2 class="title">${name}</h2>
-				<p>
-					You've successfully login into your account, click continue to proceed.
-				</p>
-				<a href="/login/" class="continue">Continue</a>
+        <p class="next">
+          You've successfully login into your account. You will be redirected to <span class="url">${display}</span> in 5 seconds. 
+          Or you can click <a href="${next}">here</a> to continue.
+        </p>
 			</div>
     `
   }
 
-  getForgotSuccess(name) {
+  getAlreadyLoggedIn = name => {
+    // get the next attribute
+    const next = this.getAttribute('next') || '/home';
+    return `
+      <div class="welcome login-success">
+        <h2 class="title">${name}</h2>
+        <p class="next">
+          You can continue to with this account or login into another account. Please note that: <span class="warn">This will remove the current session.</span>
+        </p>
+        <a href="${this.getAttribute('login')}" class="login">Login</a>
+				<a href="${next}" class="continue">Continue</a>
+			</div>
+    `
+  }
+
+  getForgotSuccess = name => {
     return `
       <div class="finish">
         <h2 class="title">Success!</h2>
@@ -1805,7 +1872,7 @@ export default class LogonApp extends HTMLElement {
 				</li>
 				<li>
 					<span class="dot"></span>
-					<a href="">Privacy</a>
+					<a href="">What's new</a>
 				</li>
 				<li>
 					<span class="dot"></span>
@@ -1818,7 +1885,7 @@ export default class LogonApp extends HTMLElement {
   getStyles() {
     return /*css*/`
       <!--suppress ALL -->
-<style>
+      <style>
         * {
           box-sizing: border-box !important;
         }
@@ -2102,8 +2169,11 @@ export default class LogonApp extends HTMLElement {
           justify-content: center;
         }
 
+        .logon-container > .login-success > h2,
         .logon-container > .finish > h2 {
+          grid-column: 1/3;
           margin: 10px 0;
+          font-family: var(--font-text), sans-serif;
           text-align: center;
           color: var(--text-color);
           line-height: 1.4;
@@ -2138,6 +2208,35 @@ export default class LogonApp extends HTMLElement {
           color: var(--text-color);
           line-height: 1.4;
           font-size: 1.15rem;
+        }
+
+        .logon-container > .finish  p.next > .url,
+        .logon-container>.welcome  p.next > .url {
+          background: var(--poll-background);
+          color: var(--gray-color);
+          padding: 2px 5px;
+          font-size: 0.95rem;
+          font-weight: 400;
+          border-radius: 5px;
+        }
+
+        .logon-container > .welcome  p.next > a,
+        .logon-container > .finish  p.next > a {
+          text-decoration: none;
+          font-weight: 500;
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        .logon-container > .welcome  p.next .warn {
+          color: var(--error-color);
+          font-weight: 500;
+          font-size: 0.9rem;
+          background: var(--poll-background);
+          padding: 2px 5px;
+          border-radius: 5px;
         }
 
         .logon-container > .finish > a,
@@ -2474,12 +2573,12 @@ export default class LogonApp extends HTMLElement {
         }
 
         .logon-container > .footer > li:hover {
-          color: var(--anchor-active);
+          color: var(--anchor-color);
           text-decoration: underline;
         }
 
         .logon-container > .footer > li:hover span.dot {
-          background-color: var(--anchor-active);
+          background-color: var(--anchor-color);
         }
 
         .logon-container > .footer > li a.copyright {

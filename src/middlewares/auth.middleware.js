@@ -76,7 +76,7 @@ const verifyToken = async (req, res, next) => {
     return res.status(403).send({
       success: false,
       unverified: true,
-      message: "No token provided!, login to continue"
+      message: "No are not authorized!, login to continue"
     })
   }
 
@@ -99,9 +99,55 @@ const verifyToken = async (req, res, next) => {
   next();
 };
 
+/**
+ * @function checkToken
+ * @description - Middleware to verify token(JWT) and add user to the request object
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
+// Middleware to verify token(JWT)
+const checkToken = async (req, res, next) => {
+
+  // Get jwt token from cookies or headers
+  let token = req.cookies['x-access-token'] || req.headers["x-access-token"]
+
+  // If not, token is found in the headers/cookies - return 403(Forbidden)
+  if (!token) {
+    // add null user to the request object
+    req.user = {
+      hash: null,
+      email: null,
+      name: null
+    };
+
+    return next();
+  }
+
+  const {
+    user,
+    error
+  } = await validateToken(token);
+
+  // If error is returned
+  if(error) {
+    return res.status(401).send({
+      success: false,
+      unverified: true,
+      message: "Unauthorized!, please login to continue!"
+    });
+  }
+
+  // Add user to the request object
+  req.user = user;
+  return next();
+};
+
 
 // Exporting all the middlewares as a single object
 module.exports = {
   checkDuplicateEmail,
-  verifyToken
+  verifyToken, checkToken
 };

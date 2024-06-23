@@ -4,7 +4,7 @@ const {
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
   acceptDraft, getTopicDrafts, getTopicSections,
-  searchTopics, getTopicByHash
+  searchTopics, getTopicByHash, followTopic, subscribeTopic
 } = require('../controllers').topicController;
 
 const {
@@ -52,6 +52,16 @@ module.exports = (app, url) => {
   // getting a topic by hash
   app.get(`${url}/:hash`,
     getTopicByHash
+  );
+
+  // following a topic
+  app.post(`${url}/:hash/follow`,
+    verifyToken, followTopic
+  );
+
+  // subscribing to a topic
+  app.post(`${url}/:hash/subscribe`,
+    verifyToken, subscribeTopic
   );
 
   // creating a new topic section
