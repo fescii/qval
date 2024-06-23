@@ -49,9 +49,17 @@ export default class PostSection extends HTMLElement {
   updateActiveTab = active => {
     // Select tab with active class
     const tab = this.shadowObj.querySelector(`ul#tab > li.${active}`);
+    // select line
+    const line = tabContainer.querySelector('span.line');
 
-    if (tab) {
+    if (tab && line) {
       tab.classList.add('active');
+
+      // Calculate half tab width - 10px
+      const tabWidth = (tab.offsetWidth/2) - 20;
+
+      // update line
+      line.style.left = `${tab.offsetLeft + tabWidth}px`;
     }
     else {
       // select replies tab

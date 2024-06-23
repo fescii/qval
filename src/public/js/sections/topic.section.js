@@ -58,8 +58,17 @@ export default class TopicSection extends HTMLElement {
     // Select tab with active class
     const tab = tabContainer.querySelector(`ul#tab > li.${this._active}`);
 
-    if (tab) {
+    // select line
+    const line = tabContainer.querySelector('span.line');
+
+    if (tab && line) {
       tab.classList.add('active');
+
+      // Calculate half tab width - 10px
+      const tabWidth = (tab.offsetWidth/2) - 20;
+
+      // update line
+      line.style.left = `${tab.offsetLeft + tabWidth}px`;
     }
     else {
       // Select the stories tab

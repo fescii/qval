@@ -1,6 +1,6 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getTopic
+  getTopic, getTopicStories, getTopicContributors
 } = require('../../content').topicContent;
 
 const {
@@ -27,4 +27,10 @@ module.exports = (app) => {
 
   // Route for handling topic page
   app.get('/t/:topic', checkToken, getTopic);
+
+  // Route for handling topic stories page
+  app.get('/t/:topic/stories', checkToken, getTopicStories);
+
+  // Route for handling topic contributers page
+  app.get('/t/:topic/contributors', checkToken, getTopicContributors);
 }
