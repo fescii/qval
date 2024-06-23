@@ -110,13 +110,13 @@ export default class ProfileWrapper extends HTMLElement {
           }
 
           // Follow the topic
-          this.followTopic(`${url}/follow`, options, followBtn, action);
+          this.followUser(`${url}/follow`, options, followBtn, action);
         }
       });
     }
   }
 
-  followTopic = (url, options, followBtn, followed) => {
+  followUser = (url, options, followBtn, followed) => {
     const outerThis = this;
     this.fetchWithTimeout(url, options)
       .then(response => {
@@ -156,7 +156,7 @@ export default class ProfileWrapper extends HTMLElement {
       .catch(_error => {
         // console.log(_error);
         // show toast message
-        outerThis.showToast('An error occurred while following the topic', false);
+        outerThis.showToast('An error occurred while following the user', false);
 
         // revert the follow button
         outerThis.updateFollowBtn(followed, followBtn);
