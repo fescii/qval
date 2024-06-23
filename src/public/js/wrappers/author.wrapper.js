@@ -110,6 +110,9 @@ export default class AuthorWrapper extends HTMLElement {
       { page: 'page', content: profile},
       url, url
     );
+
+    // update title of the document
+    document.title = `User | ${this.getAttribute('name')}`;
   }
 
   disableScroll() {
@@ -661,7 +664,7 @@ export default class AuthorWrapper extends HTMLElement {
        following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
      </app-profile>
    `
- }
+  }
 
   getStyles() {
     return /* css */`

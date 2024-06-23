@@ -62,6 +62,9 @@ export default class TopicWrapper extends HTMLElement {
       { page: 'page', content: topic},
       url, url
     );
+
+    // update title of the document
+    document.title = `Topic | ${this.getAttribute('name')}`;
   }
 
   formatNumber = n => {

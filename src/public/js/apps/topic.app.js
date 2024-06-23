@@ -613,13 +613,10 @@ export default class AppTopic extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <topic-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" username="${this.getAttribute('username')}"
-        stories-url="${this.getAttribute('stories-url')}" contributers-url="${this.getAttribute('contributers-url')}"
-        followers-url="${this.getAttribute('followers-url')}">
+      <topic-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}">
         ${this.getArticle()}
       </topic-section>
     `
-
   }
 
   getStats = () => {

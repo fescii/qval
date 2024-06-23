@@ -160,7 +160,7 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
           sequelize.literal(`(
           SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
           FROM account.connects
-          WHERE connects.to = topic_author.hash
+          WHERE connects.to = users.hash
           AND connects.from = '${currentUser}'
           )`),
           'is_following'

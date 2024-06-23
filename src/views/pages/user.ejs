@@ -2,7 +2,7 @@
 <html lang="en">
 
   <!--  Head/Meta  Start-->
-  <% var title = "Profile for " + data.name %>
+  <% var title = "User | " + data.name %>
   <%# Separate the name into first and last name %> 
   <% var name = data.name.split(" ") %>
 
@@ -10,7 +10,7 @@
   <% var picture = data.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + data.picture %>
 
   <%# Check if bio is null and overwrite it with the default bio %> 
-  <% var bio = author.bio === null ? "This user has not added a bio yet." : author.bio %>
+  <% var bio = data.bio === null ? "This user has not added a bio yet." : data.bio %>
 
   <%- include('../partials/meta', {
     title: title, image: picture, description: bio

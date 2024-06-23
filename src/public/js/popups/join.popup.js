@@ -20,6 +20,12 @@ export default class JoinPopup extends HTMLElement {
     // console.log('We are inside connectedCallback');
     this.disableScroll();
 
+    // Const body element
+    const body = document.querySelector('body');
+
+    // Handle action click
+    this.handleActionClick(body);
+
     // Select the close button & overlay
     const overlay = this.shadowObj.querySelector('.overlay');
     const btn = this.shadowObj.querySelector('#close-btn');
@@ -28,6 +34,51 @@ export default class JoinPopup extends HTMLElement {
     if (overlay && btn) {
       this.closePopup(overlay, btn);
     }
+  }
+
+  // Open user profile
+  handleActionClick = (body) => {
+    const outerThis = this;
+    // get a.meta.link
+    const actions = this.shadowObj.querySelectorAll('.actions > a.action');
+
+    if(body && actions) { 
+      actions.forEach(content => {
+        content.addEventListener('click', event => {
+          event.preventDefault();
+
+          // get join
+          const join = outerThis.getJoin(content.dataset.name);
+
+          // get url
+          const url = content.dataset.name === 'login' ? outerThis.getAttribute('login') : outerThis.getAttribute('register');
+          
+          // replace and push states
+          outerThis.replaceAndPushStates(url, body, join);
+
+          body.innerHTML = join;
+        })
+      })
+    }
+  }
+
+  replaceAndPushStates = (url, body, join) => {
+    //Replace the content with the current url and body content
+    // get window location
+    const pageUrl = window.location.href;
+    window.history.replaceState(
+      { page: 'page', content: body.innerHTML },
+      url, pageUrl
+    );
+
+    // Updating History State
+    window.history.pushState(
+      { page: 'page', content: join},
+      url, url
+    );
+
+    // update title of the document
+    document.title = 'Join | Register or Login to Qval';
   }
 
   disconnectedCallback() {
@@ -90,11 +141,22 @@ export default class JoinPopup extends HTMLElement {
           If you do not have an account, you can create one by clicking the register button below.
         </p>
         <div class="actions">
-          <a href="${this.getAttribute('login')}?next=${this.getAttribute('next')}" class="login">Login</a>
-          <a href="${this.getAttribute('register')}?next=${this.getAttribute('next')}" class="register">Register</a>
+          <a data-name="login" href="${this.getAttribute('login')}?next=${this.getAttribute('next')}" class="login action">Login</a>
+          <a data-name="register" href="${this.getAttribute('register')}?next=${this.getAttribute('next')}" class="register action">Register</a>
         </div>
 			</div>
     `
+  }
+
+  getJoin = action => {
+   return /* html */`
+    <app-logon name="${action}" next="${this.getAttribute('next')}" api-login="/api/v1/a/login" 
+      api-register="/api/v1/a/register" api-check-email="/api/v1/a/check-email" 
+      api-forgot-password="/api/v1/a/forgot-password" api-verify-token="/api/v1/a/verify-token" 
+      api-reset-password="/api/v1/a/reset-password" join-url="/join" login="/join/login" 
+      register="/join/register" forgot="/join/recover">
+    </app-logon>
+   `
   }
 
   getStyles() {

@@ -28,6 +28,9 @@ module.exports = (app) => {
   // Route for handling topic page
   app.get('/t/:topic', checkToken, getTopic);
 
+  // Route for handling topic articles page
+  app.get('/t/:topic/article', checkToken, getTopic);
+
   // Route for handling topic stories page
   app.get('/t/:topic/stories', checkToken, getTopicStories);
 

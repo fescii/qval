@@ -97,6 +97,9 @@ export default class PollPost extends HTMLElement {
       { page: 'page', content: post},
       url, url
     );
+
+    // update title of the document
+    document.title = `Post | ${this.getAttribute('hash')}`;
   }
 
   clickPollContainer = () => {
@@ -954,8 +957,8 @@ export default class PollPost extends HTMLElement {
     return /* html */`
 			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
         picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
       </hover-author>
 		`
   }
