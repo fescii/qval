@@ -38,6 +38,33 @@ const addStorySection = async (story, data) => {
   }
 }
 
+/**
+ * @function adjustSectionOrders
+ * @description Query to adjust the order of sections
+ * @param {String} story - The hash of the story to adjust the sections
+ * @param {Number} start - The start order of the section
+ * @param {Object} transaction - The transaction object
+ * @param {Number} exclude - The id of the section to exclude
+ * @returns {Object} - The sections object or null, and the error if any
+*/
+const adjustSectionOrders = async (story, start, transaction, exclude) => {
+  // update the order of the sections from the start : order = order + 1
+  await TopicSection.update(
+    { order: Sequelize.literal('"order" + 1')},
+    {
+      where: {
+        story: story,
+        order: {
+          [Op.gte]: start
+        },
+        id: {
+          [Op.ne]: exclude
+        }
+      }
+    }, {transaction}
+  );
+}
+
 // Export the module
 module.exports = {
 }
