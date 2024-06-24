@@ -95,7 +95,7 @@ const updateStory = async (req, res, next) => {
   const {
     story,
     error
-  } = await editStory(storyHash, data);
+  } = await editStory(data);
 
   // Passing the error to error middleware
   if (error) {
@@ -127,7 +127,7 @@ const updateStory = async (req, res, next) => {
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
 */
-const updateStoryBody = async (req, res, next) => {
+const checkStoryBySlug = async (req, res, next) => {
   if (!req.body || !req.user) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
@@ -187,20 +187,10 @@ const updateTitle = async (req, res, next) => {
     return next(error)
   }
 
-  // Get validated payload and user data from request object
-  const data = req.body;
-  const userId = req.user.id;
-
-  // Validate story title data
-  const valObj = await validateStoryTitle(data);
-
-  // Check if there is a validation error
-  if (valObj.error) {
-    return res.status(400).send({
-      success: false,
-      message: valObj.error.message
-    });
-  }
+  // add author and story hash to the data
+  const data = req.story;
+  data.author = req.user.hash;
+  data.hash = storyHash;
 
   // Create access data - (For authorizing user)
   const access = {
@@ -225,7 +215,7 @@ const updateTitle = async (req, res, next) => {
   const {
     story,
     error
-  } = await editStoryTitle(storyHash, valObj.data);
+  } = await editTitle(data);
 
   // Passing the error to error middleware
   if (error) {
@@ -251,25 +241,26 @@ const updateTitle = async (req, res, next) => {
 
 
 /**
- * @function updateStorySlug
+ * @function updateSlug
  * @description Controller for updating story slug
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object
 */
-const updateStorySlug = async (req, res, next) => {
+const updateSlug = async (req, res, next) => {
   // Check if the params or payload is available
   const { storyHash } = req.params;
 
-  if (!req.body || !storyHash) {
+  if (!req.story || !storyHash) {
     const error = new Error('Payload data or params data is undefined!');
     return next(error)
   }
 
-  // Get validated payload and user data from request object
-  const data = req.body;
-  const userId = req.user.id;
+  // add author and story hash to the data
+  const data = req.story;
+  data.author = req.user.hash;
+  data.hash = storyHash;
 
   // Validate story slug data
   const valObj = await validateStorySlug(data);
@@ -304,21 +295,12 @@ const updateStorySlug = async (req, res, next) => {
   // Update the story slug
   const {
     story,
-    exists,
     error
-  } = await editStorySlug(storyHash, valObj.data);
+  } = await editSlug(data);
 
   // Passing the error to error middleware
   if (error) {
     return next(error);
-  }
-
-  // Check if story slug already exists
-  if (exists) {
-    return res.status(409).send({
-      success: false,
-      message: "Story with slug already exists or you didn't change the slug at all!"
-    });
   }
 
   // Check if story was not found
@@ -340,86 +322,6 @@ const updateStorySlug = async (req, res, next) => {
 
 
 /**
- * @function updateStoryTopics
- * @description Controller for updating story topics
- * @param {Object} req - Request object
- * @param {Object} res - Response object
- * @param {Function} next - Next middleware function
- * @returns {Object} - Returns response object
-*/
-const updateStoryTopics = async (req, res, next) => {
-  // Check if the params or payload is available
-  const { storyHash } = req.params;
-
-  if (!req.body || !storyHash) {
-    const error = new Error('Payload data or params data is undefined!');
-    return next(error)
-  }
-
-  // Get validated payload and user data from request object
-  const data = req.body;
-  const userId = req.user.id;
-
-  // Validate story topics data
-  const valObj = await validateStoryTopics(data);
-
-  // Check if there is a validation error
-  if (valObj.error) {
-    return res.status(400).send({
-      success: false,
-      message: valObj.error.message
-    });
-  }
-
-  // Create access data - (For authorizing user)
-  const access = {
-    section: storyHash,
-    privilege: Privileges.Update,
-    user: userId,
-    key: 'action'
-  };
-
-  // Check if the user has access to update the story
-  const hasAccess = await checkAuthority(access);
-
-  // If user does not have access return unauthorized
-  if (!hasAccess) {
-    return res.status(401).send({
-      success: false,
-      message: "You are not authorized to update this story!"
-    });
-  }
-
-  // Update the story topics
-  const {
-    story,
-    error
-  } = await editStoryTopics(storyHash, valObj.data);
-
-  // Passing the error to error middleware
-  if (error) {
-    return next(error);
-  }
-
-  // Check if story was not found
-  if (!story) {
-    // Return the 404 response
-    return res.status(404).send({
-      success: false,
-      message: "Story not you are trying to update was not found!"
-    });
-  }
-
-  // Return success response
-  return res.status(200).send({
-    success: true,
-    story: story,
-    message: "Story topics were updated successfully!",
-  });
-}
-
-
-/**
  * @function deleteStory
  * @description Controller for deleting a story
  * @param {Object} req - Request object
@@ -435,9 +337,6 @@ const deleteStory = async (req, res, next) => {
     const error = new Error('Params data or payload is undefined!');
     return next(error)
   }
-
-  // Get user data from request object
-  const userId = req.user.id;
 
   // Create access data - (For authorizing user)
   const access = {
@@ -460,7 +359,7 @@ const deleteStory = async (req, res, next) => {
 
   // Remove the story
   const {
-    story,
+    deleted,
     error
   } = await removeStory(storyHash);
 
@@ -470,7 +369,7 @@ const deleteStory = async (req, res, next) => {
   }
 
   // Check if story was not found
-  if (!story) {
+  if (!deleted) {
     // Return the 404 response
     return res.status(404).send({
       success: false,
@@ -490,7 +389,6 @@ const deleteStory = async (req, res, next) => {
  * Exporting Controllers
 */
 module.exports = {
-  createStory, updateStoryContent,
-  updateStoryTopics, updateStoryBody,
-  updateStoryTitle, updateStorySlug, deleteStory
+  createStory, updateStory, deleteStory,
+  checkStoryBySlug, updateTitle, updateSlug
 }

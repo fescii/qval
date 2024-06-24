@@ -1,9 +1,8 @@
 // Importing all controllers then exporting them as a single object
 const authController = require('./auth');
-const errorController = require('./error.controller');
+const errorController = require('./error');
 const topicController = require('./topics');
-const storyController = require('./story.controller');
-const opinionController = require('./opinion.controller');
+const storyController = require('./stories');
 const userController = require('./users')
 
 /**
@@ -11,6 +10,5 @@ const userController = require('./users')
 */
 module.exports = {
   authController, topicController,
-  errorController, storyController,
-  opinionController, userController
+  errorController, storyController, userController
 };
