@@ -24,6 +24,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
         ]
       ],
       where: {
+        published: true,
         [Op.or]: [{ slug: query }, { hash: query.toUpperCase() }]
       },
       include: [
@@ -83,6 +84,7 @@ const findStoryWhenLoggedOut = async query => {
     const story = await Story.findOne({
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes'],
       where: {
+        published: true,
         [Op.or]: [{ slug: query }, { hash: query.toUpperCase() }]
       },
       include: [

@@ -30,7 +30,7 @@ const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
     }
 
     // Find the stories
-    const where = { author };
+    const where = { author, published: true};
     const order = [['createdAt', 'DESC']];
 
     // initialize the stories to be null

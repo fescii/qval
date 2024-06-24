@@ -6,8 +6,13 @@ const {
 const {
   addStory, checkIfStoryExists, findStory,
   updateStory, findStoryBySlugOrHash, findStoriesByQuery,
-  findStoriesByTopic, findRelatedStories, removeStory
+   removeStory
 } = require('./base');
+
+const {
+  findStoriesByTopic,
+  findRelatedStories
+} = require('./topic');
 
 
 // Export all queries as a single object

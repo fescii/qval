@@ -45,6 +45,11 @@ const validateStory = async data => {
       topics = slugifyArray(data.topics);
     }
 
+    // check if published is present and is a boolean: if not set it
+    if (!data.published || typeof data.published !== 'boolean') {
+      data.published = false;
+    }
+
     // Validate when story type is: story
     if (data.kind === 'story') {
       if (!data.title || !data.slug || typeof data.title !== 'string' || typeof data.slug !== 'string') {
@@ -56,6 +61,7 @@ const validateStory = async data => {
 
       const validatedData = {
         kind: data.kind,
+        published: data.published,
         content: await sanitizeInput(data.content),
         title: data.title,
         slug: slugify(data.slug),
@@ -83,6 +89,7 @@ const validateStory = async data => {
 
       const validatedData = {
         kind: data.kind,
+        published: data.published,
         content: await sanitizeInput(data.content),
         poll: data.poll,
         votes: votes,
@@ -99,6 +106,7 @@ const validateStory = async data => {
     if (data.kind === 'post') {
       const validatedData = {
         kind: data.kind,
+        published: data.published,
         content: await sanitizeInput(data.content),
         topics: topics,
       }
