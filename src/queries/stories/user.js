@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { sequelize, Sequelize, Story, Reply, User } = require('../../models').models;
+const { Sequelize, Story, Reply, User } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
