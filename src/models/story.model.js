@@ -123,6 +123,59 @@ module.exports = (User, sequelize, Sequelize) => {
     })
   }
 
+
+  /**
+   * @type {Model}
+   * @name StorySection
+   * @description - This model contains all the story section info
+   * @property {Number} id - Unique identifier for the story section
+   * @property {String} kind - The kind of story section (section, chapter, part, episode)
+   * @property {Number} order - The order of the story section
+   * @property {String} story - The story hash the section belongs to
+   * @property {String} title - The title of the story section || can be null
+   * @property {String} content - The content of the story section
+  */
+  const StorySection = sequelize.define("story_sections", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    kind: {
+      type: Sequelize.ENUM('section', 'chapter', 'part', 'episode'),
+      defaultValue: 'section',
+      allowNull: false
+    },
+    order: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    story: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    title: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    content: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+  },{
+    schema: 'story',
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['kind', 'story', 'title']
+      }
+    ]
+  });
+
   /**
    * @type {Model}
    * @name Reply
@@ -393,6 +446,10 @@ module.exports = (User, sequelize, Sequelize) => {
   User.hasMany(Story, { foreignKey: 'author', sourceKey: 'hash', as : 'authored_stories', onDelete: 'CASCADE' });
   Story.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'story_author', onDelete: 'CASCADE' });
 
+  // Story <--> StorySection
+  Story.hasMany(StorySection, { foreignKey: 'story', sourceKey: 'hash', as: 'story_sections', onDelete: 'CASCADE' });
+  StorySection.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'section_story', onDelete: 'CASCADE' });
+
   // User <--> Reply association
   User.hasMany(Reply, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_replies', onDelete: 'CASCADE' });
   Reply.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'reply_author', onDelete: 'CASCADE' });
@@ -428,5 +485,5 @@ module.exports = (User, sequelize, Sequelize) => {
   Reply.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_views', onDelete: 'CASCADE' });
   // View.belongsTo(Reply, { foreignKey: 'target', as: 'viewed_reply', onDelete: 'CASCADE' });
 
-  return { Story, Reply, Like, View }
+  return { Story, Reply, Like, View, StorySection }
 }
