@@ -80,10 +80,10 @@ const likeReply = async (user, reply) => {
  * @param {String} target - The hash of the content being viewed
  * @returns {Object} - The view object or null, and the error if any
 */
-const viewContent = async (user, target) => {
+const viewContent = async (user, target, kind) => {
   try {
     // create a view object
-    const view = await View.create({author: user, target});
+    const view = await View.create({author: user, target, kind});
 
     // return the view object
     return { viewed: view, error: null };

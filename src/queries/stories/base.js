@@ -348,14 +348,14 @@ const findStoriesByQuery = async query => {
 
     // if no stories found
     if (stories.length < 1) {
-      return {stories: null, error: null}
+      return { stories: null, error: null }
     }
 
     // If stories exist, return the stories
-    return { stories: stories, error: null}
+    return { stories: stories, error: null }
   }
   catch (error) {
-    return { stories: null, error: error}
+    return { stories: null, error: error }
   }
 }
 

@@ -3,7 +3,7 @@ const { checkAuthority } = require('../../utils').roleUtil;
 const { Privileges } = require('../../configs').platformConfig;
 const {
   addStory, editStory, removeStory, checkIfStoryExists,
-  editTitle, editSlug
+  editTitle, editSlug, findStoriesByQuery
 } = require('../../queries').storyQueries;
 const {
   validateSlug
@@ -58,9 +58,9 @@ const createStory = async (req, res, next) => {
 */
 const updateStory = async (req, res, next) => {
   // Check if the params or payload is available
-  const { storyHash } = req.params;
+  const { hash } = req.params;
 
-  if (!req.story || !storyHash) {
+  if (!req.story || !hash) {
     const error = new Error('Payload data or params data is undefined!');
     return next(error)
   }
@@ -70,11 +70,11 @@ const updateStory = async (req, res, next) => {
 
   // add author and story hash to the data
   data.author = req.user.hash;
-  data.hash = storyHash;
+  data.hash = hash.toUpperCase();
 
   // Create access data - (For authorizing user)
   const access = {
-    section: storyHash,
+    section: hash.toUpperCase(),
     privilege: Privileges.Update,
     user: userId,
     key: 'action'
@@ -180,9 +180,9 @@ const checkStoryBySlug = async (req, res, next) => {
  */
 const updateTitle = async (req, res, next) => {
   // Check if the params or payload is available
-  const { storyHash } = req.params;
+  const { hash } = req.params;
 
-  if (!req.story || !storyHash) {
+  if (!req.story || !hash) {
     const error = new Error('Payload data or params data is undefined!');
     return next(error)
   }
@@ -190,11 +190,11 @@ const updateTitle = async (req, res, next) => {
   // add author and story hash to the data
   const data = req.story;
   data.author = req.user.hash;
-  data.hash = storyHash;
+  data.hash = hash.toUpperCase();
 
   // Create access data - (For authorizing user)
   const access = {
-    section: storyHash,
+    section: hash.toUpperCase(),
     privilege: Privileges.Update,
     user: userId,
     key: 'action'
@@ -250,9 +250,9 @@ const updateTitle = async (req, res, next) => {
 */
 const updateSlug = async (req, res, next) => {
   // Check if the params or payload is available
-  const { storyHash } = req.params;
+  const { hash } = req.params;
 
-  if (!req.story || !storyHash) {
+  if (!req.story || !hash) {
     const error = new Error('Payload data or params data is undefined!');
     return next(error)
   }
@@ -260,7 +260,7 @@ const updateSlug = async (req, res, next) => {
   // add author and story hash to the data
   const data = req.story;
   data.author = req.user.hash;
-  data.hash = storyHash;
+  data.hash = hash.toUpperCase();
 
   // Validate story slug data
   const valObj = await validateStorySlug(data);
@@ -275,7 +275,7 @@ const updateSlug = async (req, res, next) => {
 
   // Create access data - (For authorizing user)
   const access = {
-    section: storyHash,
+    section: hash.toUpperCase(),
     privilege: Privileges.Update,
     user: userId,
     key: 'action'
@@ -320,6 +320,51 @@ const updateSlug = async (req, res, next) => {
   });
 }
 
+/**
+ * @function findStories
+ * @description Controller for finding stories by query
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+*/
+const findStories = async (req, res, next) => {
+  // Check if the query is available
+  const { q } = req.query;
+
+  if (!q) {
+    const error = new Error('Query data is undefined!');
+    return next(error)
+  }
+
+  // Find stories by query
+  const {
+    stories,
+    error
+  } = await findStoriesByQuery(q);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // Check if stories were not found
+  if (!stories) {
+    // Return the 404 response
+    return res.status(404).send({
+      success: false,
+      message: "No story match your query!"
+    });
+  }
+
+  // Return the response
+  return res.status(200).send({
+    success: true,
+    stories: stories,
+    message: "Stories found successfully!",
+  });
+}
+
 
 /**
  * @function deleteStory
@@ -331,16 +376,16 @@ const updateSlug = async (req, res, next) => {
 */
 const deleteStory = async (req, res, next) => {
   // Check if the params is available
-  const { storyHash } = req.params;
+  const { hash } = req.params;
 
-  if (!req.user || !storyHash) {
+  if (!req.user || !hash) {
     const error = new Error('Params data or payload is undefined!');
     return next(error)
   }
 
   // Create access data - (For authorizing user)
   const access = {
-    section: storyHash,
+    section: hash.toUpperCase(),
     privilege: Privileges.Delete,
     user: userId,
     key: 'action'
@@ -361,7 +406,7 @@ const deleteStory = async (req, res, next) => {
   const {
     deleted,
     error
-  } = await removeStory(storyHash);
+  } = await removeStory(hash.toUpperCase());
 
   // Passing the error to error middleware
   if (error) {
@@ -373,7 +418,7 @@ const deleteStory = async (req, res, next) => {
     // Return the 404 response
     return res.status(404).send({
       success: false,
-      message: "Story not you are trying to delete was not found!"
+      message: "Story you are trying to delete was not found!"
     });
   }
 
@@ -390,5 +435,6 @@ const deleteStory = async (req, res, next) => {
 */
 module.exports = {
   createStory, updateStory, deleteStory,
-  checkStoryBySlug, updateTitle, updateSlug
+  checkStoryBySlug, updateTitle, updateSlug,
+  findStories
 }
