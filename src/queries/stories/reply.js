@@ -136,3 +136,10 @@ const removeReply = async (user, hash) => {
     return {deleted: null, error: error}
   }
 }
+
+// Export all functions
+module.exports = {
+  addReply,
+  editReply,
+  removeReply
+}

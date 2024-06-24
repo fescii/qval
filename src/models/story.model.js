@@ -544,6 +544,14 @@ module.exports = (User, sequelize, Sequelize) => {
   Story.hasMany(StorySection, { foreignKey: 'story', sourceKey: 'hash', as: 'story_sections', onDelete: 'CASCADE' });
   StorySection.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'section_story', onDelete: 'CASCADE' });
 
+  // Story <--> Vote
+  Story.hasMany(Vote, { foreignKey: 'story', sourceKey: 'hash', as: 'story_votes', onDelete: 'CASCADE' });
+  Vote.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'voted_story', onDelete: 'CASCADE' });
+
+  // User <--> Vote
+  User.hasMany(Vote, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_votes', onDelete: 'CASCADE' });
+  Vote.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'vote_author', onDelete: 'CASCADE' });
+
   // User <--> Reply association
   User.hasMany(Reply, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_replies', onDelete: 'CASCADE' });
   Reply.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'reply_author', onDelete: 'CASCADE' });

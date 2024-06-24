@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { sequelize, Sequelize, Story, Reply, User } = require('../../models').models;
+const { sequelize, Sequelize, Story, Reply, User, Vote } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
@@ -39,6 +39,14 @@ const findStoryWhenLoggedIn = async (query, user) => {
               'is_following'
             ]
           ],
+        },
+        // If story kind is poll, include user vote: if and only if the kind is poll
+        {
+          model: Vote,
+          as: 'story_votes',
+          attributes: ['option'],
+          where: { author: user, story: sequelize.col('stories.hash')},
+          required: false
         }
       ]
     });
@@ -117,7 +125,6 @@ const findStoryWhenLoggedOut = async query => {
     return { story: null, error: error };
   }
 };
-
 
 /**
  * @function findReplyWhenLoggedIn

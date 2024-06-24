@@ -18,12 +18,24 @@ const {
   addStorySection, editStorySection, removeStorySection
 } = require('./section');
 
+const {
+  addVote
+} = require('./vote');
+
+const {
+  likeReply, likeStory, viewContent
+} = require('./action');
+
+const {
+  addReply, editReply, removeReply
+} = require('./reply');
 
 // Export all queries as a single object
 module.exports = {
   findStoriesByAuthor, findRepliesByAuthor,
-  addStory, checkIfStoryExists, findStory,
+  addStory, checkIfStoryExists, findStory, addVote,
   editStory, findStoryBySlugOrHash, findStoriesByQuery,
   findStoriesByTopic, findRelatedStories, removeStory,
-  addStorySection, editStorySection, removeStorySection
+  addStorySection, editStorySection, removeStorySection,
+  likeReply, likeStory, viewContent, addReply, editReply, removeReply
 };

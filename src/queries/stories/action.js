@@ -1,5 +1,5 @@
 // import models
-const {Like} = require('../../models').models;
+const {Like, View} = require('../../models').models;
 
 /**
  * @function likeStory
@@ -73,6 +73,25 @@ const likeReply = async (user, reply) => {
   }
 }
 
+/**
+ * @function viewContent
+ * @description Query to add a view to a story or reply or a topic, or user profile
+ * @param {String} user - The hash of the user viewing the content || can be null
+ * @param {String} target - The hash of the content being viewed
+ * @returns {Object} - The view object or null, and the error if any
+*/
+const viewContent = async (user, target) => {
+  try {
+    // create a view object
+    const view = await View.create({author: user, target});
+
+    // return the view object
+    return { viewed: view, error: null };
+  }
+  catch (error) {
+    return { viewed: null, error };
+  }
+}
 module.exports = {
-  likeStory, likeReply
+  likeStory, likeReply, viewContent
 }
