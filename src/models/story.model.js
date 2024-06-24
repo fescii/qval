@@ -22,6 +22,8 @@ module.exports = (User, sequelize, Sequelize) => {
    * @property {String} hash - The hash of the story/ usually a unique identifier generated from hash algorithms(sha256)
    * @property {String} title - The title of the story
    * @property {String} slug - The slug of the story, a unique identifier for the story
+   * @property {Array} poll - The poll options of the story. an array of strings
+   * @property {Array} votes - The votes of the poll per option. an array of integers
    * @property {String} content - The content of the story
    * @property {String} body - The body of the story
    * @property {Array} topics - The topics of the story. an array of strings
@@ -60,6 +62,14 @@ module.exports = (User, sequelize, Sequelize) => {
     slug: {
       type: Sequelize.STRING,
       unique: true,
+      allowNull: true
+    },
+    poll: {
+      type: Sequelize.ARRAY(Sequelize.STRING),
+      allowNull: true
+    },
+    votes: {
+      type: Sequelize.ARRAY(Sequelize.INTEGER),
       allowNull: true
     },
     topics: {
@@ -175,6 +185,65 @@ module.exports = (User, sequelize, Sequelize) => {
       }
     ]
   });
+
+  /**
+   * @type {Model}
+   * @name Votes
+   * @description - This model contains all the poll info for a story
+   * @property {Number} id - Unique identifier for the poll
+   * @property {String} story - The story hash the poll belongs to
+   * @property {String} author - The author of the poll
+   * @property {INTEGER} option - The option of the poll
+  */
+  const Vote = sequelize.define("votes", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    story: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    author: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    option: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+  },{
+    schema: 'story',
+    freezeTableName: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['id']
+      },
+      {
+        fields: ['story', 'author', 'option']
+      }
+    ]
+  });
+
+
+  // addd afterCreate hook to increment the votes count of the story
+  Vote.afterCreate(async vote => {
+    // construct the job payload: for queueing
+    const payload = {
+      kind: 'story',
+      hashes: {
+        target: vote.story,
+      },
+      action: 'vote',
+      value: vote.option,
+    };
+
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
+
 
   /**
    * @type {Model}
@@ -485,5 +554,5 @@ module.exports = (User, sequelize, Sequelize) => {
   Reply.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_views', onDelete: 'CASCADE' });
   // View.belongsTo(Reply, { foreignKey: 'target', as: 'viewed_reply', onDelete: 'CASCADE' });
 
-  return { Story, Reply, Like, View, StorySection }
+  return { Story, Reply, Like, View, StorySection, Vote }
 }

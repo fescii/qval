@@ -1,7 +1,7 @@
 // hook fns: functions to udate hooks data in the database
 const {
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
-  updateUserFollowers, updateUserFollowing,
+  updateUserFollowers, updateUserFollowing, updateStoryVotes,
   updateStoryViews, updateStoryLikes, updateStoryReplies,
   updateReplyViews, updateReplyReplies, updateReplyLikes,
 } = require('./fns.hook');
@@ -124,6 +124,10 @@ const storyUpdator = async (action, storyHash, value) => {
   else if (action === 'reply') {
     // Update the story replies
     await updateStoryReplies(storyHash, value);
+  }
+  else if (action === 'vote') {
+    // Update the story votes
+    await updateStoryVotes(storyHash, value);
   }
 }
 

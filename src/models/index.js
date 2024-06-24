@@ -68,7 +68,7 @@ const {
 
 // Importing story schema models
 const {
-  Story, Reply, View, Like, StorySection
+  Story, Reply, View, Like, StorySection, Vote
 } = require('./story.model')(User, sequelize, Sequelize);
 
 // Importing topic schema models
@@ -81,7 +81,7 @@ const {
 Object.assign(models, {
   User, Code, Connect, 
   System, Section, Approval, Role, Log,
-  Story, Reply, View, Like, StorySection,
+  Story, Reply, View, Like, StorySection, Vote,
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
 });
 

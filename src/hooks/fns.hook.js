@@ -218,6 +218,28 @@ const updateStoryReplies = async (storyHash, value) => {
 }
 
 /**
+ * @function updateStoryVotes
+ * @name updateStoryVotes
+ * @description A function that updates the story votes data: check on votes array in the story model and increment the array of option(index) by 1
+ * @param {String} storyHash - The hash of the story
+ * @param {Number} option - The index of the option to increment
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateStoryVotes = async (storyHash, option) => {
+  if (!storyHash || !option || typeof option !== 'number') {
+    // throw an error
+    throw new Error('Story hash and option are required!, option must be a number');
+  }
+
+  // Update the story votes by the option: consider postgres index array increment
+  await Story.update(
+    // { votes: Sequelize.literal(`votes[${option}] + 1`)}, 
+    { votes: sequelize.literal(`array_replace(votes, votes[${option}], votes[${option}] + 1`)},
+    { where: { hash: storyHash } 
+  });
+}
+
+/**
  * @function updateReplyLikes
  * @name updateReplyLikes
  * @description A function that updates the reply likes data
@@ -303,6 +325,6 @@ const updateReplyReplies = async (replyHash, value) => {
 module.exports = {
   updateUserFollowers, updateUserFollowing,
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
-  updateStoryLikes, updateStoryViews, updateStoryReplies,
+  updateStoryLikes, updateStoryViews, updateStoryReplies, updateStoryVotes,
   updateReplyLikes, updateReplyViews, updateReplyReplies
 };
