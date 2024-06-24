@@ -102,6 +102,7 @@ const validateStory = async data => {
       };
     }
 
+
     // Validate when story type is: post
     if (data.kind === 'post') {
       const validatedData = {
@@ -162,7 +163,74 @@ const validateContent = async data => {
   }
 }
 
+/**
+ * @function validateSlug
+ * @description a validator function that validates story slug before being passed to the controllers or middlewares
+ * @param {Object} data - The story data object
+ * @returns {String} slug - The validated story slug and error if any
+*/
+const validateSlug = async data => {
+  try {
+    // Check if the slug is present
+    if (!data.slug || typeof data.slug !== 'string') {
+      return {
+        slug: null,
+        error: new Error('Slug is required and should be a string')
+      };
+    }
+
+    // Validate the slug
+    const validatedSlug = slugify(data.slug);
+
+    // Return the validated slug
+    return {
+      data: {
+        slug: await sanitizeInput(validatedSlug)
+      },
+      error: null
+    };
+
+  } catch (error) {
+    return {
+      slug: null,
+      error: new Error('An error occurred while validating the story slug')
+    };
+  }
+}
+
+/**
+ * @validate validateTitle
+ * @description a function that validates the story title
+ * @param {Object} data - The story title
+ * @returns {Object} data - The validated story title and error if any
+*/
+const validateTitle = async data => {
+  try {
+    // Check if the title is present
+    if (!data.title || typeof data.title !== 'string') {
+      return {
+        title: null,
+        error: new Error('Title is required and should be a string')
+      };
+    }
+
+    // Return the validated title
+    return {
+      data: {
+        title: await sanitizeInput(data.title)
+      },
+      error: null
+    };
+
+  } catch (error) {
+    return {
+      title: null,
+      error: new Error('An error occurred while validating the story title')
+    };
+  }
+}
+
 module.exports = {
-  validateStory,
-  validateContent
+  validateStory, validateTitle,
+  validateContent, validateSlug
 }

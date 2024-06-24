@@ -1,7 +1,7 @@
 // Import all validators and export them as an object
 const {
-  validateStory,
-  validateContent
+  validateStory, validateTitle,
+  validateContent, validateSlug
 } = require('./base');
 
 const {
@@ -15,7 +15,7 @@ const {
 
 // Export all validators as a single object
 module.exports = {
-  validateStory, validateContent,
+  validateStory, validateContent, validateSlug,
   validateSection, validateSectionContent,
-  validateReply, validateReplyContent
+  validateReply, validateReplyContent, validateTitle
 };

@@ -194,7 +194,7 @@ const editStory = async data => {
   const t = await sequelize.transaction();
   try {
     // Find the story
-    const story = await Story.findOne({ where: { hash: data.hash } });
+    const story = await Story.findOne({ where: { hash: data.hash, author: data.author}});
 
     // Check if the story exists
     if (!story) {
@@ -211,6 +211,88 @@ const editStory = async data => {
     return { 
       story: {
         content: story.content
+      },
+      error: null
+    }
+  }
+  catch (error) {
+    // Rollback the transaction
+    await t.rollback();
+
+    // return the error
+    return { story: null, error };
+  }
+}
+
+/**
+ * @function editTitle
+ * @description a function that updates a story title in the database
+ * @param {Object} data - The story data object
+ * @returns {Object} data - The updated story object and error if any
+*/
+const editTitle = async data => {
+  // start a transaction
+  const t = await sequelize.transaction();
+  try {
+    // Find the story
+    const story = await Story.findOne({ where: { hash: data.hash, author: data.author}});
+
+    // Check if the story exists
+    if (!story) {
+      return { story: null, error: null };
+    }
+
+    // Update the story with the new data: title
+    await story.update({title: data.title}, { transaction: t });
+
+    // Commit the transaction
+    await t.commit();
+
+    // return only the updated fields
+    return { 
+      story: {
+        title: story.title
+      },
+      error: null
+    }
+  }
+  catch (error) {
+    // Rollback the transaction
+    await t.rollback();
+
+    // return the error
+    return { story: null, error };
+  }
+}
+
+/**
+ * @function editSlug
+ * @description a function that updates a story slug in the database
+ * @param {Object} data - The story data object
+ * @returns {Object} data - The updated story object and error if any
+*/
+const editSlug = async data => {
+  // start a transaction
+  const t = await sequelize.transaction();
+  try {
+    // Find the story
+    const story = await Story.findOne({ where: { hash: data.hash, author: data.author}});
+
+    // Check if the story exists
+    if (!story) {
+      return { story: null, error: null };
+    }
+
+    // Update the story with the new data: slug
+    await story.update({slug: data.slug}, { transaction: t });
+
+    // Commit the transaction
+    await t.commit();
+
+    // return only the updated fields
+    return { 
+      story: {
+        slug: story.slug
       },
       error: null
     }
@@ -304,7 +386,7 @@ const removeStory = async hash => {
 // Export the module
 module.exports = {
   addStory, checkIfStoryExists,
-  findStory, editStory,
-  findStoryBySlugOrHash,
+  findStory, editStory, editSlug,
+  findStoryBySlugOrHash, editTitle,
   removeStory, findStoriesByQuery
 };

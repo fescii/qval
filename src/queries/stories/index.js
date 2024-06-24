@@ -6,7 +6,7 @@ const {
 const {
   addStory, checkIfStoryExists, findStory,
   editStory, findStoryBySlugOrHash, findStoriesByQuery,
-  removeStory
+  removeStory, editSlug, editTitle
 } = require('./base');
 
 const {
@@ -32,7 +32,7 @@ const {
 
 // Export all queries as a single object
 module.exports = {
-  findStoriesByAuthor, findRepliesByAuthor,
+  findStoriesByAuthor, findRepliesByAuthor, editTitle, editSlug,
   addStory, checkIfStoryExists, findStory, addVote,
   editStory, findStoryBySlugOrHash, findStoriesByQuery,
   findStoriesByTopic, findRelatedStories, removeStory,
