@@ -8,16 +8,12 @@ const Op = Sequelize.Op;
 /**
  * @function addStorySection
  * @description Query to add a new section to a story
- * @param {String} story - The hash of the story to add the section to
  * @param {Object} data - The data of the story
- * @returns {Object} - The story object or null, and the error if any
+ * @returns {Object} - The story section or error
 */
-const addStorySection = async (story, data) => {
+const addStorySection = async data => {
   // initialize transaction
   const transaction = await sequelize.transaction();
-
-  // add story to data
-  data.story = story;
 
   try {
     // Trying to create a story to the database
@@ -41,17 +37,16 @@ const addStorySection = async (story, data) => {
 /**
  * @function editStorySection
  * @description Query to update a section of a story
- * @param {String} story - The hash of the story to update the section
  * @param {Object} data - The data of the section
  * @returns {Object} - The section object or null, and the error if any
 */
-const editStorySection = async (story, data) => {
+const editStorySection = async data => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
   try {
     // Find the section
-    const section = await StorySection.findOne({ where: { story, id: data.id } }, {transaction});
+    const section = await StorySection.findOne({ where: { story: data.story, id: data.id } }, {transaction});
 
     // Check if the section exists
     if (!section) {
@@ -114,10 +109,10 @@ const adjustSectionOrders = async (story, start, transaction, exclude) => {
  * @param {Number} id - The id of the section to remove
  * @returns {Object} - The section object or null, and the error if any
 */
-const removeStorySection = async (story, id) => {
+const removeStorySection = async data => {
   try {
     // destroy the section
-    const result = await StorySection.destroy({ where: { story, id } });
+    const result = await StorySection.destroy({ where: { story: data.story, id: data.id } });
 
     // check if the section was deleted
     if (result === 1) {

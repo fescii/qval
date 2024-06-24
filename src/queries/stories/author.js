@@ -12,20 +12,15 @@ const {
 /**
  * @function findStoriesByAuthor
  * @description a function that finds stories by author in the database: 10 at a time orderd by the date created
- * @param {String} author - The author hash
- * @param {String} user - The user hash: the current user
- * @param {Number} totalStories - The total number of stories the user has published
- * @param {Number} limit - The limit for pagination: default 10
- * @param {Number} page - The current page number
+ * @param {Object} reqData - The request data object
  * @returns {Object} data - The stories object and error if any
- * @returns {Array} data.stories - The stories array
- * @returns {Number} data.limit - The limit for pagination
- * @returns {Number} data.offset - The offset for pagination
- * @returns {Number} data.pages - The total number of pages
- * @returns {Number} data.page - The current page
 */
-const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
+const findStoriesByAuthor = async (reqData) => {
   try {
+    const {
+      author, user, totalStories, page, limit
+    } = reqData;
+
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 
@@ -78,7 +73,7 @@ const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
 
     // Check if the stories exist
     if (stories === null) {
-      return { stories: null, error: null };
+      return { data: null, error: null };
     }
 
     // calculate the total number of pages
@@ -107,21 +102,15 @@ const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
 /**
  * @function findRepliesByAuthor
  * @description a function that finds replies by author in the database: 10 at a time orderd by the date created
- * @param {String} author - The author hash
- * @param {String} user - The user hash: the current user
- * @param {Number} totalReplies - The total number of replies the user has published
- * @param {Number} limit - The limit for pagination: default 10
- * @param {Number} page - The current page number
+ * @param {Object} reqData - The request data object
  * @returns {Object} data - The replies object and error if any
- * @returns {Array} data.replies - The replies array
- * @returns {Number} data.limit - The limit for pagination
- * @returns {Number} data.offset - The offset for pagination
- * @returns {Number} data.pages - The total number of pages
- * @returns {Number} data.page - The current page
- * @returns {Boolean} data.last - The last page
 */
-const findRepliesByAuthor = async (author, user, totalReplies, limit=10) => {
+const findRepliesByAuthor = async (reqData) => {
   try {
+    const {
+      author, user, totalReplies, page, limit
+    } = reqData;
+
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 
@@ -174,7 +163,7 @@ const findRepliesByAuthor = async (author, user, totalReplies, limit=10) => {
 
     // Check if the replies exist
     if (replies === null) {
-      return { replies: null, error: null };
+      return { data: null, error: null };
     }
 
     // calculate the total number of pages

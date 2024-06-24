@@ -11,15 +11,15 @@ const {
 /**
  * @function findStoriesByTopic
  * @description a function that finds stories by topic in the database: 10 at a time orderd by the date created
- * @param {String} topic - The topic slug
- * @param {String} user - The user hash: the current user
- * @param {Number} totalStories - The total number of stories the user has published
- * @param {Number} limit - The limit for pagination: default 10
- * @param {Number} page - The current page number
+ * @param {Object} reqData - The request data object
  * @returns {Object} data - The stories object and error if any
 */
-const findStoriesByTopic = async (topic, user, totalStories, limit=10) => {
+const findStoriesByTopic = async (reqData) => {
   try {
+
+    // dEstructure the request data
+    const { topic, user, totalStories, page, limit } = reqData;
+
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 
@@ -93,15 +93,14 @@ const findStoriesByTopic = async (topic, user, totalStories, limit=10) => {
 /**
  * @function findRelatedStories
  * @description a function that finds stories by topic in the database: 10 at a time orderd by the date created
- * @param {Array} topics - The topic slugs
- * @param {String} user - The user hash: the current user
- * @param {Number} totalStories - The total number of stories the user has published
- * @param {Number} limit - The limit for pagination: default 10
- * @param {Number} page - The current page number
+ * @param {Object} reqData - The request data object
  * @returns {Object} data - The stories object and error if any
 */
-const findRelatedStories = async (topics, user, totalStories, limit=10) => {
+const findRelatedStories = async (reqData) => {
   try {
+    // Destructure the request data
+    const { topics, user, totalStories, page, limit } = reqData;
+
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 

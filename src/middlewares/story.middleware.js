@@ -286,6 +286,6 @@ const checkSectionContent = async(req, res, next) => {
  * Exporting the middlewares as a single object
 */
 module.exports = {
-  checkDuplicateStory, checkContent, checkReply, checkSection, 
+  checkStory, checkContent, checkReply, checkSection, 
   checkReplyContent, checkSectionContent, checkSlug, checkTitle
 };
