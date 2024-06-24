@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { sequelize, Sequelize, Story, User } = require('../../models').models;
+const { sequelize, Sequelize, Story, Reply, User } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
@@ -121,6 +121,117 @@ const findStoryWhenLoggedOut = async query => {
   }
 };
 
+
+/**
+ * @function findReplyWhenLoggedIn
+ * @description a function that queries replies when user is logged in
+ * @param {String} hash - The hash of the reply
+ * @param {String} user - The hash of the user
+ * @returns {Object} data - The reply object and error if any
+*/
+const findReplyWhenLoggedIn = async (hash, user) => {
+  try {
+    // Find the reply
+    const reply = await Reply.findOne({
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+        // Check if the user has liked the reply
+        [
+          Sequelize.fn('EXISTS', Sequelize.literal(`(
+            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
+          )`)),
+          'liked'
+        ]
+      ],
+      where: { hash },
+      include: [
+        {
+          model: User,
+          as: 'reply_author',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+            [
+              Sequelize.fn('EXISTS', Sequelize.literal(`( 
+                SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}'
+              )`)),
+              'is_following'
+            ]
+          ],
+        }
+      ],
+    });
+
+    // Check if the reply exists
+    if (!reply) {
+      return { reply: null, error: null };
+    }
+
+    // return the reply
+    const data = reply.dataValues;
+
+    // add you you to the reply
+    data.you = user === data.author;
+
+    // add authenicated to the reply
+    data.authenticated = true;
+
+    // return the reply
+    return { 
+      reply: data,
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { reply: null, error };
+  }
+}
+
+/**
+ * @function findReplyWhenLoggedOut
+ * @description a function that queries replies when user is logged out
+ * @param {String} hash - The hash of the reply
+ * @returns {Object} data - The reply object and error if any
+*/
+const findReplyWhenLoggedOut = async hash => {
+  try {
+    // Find the reply
+    const reply = await Reply.findOne({
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
+      where: { hash },
+      include: [
+        {
+          model: User,
+          as: 'reply_author',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified'],
+        }
+      ],
+    });
+
+    // Check if the reply exists
+    if (!reply) {
+      return { reply: null, error: null };
+    }
+
+    // return the reply
+    const data = reply.dataValues;
+
+    // add you you to the reply
+    data.you = false;
+
+    // add authenicated to the reply
+    data.authenticated = false;
+
+    // return the reply
+    return { 
+      reply: data,
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { reply: null, error };
+  }
+}
+
 /**
  * @function getStoriesWhenLoggedIn
  * @description a function that queries stories when user is logged in
@@ -224,8 +335,111 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
   }
 }
 
+/**
+ * @function getRepliesWhenLoggedIn
+ * @description a function that queries replies when user is logged in
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The replies object and error if any
+*/
+const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
+  try {
+    // Find the replies
+    const replies = await Reply.findAll({
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+        // Check if the user has liked the reply
+        [
+          Sequelize.fn('EXISTS', Sequelize.literal(`(
+            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
+          )`)),
+          'liked'
+        ]
+      ],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          as: 'reply_author',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+            [
+              Sequelize.fn('EXISTS', Sequelize.literal(`( 
+                SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}'
+              )`)),
+              'is_following'
+            ]
+          ],
+        }
+      ],
+    });
+
+    // Check if the replies exist
+    if (!replies) {
+      return { replies: null, error: null };
+    }
+
+    // return the replies
+    return { 
+      replies: replies.map(reply => reply.dataValues),
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { replies: null, error };
+  }
+}
+
+/**
+ * @function getRepliesWhenLoggedOut
+ * @description a function that queries replies when user is logged out
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The replies object and error if any
+*/
+const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
+  try {
+    // Find the replies
+    const replies = await Reply.findAll({
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          as: 'reply_author',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified'],
+        }
+      ],
+    });
+
+    // Check if the replies exist
+    if (!replies) {
+      return { replies: null, error: null };
+    }
+
+    // return the replies
+    return { 
+      replies: replies.map(reply => reply.dataValues),
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { replies: null, error };
+  }
+}
 
 // Export the module
 module.exports = {
-  findStoryWhenLoggedIn, findStoryWhenLoggedOut, getStoriesWhenLoggedIn, getStoriesWhenLoggedOut
+  findStoryWhenLoggedIn, findStoryWhenLoggedOut, getStoriesWhenLoggedIn, getStoriesWhenLoggedOut,
+  findReplyWhenLoggedIn, findReplyWhenLoggedOut, getRepliesWhenLoggedIn, getRepliesWhenLoggedOut
 };

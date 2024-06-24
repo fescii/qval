@@ -1,6 +1,6 @@
 module.exports = {
   user: 'U',
   story: 'P',
-  opinion: 'N',
+  reply: 'N',
   topic: 'T'
 };

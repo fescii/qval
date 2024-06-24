@@ -297,7 +297,7 @@ const removeStory = async hash => {
     }
   }
   catch (error) {
-    return { deleted: false, error };
+    return { deleted: null, error };
   }
 }
 
