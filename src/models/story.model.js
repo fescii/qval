@@ -139,6 +139,25 @@ module.exports = (User, sequelize, Sequelize) => {
     })
   }
 
+  // add afterCreate hook to tagg topics
+  Story.afterCreate(async story => {
+    // Check if topic array is not empty
+    if (story.topics.length === 0) return;
+
+    // construct the job payload: for queueing
+    const payload = {
+      kind: 'tag',
+      hashes: {
+        target: story.hash,
+      },
+      action: 'topic',
+      value: story.topics,
+    };
+
+    // add the job to the queue
+    await actionQueue.add('actionJob', payload);
+  });
+
 
   /**
    * @type {Model}

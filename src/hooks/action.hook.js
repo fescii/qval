@@ -6,6 +6,9 @@ const {
   updateReplyViews, updateReplyReplies, updateReplyLikes,
 } = require('./fns.hook');
 
+// import update tags query 
+const { tagStory } = require('../queries').topicQueries;
+
 /**
  * @function actionHook
  * @name actionHook
@@ -47,6 +50,10 @@ const actionHook = async data => {
       case 'reply':
         // call the reply updator
         await replyUpdator(data.action, data.hashes.target, data.value);
+        break;
+      case 'tag':
+        // call add tag to story
+        await tagStory(data.hashes.target, data.value);
         break;
       default:
         // Log the error
