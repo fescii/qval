@@ -5,7 +5,7 @@ const {
 
 const {
   addStory, checkIfStoryExists, findStory,
-  updateStory, findStoryBySlugOrHash,
+  updateStory, findStoryBySlugOrHash, findStoriesByQuery,
   findStoriesByTopic, findRelatedStories, removeStory
 } = require('./base');
 
@@ -14,6 +14,6 @@ const {
 module.exports = {
   findStoriesByAuthor,
   addStory, checkIfStoryExists, findStory,
-  updateStory, findStoryBySlugOrHash,
+  updateStory, findStoryBySlugOrHash, findStoriesByQuery,
   findStoriesByTopic, findRelatedStories, removeStory
 };

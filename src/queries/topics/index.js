@@ -5,6 +5,7 @@ const {
   findTopicBySlug, findTopicsByQuery,
   findTopicBySlugOrHash
 } = require('./base');
+
 const {
   addTopicSection, fetchTopicSections, editTopicSection,
   removeTopicSection, addDraft, fetchDrafts,

@@ -407,6 +407,36 @@ const findRelatedStories = async (topics, user, totalStories, limit=10) => {
 }
 
 /**
+ * @function findStoriesByQuery
+ * @description Query to finding story by query: using vector search 
+ * @param {String} query - The query of the topic
+ * @returns {Object} - The stories object or null, and the error if any
+*/
+const findStoriesByQuery = async query => {
+  try {
+    // trim the query
+    query = query.trim();
+
+    // refine the query: make the query to match containing, starting or ending with the query
+    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
+    
+    // build the query(vector search)
+    const stories = await Story.search(query);
+
+    // if no stories found
+    if (stories.length < 1) {
+      return {stories: null, error: null}
+    }
+
+    // If stories exist, return the stories
+    return { stories: stories, error: null}
+  }
+  catch (error) {
+    return { stories: null, error: error}
+  }
+}
+
+/**
  * @function removeStory
  * @description a function that removes a story from the database
  * @param {String} hash - The story hash
@@ -432,12 +462,8 @@ const removeStory = async hash => {
 
 // Export the module
 module.exports = {
-  addStory,
-  checkIfStoryExists,
-  findStory,
-  updateStory,
-  findStoryBySlugOrHash,
-  findStoriesByTopic,
-  findRelatedStories,
-  removeStory
+  addStory, checkIfStoryExists,
+  findStory, updateStory, findRelatedStories,
+  findStoryBySlugOrHash, findStoriesByTopic,
+  removeStory, findStoriesByQuery
 };

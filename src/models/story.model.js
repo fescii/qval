@@ -18,6 +18,7 @@ module.exports = (User, sequelize, Sequelize) => {
    * @description - This model contains all the story info
    * @property {Number} id - Unique identifier for the story
    * @property {String} kind - The kind of story (story, post, poll, article, blog, news, journal)
+   * @property {Boolean} published - The status of the story: published or not
    * @property {Number} author - The author of the story: hash of the author
    * @property {String} hash - The hash of the story/ usually a unique identifier generated from hash algorithms(sha256)
    * @property {String} title - The title of the story
@@ -40,6 +41,11 @@ module.exports = (User, sequelize, Sequelize) => {
     kind: {
       type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
       defaultValue: 'post',
+      allowNull: false
+    },
+    published: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
       allowNull: false
     },
     author: {
@@ -100,7 +106,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id', 'slug', 'hash']
       },
       {
-        fields: ['kind', 'author', 'title']
+        fields: ['kind', 'author', 'title', 'published', 'views', 'likes', 'replies']
       }
     ]
   });

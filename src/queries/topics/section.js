@@ -1,8 +1,8 @@
 // import the sequelize models
-const { sequelize, TopicSection, Draft } = require('../../models').models;
+const { sequelize, TopicSection, Draft, Sequelize } = require('../../models').models;
 
 // import op from sequelize
-const { Op, Sequelize} = require('sequelize');
+const Op = Sequelize.Op;
 
 
 /**
