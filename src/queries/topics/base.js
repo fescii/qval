@@ -19,13 +19,11 @@ const addTopic = async (user, data) => {
   const transaction = await sequelize.transaction();
 
   try {
+    // add author to the data object
+    data.author = user.hash;
+  
     // Trying to create a topic to the database
-    const topic = await Topic.create({
-      author: user.hash,
-      name: data.name,
-      slug: data.slug,
-      summary: data.summary,
-    }, {transaction})
+    const topic = await Topic.create(data, {transaction});
 
     // Generate a hash for the topic created
     const {
@@ -38,13 +36,8 @@ const addTopic = async (user, data) => {
       throw new Error(error);
     }
 
-    // Assign the hash to the topic
-    topic.hash = hash;
-
-    // Save the topic with the hash
-    await topic.save({transaction});
-
-    // console.log('Section', Section);
+    // Update the topic with the hash
+    await topic.update({ hash }, {transaction});
 
     // Create a section for the topic created
     const section = await Section.create({

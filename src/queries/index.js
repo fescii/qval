@@ -1,9 +1,7 @@
 // Importing all routes and exporting them as a single object
-const authQueries = require('./auth.queries');
+const authQueries = require('./auth');
 const topicQueries = require('./topics')
-const roleQueries = require('./role.queries');
-const storyQueries = require('./story.queries');
-const opinionQueries = require('./opinion.queries');
+const roleQueries = require('./roles');
 const userQueries = require('./users');
 
 module.exports = {

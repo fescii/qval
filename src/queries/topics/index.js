@@ -4,15 +4,15 @@ const {
   editTopic, findTopic, removeTopic,
   findTopicBySlug, findTopicsByQuery,
   findTopicBySlugOrHash
-} = require('./base.topic');
+} = require('./base');
 const {
   addTopicSection, fetchTopicSections, editTopicSection,
   removeTopicSection, addDraft, fetchDrafts,
   editDraft, approveDraft, removeDraft
-} = require('./section.topic');
+} = require('./section');
 const {
   follow, subscribe, tagStory
-} = require('./action.topic');
+} = require('./action');
 
 
 // Export all topic queries
