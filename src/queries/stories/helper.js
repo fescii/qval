@@ -46,6 +46,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
           as: 'story_votes',
           attributes: ['option'],
           where: { author: user, story: sequelize.col('stories.hash')},
+          limit : 1,
           required: false
         }
       ]
@@ -275,6 +276,15 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
               'is_following'
             ]
           ],
+        },
+        // If story kind is poll, include user vote: if and only if the kind is poll
+        {
+          model: Vote,
+          as: 'story_votes',
+          attributes: ['option'],
+          where: { author: user, story: sequelize.col('stories.hash')},
+          limit : 1,
+          required: false
         }
       ]
     });
