@@ -33,12 +33,9 @@ const findStoryWhenLoggedIn = async (query, user) => {
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              sequelize.literal(`(
-              SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
-              FROM account.connects
-              WHERE connects.to = story_author.hash
-              AND connects.from = '${user}'
-              )`),
+              sequelize.fn('EXISTS', sequelize.literal(`(
+                SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}'
+              )`)),
               'is_following'
             ]
           ],
@@ -237,6 +234,7 @@ const findReplyWhenLoggedOut = async hash => {
  * @description a function that queries stories when user is logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
+ * @param {String} user - The user hash
  * @param {Number} limit - The limit for pagination
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The stories object and error if any
@@ -281,7 +279,13 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
 
     // return the stories: map the stories' dataValues
     return { 
-      stories: stories.map(story => story.dataValues),
+      stories: stories.map(story => {
+        const data = story.dataValues;
+        data.you = user === data.author;
+        data.authenticated = true;
+
+        return data;
+      }),
       error: null 
     };
   }
@@ -325,7 +329,13 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
 
     // return the stories: map the stories' dataValues
     return { 
-      stories: stories.map(story => story.dataValues),
+      stories: stories.map(story => {
+        const data = story.dataValues;
+        data.you = false;
+        data.authenticated = false;
+
+        return data;
+      }),
       error: null 
     };
   }
@@ -384,7 +394,13 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
 
     // return the replies
     return { 
-      replies: replies.map(reply => reply.dataValues),
+      replies: replies.map(reply => {
+        const data = reply.dataValues;
+        data.you = user === data.author;
+        data.authenticated = true;
+
+        return data;
+      }),
       error: null 
     };
   }
@@ -428,7 +444,13 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
 
     // return the replies
     return { 
-      replies: replies.map(reply => reply.dataValues),
+      replies: replies.map(reply => {
+        const data = reply.dataValues;
+        data.you = false;
+        data.authenticated = false;
+
+        return data;
+      }),
       error: null 
     };
   }

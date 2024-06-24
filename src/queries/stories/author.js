@@ -5,6 +5,10 @@ const {
   getRepliesWhenLoggedIn, getRepliesWhenLoggedOut
 } = require('./helper');
 
+const {
+  getUserReplies, getUserStories,
+} = require('./user');
+
 /**
  * @function findStoriesByAuthor
  * @description a function that finds stories by author in the database: 10 at a time orderd by the date created
@@ -38,7 +42,29 @@ const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
     let stories = null;
 
     // check if user is logged in
-    if (user !== null) {
+    if (user === null) {
+      const fetchedStories = await getStoriesWhenLoggedOut(where, order, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedStories.error) {
+        throw fetchedStories.error;
+      }
+
+      // set the stories
+      stories = fetchedStories.stories; 
+    }
+    else if (user === author) {
+      const fetchedStories = await getUserStories(where, order, user, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedStories.error) {
+        throw fetchedStories.error;
+      }
+
+      // set the stories
+      stories = fetchedStories.stories;
+    }
+    else {
       const fetchedStories =  await getStoriesWhenLoggedIn(where, order, user, limit, offset);
 
       // If there is an error: throw the error
@@ -48,17 +74,6 @@ const findStoriesByAuthor = async (author, user, totalStories, limit=10) => {
 
       // set the stories
       stories = fetchedStories.stories;  
-    }
-    else {
-      const fetchedStories = await getStoriesWhenLoggedOut(where, order, limit, offset);
-
-      // If there is an error: throw the error
-      if (fetchedStories.error) {
-        throw fetchedStories.error;
-      }
-
-      // set the stories
-      stories = fetchedStories.stories;
     }
 
     // Check if the stories exist
@@ -123,18 +138,7 @@ const findRepliesByAuthor = async (author, user, totalReplies, limit=10) => {
     let replies = null;
 
     // check if user is logged in
-    if (user !== null) {
-      const fetchedReplies =  await getRepliesWhenLoggedIn(where, order, user, limit, offset);
-
-      // If there is an error: throw the error
-      if (fetchedReplies.error) {
-        throw fetchedReplies.error;
-      }
-
-      // set the replies
-      replies = fetchedReplies.replies;  
-    }
-    else {
+    if (user === null){
       const fetchedReplies = await getRepliesWhenLoggedOut(where, order, limit, offset);
 
       // If there is an error: throw the error
@@ -144,6 +148,28 @@ const findRepliesByAuthor = async (author, user, totalReplies, limit=10) => {
 
       // set the replies
       replies = fetchedReplies.replies;
+    }
+    else if (user === author) {
+      const fetchedReplies = await getUserReplies(where, order, user, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedReplies.error) {
+        throw fetchedReplies.error;
+      }
+
+      // set the replies
+      replies = fetchedReplies.replies;
+    }
+    else if (user !== null) {
+      const fetchedReplies =  await getRepliesWhenLoggedIn(where, order, user, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedReplies.error) {
+        throw fetchedReplies.error;
+      }
+
+      // set the replies
+      replies = fetchedReplies.replies;  
     }
 
     // Check if the replies exist

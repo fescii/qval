@@ -10,7 +10,7 @@ const  { hash_secret } = require("../../configs").envConfig;
 
 
 const { 
-  findStoryWhenLoggedIn, findStoryWhenLoggedOut, getStoriesWhenLoggedIn, getStoriesWhenLoggedOut
+  findStoryWhenLoggedIn, findStoryWhenLoggedOut,
 } = require('./helper');
 
 
@@ -184,12 +184,12 @@ const findStory = async hash => {
 }
 
 /**
- * @function updateStory
+ * @function editStory
  * @description a function that updates a story in the database
  * @param {Object} data - The story data object
  * @returns {Object} data - The updated story object and error if any
 */
-const updateStory = async data => {
+const editStory = async data => {
   // start a transaction
   const t = await sequelize.transaction();
   try {
@@ -304,7 +304,7 @@ const removeStory = async hash => {
 // Export the module
 module.exports = {
   addStory, checkIfStoryExists,
-  findStory, updateStory,
+  findStory, editStory,
   findStoryBySlugOrHash,
   removeStory, findStoriesByQuery
 };
