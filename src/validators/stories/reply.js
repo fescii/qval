@@ -11,7 +11,7 @@ const { sanitizeInput } = require('../../utils').sanitizeUtil;
 const validateReply = async data => {
   try {
     // Check if the data mandatory fields are present
-    if (!data.kind || !data.content || typeof data.kind !== 'string' || typeof data.content !== 'string') {
+    if (!data.content || typeof data.content !== 'string') {
       return {
         data: null,
         error: new Error('Kind and content are required and should be strings')
@@ -20,7 +20,6 @@ const validateReply = async data => {
 
     // Construct the validated data object
     const validatedData = {
-      kind: data.kind,
       content: await sanitizeInput(data.content)
     };
 

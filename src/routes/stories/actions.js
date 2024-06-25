@@ -22,6 +22,7 @@ module.exports = (app, url) => {
     next();
   });
 
+  
   // Route for handling liking a story
   app.post(`${url}/s/:hash/like`,
     verifyToken, likeStoryController

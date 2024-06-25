@@ -322,7 +322,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id', 'hash']
       },
       {
-        fields: ['content', 'author', 'parent']
+        fields: ['content', 'author', 'story', 'reply']
       }
     ]
   });
@@ -344,7 +344,7 @@ module.exports = (User, sequelize, Sequelize) => {
     const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
     
     return await Reply.findAll({
-      attributes: ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
+      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies'],
       where: sequelize.where(
         sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
         '@@',
@@ -411,7 +411,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['author', 'target']
+        fields: ['author', 'story', 'reply']
       }
     ]
   });

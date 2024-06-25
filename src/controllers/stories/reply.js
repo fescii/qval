@@ -101,7 +101,6 @@ const updateReply = async (req, res, next) => {
   // Check if the user or payload is available
   const { hash } = req.params;
 
-
   if (!req.reply || !hash) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
@@ -122,6 +121,14 @@ const updateReply = async (req, res, next) => {
   // Passing the error to error middleware
   if (error) {
     return next(error);
+  }
+
+  // If no reply was found
+  if (!reply){
+    return res.status(404).send({
+      success: false,
+      message: "The reply you are trying to update was not found!",
+    });
   }
 
   // Return the response
@@ -178,7 +185,7 @@ const deleteReply = async (req, res, next) => {
    // Return success response
    return res.status(200).send({
     success: true,
-    story: story,
+    deleted: deleted,
     message: "Reply was deleted successfully!",
   });
 }

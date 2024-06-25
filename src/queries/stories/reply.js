@@ -49,7 +49,8 @@ const addReply = async data => {
       reply: {
         kind: reply.kind,
         author: reply.author,
-        parent: reply.parent,
+        story: reply.story,
+        reply: reply.reply,
         hash: reply.hash,
         content: reply.content,
         views: reply.views,
@@ -73,7 +74,7 @@ const addJob = async reply => {
   const payload = {
     kind: reply.kind,
     hashes: {
-      target: reply.parent,
+      target: reply.reply !== null ? reply.reply : reply.story,
     },
     action: 'reply',
     value: 1,
@@ -91,11 +92,16 @@ const addJob = async reply => {
 */
 const editReply = async data => {
   // start a transaction
-  const transaction = sequelize.transaction();
+  const t = await sequelize.transaction();
 
   try {
     // find the reply to edit
-    const reply = await Reply.findOne({where: {hash: data.hash, author: data.author}}, {transaction});
+    const reply = await Reply.findOne({
+      where: {
+        hash: data.hash, 
+        author: data.author
+      }
+    }, {transaction: t});
 
     // check if the reply exists
     if (!reply) {
@@ -103,16 +109,17 @@ const editReply = async data => {
     }
 
     // edit the reply
-    await reply.update(data, {transaction});
+    await reply.update({content: data.content}, {transaction: t});
 
     // commit transaction
-    await transaction.commit();
+    await t.commit();
 
     return {
       reply: {
         kind: reply.kind,
         author: reply.author,
-        parent: reply.parent,
+        story: reply.story,
+        reply: reply.reply,
         hash: reply.hash,
         content: reply.content,
         views: reply.views,
@@ -124,7 +131,7 @@ const editReply = async data => {
   } 
   catch (error) {
     // rollback transaction
-    await transaction.rollback();
+     await t.rollback();
     return {reply: null, error: error}
   }
 }

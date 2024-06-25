@@ -138,7 +138,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(
@@ -200,7 +200,7 @@ const findReplyWhenLoggedOut = async hash => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies'],
       where: { hash },
       include: [
         {
@@ -375,7 +375,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(
@@ -440,7 +440,7 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies'],
+      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies'],
       where: where,
       order: [order],
       limit: limit,
