@@ -337,7 +337,7 @@ const updateSlug = async (req, res, next) => {
   data.hash = hash.toUpperCase();
 
   // Validate story slug data
-  const valObj = await validateStorySlug(data);
+  const valObj = await validateSlug(data);
 
   // Check if there is a validation error
   if (valObj.error) {

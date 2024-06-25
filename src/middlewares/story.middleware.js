@@ -69,7 +69,7 @@ const checkStory = async(req, res, next) => {
 */
 const checkSlug = async(req, res, next) => {
   //Check if the payload is available in the request object
-  if (!req.body || req.user) {
+  if (!req.body || !req.user) {
     const error = new Error('Payload data is not defined in the request!');
     return next(error);
   }
