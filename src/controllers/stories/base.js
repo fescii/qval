@@ -499,7 +499,6 @@ const deleteStory = async (req, res, next) => {
   // Return success response
   return res.status(200).send({
     success: true,
-    story: story,
     message: "Story was deleted successfully!",
   });
 }

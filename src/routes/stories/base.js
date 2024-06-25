@@ -58,7 +58,7 @@ module.exports = (app, url) => {
   );
 
   // Route for handling story removal/deletion
-  app.delete(`${url}/:storyHash/remove`,
+  app.delete(`${url}/:hash/remove`,
     verifyToken, deleteStory
   );
 
