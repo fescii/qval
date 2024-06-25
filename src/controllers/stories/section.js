@@ -76,18 +76,17 @@ const createStorySection = async (req, res, next) => {
 */
 const updateStorySection = async (req, res, next) => {
   // Check if the user or payload is available
-  const { hash, sectionId } = req.params;
+  const { hash, id } = req.params;
 
-  if (!req.section || !req.user || !hash || !sectionId) {
+  if (!req.section || !req.user || !hash || !id) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
 
   // Get validated payload and user data from request object
-  const data = {
-    story: hash.toUpperCase(),
-    id: sectionId,
-  };
+  const data = req.section;
+  data.story = hash.toUpperCase();
+  data.id =  id;
 
   // Create access data - (For authorizing user)
   const access = {
@@ -137,9 +136,9 @@ const updateStorySection = async (req, res, next) => {
 */
 const deleteStorySection = async (req, res, next) => {
   // Check if the user or payload is available
-  const { hash, sectionId } = req.params;
+  const { hash, id } = req.params;
 
-  if (!hash || !req.user || !section) {
+  if (!hash || !req.user || !id) {
     const error = new Error('Payload data or user data is undefined!');
     return next(error)
   }
@@ -147,7 +146,7 @@ const deleteStorySection = async (req, res, next) => {
   // create data object
   const section = {
     story: hash.toUpperCase(),
-    id: sectionId
+    id: id
   }
 
   // Create access data - (For authorizing user)

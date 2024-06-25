@@ -74,13 +74,13 @@ module.exports = (app, url) => {
   );
 
   // Route for handling updating story section content
-  app.patch(`${url}/:hash/section/edit`,
+  app.patch(`${url}/:hash/section/edit/:id`,
     [verifyToken, checkSectionContent],
     updateStorySection
   );
 
   // Route for handling story section removal/deletion
-  app.delete(`${url}/:hash/section/remove`,
+  app.delete(`${url}/:hash/section/remove/:id`,
     verifyToken, deleteStorySection
   );
 }

@@ -202,7 +202,7 @@ const updateStory = async (req, res, next) => {
  * @returns {Object} - Returns response object
 */
 const checkStoryBySlug = async (req, res, next) => {
-  if (!req.body || !req.user) {
+  if (!req.body) {
     const error = new Error('Payload data is not defined in the req object!');
     return next(error);
   }

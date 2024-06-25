@@ -26,7 +26,7 @@ const validateSection = async data => {
       };
     }
 
-    if(title) {
+    if(data.title) {
       data.title = await sanitizeInput(data.title);
     }
 
@@ -62,7 +62,7 @@ const validateSection = async data => {
 const validateSectionContent = async data => {
   try {
     // Check if the data mandatory fields are present
-    if (!data.content || !data.id || typeof data.content !== 'string' || typeof data.id !== 'number') {
+    if (!data.content || !data.order || typeof data.content !== 'string' || typeof data.order !== 'number') {
       return {
         data: null,
         error: new Error('Content body and section identity are required and should be a string and number respectively')
@@ -77,7 +77,7 @@ const validateSectionContent = async data => {
       };
     }
 
-    if(title) {
+    if(data.title) {
       data.title = await sanitizeInput(data.title);
     }
 
@@ -85,7 +85,7 @@ const validateSectionContent = async data => {
     const validatedData = {
       content: await sanitizeInput(data.content),
       title: data.title || null,
-      id: data.id
+      order: data.order
     };
 
     return {
