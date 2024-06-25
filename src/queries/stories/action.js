@@ -17,6 +17,7 @@ const likeStory = async (user, story) => {
         story: story
       },
       defaults: {
+        kind: 'story',
         author: user,
         story: story
       }
@@ -53,6 +54,7 @@ const likeReply = async (user, reply) => {
         reply: reply
       },
       defaults: {
+        kind: 'reply',
         author: user,
         reply: reply
       }

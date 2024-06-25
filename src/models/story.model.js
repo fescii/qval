@@ -395,11 +395,11 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     },
     reply: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     }
   },
   {
