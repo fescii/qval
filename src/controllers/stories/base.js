@@ -56,7 +56,7 @@ const createStory = async (req, res, next) => {
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object || or calls next middleware
 */
-const publishStory = async (req, res, next) => {
+const publishAStory = async (req, res, next) => {
   // Check if the params or payload is available
   const { hash } = req.params;
 
@@ -508,5 +508,5 @@ const deleteStory = async (req, res, next) => {
 module.exports = {
   createStory, updateStory, deleteStory,
   checkStoryBySlug, updateTitle, updateSlug,
-  findStories, publishStory
+  findStories, publishAStory
 }

@@ -6,7 +6,7 @@ const {
   checkSection, checkSectionContent
 } = require('../../middlewares').storyMiddleware;
 const {
-  createStory, deleteStory, updateSlug, updateTitle, updateStory,
+  createStory, deleteStory, updateSlug, updateTitle, updateStory, publishAStory,
   checkStoryBySlug, createStorySection, updateStorySection, deleteStorySection
 } = require('../../controllers').storyController;
 
@@ -32,6 +32,11 @@ module.exports = (app, url) => {
   app.put(`${url}/add`,
     [verifyToken, checkStory],
     createStory
+  );
+
+  // Route for handling publishing a story
+  app.patch(`${url}/:hash/publish`,
+    verifyToken, publishAStory
   );
 
   // Route for handling updating story content

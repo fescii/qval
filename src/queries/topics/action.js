@@ -1,5 +1,5 @@
 // import models
-const { sequelize, Topic, Follow, Subscribe, Tagged } = require('../../models').models;
+const { sequelize, Sequelize, Topic, Follow, Subscribe, Tagged } = require('../../models').models;
 
 /**
  * @function followTopic
@@ -76,17 +76,18 @@ const subscribe = async (user, topic) => {
 /**
  * @function tagStory
  * @description Query to tag a story with a topic
- * @param {String} story - The hash of the story to tag
- * @param {Array} topicsArray - An array of slugs(strings) of the topics to tag the story with
+ * @param {Object} data - The data object
+ * @param {String} data.hash - the hash of the story
+ * @param {Array} data.topics - the array of topics
  * @returns {Object} - The tagged boolean or null, and the error if any
 */
-const tagStory = async (story, topicsArray) => {
+const tagStory = async data => {
   try {
     // get all the topics where slug in topics array: return only the hash and slug
     const topics = await Topic.findAll({
       where: {
         slug: {
-          [sequelize.Op.in]: topicsArray
+          [Sequelize.Op.in]: data.topics
         }
       },
       attributes: ['hash', 'slug']
@@ -98,7 +99,7 @@ const tagStory = async (story, topicsArray) => {
     // create a tagged object for each topic string in the topics array
     const tagged = topics.map(topic => {
       return {
-        story: story,
+        story: data.hash,
         topic: topic.hash
       }
     });

@@ -1,8 +1,8 @@
 // Import all stroy routes and export them as an object
-const { storyRoutes } = require('./base');
-const { replyRoutes } = require('./replies');
-const { actionRoutes } = require('./actions');
-const { feedsRoutes } = require('./feeds');
+const storyRoutes  = require('./base');
+const replyRoutes  = require('./replies');
+const actionRoutes = require('./actions');
+const feedsRoutes  = require('./feeds');
 
 // Export all routes as a single object
 module.exports = app => {

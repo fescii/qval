@@ -53,7 +53,23 @@ const actionHook = async data => {
         break;
       case 'tag':
         // call add tag to story
-        await tagStory(data.hashes.target, data.value);
+        console.log('The data:', data.hashes.target, data.value);
+        const reqData =  {
+          hash: data.hashes.target,
+          topics: data.value
+        }
+        const {tagged, error } = await tagStory(reqData);
+
+        if (error) {
+          console.log('Error processing the job')
+          console.log(error)
+        }
+
+        if (!tagged) {
+          console.log('Tgging job failed')
+        }
+        console.log('Tagging job completed')
+
         break;
       default:
         // Log the error

@@ -3,6 +3,7 @@ const { hashConfig} = require('../../configs');
 const { sequelize, Sequelize, Section, Story, Role} = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
 const Op = Sequelize.Op;
+const { actionQueue } = require('../../bull');
 
 // Imports for gen_hash
 const { gen_hash } = require("../../wasm");
@@ -45,6 +46,9 @@ const addStory = async (user, data) => {
 
     // Update the story with the hash
     await story.update({ hash }, { transaction: t });
+
+    // Add a job to the queue
+    await addJob(story);
 
     // Create a section for the story created
     const section = await Section.create({
@@ -99,6 +103,26 @@ const addStory = async (user, data) => {
     return { story: null, error };
   }
 }
+
+// add a job to the queue
+const addJob = async story => {
+  // Check if topic array is not empty
+  if (story.topics.length === 0) return;
+
+  // construct the job payload: for queueing
+  const payload = {
+    kind: 'tag',
+    hashes: {
+      target: story.hash,
+    },
+    action: 'topic',
+    value: story.topics,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
+};
+
 
 /**
  * @function publishStory

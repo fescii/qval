@@ -8,7 +8,15 @@ const { sanitizeUtil } = require('../../utils');
  * @returns {Object} - The validated topic data object
 */
 const validateUser = async data => {
-  if (data.first_name && data.last_name && data.email && data.password) {
+  try {
+    // Check if all required fields are provided
+    if (!data.first_name || !data.last_name || !data.email || !data.password) {
+      return {
+        data: null,
+        error: new Error("Some fields were not provided or contains null values, Ensure you provide: (Firstname, Lastname, email, password)")
+      }
+    }
+
     // validate first name
     if (typeof data.first_name !== 'string' || data.first_name.length < 2) {
       return {
@@ -51,13 +59,14 @@ const validateUser = async data => {
     }
 
     return { data: validatedData, error: null };
-  }
-  else {
+  } 
+  catch (_) {
     return {
       data: null,
-      error: new Error("Some fields were not provided or contains null values, Ensure you provide: (Firstname, Lastname, email, password)")
+      error: "There was an error validating user data!"
     }
   }
+  
 }
 
 /**

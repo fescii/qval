@@ -1,5 +1,5 @@
 // Import sanitizeUtil from src/utils/sanitize.util.js
-const sanitizeInput = require('../../utils').sanitizeUtil;
+const { sanitizeInput } = require('../../utils').sanitizeUtil;
 const {slugify, slugifyArray} = require('../../utils').arrayUtil;
 
 // import platformConfig from src/config/platform.config.js
@@ -119,6 +119,7 @@ const validateStory = async data => {
     }
 
   } catch (error) {
+    console.log(error);
     return {
       data: null,
       error: new Error('An error occurred while validating the data')

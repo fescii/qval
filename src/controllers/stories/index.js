@@ -1,7 +1,7 @@
 // Import all stroy controllers and export them as an object
 const {
   createStory, updateStory, deleteStory, checkStoryBySlug, updateTitle,
-   updateSlug,  findStories, publishStory
+   updateSlug,  findStories, publishAStory
 } = require('./base');
 
 const {
@@ -33,7 +33,7 @@ const {
 module.exports = {
   createStory, updateStory, deleteStory, voteController,
   checkStoryBySlug, updateTitle, updateSlug, getTopicStories,
-  likeStoryController, likeReplyController, findStories, publishStory,
+  likeStoryController, likeReplyController, findStories, publishAStory,
   viewContentController, createReply, updateReply, deleteReply,
   findAuthorReplies, findAuthorStories, getRelatedStories,
   createStorySection, updateStorySection, deleteStorySection
