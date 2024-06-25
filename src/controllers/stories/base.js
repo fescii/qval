@@ -1,9 +1,10 @@
+const { auth } = require('../../configs/mpesa.config');
 
 const { checkAuthority } = require('../../utils').roleUtil;
 const { Privileges } = require('../../configs').platformConfig;
 const {
   addStory, editStory, removeStory, checkIfStoryExists,
-  editTitle, editSlug, findStoriesByQuery
+  editTitle, editSlug, findStoriesByQuery, publishStory
 } = require('../../queries').storyQueries;
 const {
   validateSlug
@@ -45,6 +46,77 @@ const createStory = async (req, res, next) => {
     story: story,
     message: "Story was added successfully!",
   });
+}
+
+/**
+ * @function publishStory
+ * @description Controller for publishing a story content
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object || or calls next middleware
+*/
+const publishStory = async (req, res, next) => {
+  // Check if the params or payload is available
+  const { hash } = req.params;
+
+  if (!req.user) {
+    const error = new Error('Payload data or params data is undefined!');
+    return next(error)
+  }
+
+  // create data
+  const data = {
+    auth: req.user.hash,
+    hash: hash.toUpperCase()
+  }
+
+  // Create access data - (For authorizing user)
+  const access = {
+    section: hash.toUpperCase(),
+    privilege: Privileges.Publish,
+    user: userId,
+    key: 'action'
+  }
+
+  // Check if the user has access to publish the story
+  const hasAccess = await checkAuthority(access);
+
+  // If user does not have access return unauthorized
+  if (!hasAccess) {
+    return res.status(401).send({
+      success: false,
+      message: "You are not authorized to publish this story!"
+    });
+  }
+
+  // Publish the story content
+  const {
+    story,
+    error
+  } = await publishStory(data);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // Check if story was not found
+  if (!story) {
+    // Return the 404 response
+    return res.status(404).send({
+      success: false,
+      message: "Story not you are trying to publish was not found!"
+    });
+  }
+
+  // Return success response
+  return res.status(200).send({
+    success: true,
+    story: story,
+    message: "Story content was published successfully!",
+  });
+
 }
 
 
@@ -436,5 +508,5 @@ const deleteStory = async (req, res, next) => {
 module.exports = {
   createStory, updateStory, deleteStory,
   checkStoryBySlug, updateTitle, updateSlug,
-  findStories
+  findStories, publishStory
 }

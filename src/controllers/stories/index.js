@@ -1,6 +1,7 @@
 // Import all stroy controllers and export them as an object
 const {
-  createStory, updateStory, deleteStory, checkStoryBySlug, updateTitle, updateSlug,  findStories
+  createStory, updateStory, deleteStory, checkStoryBySlug, updateTitle,
+   updateSlug,  findStories, publishStory
 } = require('./base');
 
 const {

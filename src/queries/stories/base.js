@@ -101,6 +101,48 @@ const addStory = async (user, data) => {
 }
 
 /**
+ * @function publishStory
+ * @description a function that publishes a story: basically changes the published status to true
+ * @param {Object} data - The data containing the story hash and author
+ * @returns {Object} data - The published story object and error if any
+*/
+const publishStory = async data => {
+  // start a transaction
+  const t = await sequelize.transaction();
+  try {
+    // Find the story
+    const story = await Story.findOne({ where: { hash: data.hash, author: data.author}});
+
+    // Check if the story exists
+    if (!story) {
+      return { story: null, error: null };
+    }
+
+    // Update the story with the new data: published
+    await story.update({published: true}, { transaction: t });
+
+    // Commit the transaction
+    await t.commit();
+
+    // return only the updated fields
+    return { 
+      story: {
+        published: story.published
+      },
+      error: null
+    }
+  }
+  catch (error) {
+    // Rollback the transaction
+    await t.rollback();
+
+    // return the error
+    return { story: null, error };
+  }
+
+}
+
+/**
  * @function checkIfStoryExists
  * @description a function that checks if a story exists in the database: using slug
  * @param {String} slug - The story slug
@@ -388,5 +430,5 @@ module.exports = {
   addStory, checkIfStoryExists,
   findStory, editStory, editSlug,
   findStoryBySlugOrHash, editTitle,
-  removeStory, findStoriesByQuery
+  removeStory, findStoriesByQuery, publishStory
 };
