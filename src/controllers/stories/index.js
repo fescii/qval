@@ -9,7 +9,8 @@ const {
 } = require('./action');
 
 const {
-  createReply, updateReply, deleteReply
+  createReply, updateReply, deleteReply,
+  createStoryReply
 } = require('./reply');
 
 const {
@@ -31,7 +32,7 @@ const {
 
 // Export all controllers as a single object
 module.exports = {
-  createStory, updateStory, deleteStory, voteController,
+  createStory, updateStory, deleteStory, voteController, createStoryReply,
   checkStoryBySlug, updateTitle, updateSlug, getTopicStories,
   likeStoryController, likeReplyController, findStories, publishAStory,
   viewContentController, createReply, updateReply, deleteReply,

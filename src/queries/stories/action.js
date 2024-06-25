@@ -14,11 +14,11 @@ const likeStory = async (user, story) => {
     const [like, created] = await Like.findOrCreate({
       where: {
         author: user,
-        target: story
+        story: story
       },
       defaults: {
         author: user,
-        target: story
+        story: story
       }
     });
 
@@ -50,11 +50,11 @@ const likeReply = async (user, reply) => {
     const [like, created] = await Like.findOrCreate({
       where: {
         author: user,
-        target: reply
+        reply: reply
       },
       defaults: {
         author: user,
-        target: reply
+        reply: reply
       }
     });
 

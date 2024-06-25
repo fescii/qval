@@ -5,7 +5,7 @@ const {
   checkReply, checkReplyContent
 } = require('../../middlewares').storyMiddleware;
 const {
-  createReply, updateReply, deleteReply
+  createReply, updateReply, deleteReply, createStoryReply
 } = require('../../controllers').storyController;
 
 
@@ -27,19 +27,25 @@ module.exports = (app, url) => {
   });
 
   // Route for handling creation a reply
-  app.put(`${url}/:hash/add`,
+  app.put(`${url}/s/:hash/reply`,
+    [verifyToken, checkReply],
+    createStoryReply
+  );
+
+  // Route for handling creation a reply
+  app.put(`${url}/r/:hash/reply`,
     [verifyToken, checkReply],
     createReply
   );
 
   // Route for handling updating reply content
-  app.patch(`${url}/:hash/edit`,
+  app.patch(`${url}/r/:hash/edit`,
     [verifyToken, checkReplyContent],
     updateReply
   );
 
   // Route for handling reply removal/deletion
-  app.delete(`${url}/:hash/remove`,
+  app.delete(`${url}/r/:hash/remove`,
     verifyToken, deleteReply
   );
 }
