@@ -90,6 +90,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     likes: {
       type: Sequelize.INTEGER,
+      defaultValue: 0,
       allowNull: true
     },
     replies: {

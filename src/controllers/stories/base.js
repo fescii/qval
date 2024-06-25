@@ -67,15 +67,17 @@ const publishAStory = async (req, res, next) => {
 
   // create data
   const data = {
-    auth: req.user.hash,
+    author: req.user.hash,
     hash: hash.toUpperCase()
   }
+
+  console.log("Data: ", data)
 
   // Create access data - (For authorizing user)
   const access = {
     section: hash.toUpperCase(),
     privilege: Privileges.Publish,
-    user: userId,
+    user: req.user.id,
     key: 'action'
   }
 
@@ -148,7 +150,7 @@ const updateStory = async (req, res, next) => {
   const access = {
     section: hash.toUpperCase(),
     privilege: Privileges.Update,
-    user: userId,
+    user: req.user.id,
     key: 'action'
   }
 
@@ -268,7 +270,7 @@ const updateTitle = async (req, res, next) => {
   const access = {
     section: hash.toUpperCase(),
     privilege: Privileges.Update,
-    user: userId,
+    user: req.user.id,
     key: 'action'
   };
 
@@ -349,7 +351,7 @@ const updateSlug = async (req, res, next) => {
   const access = {
     section: hash.toUpperCase(),
     privilege: Privileges.Update,
-    user: userId,
+    user: req.user.id,
     key: 'action'
   };
 
@@ -459,7 +461,7 @@ const deleteStory = async (req, res, next) => {
   const access = {
     section: hash.toUpperCase(),
     privilege: Privileges.Delete,
-    user: userId,
+    user: req.user.id,
     key: 'action'
   };
 
