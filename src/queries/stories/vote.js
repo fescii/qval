@@ -15,10 +15,13 @@ const addVote = async (user, story, option) => {
 
   try {
     // create a new vote
-    const vote = await Vote.create(data);
+    const vote = await Vote.findOrCreate({
+      where: {story: story, author: user},
+      defaults: data
+    });
 
     return {
-      vote: { story: vote.story, author: vote.author, option: vote.option },
+      vote: vote,
       error: null
     };
   }

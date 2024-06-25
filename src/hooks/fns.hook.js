@@ -239,6 +239,9 @@ const updateStoryVotes = async (storyHash, option) => {
 
     if(!story || story.kind !== 'poll') return;
 
+    // check array lenth against votes'
+    if (story.votes.lenth < option - 1) return;
+
     // update votes
     let voted = story.votes.map((vote, index) => {
       return index === option - 1 ? vote + 1 : vote;
