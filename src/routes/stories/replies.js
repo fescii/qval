@@ -27,7 +27,7 @@ module.exports = (app, url) => {
   });
 
   // Route for handling creation a reply
-  app.put(`${url}/add`,
+  app.put(`${url}/:hash/add`,
     [verifyToken, checkReply],
     createReply
   );

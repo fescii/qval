@@ -1,8 +1,7 @@
 // Importing the required modules, fns, configs, and utils...
 const { hashConfig} = require('../../configs');
-const { sequelize, Sequelize, Section, Story, Role} = require('../../models').models;
+const { sequelize, Section, Story, Role} = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
-const Op = Sequelize.Op;
 const { actionQueue } = require('../../bull');
 
 // Imports for gen_hash

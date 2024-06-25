@@ -11,7 +11,7 @@ const { addReply, editReply, removeReply } = require('../../queries').storyQueri
 */
 const createReply = async (req, res, next) => {
   // Check if the user or payload is available
-  const { parent } = req.params;
+  const { hash } = req.params;
 
   if (!req.reply) {
     const error = new Error('Payload data or user data is undefined!');
@@ -22,16 +22,17 @@ const createReply = async (req, res, next) => {
   const data = req.reply;
   // add author & parent to the data
   data.author = req.user.hash;
-  data.parent = parent.toUpperCase();
+  data.parent = hash.toUpperCase();
 
   // Add story to the database
   const {
     reply,
     error
-  } = await addReply(req.user, data);
+  } = await addReply(data);
 
   // Passing the error to error middleware
   if (error) {
+    console.log('eRR:', error)
     return next(error);
   }
 
@@ -71,7 +72,7 @@ const updateReply = async (req, res, next) => {
   const {
     reply,
     error
-  } = await editReply(req.user, data);
+  } = await editReply(data);
 
   // Passing the error to error middleware
   if (error) {

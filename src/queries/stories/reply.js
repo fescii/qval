@@ -1,8 +1,9 @@
 // Import all necessary modules, fns, and configs...
 const { hashConfig } = require('../../configs');
 const { sequelize, Sequelize, Reply } = require('../../models').models;
-const { RoleBase } = require('../../configs').platformConfig;
-const Op = Sequelize.Op;
+
+
+const { actionQueue } = require('../../bull');
 
 // Imports for gen_hash
 const { gen_hash } = require("../../wasm");
@@ -17,11 +18,11 @@ const  { hash_secret } = require("../../configs").envConfig;
 */
 const addReply = async data => {
   // start a transaction
-  const transaction = sequelize.transaction();
+  const t = await sequelize.transaction();
 
   try {
     // create a new reply
-    const reply = await Reply.create(data, {transaction});
+    const reply = await Reply.create(data, {transaction: t});
 
     // Generate a hash for the story created
     const {
@@ -36,19 +37,22 @@ const addReply = async data => {
     }
 
     // Update the story with the hash
-    await reply.update({ hash }, { transaction });
+    await reply.update({ hash }, { transaction: t });
+
+    // add the reply to the queue
+    await addJob(reply);
 
     // commit transaction
-    await transaction.commit();
+    await t.commit();
 
     return {
       reply: {
         kind: reply.kind,
         author: reply.author,
-        parent: reply.author,
+        parent: reply.parent,
         hash: reply.hash,
         content: reply.content,
-        views: reply.content,
+        views: reply.views,
         likes: reply.likes,
         replies: reply.replies
       },
@@ -56,9 +60,28 @@ const addReply = async data => {
     }
 
   } catch (error) {
+    // rollback transaction
+    await t.rollback();
+    // console.log(error);
     return {reply: null, error: error}
   }
 }
+
+// add afterCreate hook to increment the replies count of the story/reply
+const addJob = async reply => {
+  // construct the job payload: for queueing
+  const payload = {
+    kind: reply.kind,
+    hashes: {
+      target: reply.parent,
+    },
+    action: 'reply',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
+};
 
 
 /**
@@ -89,10 +112,10 @@ const editReply = async data => {
       reply: {
         kind: reply.kind,
         author: reply.author,
-        parent: reply.author,
+        parent: reply.parent,
         hash: reply.hash,
         content: reply.content,
-        views: reply.content,
+        views: reply.views,
         likes: reply.likes,
         replies: reply.replies
       },
@@ -100,6 +123,8 @@ const editReply = async data => {
     }
   } 
   catch (error) {
+    // rollback transaction
+    await transaction.rollback();
     return {reply: null, error: error}
   }
 }

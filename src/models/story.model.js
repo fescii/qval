@@ -257,7 +257,8 @@ module.exports = (User, sequelize, Sequelize) => {
    * @description - This model contains all the Reply info
    * @property {Number} id - Unique identifier for the Reply
    * @property {String} kind - The kind of Reply (reply to a story or reply to a reply)
-   * @property {String} parent - The story/reply the Reply is made on
+   * @property {String} story - The story hash || can be null
+   * @property {String} reply - The reply hash || can be null
    * @property {Number} author - The author who has made the Reply
    * @property {String} hash - The hash of the Reply/ usually a unique identifier generated from hash algorithms(sha256)
    * @property {String} content - The content of the Reply
@@ -279,7 +280,11 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false
     },
-    parent: {
+    story: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    reply: {
       type: Sequelize.STRING,
       allowNull: true
     },
@@ -290,7 +295,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     content: {
       type: Sequelize.TEXT,
-      allowNull: true
+      allowNull: false
     },
     views: {
       type: Sequelize.INTEGER,
@@ -349,29 +354,13 @@ module.exports = (User, sequelize, Sequelize) => {
     })
   }
 
-  // add afterCreate hook to increment the replies count of the story/reply
-  Reply.afterCreate(async reply => {
-    // construct the job payload: for queueing
-    const payload = {
-      kind: reply.kind,
-      hashes: {
-        target: reply.parent,
-      },
-      action: 'reply',
-      value: 1,
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
-  });
-
   // add afterDestroy hook to decrement the replies count of the story/reply
   Reply.afterDestroy(async reply => {
     // construct the job payload: for queueing
     const payload = {
       kind: reply.kind,
       hashes: {
-        target: reply.parent,
+        target: reply.reply !== null ? reply.reply : reply.story,
       },
       action: 'reply',
       value: -1,
@@ -404,10 +393,14 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false
     },
-    target: {
+    story: {
       type: Sequelize.STRING,
       allowNull: false
     },
+    reply: {
+      type: Sequelize.STRING,
+      allowNull: false
+    }
   },
   {
     schema: 'story',
@@ -430,7 +423,7 @@ module.exports = (User, sequelize, Sequelize) => {
     const payload = {
       kind: like.kind,
       hashes: {
-        target: like.target,
+        target: like.reply !== null ? like.reply : like.story,
       },
       action: 'like',
       value: 1,
@@ -447,7 +440,7 @@ module.exports = (User, sequelize, Sequelize) => {
     const payload = {
       kind: like.kind,
       hashes: {
-        target: like.target,
+        target: like.reply !== null ? like.reply : like.story,
       },
       action: 'like',
       value: -1,
@@ -541,32 +534,21 @@ module.exports = (User, sequelize, Sequelize) => {
   User.hasMany(Like, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_likes', onDelete: 'CASCADE' });
   Like.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'like_author', onDelete: 'CASCADE' });
 
-  // User <--> View association
-  User.hasMany(View, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_views', onDelete: 'CASCADE' });
-  View.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'view_author', onDelete: 'CASCADE' });
-
   // Story --> Reply association
-  Story.hasMany(Reply, { foreignKey: 'parent', sourceKey: 'hash', as: 'story_replies', onDelete: 'CASCADE' });
-  // Reply.belongsTo(Story, { foreignKey: 'parent', as: 'parent_story', onDelete: 'CASCADE' });
+  Story.hasMany(Reply, {foreignKey: 'story', sourceKey: 'hash', as: 'story_replies', onDelete: 'CASCADE'})
+  Reply.belongsTo(Story, {foreignKey: 'story', targetKey: 'hash', as: 'reply_story', onDelete: 'CASCADE'})
 
   // Reply --> Reply association
-  Reply.hasMany(Reply, { foreignKey: 'parent', sourceKey: 'hash', as: 'reply_replies', onDelete: 'CASCADE' });
+  Reply.hasMany(Reply, {foreignKey: 'reply', sourceKey: 'hash', as: 'reply_replies', onDelete: 'CASCADE'});
+  Reply.belongsTo(Reply, { foreignKey: 'reply', targetKey: 'hash', as: 'reply_reply', onDelete: 'CASCADE'});
 
   // Story --> Like association
-  Story.hasMany(Like, { foreignKey: 'target', sourceKey: 'hash', as: 'story_likes', onDelete: 'CASCADE' });
-  // Like.belongsTo(Story, { foreignKey: 'target', as: 'story_like', onDelete: 'CASCADE' });
-
-  // Story --> View association
-  Story.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'story_views', onDelete: 'CASCADE' });
-  // View.belongsTo(Story, { foreignKey: 'target', as: 'viewed_story', onDelete: 'CASCADE' });
+  Story.hasMany(Like, { foreignKey: 'story', sourceKey: 'hash', as: 'story_likes', onDelete: 'CASCADE' });
+  Like.belongsTo(Story, { foreignKey: 'story', targetKey: 'hash', as: 'story_like', onDelete: 'CASCADE' });
 
   // Reply --> Like association
-  Reply.hasMany(Like, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_likes', onDelete: 'CASCADE' });
-  // Like.belongsTo(Reply, { foreignKey: 'target', as: 'liked_reply', onDelete: 'CASCADE' });
-
-  // Reply --> View association
-  Reply.hasMany(View, { foreignKey: 'target', sourceKey: 'hash', as: 'reply_views', onDelete: 'CASCADE' });
-  // View.belongsTo(Reply, { foreignKey: 'target', as: 'viewed_reply', onDelete: 'CASCADE' });
+  Reply.hasMany(Like, { foreignKey: 'reply', sourceKey: 'hash', as: 'reply_likes', onDelete: 'CASCADE' });
+  Like.belongsTo(Reply, { foreignKey: 'reply', targetKey: 'hash',as: 'liked_reply', onDelete: 'CASCADE' });
 
   return { Story, Reply, Like, View, StorySection, Vote }
 }
