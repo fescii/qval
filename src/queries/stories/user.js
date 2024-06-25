@@ -17,9 +17,7 @@ const findUserStory = async (query, user) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -77,9 +75,7 @@ const findUserReply = async (hash, user) => {
       attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -136,9 +132,7 @@ const getUserStories = async (where, order, user, limit, offset) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -156,7 +150,7 @@ const getUserStories = async (where, order, user, limit, offset) => {
     });
 
     // Check if the stories exist
-    if (!stories) {
+    if (stories.length < 1) {
       return { stories: null, error: null };
     }
 
@@ -193,12 +187,10 @@ const getUserReplies = async (where, order, user, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -216,7 +208,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
     });
 
     // Check if the replies exist
-    if (!replies) {
+    if (replies.length < 1) {
       return { replies: null, error: null };
     }
 
@@ -236,6 +228,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
   }
   catch (error) {
     // return the error
+    // console.log(error)
     return { replies: null, error };
   }
 }

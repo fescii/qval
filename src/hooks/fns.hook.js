@@ -1,4 +1,4 @@
-const { User, Topic, Story, Reply, sequelize, Sequelize } = require('../models').models;
+const { User, Topic, Story, Reply, View, sequelize, Sequelize } = require('../models').models;
 
 /**
  * @function updateUserFollowers
@@ -230,13 +230,27 @@ const updateStoryVotes = async (storyHash, option) => {
     // throw an error
     throw new Error('Story hash and option are required!, option must be a number');
   }
+  try {
+    // get the story 
+    const story = await Story.findOne({
+      attributes: ['id', 'votes', 'kind'],
+      where: {hash: storyHash}
+    });
 
-  // Update the story votes by the option: consider postgres index array increment
-  await Story.update(
-    // { votes: Sequelize.literal(`votes[${option}] + 1`)}, 
-    { votes: sequelize.literal(`array_replace(votes, votes[${option}], votes[${option}] + 1`)},
-    { where: { hash: storyHash } 
-  });
+    if(!story || story.kind !== 'poll') return;
+
+    // update votes
+    let voted = story.votes.map((vote, index) => {
+      return index === option - 1 ? vote + 1 : vote;
+    })
+
+    // Update the story votes by the option: consider postgres index array increment
+    await story.update({votes: voted});
+  } catch (error) {
+    // throw an error
+    throw error;
+  }
+  
 }
 
 /**
@@ -320,10 +334,30 @@ const updateReplyReplies = async (replyHash, value) => {
   });
 }
 
+/**
+ * @function viewContent
+ * @description Query to add a view to a story or reply or a topic, or user profile
+ * @param {String} user - The hash of the user viewing the content || can be null
+ * @param {String} target - The hash of the content being viewed
+ * @returns {Object} - The view object or null, and the error if any
+*/
+const viewContent = async (user, target, kind) => {
+  try {
+    // create a view object
+    await View.create({author: user, target, kind});
+
+    // return the view object
+    return { viewed: true, error: null };
+  }
+  catch (error) {
+    return { viewed: null, error };
+  }
+}
+
 
 // Export the hook functions
 module.exports = {
-  updateUserFollowers, updateUserFollowing,
+  updateUserFollowers, updateUserFollowing, viewContent,
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
   updateStoryLikes, updateStoryViews, updateStoryReplies, updateStoryVotes,
   updateReplyLikes, updateReplyViews, updateReplyReplies

@@ -74,7 +74,7 @@ const findStoriesByTopic = async (reqData) => {
 
     // create a data object
     const data = {
-      stories: strories,
+      stories: stories,
       limit: limit,
       offset: offset,
       pages: totalPages,
@@ -156,7 +156,7 @@ const findRelatedStories = async (reqData) => {
 
     // create a data object
     const data = {
-      stories: strories,
+      stories: stories,
       limit: limit,
       offset: offset,
       pages: totalPages,

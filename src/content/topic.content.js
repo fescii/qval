@@ -3,6 +3,8 @@ const {
   findTopicBySlugOrHash
 } = require('../queries').topicQueries;
 
+const { actionQueue } = require('../bull');
+
 
 /**
  * @controller {get} /t/:slug(:hash) Topic
@@ -33,6 +35,19 @@ const getTopic = async (req, res) => {
   if (!topic) {
     return res.status(404).render('404')
   }
+
+  // add view to update views
+  const payload = {
+    kind: 'view',
+    hashes: {
+      target: topic.hash,
+    },
+    action: 'topic',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
 
   // add tab to the topic object
   topic.tab = 'article';
@@ -72,6 +87,19 @@ const getTopicStories = async (req, res) => {
     return res.status(404).render('404')
   }
 
+  // add view to update views
+  const payload = {
+    kind: 'view',
+    hashes: {
+      target: topic.hash,
+    },
+    action: 'topic',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
+
   // add tab to the topic object
   topic.tab = 'stories';
 
@@ -109,6 +137,19 @@ const getTopicContributors = async (req, res) => {
   if (!topic) {
     return res.status(404).render('404')
   }
+
+  // add view to update views
+  const payload = {
+    kind: 'view',
+    hashes: {
+      target: topic.hash,
+    },
+    action: 'topic',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
 
   // add tab to the topic object
   topic.tab = 'contributors';

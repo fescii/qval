@@ -4,6 +4,7 @@ const {
   updateUserFollowers, updateUserFollowing, updateStoryVotes,
   updateStoryViews, updateStoryLikes, updateStoryReplies,
   updateReplyViews, updateReplyReplies, updateReplyLikes,
+  viewContent
 } = require('./fns.hook');
 
 // import update tags query 
@@ -68,7 +69,18 @@ const actionHook = async data => {
         if (!tagged) {
           console.log('Tgging job failed')
         }
-        console.log('Tagging job completed')
+        break;
+      case 'view':
+        const viewObj = await viewContent(data.user, data.hashes.target, data.action);
+        if (viewObj.error) {
+          console.log('Error processing the view job')
+          console.log(viewObj.error)
+        }
+
+        if (!viewObj.viewed) {
+          console.log('View job failed')
+        }
+
         break;
       default:
         // Log the error

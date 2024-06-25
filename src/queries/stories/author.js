@@ -18,7 +18,7 @@ const {
 const findStoriesByAuthor = async (reqData) => {
   try {
     const {
-      author, user, totalStories, page, limit
+      hash, user, totalStories, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -30,7 +30,7 @@ const findStoriesByAuthor = async (reqData) => {
     }
 
     // Find the stories
-    const where = { author, published: true};
+    const where = { author: hash, published: true};
     const order = [['createdAt', 'DESC']];
 
     // initialize the stories to be null
@@ -48,7 +48,7 @@ const findStoriesByAuthor = async (reqData) => {
       // set the stories
       stories = fetchedStories.stories; 
     }
-    else if (user === author) {
+    else if (user === hash) {
       const fetchedStories = await getUserStories(where, order, user, limit, offset);
 
       // If there is an error: throw the error
@@ -71,19 +71,26 @@ const findStoriesByAuthor = async (reqData) => {
       stories = fetchedStories.stories;  
     }
 
-    // Check if the stories exist
-    if (stories === null) {
-      return { data: null, error: null };
-    }
-
     // calculate the total number of pages
     const totalPages = Math.ceil(stories / limit);
 
     const last = page === totalPages;
 
+    // Check if the stories exist
+    if (stories === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          last: true,
+        }, error: null 
+      };
+    }
+
     // create a data object
     const data = {
-      stories: strories,
+      stories: stories,
       limit: limit,
       offset: offset,
       pages: totalPages,
@@ -108,19 +115,14 @@ const findStoriesByAuthor = async (reqData) => {
 const findRepliesByAuthor = async (reqData) => {
   try {
     const {
-      author, user, totalReplies, page, limit
+      hash, user, totalReplies, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 
-    // check if replies is less than the limit + offset
-    if (totalReplies < limit + offset) {
-      limit = totalReplies - offset;
-    }
-
     // Find the replies
-    const where = { author, published: true};
+    const where = { author: hash};
     const order = [['createdAt', 'DESC']];
 
     // initialize the replies to be null
@@ -138,7 +140,7 @@ const findRepliesByAuthor = async (reqData) => {
       // set the replies
       replies = fetchedReplies.replies;
     }
-    else if (user === author) {
+    else if (user === hash) {
       const fetchedReplies = await getUserReplies(where, order, user, limit, offset);
 
       // If there is an error: throw the error
@@ -161,15 +163,22 @@ const findRepliesByAuthor = async (reqData) => {
       replies = fetchedReplies.replies;  
     }
 
-    // Check if the replies exist
-    if (replies === null) {
-      return { data: null, error: null };
-    }
-
     // calculate the total number of pages
-    const totalPages = Math.ceil(replies / limit);
+    const totalPages = Math.ceil(totalReplies / limit);
 
     const last = page === totalPages;
+
+    // Check if the replies exist
+    if (replies === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          last: true,
+        }, error: null 
+      };
+    }
 
     // create a data object
     const data = {

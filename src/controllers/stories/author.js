@@ -56,14 +56,14 @@ const findAuthorStories = async(req, res, next) => {
   if (!data) {
     return res.status(404).json({
       success: false,
-      message: 'Author has not created any story yet!'
+      message: 'No stories found!'
     });
   }
 
   // return the response
   return res.status(200).json({
     success: true,
-    message: 'Stories found!',
+    message: data.stories ? 'Stories found!' : 'No stories found!',
     data
   });
 }
@@ -123,14 +123,14 @@ const findAuthorReplies = async(req, res, next) => {
   if (!data) {
     return res.status(404).json({
       success: false,
-      message: 'Author has not created any reply yet!'
+      message: 'No replies found!'
     });
   }
 
   // return the response
   return res.status(200).json({
     success: true,
-    message: 'Replies found!',
+    message: data.replies ? 'Replies found!' : 'No replies found!',
     data
   });
 }

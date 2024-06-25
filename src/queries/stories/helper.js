@@ -17,9 +17,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -33,9 +31,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              sequelize.fn('EXISTS', sequelize.literal(`(
-                SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}'
-              )`)),
+              sequelize.fn('EXISTS', sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
               'is_following'
             ]
           ],
@@ -141,9 +137,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
       attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -154,9 +148,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
           as: 'reply_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              Sequelize.fn('EXISTS', Sequelize.literal(`( 
-                SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}'
-              )`)),
+              Sequelize.fn('EXISTS', Sequelize.literal(`( SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
               'is_following'
             ]
           ],
@@ -254,10 +246,12 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = stories.hash AND likes.author = '${user}')`)),
           'liked'
+        ],
+        [
+          Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
+          'option'
         ]
       ],
       where: where,
@@ -270,27 +264,29 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              Sequelize.fn('EXISTS', Sequelize.literal(`( 
-                SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}'
-              )`)),
+              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
               'is_following'
-            ]
+            ],
+            // [
+            //   Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = story_author.hash AND votes.story = stories.hash LIMIT 1)`),
+            //   'option'
+            // ]
           ],
         },
         // If story kind is poll, include user vote: if and only if the kind is poll
-        {
-          model: Vote,
-          as: 'story_votes',
-          attributes: ['option'],
-          where: { author: user, story: sequelize.col('stories.hash')},
-          limit : 1,
-          required: false
-        }
+        // {
+        //   model: Vote,
+        //   as: 'story_votes',
+        //   attributes: ['option'],
+        //   where: { author: user, story: sequelize.col('stories.hash')},
+        //   limit : 1,
+        //   required: false
+        // }
       ]
     });
 
     // Check if the stories exist
-    if (!stories) {
+    if (stories.length < 1) {
       return { stories: null, error: null };
     }
 
@@ -308,6 +304,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
   }
   catch (error) {
     // return the error
+    console.log(error)
     return { stories: null, error };
   }
 }
@@ -340,7 +337,7 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
     });
 
     // Check if the stories exist
-    if (!stories) {
+    if (stories.length < 1) {
       return { stories: null, error: null };
     }
 
@@ -362,6 +359,7 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
   }
 }
 
+
 /**
  * @function getRepliesWhenLoggedIn
  * @description a function that queries replies when user is logged in
@@ -378,9 +376,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
       attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(
-            SELECT 1 FROM reply.likes WHERE likes.target = replies.hash AND likes.author = '${user}'
-          )`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -394,9 +390,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
           as: 'reply_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              Sequelize.fn('EXISTS', Sequelize.literal(`( 
-                SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}'
-              )`)),
+              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
               'is_following'
             ]
           ],
@@ -405,7 +399,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
     });
 
     // Check if the replies exist
-    if (!replies) {
+    if (replies.length < 1) {
       return { replies: null, error: null };
     }
 
@@ -455,7 +449,7 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
     });
 
     // Check if the replies exist
-    if (!replies) {
+    if (replies.length < 1) {
       return { replies: null, error: null };
     }
 
