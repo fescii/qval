@@ -1,5 +1,5 @@
 const { login, forgotPassword, verifyUserCode, resetPassword } = require('../controllers').authController;
-const { register, checkIfEmailExits } = require('../controllers/').userController;
+const { register, checkIfEmailExits } = require('../controllers').userController;
 const { checkDuplicateEmail } = require('../middlewares').authMiddleware;
 /**
  * @function authRoutes

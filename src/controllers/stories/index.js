@@ -33,7 +33,7 @@ const {
 module.exports = {
   createStory, updateStory, deleteStory, voteController,
   checkStoryBySlug, updateTitle, updateSlug, getTopicStories,
-  likeStoryController, likeReplyController, findStories,
+  likeStoryController, likeReplyController, findStories, publishStory,
   viewContentController, createReply, updateReply, deleteReply,
   findAuthorReplies, findAuthorStories, getRelatedStories,
   createStorySection, updateStorySection, deleteStorySection
