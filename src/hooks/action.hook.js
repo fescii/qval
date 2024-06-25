@@ -69,7 +69,6 @@ const actionHook = async data => {
           console.log('Tgging job failed')
         }
         console.log('Tagging job completed')
-
         break;
       default:
         // Log the error
