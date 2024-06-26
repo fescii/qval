@@ -43,6 +43,37 @@ export default class VotesAuthor extends HTMLElement {
     });
   }
 
+  // observe the attributes
+  static get observedAttributes() {
+    return ['options', 'votes', 'end-time', 'voted', 'selected', 'you', 'reload'];
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // Check if the attribute is reload
+    if (name === 'reload') {
+
+      if (newValue === 'true') {
+        // re-render the component
+        this.render();
+
+        this.setAttribute('reload', false)
+
+        // re attach the event listeners
+        this.updatePollTime();
+        // Check if user has voted
+        if (this._voted) {
+          // disable all inputs
+          this.disableInputs();
+        }
+        else {
+          // Listen for checked radio button
+          this.listenForChecked();
+        }
+      }
+    }
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
   }
@@ -97,62 +128,29 @@ export default class VotesAuthor extends HTMLElement {
   }
 
   // perfom actions
-  performActions = () => {
-    const outerThis = this;
-    // get body 
-    const body = document.querySelector('body');
-
+  performVote = (option, selected, votes) => {
     // get url to 
     let hash = this.getAttribute('hash');
     // trim and convert to lowercase
     hash = hash.trim().toLowerCase();
 
     // base api
-    const url = '/api/v1/u/' + hash;
+    const url = `/api/v1/s/${hash}/vote/${option}`;
 
-    // Get the follow action and subscribe action
-    const followBtn = this.shadowObj.querySelector('.actions>.action#follow-action');
-
-    // add event listener to the follow action
-    if (followBtn) {
-      // construct options
-      const options = {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        }
+    // define options 
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application',
+        'Accept': 'application/json',
       }
-
-      followBtn.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        let action = false;
-
-        // Check if the user is authenticated
-        if (!this._authenticated) {
-          // Open the join popup
-          this.openJoin(body);
-        } 
-        else {
-          // Update the follow button
-          if (followBtn.classList.contains('following')) {
-            action = true;
-            outerThis.updateFollowBtn(false, followBtn);
-          }
-          else {
-            outerThis.updateFollowBtn(true, followBtn);
-          }
-
-          // Follow the topic
-          this.followUser(`${url}/follow`, options, followBtn, action);
-        }
-      });
     }
+
+    // Vote for the story
+    this.vote(url, options, selected, votes);
   }
 
-  followUser = (url, options, followBtn, followed) => {
+  vote = (url, options, selectedOption, votes) => {
     const outerThis = this;
     this.fetchWithTimeout(url, options)
       .then(response => {
@@ -166,36 +164,52 @@ export default class VotesAuthor extends HTMLElement {
             // Open the join popup
             outerThis.openJoin(body);
 
-            // revert the follow button
-            outerThis.updateFollowBtn(followed, followBtn);
+            outerThis.showToast(data.message, false);
+
+            // revert selected to null
+            outerThis.setAttribute('selected', null);
+
+            outerThis.setAttribute('voted', 'false');
+
+            selectedOption.setAttribute('votes', votes);
+
+            outerThis._voted = false;
+            
+            // update reload attribute to true
+            outerThis.setAttribute('reload', 'true');
           }
 
           // if success is false, show toast message
           if (!data.success) {
             outerThis.showToast(data.message, false);
 
-            // revert the follow button
-            outerThis.updateFollowBtn(followed, followBtn);
+            // revert selected to null
+            outerThis.setAttribute('selected', null);
+
+            outerThis.setAttribute('voted', 'false');
+            selectedOption.setAttribute('votes', votes);
+
+            outerThis._voted = false;
+            
+            // update reload attribute to true
+            outerThis.setAttribute('reload', 'true');
           }
           else {
             // Show toast message
             outerThis.showToast(data.message, true);
-
-            // Check for followed boolean
-            outerThis.updateFollowBtn(data.followed, followBtn);
-
-            // Update the followers
-            outerThis.updateFollowers(data.followed);
           }
         });
       })
       .catch(_error => {
-        // console.log(_error);
-        // show toast message
         outerThis.showToast('An error occurred while following the user', false);
 
-        // revert the follow button
-        outerThis.updateFollowBtn(followed, followBtn);
+        outerThis.setAttribute('voted', 'false');
+        selectedOption.setAttribute('votes', votes);
+        outerThis._voted = false;
+        // revert selected to null
+        outerThis.setAttribute('selected', null);
+        // update reload attribute to true
+        outerThis.setAttribute('reload', 'true');
       });
   }
 
@@ -219,29 +233,6 @@ export default class VotesAuthor extends HTMLElement {
           reject(error);
         });
     });
-  }
-
-  updateFollowBtn = (following, btn) => {
-    if (following) {
-      // Change the text to following
-      btn.textContent = 'following';
-
-      // remove the follow class
-      btn.classList.remove('follow');
-
-      // add the following class
-      btn.classList.add('following');
-    }
-    else {
-      // Change the text to follow
-      btn.textContent = 'follow';
-
-      // remove the following class
-      btn.classList.remove('following');
-
-      // add the follow class
-      btn.classList.add('follow');
-    }
   }
 
   showToast = (text, success) => {
@@ -302,34 +293,6 @@ export default class VotesAuthor extends HTMLElement {
     return /* html */`
       <join-popup register="/join/register" login="/join/login" next="${url}"></join-popup>
     `
-  }
-
-  updateFollowers = (followed) => {
-    const outerThis = this;
-    let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
-
-    let followers = this.parseToNumber(this.getAttribute('followers')) + value;
-
-    // if followers is less than 0, set it to 0
-    followers = followers < 0 ? 0 : followers;
-
-    // Set the followers attribute
-    this.setAttribute('followers', followers.toString());
-
-    // select the followers element
-    const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');
-    if (followersStat) {
-      // select no element
-      const no = followersStat.querySelector('.number');
-      const text = followersStat.querySelector('.label');
-
-      // Update the followers
-      no.textContent = this.formatNumber(followers);
-
-      // Update the text
-      text.textContent = followers === 1 ? 'follower' : 'followers';
-    }
   }
 
   // fn to take number and return a string with commas
@@ -413,11 +376,20 @@ export default class VotesAuthor extends HTMLElement {
     }
   }
 
+  // revert all inputs to unchecked
+  revertInputs = inputs =>{
+    inputs.forEach(input => {
+      input.checked = false;
+    });
+  }
+
   // Listen for checked radio button
   listenForChecked = () => {
     const outerThis = this;
     // Get the poll options container
     const pollOptions = this.shadowObj.querySelector('.poll-options');
+
+    const body = document.querySelector('body');
 
     // Check if the poll options container exists
     if (pollOptions) {
@@ -434,55 +406,73 @@ export default class VotesAuthor extends HTMLElement {
           // prevent the propagation of the event
           e.stopPropagation();
 
-          // Get the selected option
-          const selectedOption = e.target.parentElement;
+          // Check if the checked value is true
+          if (input.checked) {
+            // Check if the user is authenticated
+            if (!outerThis._authenticated) {
+              // Open the join popup
+              outerThis.openJoin(body);
 
-          // Get the selected option name
-          const selectedOptionName = selectedOption.dataset.name;
+              // revert any checked input
+              outerThis.revertInputs(inputs)
 
-          // Get the new options
-          const newOptions = outerThis._options.map(option => {
-            // Check if the option is the selected option
-            if (option.name === selectedOptionName) {
-              return { ...option, votes: option.votes + 1 };
-            }
-            else {
-              return option;
-            }
-          });
+              // prevet this function from proceeding
+              return;
+            } 
 
-          // Update the options
-          outerThis._options = newOptions;
+            // Get the selected option
+            const selectedOption = e.target.parentElement;
 
-          // Calculate the total percentage for each option based on the total votes
-          const totalVotes = newOptions.reduce((acc, option) => acc + option.votes, 0);
+            // Get the selected option name
+            const selectedOptionName = selectedOption.dataset.name;
 
-          // Calculate the percentage for each option
-          newOptions.forEach(option => { option.percentage = (option.votes / totalVotes) * 100 });
+            // Get the new options
+            const newOptions = outerThis._options.map(option => {
+              // Check if the option is the selected option
+              if (option.name === selectedOptionName) {
+                return { ...option, votes: option.votes + 1 };
+              }
+              else {
+                return option;
+              }
+            });
 
-          // update votes attribute in the selected option
-          let votes = outerThis.parseToNumber(selectedOption.getAttribute('votes'));
-          // console.log(votes);
-          selectedOption.setAttribute('votes', votes + 1);
-          // console.log(selectedOption.getAttribute('votes'));
+            // Update the options
+            outerThis._options = newOptions;
 
-          // Update the selected attribute
-          outerThis.setAttribute('selected', selectedOptionName);
+            // Calculate the total percentage for each option based on the total votes
+            const totalVotes = newOptions.reduce((acc, option) => acc + option.votes, 0);
 
-          // Update the voted attribute
-          outerThis.setAttribute('voted', 'true');
+            // Calculate the percentage for each option
+            newOptions.forEach(option => { option.percentage = (option.votes / totalVotes) * 100 });
 
-          // Update the options attribute
-          outerThis.setAttribute('options', JSON.stringify(newOptions));
+            // update votes attribute in the selected option
+            let votes = outerThis.parseToNumber(selectedOption.getAttribute('votes'));
 
-          // update the fill width for each option fill element
-          outerThis.updateFillWidth();
+            selectedOption.setAttribute('votes', votes + 1);
+            // console.log(selectedOption.getAttribute('votes'));
 
-          // update the total votes element
-          outerThis.updateTotalVotes();
+            // Update the selected attribute
+            outerThis.setAttribute('selected', selectedOptionName);
 
-          // disable all inputs after voting
-          outerThis.disableInputs();
+            // Update the voted attribute
+            outerThis.setAttribute('voted', 'true');
+
+            // Update the options attribute
+            // outerThis.setAttribute('options', JSON.stringify(newOptions));
+
+            // update the fill width for each option fill element
+            outerThis.updateFillWidth();
+
+            // update the total votes element
+            outerThis.updateTotalVotes();
+
+            // disable all inputs after voting
+            outerThis.disableInputs();
+
+            // call the perform vote function
+            outerThis.performVote(selectedOptionName, input.parentElement, votes);
+          }
         });
       });
 
@@ -511,12 +501,10 @@ export default class VotesAuthor extends HTMLElement {
         const totalVotes = this._options.reduce((acc, option) => acc + option.votes, 0);
 
         // Check if the current option has the highest number of votes
-        const isHighest = votes === Math.max(...this._options.map(option => option.votes));
+        const isHighest = votes >= Math.max(...this._options.map(option => option.votes));
 
         // add the high class if the option has the highest number of votes
-        if (isHighest) {
-          option.classList.add('high');
-        }
+        isHighest ? option.classList.add('high') : option.classList.remove('high');
 
         // Calculate the percentage for the option
         const percentage = (votes / totalVotes) * 100;
@@ -663,7 +651,7 @@ export default class VotesAuthor extends HTMLElement {
     const options = this._options;
 
     // get selected option
-    const selected = this.getAttribute('selected');
+    const selected = this.parseToNumber(this.getAttribute('selected'));
 
     // Calculate the total percentage for each option based on the total votes
     const totalVotes = options.reduce((acc, option) => acc + option.votes, 0);
@@ -724,7 +712,7 @@ export default class VotesAuthor extends HTMLElement {
     const options = this._options;
 
     // get selected option
-    const selected = this.getAttribute('selected');
+    const selected = this.parseToNumber(this.getAttribute('selected'));
 
     // Calculate the total percentage for each option based on the total votes
     const totalVotes = options.reduce((acc, option) => acc + option.votes, 0);

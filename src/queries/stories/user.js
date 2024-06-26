@@ -17,7 +17,7 @@ const findUserStory = async (query, user) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ],
         [
@@ -79,7 +79,7 @@ const findUserReply = async (hash, user) => {
       attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = replies.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],

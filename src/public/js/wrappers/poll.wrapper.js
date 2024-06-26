@@ -276,7 +276,7 @@ export default class PollWrapper extends HTMLElement {
 
   getPoll = () =>  {
     return /*html*/`
-      <votes-wrapper votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}" 
+      <votes-wrapper reload="false" votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}"  hash="${this.getAttribute('hash')}"
         end-time="${this.getAttribute('end-time')}" voted="${this.getAttribute('voted')}" options="${this.getAttribute('options')}">
       </votes-wrapper>
     `

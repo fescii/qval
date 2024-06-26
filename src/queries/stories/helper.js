@@ -14,10 +14,10 @@ const findStoryWhenLoggedIn = async (query, user) => {
   try {
     // Find the story
     const story = await Story.findOne({
-      attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', end, createdAt, updatedAt,
+      attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ],
         [
@@ -40,15 +40,6 @@ const findStoryWhenLoggedIn = async (query, user) => {
             ]
           ],
         },
-        // If story kind is poll, include user vote: if and only if the kind is poll
-        {
-          model: Vote,
-          as: 'story_votes',
-          attributes: ['option'],
-          where: { author: user, story: sequelize.col('stories.hash')},
-          limit : 1,
-          required: false
-        }
       ]
     });
 
@@ -141,7 +132,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
       attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
         // Check if the user has liked the reply
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = replies.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
