@@ -199,7 +199,7 @@ export default class SummeryPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-story story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}"
+      <app-story story="story" tab="replies" style="display: none;" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}"
         story-title="${this.getAttribute('story-title')}" time="${this.getAttribute('time')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
@@ -208,6 +208,7 @@ export default class SummeryPost extends HTMLElement {
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
+        ${this.getAttribute('content')}
       </app-story>
     `
   }

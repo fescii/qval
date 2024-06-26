@@ -30,8 +30,8 @@ export default class AppStory extends HTMLElement {
   }
 
   connectedCallback() {
-    // scroll to top of the page
-    window.scrollTo(0, 0);
+    // Change style to flex
+    this.style.display='flex';
 
     // Get mql object
     const mql = window.matchMedia('(max-width: 660px)');

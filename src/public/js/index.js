@@ -89,6 +89,7 @@ import UserWrapper from "./wrappers/user.wrapper.js";
 import TopicWrapper from "./wrappers/topic.wrapper.js";
 import HoverAuthor from "./wrappers/hover.author.js";
 import VotesWrapper from "./wrappers/votes.wrapper.js";
+import ActionWrapper from "./wrappers/action.wrapper.js";
 
 // import popups
 import JoinPopup from "./popups/join.popup.js";
@@ -183,6 +184,7 @@ const initApp = () => {
   customElements.define("topic-wrapper", TopicWrapper);
   customElements.define("hover-author", HoverAuthor);
   customElements.define("votes-wrapper", VotesWrapper);
+  customElements.define("action-wrapper", ActionWrapper);
 
   // Register popups
   customElements.define("join-popup", JoinPopup);
