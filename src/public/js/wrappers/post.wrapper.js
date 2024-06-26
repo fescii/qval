@@ -16,11 +16,6 @@ export default class PostWrapper extends HTMLElement {
   connectedCallback() {
     // console.log('We are inside connectedCallback');
 
-    // like post
-    this.likePost();
-
-    // scroll likes
-    this.scrollLikes();
   }
 
   disableScroll() {
@@ -43,158 +38,6 @@ export default class PostWrapper extends HTMLElement {
   // fn to take number and return a string with commas
   numberWithCommas = x => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  // fn to like a post
-  likePost = () => {
-    // Select like button
-    const likeButton = this.shadowObj.querySelector('.action.like');
-
-    // If like button, add event listener
-    if (likeButton) {
-      // Get the svg node
-      const svg = likeButton.querySelector('svg');
-
-
-      likeButton.addEventListener('click', e => {
-        // prevent the default action
-        e.preventDefault()
-
-        // prevent the propagation of the event
-        e.stopPropagation();
-
-        // Toggle the active class
-        likeButton.classList.toggle('true');
-
-        // Get the current like status
-        const liked = this.getAttribute('liked') || 'false';
-
-        // Get the total likes
-        const likes = this.getAttribute('likes') || 0;
-
-        // Parse the likes to an integer
-        const totalLikes = this.parseToNumber(likes);
-
-        // add scaling to the svg: reduce the size of the svg
-        svg.style.transform = 'scale(0.8)';
-
-        // Add a transition to the svg
-        svg.style.transition = 'transform 0.2s ease-in-out';
-
-        // Check if the user has liked the post
-        if (liked === 'true') {
-          // Set the new value of likes
-          this.setAttribute('likes', totalLikes - 1);
-
-          // Set the new value of liked
-          this.setAttribute('liked', 'false');
-
-          // replace the svg with the new svg
-          setTimeout(() => {
-            svg.innerHTML = `
-              <path d="m8 14.25.345.666a.75.75 0 0 1-.69 0l-.008-.004-.018-.01a7.152 7.152 0 0 1-.31-.17 22.055 22.055 0 0 1-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.066 22.066 0 0 1-3.744 2.584l-.018.01-.006.003h-.002ZM4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.58 20.58 0 0 0 8 13.393a20.58 20.58 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.749.749 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"></path>
-            `;
-            // scale the svg back to 1
-            svg.style.transform = 'scale(1)';
-          }, 200);
-        }
-        else {
-          // Set the new value of likes
-          this.setAttribute('likes', totalLikes + 1);
-
-          // Set the new value of liked
-          this.setAttribute('liked', 'true');
-
-          // replace the svg with the new svg
-          setTimeout(() => {
-            svg.innerHTML = `
-              <path d="M7.655 14.916v-.001h-.002l-.006-.003-.018-.01a22.066 22.066 0 0 1-3.744-2.584C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.044 5.231-3.886 6.818a22.094 22.094 0 0 1-3.433 2.414 7.152 7.152 0 0 1-.31.17l-.018.01-.008.004a.75.75 0 0 1-.69 0Z"></path>
-            `;
-
-            // scale the svg back to 1
-            svg.style.transform = 'scale(1)';
-          }, 200);
-        }
-
-        // Re-render the component
-        // this.render();
-
-        // Scroll the likes
-        this.scrollLikes();
-      });
-    }
-  }
-
-  // fn to scroll likes numbers: bring the appropriate number into view
-  scrollLikes = () => {
-    // Check if user has liked the post
-    const liked = this.getAttribute('liked') || 'false';
-
-    // Get the numbers container
-    const numbers = this.shadowObj.querySelector('.numbers.likes');
-
-    // Get the previous and next elements
-    if (numbers) {
-      const prevElement = numbers.querySelector('#prev');
-      const nextElement = numbers.querySelector('#next');
-
-      // Check if the elements exist
-      if (prevElement && nextElement) {
-        // Get the height of the container
-        const containerHeight = numbers.clientHeight;
-
-        // Get the height of the previous and next elements
-        // const prevHeight = prevElement.clientHeight;
-        const nextHeight = nextElement.clientHeight;
-
-        // If the user has liked the post, scroll to the next element
-        if (liked === 'true') {
-          // Scroll to the next element
-          // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });
-          // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });
-
-          // Scroll to the next element using custom scrollTo
-          this.scrollTo(numbers, nextElement.offsetTop - containerHeight + nextHeight, 200);
-        }
-        else {
-          // Scroll to the top of the container
-          // numbers.scrollTo({ top: 0, behavior: 'smooth' });
-
-          // Scroll to the top of the container using custom scrollTo
-          this.scrollTo(numbers, 0, 200);
-        }
-      }
-    }
-  }
-
-  // Define the easeInOutQuad function for smoother scrolling
-  easeInOutQuad = (t, b, c, d) => {
-    t /= d / 2;
-    if (t < 1) return c / 2 * t * t + b;
-    t--;
-    return -c / 2 * (t * (t - 2) - 1) + b;
-  };
-
-  // Create a custom smooth scrollTo to accommodate chrome and other browsers
-  scrollTo = (element, to, duration) => {
-    const outThis = this;
-
-    // Get the current scroll position
-    let start = element.scrollTop,
-      change = to - start,
-      currentTime = 0,
-      increment = 20;
-
-    // Create the animation
-    const animateScroll = function () {
-      currentTime += increment;
-      let val = outThis.easeInOutQuad(currentTime, start, change, duration);
-      element.scrollTop = val;
-      if (currentTime < duration) {
-        setTimeout(animateScroll, increment);
-      }
-    };
-    animateScroll();
   }
 
   formatNumber = n => {
@@ -235,7 +78,7 @@ export default class PostWrapper extends HTMLElement {
     }
   }
 
-  formatDateWithRelativeTime = (isoDateStr) => {
+  formatDateWithRelativeTime = isoDateStr => {
     // 1. Convert ISO date string with timezone to local Date object
     let date;
     try {
@@ -299,129 +142,12 @@ export default class PostWrapper extends HTMLElement {
     `
   }
 
-  getStats = () => {
-    return /* html */`
-      <div class="actions stats">
-        <span class="action write open">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8.00016 1.83337C3.3755 1.83337 1.8335 3.37537 1.8335 8.00004C1.8335 12.6247 3.3755 14.1667 8.00016 14.1667C12.6248 14.1667 14.1668 12.6247 14.1668 8.00004" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0189 2.86915V2.86915C12.3569 2.28315 11.3456 2.34449 10.7596 3.00649C10.7596 3.00649 7.84694 6.29649 6.83694 7.43849C5.8256 8.57982 6.56694 10.1565 6.56694 10.1565C6.56694 10.1565 8.23627 10.6852 9.23227 9.55982C10.2289 8.43449 13.1563 5.12849 13.1563 5.12849C13.7423 4.46649 13.6803 3.45515 13.0189 2.86915Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10.0061 3.86719L12.4028 5.98919" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          ${this.getReplies()}
-          <span class="line"></span>
-        </span>
-        ${this.getLike(this.getAttribute('liked'))}
-        ${this.getViews()}
-      </div>
-		`
-  }
-
-  getReplies = () => {
-    // Get total replies and parse to integer
-    const replies = this.getAttribute('replies') || 0;
-
-    // Convert the replies to a number
-    const totalReplies = this.parseToNumber(replies);
-
-    //  format the number
-    const opinionsFormatted = this.formatNumber(totalReplies);
-
+  getStats = () =>  {
     return /*html*/`
-      <span class="numbers">
-        <span id="prev">${opinionsFormatted}</span>
-      </span>
+      <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}">
+      </action-wrapper>
     `
-  }
-
-  getViews = () => {
-    // Get total views and parse to integer
-    const views = this.getAttribute('views') || 0;
-
-    // Convert the views to a number
-    const totalViews = this.parseToNumber(views);
-
-    // Format the number
-    const viewsFormatted = this.formatNumber(totalViews);
-
-    return /*html*/`
-      <span class="stat views">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
-          <path d="M8.75 1.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-1.5 0V2.25a.75.75 0 0 1 .75-.75Zm-3.5 3a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Zm7 0a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Z"></path>
-        </svg>
-        <span class="numbers">
-          <span id="prev">${viewsFormatted}</span>
-        </span>
-      </span>
-    `
-  }
-
-  getLike = (liked) => {
-    if (liked === 'true') {
-      return /*html*/`
-        <span class="action like true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="M7.655 14.916v-.001h-.002l-.006-.003-.018-.01a22.066 22.066 0 0 1-3.744-2.584C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.044 5.231-3.886 6.818a22.094 22.094 0 0 1-3.433 2.414 7.152 7.152 0 0 1-.31.17l-.018.01-.008.004a.75.75 0 0 1-.69 0Z"></path>
-          </svg>
-          <span class="numbers likes">
-            ${this.getLikeNumbers()}
-          </span>
-        </span>
-			`
-    }
-    else {
-      return /*html*/`
-        <span class="action like">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="m8 14.25.345.666a.75.75 0 0 1-.69 0l-.008-.004-.018-.01a7.152 7.152 0 0 1-.31-.17 22.055 22.055 0 0 1-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.066 22.066 0 0 1-3.744 2.584l-.018.01-.006.003h-.002ZM4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.58 20.58 0 0 0 8 13.393a20.58 20.58 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.749.749 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"></path>
-          </svg>
-          <span class="numbers likes">
-            ${this.getLikeNumbers()}
-          </span>
-        </span>
-			`
-    }
-  }
-
-  getLikeNumbers = () => {
-    // Get total likes and parse to integer
-    const likes = this.getAttribute('likes') || 0;
-    const totalLikes = this.parseToNumber(likes);
-
-    // Format the number
-    const likesFormatted = this.formatNumber(totalLikes);
-
-    // Check if user has liked the post
-    const liked = this.getAttribute('liked') || 'false';
-
-    // Check if the user has liked the post
-    if (liked === 'true') {
-      // next value is the current value
-      const nextValue = likesFormatted;
-
-      // Get the previous value by subtracting 1, if the value is less than 0, return 0: wrap in formatNumber
-      const prevValue = this.formatNumber(totalLikes - 1 >= 0 ? totalLikes - 1 : 0);
-
-
-      // Return the HTML for prev and next values
-      return /*html*/`
-        <span id="prev">${prevValue}</span>
-        <span id="next">${nextValue}</span>
-      `
-    }
-    else {
-      // next value is the current value + 1
-      const nextValue = this.formatNumber(totalLikes + 1);
-
-      // the previous value is the current value
-      const prevValue = likesFormatted;
-
-      // Return the HTML for prev and next values
-      return /*html*/`
-        <span id="prev">${prevValue}</span>
-        <span id="next">${nextValue}</span>
-      `
-    }
   }
 
   getAuthor = () => {

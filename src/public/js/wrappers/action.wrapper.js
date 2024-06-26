@@ -729,7 +729,7 @@ export default class ActionWrapper extends HTMLElement {
 
         .actions.stats {
           padding: 5px 0 0 0;
-          margin: 0 0 15px 0;
+          margin: 0 0 ${this.getAttribute('full') === 'true' ? '15px' : '0'} 0;
           display: flex;
           flex-flow: row;
           align-items: center;
@@ -804,7 +804,7 @@ export default class ActionWrapper extends HTMLElement {
           gap: 5px;
           font-size: 1rem;
           font-weight: 400;
-          /* color: var(--action-color); */
+          color: var(--action-color);
           color: var(--gray-color);
           border-radius: 50px;
           -webkit-border-radius: 50px;
@@ -835,14 +835,14 @@ export default class ActionWrapper extends HTMLElement {
           background: inherit;
         }
 
-        .stats.actions span.numbers {
+        .action span.numbers {
           /* border: var(--input-border); */
           font-family: var(--font-main), sans-serif;
           font-size: 1rem;
           font-weight: 500;
         }
 
-        .stats.actions span {
+        .action span {
           padding: 0;
           display: flex;
           align-items: center;
