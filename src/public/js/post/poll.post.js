@@ -4,7 +4,7 @@ export default class PollPost extends HTMLElement {
     super();
 
     // Get array of objects for poll options and parse to Array
-    this._options = Array.from(JSON.parse(this.getAttribute('options')));
+    this._options = this.combinePollAndVotes(this.getAttribute('options'), this.getAttribute('votes'));
 
     // Get the end time for the poll
     this._endTime = new Date(this.getAttribute('end-time'));
@@ -18,6 +18,27 @@ export default class PollPost extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  // Function(method) to combine poll(string separated by comma) + votes(string separated by comma) to an object to this format
+  /*
+   [{"name":"one","text":"Java","votes":367},{"name":"two","text":"Python","votes":986},{"name":"three","text":"JavaScript","votes":879},{"name":"four","text":"C#","votes":117}]
+  */
+  combinePollAndVotes = (poll, votes) => {
+    // convert the poll string to an array
+    const pollArray = poll.split(',');
+
+    // convert the votes string to an array
+    const votesArray = votes.split(',');
+
+    // combine the poll and votes arrays to an object named options
+    return pollArray.map((option, index) => {
+      return {
+        name: index + 1,
+        text: option,
+        votes: this.parseToNumber(votesArray[index])
+      }
+    });
   }
 
   render() {
