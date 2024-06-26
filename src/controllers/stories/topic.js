@@ -58,6 +58,7 @@ const getTopicStories = async (req, res, next) => {
   // return the response
   return res.status(200).json({
     success: true,
+    message: data.stories ? "Stories found" : "No stories found!",
     data
   })
 
@@ -123,9 +124,10 @@ const getRelatedStories = async (req, res, next) => {
     });
   }
 
-  // return the response
-  return res.status(200).json({
+   // return the response
+   return res.status(200).json({
     success: true,
+    message: data.stories ? "Stories found" : "No stories found!",
     data
   })
 

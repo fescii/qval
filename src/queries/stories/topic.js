@@ -23,11 +23,6 @@ const findStoriesByTopic = async (reqData) => {
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
 
-    // check if stories is less than the limit + offset
-    if (totalStories < limit + offset) {
-      limit = totalStories - offset;
-    }
-
     // Find the stories
     const where = { 
       published: true,
@@ -62,15 +57,20 @@ const findStoriesByTopic = async (reqData) => {
       stories = fetchedStories.stories;
     }
 
-    // Check if the stories exist
-    if (stories === null) {
-      return { stories: null, error: null };
-    }
-
     // calculate the total number of pages
-    const totalPages = Math.ceil(stories / limit);
+    const totalPages = Math.ceil(totalStories / limit);
 
     const last = page === totalPages;
+
+    // Check if the stories exist
+    if (stories === null) {
+      return { stories: {
+        limit: limit,
+        offset: offset,
+        pages: totalPages,
+        last: true,
+      }, error: null };
+    }
 
     // create a data object
     const data = {
@@ -103,11 +103,6 @@ const findRelatedStories = async (reqData) => {
 
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
-
-    // check if stories is less than the limit + offset
-    if (totalStories < limit + offset) {
-      limit = totalStories - offset;
-    }
 
     // Find the stories
     const where = {
@@ -144,15 +139,20 @@ const findRelatedStories = async (reqData) => {
       stories = fetchedStories.stories;
     }
 
-    // Check if the stories exist
-    if (stories === null) {
-      return { stories: null, error: null };
-    }
-
     // calculate the total number of pages
-    const totalPages = Math.ceil(stories / limit);
+    const totalPages = Math.ceil(totalStories / limit);
 
     const last = page === totalPages;
+
+    // Check if the stories exist
+    if (stories === null) {
+      return { stories: {
+        limit: limit,
+        offset: offset,
+        pages: totalPages,
+        last: true,
+      }, error: null };
+    }
 
     // create a data object
     const data = {

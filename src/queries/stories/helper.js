@@ -19,6 +19,10 @@ const findStoryWhenLoggedIn = async (query, user) => {
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.target = stories.hash AND likes.author = '${user}')`)),
           'liked'
+        ],
+        [
+          Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
+          'option'
         ]
       ],
       where: {
@@ -266,22 +270,9 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
               'is_following'
-            ],
-            // [
-            //   Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = story_author.hash AND votes.story = stories.hash LIMIT 1)`),
-            //   'option'
-            // ]
+            ]
           ],
         },
-        // If story kind is poll, include user vote: if and only if the kind is poll
-        // {
-        //   model: Vote,
-        //   as: 'story_votes',
-        //   attributes: ['option'],
-        //   where: { author: user, story: sequelize.col('stories.hash')},
-        //   limit : 1,
-        //   required: false
-        // }
       ]
     });
 
