@@ -40,7 +40,7 @@ module.exports = (app, url) => {
   );
 
   // Route for finding related stories
-  app.get(`${url}/t/:hash/related`,
+  app.get(`${url}/t/feeds/related`,
     checkToken, getRelatedStories
   );
   

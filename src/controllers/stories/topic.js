@@ -73,17 +73,14 @@ const getTopicStories = async (req, res, next) => {
  * @returns {Object} - Returns response object
 */
 const getRelatedStories = async (req, res, next) => {
-  // Get the story hash from the request object
-  const { hash } = req.params;
-
   // get page and totalStories from the query
   const page = req.query.page || 1;
 
   const totalStories = req.query.stories || 10;
 
-  // Check if the story hash is available in the request object
-  if (!hash || !page || !totalStories || !req.body) {
-    const error = new Error('Story hash or page or totalStories is undefined!');
+  // Check if the queries is available in the request object
+  if (!page || !totalStories || !req.body) {
+    const error = new Error('Page or totalStories is undefined!');
     return next(error);
   }
 
