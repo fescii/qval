@@ -3,6 +3,7 @@ const storyRoutes  = require('./base');
 const replyRoutes  = require('./replies');
 const actionRoutes = require('./actions');
 const feedsRoutes  = require('./feeds');
+const publicRoutes = require('./public');
 
 // Export all routes as a single object
 module.exports = app => {
@@ -10,4 +11,5 @@ module.exports = app => {
   replyRoutes(app, '/api/v1');
   actionRoutes(app, '/api/v1');
   feedsRoutes(app, '/api/v1');
+  publicRoutes(app);
 }

@@ -77,12 +77,27 @@ const validateStory = async data => {
     // Validate when story type is: poll
     if (data.kind === 'poll') {
       // Check if the data poll is present and is an array of strings
-      if (!data.poll || !Array.isArray(data.poll)) {
+      if (!data.poll || !Array.isArray(data.poll) || !data.poll.every(item => typeof item === 'string')) {
         return {
           data: null,
           error: new Error('Poll should be an array of strings - text')
         };
       }
+
+      // Check if end was provided and is a number
+      if (data.end && typeof data.end !== 'number') {
+        return {
+          data: null,
+          error: new Error('End should be a number')
+        };
+      }
+
+      // the end containst the number of days the poll will run for: convert it to date compatible with sequelize
+      const now = new Date(Date.now());
+
+      // add the number of days to the current date
+      now.setDate(now.getDate() + data.end);
+
 
       // Create a votes array of the same length as the poll array: and initialize each value to 0
       const votes = data.poll.map(() => 0);
@@ -94,6 +109,7 @@ const validateStory = async data => {
         poll: data.poll,
         votes: votes,
         topics: topics,
+        end: now
       }
 
       return {

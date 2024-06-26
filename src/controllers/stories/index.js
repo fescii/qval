@@ -13,29 +13,25 @@ const {
   createStoryReply
 } = require('./reply');
 
-const {
-  findAuthorReplies, findAuthorStories
-} = require('./author');
+const { findAuthorReplies, findAuthorStories } = require('./author');
 
 const {
   createStorySection, updateStorySection, deleteStorySection
 } = require('./section');
 
-const {
-  getRelatedStories, getTopicStories
-} = require('./topic');
+const { getRelatedStories, getTopicStories } = require('./topic');
 
-const { 
-  voteController
-} = require('./vote');
+const { voteController } = require('./vote');
+
+const { getStory, getStoryLikes } = require('./public');
 
 
 // Export all controllers as a single object
 module.exports = {
   createStory, updateStory, deleteStory, voteController, createStoryReply,
-  checkStoryBySlug, updateTitle, updateSlug, getTopicStories,
+  checkStoryBySlug, updateTitle, updateSlug, getTopicStories, getStoryLikes,
   likeStoryController, likeReplyController, findStories, publishAStory,
   viewContentController, createReply, updateReply, deleteReply,
-  findAuthorReplies, findAuthorStories, getRelatedStories,
+  findAuthorReplies, findAuthorStories, getRelatedStories, getStory,
   createStorySection, updateStorySection, deleteStorySection
 }

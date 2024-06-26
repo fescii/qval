@@ -98,6 +98,12 @@ module.exports = (User, sequelize, Sequelize) => {
       defaultValue: 0,
       allowNull: true
     },
+    // add end date if the story type is poll
+    end: {
+      type: Sequelize.DATE,
+      defaultValue: null,
+      allowNull: true,
+    }
   },{
     schema: 'story',
     freezeTableName: true,
@@ -130,7 +136,7 @@ module.exports = (User, sequelize, Sequelize) => {
     const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
 
     return await Story.findAll({
-      attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies'],
+      attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies', 'end', 'createdAt', 'updatedAt'],
       where: sequelize.where(
         sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
         '@@',

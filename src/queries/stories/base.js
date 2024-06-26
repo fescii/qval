@@ -118,6 +118,8 @@ const addJob = async story => {
     value: story.topics,
   };
 
+  //construct 
+
   // add the job to the queue
   await actionQueue.add('actionJob', payload);
 };

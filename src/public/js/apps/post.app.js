@@ -98,11 +98,11 @@ export default class AppPost extends HTMLElement {
     switch (story) {
       case 'poll':
         return /*html */`
-          <poll-wrapper hash="${this.getAttribute('hash')}" upvotes="${this.getAttribute('upvotes')}" url="${url}"
+          <poll-wrapper hash="${this.getAttribute('hash')}" url="${url}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
             options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
-            end-time="${this.getAttribute('end-time')}"
+            end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
             author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
@@ -112,7 +112,7 @@ export default class AppPost extends HTMLElement {
         `
       default:
         return /* html */`
-          <post-wrapper hash="${this.getAttribute('hash')}" upvotes="${this.getAttribute('upvotes')}" url="${url}"
+          <post-wrapper hash="${this.getAttribute('hash')}" url="${url}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
             author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"

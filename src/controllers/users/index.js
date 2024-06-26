@@ -1,10 +1,10 @@
 // import all users controllers and export them
-const { register, checkIfEmailExits } = require('./base.user');
-const { followUser } = require('./action.user');
+const { register, checkIfEmailExits } = require('./base');
+const { followUser } = require('./action');
 const {
   updateProfileBio, updateProfileContact, updateProfileName,
   updateProfilePassword, updateProfilePicture, updateProfileEmail
-} = require('./edit.user');
+} = require('./edit');
 
 // Export all users controllers
 module.exports = {
