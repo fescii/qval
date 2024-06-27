@@ -218,7 +218,7 @@ export default class PollPost extends HTMLElement {
   getFooter = () => {
     return /*html*/`
       <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}">
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
   }

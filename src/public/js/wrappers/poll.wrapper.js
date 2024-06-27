@@ -129,7 +129,7 @@ export default class PollWrapper extends HTMLElement {
   getStats = () =>  {
     return /*html*/`
       <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}">
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
   }
@@ -168,33 +168,6 @@ export default class PollWrapper extends HTMLElement {
 		`
   }
 
-  getShare = () => {
-    // get content of the story
-    let content = this.innerHTML;
-
-    // remove all html tags from the content
-    content = content.replace(/<[^>]*>?/gm, '');
-
-    // trim all white spaces from the content
-    content = content.trim();
-
-    // shorten the content to 85 characters
-    content = content.length > 85 ? content.substring(0, 85) : content;
-
-    // Get url to share
-    const url = this.getAttribute('url');
-
-    // Get window host url including https/http part
-    let host = window.location.protocol + '//' + window.location.host;
-
-    // combine the url with the host
-    const shareUrl = `${host}${url}`;
-
-    return /* html */`
-      <share-wrapper url="${shareUrl.toLowerCase()}" summery="${content}"></share-wrapper>
-    `
-  }
-
   getLoader = () => {
     return `
 			<post-loader speed="300"></post-loader>
@@ -208,7 +181,6 @@ export default class PollWrapper extends HTMLElement {
       ${this.getContent()}
       ${this.getPoll()}
       ${this.getAuthorContainer(mql.matches)}
-      ${this.getShare()}
       ${this.getMeta()}
       ${this.getStats()}
       <form-container type="post"></form-container>

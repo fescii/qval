@@ -24,7 +24,8 @@ export default class ActionWrapper extends HTMLElement {
   }
 
   render() {
-    this.shadowObj.innerHTML = this.getTemplate();
+    const full = this.convertToBool(this.getAttribute('full'));
+    this.shadowObj.innerHTML = this.getTemplate(full);
   }
 
   connectedCallback() {
@@ -35,8 +36,10 @@ export default class ActionWrapper extends HTMLElement {
     // scroll likes
     this.scrollLikes(liked);
 
+    const full = this.convertToBool(this.getAttribute('full'))
+
     // open the form
-    this.openForm();
+    this.openForm(full);
   }
 
   isLoggedIn = name => {
@@ -84,10 +87,10 @@ export default class ActionWrapper extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  openForm = () => {
+  openForm = full => {
     const writeBtn = this.shadowObj.querySelector('span.action.write');
     const formContainer = this.shadowObj.querySelector('div.form-container');
-    if (writeBtn && formContainer) {
+    if (writeBtn && formContainer && !full) {
       const formElement = this.getForm();
 
       writeBtn.addEventListener('click', event => {
@@ -516,13 +519,21 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-  getTemplate() {
+  getTemplate = full => {
     // Show HTML Here
-    return `
-      ${this.getStats()}
-      <div class="form-container"></div>
-      ${this.getStyles()}
-    `;
+    if (full) {
+      return `
+        ${this.getStats()}
+          <div class="form-container">${this.getForm()}</div>
+        ${this.getStyles()}
+      `;
+    } else {
+     return `
+        ${this.getStats()}
+          <div class="form-container"></div>
+        ${this.getStyles()}
+      `;
+    }
   }
 
   getStats = () => {
@@ -531,6 +542,7 @@ export default class ActionWrapper extends HTMLElement {
         ${this.getWrite(this.convertToBool(this.getAttribute('full')))}
         ${this.getLike(this.getAttribute('liked'))}
         ${this.getViews()}
+        ${this.getShare()}
       </div>
 		`
   }
@@ -677,6 +689,26 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
+
+  getShare = () => {
+    // Get url to share
+    const url = this.getAttribute('url');
+
+    // Get window host url including https/http part
+    let host = window.location.protocol + '//' + window.location.host;
+
+    // combine the url with the host
+    const shareUrl = `${host}${url}`;
+
+    // Get the tilte of the story
+    const title = this.getAttribute('summery');
+
+
+    return /* html */`
+      <share-wrapper url="${shareUrl.toLowerCase()}" summery="${title}"></share-wrapper>
+    `
+  }
+
   getStyles() {
     return /* css */`
       <style>
@@ -745,7 +777,7 @@ export default class ActionWrapper extends HTMLElement {
           font-size: 0.95rem;
           justify-content: start;
           gap: 5px;
-          padding: 5px 5px;
+          padding: 5px 10px;
           height: 30px;
           border-radius: 50px;
           font-weight: 500;
@@ -767,10 +799,10 @@ export default class ActionWrapper extends HTMLElement {
           background: var(--accent-linear);
           position: absolute;
           top: 30px;
-          left: 13px;
+          left: 18px;
           display: none;
           width: 3px;
-          height: 20px;
+          height: 16px;
           border-radius: 5px;
         }
 
@@ -811,14 +843,6 @@ export default class ActionWrapper extends HTMLElement {
           -moz-border-radius: 50px;
           -ms-border-radius: 50px;
           -o-border-radius: 50px;
-        }
-
-        span.stat.views {
-          gap: 2px;
-        }
-
-        span.stat.views {
-          padding: 5px 5px;
         }
 
         span:first-of-type {

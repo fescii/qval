@@ -165,8 +165,9 @@ const getStorySections = async (req, res, next) => {
 
   // check if the section was fetched
   if (!sections) {
-    return res.status(404).send({
-      success: false,
+    return res.status(200).send({
+      success: true,
+      sections: [],
       message: "The story has no sections!"
     });
   }

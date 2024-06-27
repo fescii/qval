@@ -16,6 +16,44 @@ export default class ShareWrapper extends HTMLElement {
   connectedCallback() {
     // Copy link
     this.copyLink();
+    this.openShare();
+  }
+
+  // fn to open the share overlay
+  openShare = () => {
+    // Get share button
+    const shareButton = this.shadowObj.querySelector('div.host');
+
+    // Check if the overlay exists
+    if (shareButton) {
+      // Get overlay
+      const overlay = shareButton.querySelector('.share.overlay');
+
+      // Add event listener to the share button
+      shareButton.addEventListener('click', e => {
+        // prevent the default action
+        e.preventDefault()
+
+        // prevent the propagation of the event
+        e.stopPropagation();
+
+        // Toggle the overlay
+        overlay.classList.add('active');
+
+        // add event to run once when the overlay is active: when user click outside the overlay
+        document.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Check if the target is not the overlay
+          if (!overlay.contains(e.target)) {
+
+            // Remove the active class
+            overlay.classList.remove('active');
+          }
+        }, { once: true });
+      });
+    }
   }
 
   // Handle copy link
@@ -99,8 +137,16 @@ export default class ShareWrapper extends HTMLElement {
 
   getContent = () => {
     return /* html */`
-      <div class="share">
-        ${this.getShareOptions()}
+      <div class="host">
+        <span class="icon">
+          <span class="sp">•</span>
+          <span class="sp">•</span>
+        </span>
+        <div class="share overlay">
+          <span class="pointer"></span>
+          <p class="title">Share</p>
+          ${this.getShareOptions()}
+        </div>
       </div>
 		`
   }
@@ -111,7 +157,7 @@ export default class ShareWrapper extends HTMLElement {
 
     // Get url of the post
     const url = this.getAttribute('url');
-
+    
     return /* html */`
       <div class="share-buttons" >
         <a class="x"
@@ -234,42 +280,105 @@ export default class ShareWrapper extends HTMLElement {
           text-decoration: none;
         }
 
-        :host {
-          font-size: 16px;
-          padding: 15px 0;
-          border-bottom: var(--border);
-          margin: 0;
-          width: 100%;
+        .host {
+          position: relative;
+          min-height: 35px;
+          height: 30px;
+          width: max-content;
+          position: relative;
+          padding: 5px 10px;
+          cursor: pointer;
           display: flex;
-          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          font-size: 1rem;
+          font-weight: 400;
+          color: var(--action-color);
+          color: var(--gray-color);
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          -ms-border-radius: 50px;
+          -o-border-radius: 50px;
+          z-index: 5;
+        }
+
+        .host:hover {
+          background: var(--hover-background);
+        }
+
+        span.icon {
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: max-content;
           gap: 0;
+          overflow-x: scroll;
+          scrollbar-width: none;
+          -webkit-scrollbar-width: none;
+        }
+
+        span.icon > span.sp {
+          font-size: 1.2rem;
+        }
+
+        span.pointer {
+          position: absolute;
+          top: -6px;
+          left: calc(50% - 6px);
+          width: 12px;
+          rotate: 45deg;
+          height: 12px;
+          cursor: pointer;
+          z-index: 1;
+          background: var(--background);
+          border-left: var(--border);
+          border-top: var(--border);
+          border-radius: 3px;
+        }
+
+        .share {
+          display: none;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          position: absolute;
+          top: 35px;
+          left: calc(50% - 100px);
+          padding: 5px 10px 10px 10px;
+          border: var(--border);
+          background: var(--background);
+          box-shadow: var(--card-box-shadow);
+          width: 200px;
+          max-width: 200px;
+          height: max-content;
+          border-radius: 12px;
+        }
+
+        .share.active {
+          display: flex;
         }
 
         .title {
           color: var(--text-color);
-          font-family: var(--font-text), sans-serif;
-          font-size: 1.2rem;
-          font-weight: 600;
+          font-family: var(--font-main), sans-serif;
+          font-size: 1rem;
+          font-weight: 500;
           margin: 0;
-          padding: 0 0 10px;
+          padding: 0;
         }
 
         .share-buttons {
           padding: 0;
           width: 100%;
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          width: max-content;
           gap: 10px;
-          overflow-x: scroll;
-          scrollbar-width: none;
-          -webkit-scrollbar-width: none;
-        }
-
-        .share-buttons::-webkit-scrollbar {
-          display: none;
-          visibility: hidden;
         }
 
         .share-buttons > span.copy,
@@ -285,6 +394,7 @@ export default class ShareWrapper extends HTMLElement {
           max-height: 30px;
           max-width: 30px;
           padding: 2px;
+          margin: 3px;
           border-radius: 50px;
           -webkit-border-radius: 50px;
           -moz-border-radius: 50px;
@@ -350,10 +460,6 @@ export default class ShareWrapper extends HTMLElement {
         @media screen and (max-width: 660px) {
           ::-webkit-scrollbar {
             -webkit-appearance: none;
-          }
-
-          :host {
-            border-bottom: var(--border-mobile);
           }
 
           a,

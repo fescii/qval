@@ -16,13 +16,8 @@ export default class AppStory extends HTMLElement {
     // get the topics
     let topics = this.getAttribute('topics');
 
-    // Check if the topics is null
-    if (topics === null) {
-      return ['story'];
-    }
-
-    // Return the topics
-    return topics.split(',');
+    // 
+    return topics ? topics.split(',') : ['story'];
   }
 
   render() {
@@ -93,16 +88,15 @@ export default class AppStory extends HTMLElement {
         return response.json();
       })
       .then(data => {
+        storyLoaders.forEach(loader  => {
+          loader.remove()
+        })
         if(data.success) {
           // map fields
           const sections = `
-            ${this.getStoryBody(outherThis.mapFields(data.sections))}
-            ${this.getSection()}
-          `;
-
-          storyLoaders.forEach(loader  => {
-            loader.remove()
-          })
+          ${this.getStoryBody(outherThis.mapFields(data.sections))}
+          ${this.getSection()}`;
+  
           contentContainer.insertAdjacentHTML('beforeend', sections);
         }
         // Check if stories is empty
@@ -119,15 +113,20 @@ export default class AppStory extends HTMLElement {
   }
 
   mapFields = data => {
-    return data.map(section => {
-      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
-      return /*html*/`
-        <div class="section" order="${section.order}" id="section${section.order}">
-          ${title}
-          ${section.content}
-        </div>
-      `
-    }).join('');
+    if (data.length <= 0) {
+      return '';
+    }
+    else {
+      return data.map(section => {
+        const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+        return /*html*/`
+          <div class="section" order="${section.order}" id="section${section.order}">
+            ${title}
+            ${section.content}
+          </div>
+        `
+      }).join('');
+    }
   }
 
   fetchWithTimeout = (url, options, timeout = 9000) => {
@@ -258,6 +257,8 @@ export default class AppStory extends HTMLElement {
     let str = this.topics[0];
     let formatted = str.toLowerCase().replace(/(^|\s)\S/g, match => match.toUpperCase());
 
+    const storyContent = this.textContent.trim();
+
     // Show HTML Here
     return /* html */ `
       <story-section topic="${formatted}" hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}"
@@ -267,16 +268,16 @@ export default class AppStory extends HTMLElement {
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
         author-bio="${this.getAttribute('author-bio')}">
-        ${this.getStoryContent()}
+        ${this.getStoryContent(storyContent)}
         ${data}
       </story-section>
     `
   }
 
-  getStoryContent = () => {
+  getStoryContent = text => {
     return `
       <div class="intro">
-        ${this.innerHTML}
+        ${text}
       </div>
     `;
   }

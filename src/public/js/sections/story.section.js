@@ -133,7 +133,6 @@ export default class StorySection extends HTMLElement {
       </article>
       ${this.getAuthorContainer(mql.matches)}
       ${this.getMeta()}
-      ${this.getShare()}
       ${this.getStats()}
     `;
   }
@@ -178,7 +177,7 @@ export default class StorySection extends HTMLElement {
   getStats = () => {
     return /*html*/`
       <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}">
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summery="${this.getAttribute('story-title')}">
       </action-wrapper>
     `
   }
@@ -191,25 +190,6 @@ export default class StorySection extends HTMLElement {
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
-  }
-
-  getShare = () => {
-    // Get url to share
-    const url = this.getAttribute('url');
-
-    // Get window host url including https/http part
-    let host = window.location.protocol + '//' + window.location.host;
-
-    // combine the url with the host
-    const shareUrl = `${host}${url}`;
-
-    // Get the tilte of the story
-    const title = this.getAttribute('story-title');
-
-
-    return /* html */`
-      <share-wrapper url="${shareUrl.toLowerCase()}" summery="${title}"></share-wrapper>
-    `
   }
 
   getStyles() {
