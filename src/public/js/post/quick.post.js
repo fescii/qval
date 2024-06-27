@@ -66,8 +66,8 @@ export default class QuickPost extends HTMLElement {
     }
   }
 
-   // Replace and push states
-   replaceAndPushStates = (url, body, post) => {
+  // Replace and push states
+  replaceAndPushStates = (url, body, post) => {
     // Replace the content with the current url and body content
     // get window location
     const pageUrl = window.location.href;

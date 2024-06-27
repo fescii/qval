@@ -33,6 +33,13 @@ export default class AppStory extends HTMLElement {
     // Change style to flex
     this.style.display='flex';
 
+    // select contentContainer
+    const contentContainer = this.shadowObj.querySelector('#content-container');
+
+    if (contentContainer) {
+      this.fetchStoryContent(contentContainer)
+    }
+
     // Get mql object
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -57,6 +64,138 @@ export default class AppStory extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+
+  fetchStoryContent = contentContainer => {
+    const outherThis = this;
+    // get hash
+    let hash = this.getAttribute('hash');
+    hash.trim();
+
+    // construct url 
+    const url  = `/api/v1/s/${hash}/sections`;
+
+    // construct options
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    }
+
+    const storyLoaders = this.shadowObj.querySelectorAll('story-loader');
+
+    // fetch content
+    this.fetchWithTimeout(url, options)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // map fields
+          const sections = `
+            ${this.getStoryBody(outherThis.mapFields(data.sections))}
+            ${this.getSection()}
+          `;
+
+          storyLoaders.forEach(loader  => {
+            loader.remove()
+          })
+          contentContainer.insertAdjacentHTML('beforeend', sections);
+        }
+        // Check if stories is empty
+        else {
+          // show toast 
+          outherThis.getToast(data.message, false);
+        }
+        
+      })
+      .catch(_error => {
+        // show toast 
+        outherThis.getToast("An error occured while fetcting content!", false)
+      });
+  }
+
+  mapFields = data => {
+    return data.map(section => {
+      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      return /*html*/`
+        <div class="section" order="${section.order}" id="section${section.order}">
+          ${title}
+          ${section.content}
+        </div>
+      `
+    }).join('');
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // reject(new Error('Request timed out'));
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  showToast = (text, success) => {
+    // Get the toast element
+    const toast = this.getToast(text, success);
+
+    // Get body element
+    const body = document.querySelector('body');
+
+    // Insert the toast into the DOM
+    body.insertAdjacentHTML('beforeend', toast);
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+      // Select the toast element
+      const toast = body.querySelector('.toast');
+
+      // Remove the toast
+      if(toast) {
+        toast.remove();
+      }
+    }, 3000);
+  }
+
+  getToast = (text, success) => {
+    if (success) {
+      return /* html */`
+        <div class="toast true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    else {
+      return /* html */`
+      <div class="toast false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    
   }
 
   getDate = isoDateStr => {
@@ -85,18 +224,16 @@ export default class AppStory extends HTMLElement {
     if (mql.matches) {
       return /* html */`
         ${this.getTop()}
-        <div class="content">
-          ${this.getStoryBody()}
-          ${this.getSection()}
+        <div class="content" id="content-container">
+          ${this.getLoader()}
         </div>
       `;
     }
     else {
       return /* html */`
-        <div class="content">
+        <div class="content" id="content-container">
           ${this.getTop()}
-          ${this.getStoryBody()}
-          ${this.getSection()}
+          ${this.getLoader()}
         </div>
 
         <section class="side">
@@ -117,7 +254,7 @@ export default class AppStory extends HTMLElement {
     `
   }
 
-  getStoryBody = () => {
+  getStoryBody = data => {
     let str = this.topics[0];
     let formatted = str.toLowerCase().replace(/(^|\s)\S/g, match => match.toUpperCase());
 
@@ -131,148 +268,17 @@ export default class AppStory extends HTMLElement {
         author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
         author-bio="${this.getAttribute('author-bio')}">
         ${this.getStoryContent()}
+        ${data}
       </story-section>
     `
   }
 
-  fetchIntro = async () => {
-    return this.innerHTML;
-  }
-
   getStoryContent = () => {
-    return /*html*/`
+    return `
       <div class="intro">
-          ${this.getIntro()}
-        </div>
-        <div class="section" id="section1">
-          <h2 class="title">Debian Has Lower System Requirements</h2>
-          <p>If the device you want to <strong>install Linux</strong> on is light on resources, you’ll
-            want to note Debian and Ubuntu’s differing minimum requirements. <a href="https://www.blogger.com/#">A Debian 11 desktop
-              install requires</a>
-            at least a 1GHz processor, 1GB RAM, and
-            10GB storage.
-          </p>
-          <p>
-            <a href="https://www.blogger.com/#">Ubuntu Desktop more than doubles those requirements</a> with a
-            2GHz dual-core processor, 4GB of RAM, and 25GB of disk space.
-          </p>
-          <p>That said, when we tested standard installations of both Debian 11
-            and Ubuntu Desktop 20.04, the pull on resources didn’t differ
-            significantly, using about 1GB of RAM at idle.
-          </p>
-          <p>
-            For older devices, this
-            can be asking a lot, so you may want a more minimal desktop. <br>That’s
-            relatively easy to get with Debian, but for Ubuntu, you’re better off
-            going with another “<a href="https://www.blogger.com/#">Ubuntu flavor</a>” like <a
-              href="https://www.blogger.com/#">Lubuntu</a> or <a href="https://www.blogger.com/#">Xubuntu</a>.
-          </p>
-          <p>Why? Much of the resource consumption comes from the GNOME desktop environment (DE), not the <a
-              href="https://www.blogger.com/#">operating system</a>
-            itself.
-          </p>
-          <p>You can reduce&nbsp;Debian’s weight significantly if, at install,
-            you simply choose a lightweight DE like Xfce or LXQt instead of GNOME
-            (optionally, deselect “standard system utilities” as well to forgo most
-            of the preinstalled apps).
-          </p>
-          <p>
-            On Ubuntu, you could <a href="https://www.blogger.com/#">get one of those DEs after
-            installation</a>, but that process is a bit more
-            complicated and leaves you with an additional DE you might not use.
-          </p>
-        </div>
-        <div class="section" id="section2">
-          <h2 class="title">Ubuntu Makes Proprietary Software Easier to Get</h2>
-          <p>Ubuntu and Debian take different approaches to the debate on free and <a href="https://www.blogger.com/#">open
-              source</a>
-            (FOSS) versus closed source or “proprietary” software.
-          </p>
-          <p>When you first
-            run Debian, you don’t have immediate access to proprietary software,
-            which includes popular apps like Spotify, Steam, and Microsoft Teams.
-          </p>
-          <p>
-            This also includes drivers necessary to make some critical hardware
-            work, including NVIDIA GPUs. You can only get that proprietary software
-            by&nbsp;<a href="https://www.blogger.com/#">adding specific repositories</a> to your software sources, downloading
-            <a href="https://www.blogger.com/#">DEB files</a> from official websites, or installing them through services like
-            <a href="https://www.blogger.com/#">Snap</a> or <a href="https://www.blogger.com/#">Flathub</a>.
-          </p>
-          <p>In stark contrast, Ubuntu Desktop doesn’t hold any proprietary
-            software back.
-          </p>
-          <p>Generally, if there’s a popular app available for Linux,
-            you can get it with ease the moment you first boot up Ubuntu (an
-            exception might be <a href="https://www.blogger.com/#">Google Chrome</a>). Ubuntu will also make sure you get all
-            necessary hardware
-            drivers at installation, proprietary and otherwise.
-          </p>
-          <p>Why the dramatic difference? Debian tries to serve a wider community
-            by making it easy for people who are dedicated to the FOSS way of life
-            to use Debian in good conscience.
-          </p>
-          <p>
-            Ubuntu, however, prioritizes
-            convenience for the everyday user who doesn’t care about code
-            philosophies. If that’s you, you’ll likely find Ubuntu more appealing.</p>
-        </div>
-        <div class="section" id="section3">
-          <h2 class="title">Debian Supports Older Hardware</h2>
-          <p>If you’re thinking of <a href="https://www.blogger.com/#">reviving an aging device</a>
-            with Linux, you’re more likely to have success with Debian. That’s
-            partly because Debian still maintains support for 32-bit architectures
-            (also known as&nbsp;i386).
-          </p>
-          <p> Most consumer PCs released in or after the year
-            2009 use 64-bit architectures. But if your computer is from before that
-            year, you may need a distribution (distro) that still supports 32-bit,
-            such as Debian.
-          </p>
-          <p>Ubuntu, in contrast, dropped full 32-bit support with version 18.04.
-            Earlier versions with 32-bit support are still available for download,
-            but standard updates have already ended.
-          </p>
-          <p>Extended security updates&nbsp;for
-            version 14.04 will continue only until April 2024 and April 2026 for
-            16.04.
-          </p>
-          <p>The decision to drop 32-bit allowed the Ubuntu development team to
-            focus on serving modern users with modern devices.
-          </p>
-          <p>The Debian team, in
-            contrast, carries on the 32-bit legacy so that outmoded but otherwise
-            functioning devices can stay out of the trash bin. These are two
-            different but honorable objectives, and which serves you better depends
-            on your device.
-          </p>
-        </div>
-        <div class="section" id="section4">
-          <h2 class="title">Ubuntu Is Corporate-Backed</h2>
-          <p>Ubuntu is maintained by an organization called <a href="https://www.blogger.com/#">Canonical</a>.
-            Debian, in contrast, is developed completely by a community of volunteers. Both offer their distros free of charge,
-            but Canonical also
-            offers paid support if you’re using Ubuntu professionally.</p>
-        </div>
-    `
-  }
-
-  getNextArticle = () => {
-    return `
-      <div class="next-article">
-        <a href="/story/${this.getAttribute('next-id')}" class="article">
-          <span class="title">Next article</span>
-          <span class="text">${this.getAttribute('next-title')}</span>
-          <span class="date">${this.getDate(this.getAttribute('next-date'))}</span>
-        </a>
+        ${this.innerHTML}
       </div>
-    `
-  }
-
-  getForm = () => {
-    return `
-      <form-container type="story"></form-container>
-    `
+    `;
   }
 
   getAuthor = () => {
@@ -306,6 +312,13 @@ export default class AppStory extends HTMLElement {
        feedback="/about/feedback" request="/about/request" code="/about/code" donate="/about/donate" contact="/about/contact" company="https://github.com/aduki-hub">
       </info-container>
     `
+  }
+
+  getLoader = () => {
+    return `
+			<story-loader speed="300"></story-loader>
+      <story-loader speed="300"></story-loader>
+		`
   }
 
   getStyles() {
