@@ -42,6 +42,10 @@ export default class HoverAuthor extends HTMLElement {
     this.handleUserClick(mql.matches, url, body, contentContainer);
   }
 
+  disconnectedCallback() {
+    this.enableScroll()
+  }
+
   isLoggedIn = name => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -124,6 +128,8 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
+
+          outerThis.disableScroll();
         });
 
         // add mouse leave event listener
@@ -133,6 +139,7 @@ export default class HoverAuthor extends HTMLElement {
 
           // remove the content from the content container
           contentContainer.innerHTML = outerThis.getLoader();
+          outerThis.enableScroll();
         });
       }
       else {
@@ -147,6 +154,8 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
+
+          outerThis.disableScroll();
         });
       }
     }
@@ -187,6 +196,8 @@ export default class HoverAuthor extends HTMLElement {
   
             // change the display of the content container
             contentContainer.style.display = 'none';
+
+            outerThis.enableScroll();
   
             // remove the content from the content container
             contentContainer.innerHTML = outerThis.getLoader();
@@ -1086,6 +1097,24 @@ export default class HoverAuthor extends HTMLElement {
           .actions > .action,
           span.action {
             cursor: default !important;
+          }
+
+          a.meta.link {
+            height: max-content;
+            display: flex;
+            height: 30px;
+            align-items: center;
+            font-family: var(--font-mono),monospace;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-decoration: none;
+            text-decoration: none;
+            color: transparent;
+            background: var(--accent-linear);
+            background-clip: text;
+            -webkit-background-clip: text;
           }
 
           .content-container {

@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { Sequelize, Story, Reply, User } = require('../../models').models;
+const { Sequelize, Story, StorySection, Reply, User } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
@@ -34,6 +34,12 @@ const findUserStory = async (query, user) => {
           model: User,
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified'],
+        },
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
         }
       ]
     });

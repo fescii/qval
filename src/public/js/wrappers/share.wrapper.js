@@ -16,11 +16,18 @@ export default class ShareWrapper extends HTMLElement {
   connectedCallback() {
     // Copy link
     this.copyLink();
-    this.openShare();
+
+    // Watch for media query changes
+    const mql = window.matchMedia('(max-width: 660px)');
+    this.openShare(mql.matches);
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   // fn to open the share overlay
-  openShare = () => {
+  openShare = mql => {
     // Get share button
     const shareButton = this.shadowObj.querySelector('div.host');
 
@@ -28,6 +35,10 @@ export default class ShareWrapper extends HTMLElement {
     if (shareButton) {
       // Get overlay
       const overlay = shareButton.querySelector('.share.overlay');
+
+      const content = shareButton.querySelector('.share > .content');
+
+      const close = shareButton.querySelector('span.close')
 
       // Add event listener to the share button
       shareButton.addEventListener('click', e => {
@@ -39,19 +50,35 @@ export default class ShareWrapper extends HTMLElement {
 
         // Toggle the overlay
         overlay.classList.add('active');
+        // disable scroll
+        this.disableScroll()
 
-        // add event to run once when the overlay is active: when user click outside the overlay
-        document.addEventListener('click', e => {
-          e.preventDefault();
-          e.stopPropagation();
-
-          // Check if the target is not the overlay
-          if (!overlay.contains(e.target)) {
-
-            // Remove the active class
+        if (!mql) {
+          // add event to run once when the overlay is active: when user click outside the overlay
+          document.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+  
+            // Check if the target is not the overlay
+            if (!content.contains(e.target)) {
+              // Remove the active class
+              overlay.classList.remove('active');
+              this.enableScroll()
+            }
+          }, { once: true });
+        }
+        else {
+          // add event to run once when the overlay is active: when user click outside the overlay
+          close.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+  
             overlay.classList.remove('active');
-          }
-        }, { once: true });
+            this.enableScroll()
+          }, { once: true });
+        }
       });
     }
   }
@@ -143,9 +170,12 @@ export default class ShareWrapper extends HTMLElement {
           <span class="sp">•</span>
         </span>
         <div class="share overlay">
-          <span class="pointer"></span>
-          <p class="title">Share</p>
-          ${this.getShareOptions()}
+          <span class="close"></span>
+          <div class="content">
+            <span class="pointer"></span>
+            <p class="title">Share</p>
+            ${this.getShareOptions()}
+          </div>
         </div>
       </div>
 		`
@@ -157,7 +187,7 @@ export default class ShareWrapper extends HTMLElement {
 
     // Get url of the post
     const url = this.getAttribute('url');
-    
+
     return /* html */`
       <div class="share-buttons" >
         <a class="x"
@@ -301,7 +331,6 @@ export default class ShareWrapper extends HTMLElement {
           -moz-border-radius: 50px;
           -ms-border-radius: 50px;
           -o-border-radius: 50px;
-          z-index: 5;
         }
 
         .host:hover {
@@ -310,6 +339,8 @@ export default class ShareWrapper extends HTMLElement {
 
         span.icon {
           padding: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -341,14 +372,11 @@ export default class ShareWrapper extends HTMLElement {
 
         .share {
           display: none;
-          flex-flow: column;
-          align-items: center;
-          justify-content: center;
-          gap: 5px;
           position: absolute;
           top: 35px;
+          z-index: 4;
           left: calc(50% - 100px);
-          padding: 5px 10px 10px 10px;
+          padding: 0;
           border: var(--border);
           background: var(--background);
           box-shadow: var(--card-box-shadow);
@@ -356,6 +384,15 @@ export default class ShareWrapper extends HTMLElement {
           max-width: 200px;
           height: max-content;
           border-radius: 12px;
+        }
+
+        .content {
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          padding: 5px 10px 10px 10px;
         }
 
         .share.active {
@@ -462,9 +499,129 @@ export default class ShareWrapper extends HTMLElement {
             -webkit-appearance: none;
           }
 
+          .host {
+            margin: 0;
+          }
+
+          .share {
+            position: fixed;
+            z-index: 100;
+            background: transparent;
+            background: var(--modal-overlay);
+            padding: 0;
+            margin: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            min-height: 100dvh;
+            min-width: 100dvw;
+            height: 100%;
+            width: 100%;
+            border-radius: 0;
+            border: none;
+            transition: all 300ms ease-in-out;
+          }
+
           a,
+          span.pointer,
+          .host,
           .share-buttons > span.copy {
             cursor: default !important;
+          }
+  
+          .overlay span.close {
+            display: flex;
+            position: absolute;
+            background: var(--modal-overlay);
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+          }
+
+          .share .content {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1;
+            gap: 0;
+            box-shadow: var(--card-box-shadow);
+            width: 100%;
+            padding: 15px 8px;
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            left: 0;
+            background: var(--background);
+            border: var(--story-border-mobile);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+          }
+
+          .title {
+            color: var(--text-color);
+            font-family: var(--font-main), sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            padding: 10px 0;
+          }
+
+          span.pointer {
+            position: absolute;
+            top: 10px;
+            left: calc(50% - 15px);
+            width: 30px;
+            rotate: 0deg;
+            height: 5px;
+            cursor: pointer;
+            z-index: 1;
+            background: var(--dot-background);
+            border-left: none;
+            border-radius: 3px;
+          }
+
+          .share-buttons > span.copy,
+          .share-buttons > a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            height: 43px;
+            width: 43px;
+            min-height: 43px;
+            min-width: 43px;
+            max-height: 43px;
+            max-width: 43px;
+            padding: 2px;
+            margin: 3px;
+          }
+
+          .share-buttons > span.copy > svg,
+          .share-buttons > a > svg {
+            height: 18px;
+            width: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .share-buttons > a.facebook > svg {
+            height: 20px;
+            width: 20px;
+          }
+
+          .share-buttons > a.reddit > svg {
+            height: 21px;
+            width: 21px;
+          }
+
+          .share-buttons > a.telegram > svg {
+            height: 21px;
+            width: 21px;
           }
         }
       </style>

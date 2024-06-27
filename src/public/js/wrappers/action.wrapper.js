@@ -860,7 +860,6 @@ export default class ActionWrapper extends HTMLElement {
         }
 
         .action span.numbers {
-          /* border: var(--input-border); */
           font-family: var(--font-main), sans-serif;
           font-size: 1rem;
           font-weight: 500;
@@ -874,7 +873,6 @@ export default class ActionWrapper extends HTMLElement {
           gap: 3px;
           font-size: 1rem;
           font-weight: 400;
-          /* color: var(--gray-color); */
         }
 
         .stat > .numbers,

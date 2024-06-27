@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { sequelize, Sequelize, Story, Reply, User, Vote } = require('../../models').models;
+const { sequelize, Sequelize, Story, StorySection, Reply, User, Vote } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
@@ -40,6 +40,12 @@ const findStoryWhenLoggedIn = async (query, user) => {
             ]
           ],
         },
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
+        }
       ]
     });
 
@@ -89,6 +95,12 @@ const findStoryWhenLoggedOut = async query => {
           model: User,
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified']
+        },
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
         }
       ]
     });

@@ -124,14 +124,12 @@ export default class StorySection extends HTMLElement {
   }
 
   getContent = () => {
-    // check mql for mobile view
-    const mql = window.matchMedia('(max-width: 660px)');
     return `
+      ${this.getAuthorTop()}
       ${this.getHeader()}
       <article class="article">
         ${this.innerHTML}
       </article>
-      ${this.getAuthorContainer(mql.matches)}
       ${this.getMeta()}
       ${this.getStats()}
     `;
@@ -140,15 +138,22 @@ export default class StorySection extends HTMLElement {
   getHeader = () => {
     return `
       <div class="head">
-        <span class="topic">${this.getAttribute('topic')}</span>
         <h1 class="story-title">${this.getAttribute('story-title')}</h1>
       </div>
     `
   }
 
-  getAuthorContainer = mql => {
-    return mql ? this.getAuthor() : '';
+  getAuthorTop = () => {
+    let authorUrl = this.getAttribute('author-url');
+    authorUrl = authorUrl.trim().toLowerCase();
+    return /*html*/`
+      <div class="top-meta">
+        <span class="by">by</span>
+        ${this.getAuthorHover()}
+      </div>
+    `
   }
+
 
   getMeta = () => {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
@@ -182,13 +187,15 @@ export default class StorySection extends HTMLElement {
     `
   }
 
-  getAuthor = () => {
+  getAuthorHover = () => {
+    let url = this.getAttribute('author-url');
+    url = url.trim().toLowerCase();
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
-       bio="${this.getAttribute('author-bio')}">
-      </author-wrapper>
+			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
+        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
+      </hover-author>
 		`
   }
 
@@ -251,6 +258,48 @@ export default class StorySection extends HTMLElement {
           flex-flow: column;
           font-family: var(--font-read), sans-serif;
           gap: 0;
+        }
+
+        .top-meta {
+          height: max-content;
+          padding: 5px 0 5px;
+          margin: 0 0 5px 0;
+          border-bottom: var(--border);
+          display: flex;
+          position: relative;
+          color: var(--gray-color);
+          align-items: center;
+          font-family: var(--font-mono),monospace;
+          gap: 5px;
+          font-size: 1rem;
+          line-height: 1.5;
+        }
+  
+        .top-meta > span.sp {
+          margin: 1px 0 0 0;
+        }
+  
+        .top-meta > time.time {
+          font-family: var(--font-main), sans-serif;
+          font-size: 0.93rem;
+          font-weight: 500;
+          margin: 1px 0 0 0;
+        }
+  
+        .top-meta a.link {
+          text-decoration: none;
+          color: transparent;
+          background-image: var(--action-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+  
+        .top-meta  a.author-link {
+          text-decoration: none;
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
         }
 
         div.head {
@@ -422,6 +471,10 @@ export default class StorySection extends HTMLElement {
 
           a {
             cursor: default !important;
+          }
+
+          .top-meta {
+            border-bottom: var(--border-mobile);
           }
 
           .meta {

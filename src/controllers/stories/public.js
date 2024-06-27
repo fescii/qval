@@ -54,6 +54,10 @@ const getStory = async (req, res) => {
   // add tab to the story object
   story.tab = 'replies';
 
+  if (story.kind === 'story') {
+    story.html = mapFields(story.content, story.story_sections);
+  }
+
   res.render('pages/story', {
     data: story
   })
@@ -105,9 +109,38 @@ const getStoryLikes = async (req, res) => {
   // add tab to the story object
   story.tab = 'likes';
 
+  if (story.kind === 'story') {
+    story.html = mapFields(story.content, story.story_sections);
+  }
+
   res.render('pages/story', {
     data: story
   })
+}
+
+const mapFields = (content, data) => {
+  let html = `
+    <div class="intro">
+      ${content}
+    </div>
+  `;
+  
+  if (data.length <= 0) {
+    return html;
+  }
+  else {
+    const sections =  data.map(section => {
+      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      return /*html*/`
+        <div class="section" order="${section.order}" id="section${section.order}">
+          ${title}
+          ${section.content}
+        </div>
+      `
+    }).join('');
+
+    return `${html} ${sections}`;
+  }
 }
 
 
