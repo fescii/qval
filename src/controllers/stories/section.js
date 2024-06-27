@@ -6,6 +6,10 @@ const {
 const { checkAuthority } = require('../../utils').roleUtil;
 const { Privileges } = require('../../configs').platformConfig;
 
+const {
+  fetchStorySections
+} = require('../../queries').storyQueries;
+
 /**
  * @function createStorySection
  * @description Controller for adding a new section to a story
@@ -127,6 +131,48 @@ const updateStorySection = async (req, res, next) => {
 }
 
 /**
+ * @function getStorySections
+ * @description Controller for fetching all sections in a story
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getStorySections = async (req, res, next) => {
+  // Check if the user or payload is available
+  const { hash } = req.params;
+
+  if (!hash) {
+    const error = new Error('Payload data or user data is undefined!');
+    return next(error)
+  }
+
+  // Get validated payload and user data from request object
+  const data = {
+    story: hash.toUpperCase()
+  }
+
+  // Fetch story sections from the database
+  const {
+    sections,
+    error
+  } = await fetchStorySections(data);
+
+  // Passing the error to error middleware
+  if (error) {
+    return next(error);
+  }
+
+  // Return the response
+  return res.status(200).send({
+    success: true,
+    sections: sections,
+    message: "Sections fetched successfully!",
+  });
+}
+
+
+/**
  * @function deleteStorySection
  * @description Controller for deleting a section in a story
  * @param {Object} req - Express request object
@@ -195,7 +241,7 @@ const deleteStorySection = async (req, res, next) => {
 }
 
 module.exports = {
-  createStorySection,
+  createStorySection, getStorySections,
   updateStorySection,
   deleteStorySection
 }

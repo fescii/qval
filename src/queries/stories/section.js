@@ -127,7 +127,39 @@ const removeStorySection = async data => {
   }
 }
 
+/**
+ * @function fetchStorySections
+ * @description Query to get all sections of a story ordered by their order
+ * @param {String} data - The hash of the story to get sections from
+ * @returns {Object} - The story sections object or null, and the error if any
+*/
+const fetchStorySections = async data => {
+  try {
+    // Get all sections of a story, ordered by order
+    const sections = await StorySection.findAll({
+      where: {
+        story: data.story
+      },
+      order: [
+        ['order', 'ASC']
+      ]
+    });
+
+    // check if the sections are empty
+    if (sections.length === 0) {
+      return { sections: null, error: null };
+    }
+
+    // return the sections
+    return { sections, error: null };
+  } catch (error) {
+    console.log(error);
+    return { sections: null, error };
+  }
+}
+
 // Export the module
 module.exports = {
-  addStorySection, editStorySection, removeStorySection
+  addStorySection, editStorySection, removeStorySection,
+  fetchStorySections
 }

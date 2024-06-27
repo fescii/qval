@@ -16,7 +16,8 @@ const {
 const { findAuthorReplies, findAuthorStories } = require('./author');
 
 const {
-  createStorySection, updateStorySection, deleteStorySection
+  createStorySection, updateStorySection, deleteStorySection,
+  getStorySections
 } = require('./section');
 
 const { getRelatedStories, getTopicStories } = require('./topic');
@@ -31,7 +32,7 @@ module.exports = {
   createStory, updateStory, deleteStory, voteController, createStoryReply,
   checkStoryBySlug, updateTitle, updateSlug, getTopicStories, getStoryLikes,
   likeStoryController, likeReplyController, findStories, publishAStory,
-  viewContentController, createReply, updateReply, deleteReply,
+  viewContentController, createReply, updateReply, deleteReply, getStorySections,
   findAuthorReplies, findAuthorStories, getRelatedStories, getStory,
   createStorySection, updateStorySection, deleteStorySection
 }

@@ -135,44 +135,14 @@ export default class AppStory extends HTMLElement {
     `
   }
 
-  // fetchNextArticle = async () => {
-  //   const url = `https://jsonplaceholder.typicode.com/posts/${this.getAttribute('next-id')}`;
-  //   const response = await fetch(url);
-  //   const data = await response.json();
-  //   return data;
-  // }
+  fetchIntro = async () => {
+    return this.innerHTML;
+  }
 
   getStoryContent = () => {
     return /*html*/`
       <div class="intro">
-          <p>If you’re looking for a Linux distribution, you’ve likely seen recommendations for both <a
-            href="https://www.blogger.com/#">Debian</a> or <a href="https://www.blogger.com/#">Ubuntu</a>.
-            <br>Their similarities, and the fact that Ubuntu is technically based on
-            Debian, blur the lines between them.<br> Let’s explore the important
-            differences.
-          </p>
-          <blockquote>
-            Debian and Ubuntu are both popular Linux distributions, but they have
-              different philosophies and target audiences. <br/> Debian is community-driven
-              and focuses on stability, while Ubuntu is corporate-backed and
-              emphasizes ease of use.
-          </blockquote>
-          <p>Following our <a href="https://femar.me">Series B last December</a>, I'm happy to announce we've raised a <a href=""><strong>$102M
-              Series C</strong></a> from existing and new investors.</p>
-          <p>Our vision of the Web is a global realtime medium for both creators
-            and consumers,
-            where all friction and latency are eliminated.</p>
-          <p>We'll use this investment to:</p>
-          <ol>
-            <li>
-              <a href="">Build the SDK for Web</a>
-            </li>
-            <li>
-              <a href="">Lower the barrier of entry</a>
-            </li>
-            <li><a href="">Focus on the end-user</a></li>
-          </ol>
-          <hr />
+          ${this.getIntro()}
         </div>
         <div class="section" id="section1">
           <h2 class="title">Debian Has Lower System Requirements</h2>

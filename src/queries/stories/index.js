@@ -15,7 +15,8 @@ const {
 } = require('./topic');
 
 const {
-  addStorySection, editStorySection, removeStorySection
+  addStorySection, editStorySection, removeStorySection,
+  fetchStorySections
 } = require('./section');
 
 const {
@@ -34,7 +35,7 @@ const {
 module.exports = {
   findStoriesByAuthor, findRepliesByAuthor, editTitle, editSlug,
   addStory, checkIfStoryExists, findStory, addVote, publishStory,
-  editStory, findStoryBySlugOrHash, findStoriesByQuery,
+  editStory, findStoryBySlugOrHash, findStoriesByQuery, fetchStorySections,
   findStoriesByTopic, findRelatedStories, removeStory,
   addStorySection, editStorySection, removeStorySection,
   likeReply, likeStory, viewContent, addReply, editReply, removeReply

@@ -7,9 +7,9 @@ const {
 } = require('../../middlewares').storyMiddleware;
 const {
   createStory, deleteStory, updateSlug, updateTitle, updateStory, publishAStory,
-  checkStoryBySlug, createStorySection, updateStorySection, deleteStorySection
+  checkStoryBySlug, createStorySection, updateStorySection, deleteStorySection,
+  getStorySections
 } = require('../../controllers').storyController;
-
 
 /**
  * @function storyRoutes
@@ -82,5 +82,10 @@ module.exports = (app, url) => {
   // Route for handling story section removal/deletion
   app.delete(`${url}/:hash/section/remove/:id`,
     verifyToken, deleteStorySection
+  );
+
+  // Router for fetching story sections
+  app.get(`${url}/:hash/sections`,
+    getStorySections
   );
 }
