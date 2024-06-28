@@ -51,7 +51,10 @@ export default class ShareWrapper extends HTMLElement {
         // Toggle the overlay
         overlay.classList.add('active');
         // disable scroll
-        this.disableScroll()
+
+        if (mql) {
+          this.disableScroll()
+        }
 
         if (!mql) {
           // add event to run once when the overlay is active: when user click outside the overlay

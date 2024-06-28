@@ -256,7 +256,7 @@ export default class QuickPost extends HTMLElement {
 
   getFooter = () => {
     return /*html*/`
-      <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
+      <action-wrapper full="false" kind="${this.getAttribute('story')}" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
         hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
@@ -280,8 +280,7 @@ export default class QuickPost extends HTMLElement {
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
-        author-you="${this.getAttribute('author-you')}"
-        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+        author-you="${this.getAttribute('author-you')}" author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
@@ -292,216 +291,216 @@ export default class QuickPost extends HTMLElement {
 
   getStyles() {
     return /* css */`
-    <style>
+      <style>
 
-      *,
-      *:after,
-      *:before {
-        box-sizing: border-box !important;
-        font-family: inherit;
-        -webkit-box-sizing: border-box !important;
-      }
-
-      *:focus {
-        outline: inherit !important;
-      }
-
-      *::-webkit-scrollbar {
-        -webkit-appearance: none;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        padding: 0;
-        margin: 0;
-        font-family: inherit;
-      }
-
-      p,
-      ul,
-      ol {
-        padding: 0;
-        margin: 0;
-      }
-
-      a {
-        text-decoration: none;
-      }
-
-
-      :host {
-        font-size: 16px;
-        border-bottom: var(--border);
-        font-family: var(--font-main), sans-serif;
-        padding: 15px 0 10px;
-        margin: 0;
-        width: 100%;
-        display: flex;
-        flex-flow: column;
-        gap: 0;
-      }
-
-      .meta {
-        height: max-content;
-        display: flex;
-        position: relative;
-        color: var(--gray-color);
-        align-items: center;
-        font-family: var(--font-mono),monospace;
-        gap: 5px;
-        font-size: 0.9rem;
-        line-height: 1.5;
-      }
-
-      .meta > span.sp {
-        margin: 1px 0 0 0;
-      }
-
-      .meta > time.time {
-        font-family: var(--font-main), sans-serif;
-        font-size: 0.83rem;
-        font-weight: 500;
-        margin: 1px 0 0 0;
-      }
-
-      .meta a.link {
-        text-decoration: none;
-        color: transparent;
-        background-image: var(--action-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
-      }
-
-      .meta  a.author-link {
-        text-decoration: none;
-        color: transparent;
-        background: var(--accent-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
-      }
-
-      .content {
-        display: flex;
-        cursor: pointer;
-        flex-flow: column;
-        color: var(--text-color);
-        line-height: 1.4;
-        gap: 0;
-        margin: 0;
-        padding: 0;
-      }
-
-      .content.extra {
-        max-height: 200px;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .content.extra .read-more {
-        position: absolute;
-        bottom: -5px;
-        right: 0;
-        left: 0;
-        width: 100%;
-        padding: 5px 0;
-        display: flex;
-        align-items: end;
-        justify-content: center;
-        min-height: 80px;
-        gap: 3px;
-        cursor: pointer;
-        font-weight: 500;
-        font-family: var(--font-text), sans-serif;
-        color: var(--gray-color);
-        background: var(--fade-linear-gradient);
-      }
-
-      .content.extra .read-more svg {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin: 0 0 2px 0;
-      }
-
-      .content p {
-        margin: 0 0 5px 0;
-        padding: 0;
-        line-height: 1.4;
-        font-family: var(--font-text), sans-serif;
-      }
-
-      .content p:last-of-type {
-        margin: 0;
-      }
-
-      .content a {
-        cursor: pointer;
-        color: transparent;
-        background: var(--accent-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
-      }
-
-      .content a:hover {
-        text-decoration-color: var(--anchor-active) !important;
-        text-decoration: underline;
-        -moz-text-decoration-color: var(--anchor-active) !important;
-      }
-
-      .content ul,
-      .content ol {
-        margin: 10px 0 0 20px;
-        line-height: 1.4;
-        color: var(--font-text);
-        font-family: var(--font-text), sans-serif;
-      }
-
-      .content ul a,
-      .content ol a {
-        background: unset;
-        color:var(--font-text);
-        font-weight: 500;
-        text-decoration-color: var(--anchor) !important;
-        text-decoration: underline;
-        -moz-text-decoration-color: var(--anchor) !important;
-      }
-
-      .content ul a:hover,
-      .content ol a:hover {
-        text-decoration-color: #4b5563bd !important;
-        -moz-text-decoration-color: #4b5563bd !important;
-      }
-
-      @media screen and (max-width:660px) {
-        :host {
-          font-size: 16px;
-          border-bottom: var(--border-mobile);
+        *,
+        *:after,
+        *:before {
+          box-sizing: border-box !important;
+          font-family: inherit;
+          -webkit-box-sizing: border-box !important;
         }
 
-        ::-webkit-scrollbar {
+        *:focus {
+          outline: inherit !important;
+        }
+
+        *::-webkit-scrollbar {
           -webkit-appearance: none;
         }
 
-        .meta a.reply-link,
-        .meta div.author-name > a,
-        a,
-        .stats > .stat {
-          cursor: default !important;
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          padding: 0;
+          margin: 0;
+          font-family: inherit;
+        }
+
+        p,
+        ul,
+        ol {
+          padding: 0;
+          margin: 0;
+        }
+
+        a {
+          text-decoration: none;
         }
 
 
-        a,
-        .content.extra .read-more,
-        .content,
-        span.action {
-          cursor: default !important;
+        :host {
+          font-size: 16px;
+          border-bottom: var(--border);
+          font-family: var(--font-main), sans-serif;
+          padding: 15px 0 10px;
+          margin: 0;
+          width: 100%;
+          display: flex;
+          flex-flow: column;
+          gap: 0;
         }
-      }
-    </style>
+
+        .meta {
+          height: max-content;
+          display: flex;
+          position: relative;
+          color: var(--gray-color);
+          align-items: center;
+          font-family: var(--font-mono),monospace;
+          gap: 5px;
+          font-size: 0.9rem;
+          line-height: 1.5;
+        }
+
+        .meta > span.sp {
+          margin: 1px 0 0 0;
+        }
+
+        .meta > time.time {
+          font-family: var(--font-main), sans-serif;
+          font-size: 0.83rem;
+          font-weight: 500;
+          margin: 1px 0 0 0;
+        }
+
+        .meta a.link {
+          text-decoration: none;
+          color: transparent;
+          background-image: var(--action-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        .meta  a.author-link {
+          text-decoration: none;
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        .content {
+          display: flex;
+          cursor: pointer;
+          flex-flow: column;
+          color: var(--text-color);
+          line-height: 1.4;
+          gap: 0;
+          margin: 0;
+          padding: 0;
+        }
+
+        .content.extra {
+          max-height: 200px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .content.extra .read-more {
+          position: absolute;
+          bottom: -5px;
+          right: 0;
+          left: 0;
+          width: 100%;
+          padding: 5px 0;
+          display: flex;
+          align-items: end;
+          justify-content: center;
+          min-height: 80px;
+          gap: 3px;
+          cursor: pointer;
+          font-weight: 500;
+          font-family: var(--font-text), sans-serif;
+          color: var(--gray-color);
+          background: var(--fade-linear-gradient);
+        }
+
+        .content.extra .read-more svg {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          margin: 0 0 2px 0;
+        }
+
+        .content p {
+          margin: 0 0 5px 0;
+          padding: 0;
+          line-height: 1.4;
+          font-family: var(--font-text), sans-serif;
+        }
+
+        .content p:last-of-type {
+          margin: 0;
+        }
+
+        .content a {
+          cursor: pointer;
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        .content a:hover {
+          text-decoration-color: var(--anchor-active) !important;
+          text-decoration: underline;
+          -moz-text-decoration-color: var(--anchor-active) !important;
+        }
+
+        .content ul,
+        .content ol {
+          margin: 10px 0 0 20px;
+          line-height: 1.4;
+          color: var(--font-text);
+          font-family: var(--font-text), sans-serif;
+        }
+
+        .content ul a,
+        .content ol a {
+          background: unset;
+          color:var(--font-text);
+          font-weight: 500;
+          text-decoration-color: var(--anchor) !important;
+          text-decoration: underline;
+          -moz-text-decoration-color: var(--anchor) !important;
+        }
+
+        .content ul a:hover,
+        .content ol a:hover {
+          text-decoration-color: #4b5563bd !important;
+          -moz-text-decoration-color: #4b5563bd !important;
+        }
+
+        @media screen and (max-width:660px) {
+          :host {
+            font-size: 16px;
+            border-bottom: var(--border-mobile);
+          }
+
+          ::-webkit-scrollbar {
+            -webkit-appearance: none;
+          }
+
+          .meta a.reply-link,
+          .meta div.author-name > a,
+          a,
+          .stats > .stat {
+            cursor: default !important;
+          }
+
+
+          a,
+          .content.extra .read-more,
+          .content,
+          span.action {
+            cursor: default !important;
+          }
+        }
+      </style>
     `;
   }
 }

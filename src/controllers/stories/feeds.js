@@ -31,7 +31,7 @@ const getStoryReplies = async(req, res, next) => {
   const user = req.user ? req.user.hash : null;
 
   const reqData = {
-    hash,
+    hash: hash.toUpperCase(),
     user,
     totalStories,
     page: page = parseInt(page, 10) || 1,
@@ -98,7 +98,7 @@ const getReplyReplies = async(req, res, next) => {
   const user = req.user ? req.user.hash : null;
 
   const reqData = {
-    hash,
+    hash: hash.toUpperCase(),
     user,
     totalReplies,
     page,

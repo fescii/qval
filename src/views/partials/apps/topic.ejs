@@ -5,7 +5,7 @@
 <% var name = author.name.split(" ") %>
 
 <%#  check if the profile picture is null and overwrite it with the default picture  %> 
-<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + author.picture %>
+<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture %>
 
 <%# Check you %>
 <% var you = data.you ? "true" : "false" %>

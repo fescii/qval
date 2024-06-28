@@ -156,7 +156,6 @@ const getReply = async (req, res) => {
   // get user from the request object
   const user = req.user;
 
-
   // query the database for the reply
   const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
 

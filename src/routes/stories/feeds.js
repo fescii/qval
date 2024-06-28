@@ -7,7 +7,6 @@ const {
   getStoryReplies, getReplyReplies
 } = require('../../controllers').storyController;
 
-
 /**
  * @function feedsRoutes
  * @description a modular function that registers all feeds for stories

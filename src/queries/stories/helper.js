@@ -56,6 +56,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
 
     // return the story
     const data = story.dataValues;
+    data.story_author = story.story_author.dataValues;
 
     // add you you to the story
     data.you = user === data.author;
@@ -170,6 +171,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
 
     // return the reply
     const data = reply.dataValues;
+    data.reply_author = reply.reply_author.dataValues;
 
     // add you you to the reply
     data.you = user === data.author;
@@ -288,6 +290,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
     return { 
       stories: stories.map(story => {
         const data = story.dataValues;
+        data.story_author = story.story_author.dataValues;
         data.you = user === data.author;
         data.authenticated = true;
 
@@ -393,7 +396,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
     });
 
     // Check if the replies exist
-    if (replies.length < 1) {
+    if (replies.length === 0) {
       return { replies: null, error: null };
     }
 
@@ -401,6 +404,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
     return { 
       replies: replies.map(reply => {
         const data = reply.dataValues;
+        data.reply_author = reply.reply_author.dataValues;
         data.you = user === data.author;
         data.authenticated = true;
 

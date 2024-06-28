@@ -79,6 +79,7 @@ const findStoryReplies = async (reqData) => {
           limit: limit,
           offset: offset,
           pages: totalPages,
+          replies: [],
           last: true,
         }, error: null 
       };
@@ -118,7 +119,7 @@ const findReplyReplies = async (reqData) => {
     const offset = (page - 1) * limit;
 
     // Find the replies
-    const where = { reply: hash};
+    const where = { reply: hash };
     const order = [['createdAt', 'DESC']];
 
     // initialize the replies to be null
