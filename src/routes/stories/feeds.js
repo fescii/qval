@@ -3,7 +3,8 @@
 const { checkToken } = require('../../middlewares').authMiddleware;
 
 const {
-  findAuthorStories, findAuthorReplies, getTopicStories, getRelatedStories
+  findAuthorStories, findAuthorReplies, getTopicStories, getRelatedStories,
+  getStoryReplies, getReplyReplies
 } = require('../../controllers').storyController;
 
 
@@ -44,4 +45,9 @@ module.exports = (app, url) => {
     checkToken, getRelatedStories
   );
   
+  // Route to handle finding all story replies
+  app.get(`${url}/p/:hash/replies`, checkToken, getStoryReplies)
+
+  // Route to handle finding all reply replies
+  app.get(`${url}/r/:hash/replies`, checkToken, getReplyReplies)
 }
