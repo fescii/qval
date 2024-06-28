@@ -329,7 +329,7 @@ export default class PostSection extends HTMLElement {
 
         :host {
           font-size: 16px;
-          padding: 15px 0;
+          padding: 15px 0 0 0;
           width: 100%;
           display: flex;
           flex-flow: column;
@@ -354,7 +354,6 @@ export default class PostSection extends HTMLElement {
 
         .tab-control {
           border-bottom: var(--border);
-          border-top: var(--border);
           background-color: var(--background);
           display: flex;
           flex-flow: column;
@@ -366,7 +365,6 @@ export default class PostSection extends HTMLElement {
         }
 
         .tab-control > .author {
-          /* border-top: var(--border); */
           border-bottom: var(--border);
           padding: 10px 0;
           display: flex;
@@ -460,8 +458,7 @@ export default class PostSection extends HTMLElement {
           }
 
           .tab-control {
-            border-bottom: var(--border-mobile);
-            border-top: var(--border-mobile);
+            border-bottom: var(--border);
             margin: 0;
             position: sticky;
             top: 50px;

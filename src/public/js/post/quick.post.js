@@ -336,7 +336,7 @@ export default class QuickPost extends HTMLElement {
           font-size: 16px;
           border-bottom: var(--border);
           font-family: var(--font-main), sans-serif;
-          padding: 15px 0 10px;
+          padding: 10px 0 0;
           margin: 0;
           width: 100%;
           display: flex;
@@ -478,7 +478,7 @@ export default class QuickPost extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            border-bottom: var(--border-mobile);
+            border-bottom: var(--border);
           }
 
           ::-webkit-scrollbar {

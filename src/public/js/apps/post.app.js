@@ -107,7 +107,7 @@ export default class AppPost extends HTMLElement {
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">
-            ${this.innerHTML}
+            ${this.textContent}
           </poll-wrapper>
         `
       default:
@@ -119,7 +119,7 @@ export default class AppPost extends HTMLElement {
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">
-            ${this.innerHTML}
+            ${this.textContent}
           </post-wrapper>
         `
     }

@@ -247,7 +247,7 @@ export default class PollPost extends HTMLElement {
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
-        ${this.innerHTML}
+        ${this.textContent}
       </app-post>
     `
   }
@@ -299,7 +299,7 @@ export default class PollPost extends HTMLElement {
         font-size: 16px;
         border-bottom: var(--border);
         font-family: var(--font-main), sans-serif;
-        padding: 15px 0 10px;
+        padding: 10px 0 0;
         margin: 0;
         width: 100%;
         display: flex;
@@ -409,7 +409,6 @@ export default class PollPost extends HTMLElement {
       @media screen and (max-width: 660px) {
         :host {
           font-size: 16px;
-          border-bottom: var(--border-mobile);
         }
 
         ::-webkit-scrollbar {

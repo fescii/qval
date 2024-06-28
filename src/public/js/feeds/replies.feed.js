@@ -82,7 +82,6 @@ export default class RepliesFeed extends HTMLElement {
             
             const content = outerThis.mapFields(data.replies);
             outerThis.populateReplies(content, repliesContainer);
-            outerThis.populateReplies(outerThis.getLoader(), repliesContainer);
             }
           }
           else {
@@ -99,7 +98,14 @@ export default class RepliesFeed extends HTMLElement {
     const outerThis = this;
     const url = `${this._url}?replies=${this._total}&page=${this._page}`;
 
-    outerThis.fetching(url, repliesContainer)
+    if(!this._block && !this._empty) {
+      outerThis._empty = true;
+      outerThis._block = true;
+      setTimeout(() => {
+        // fetch the replies
+        outerThis.fetching(url, repliesContainer)
+      }, 3000);
+    }
   }
 
   populateReplies = (content, repliesContainer) => {
@@ -116,12 +122,10 @@ export default class RepliesFeed extends HTMLElement {
   scrollEvent = repliesContainer => {
     const outerThis = this;
     window.addEventListener('scroll', function () {
-      let margin = document.body.clientHeight - window.innerHeight - 200;
+      let margin = document.body.clientHeight - window.innerHeight - 150;
       if (window.scrollY > margin && !outerThis._empty && !outerThis._block) {
-        outerThis._empty = true;
-        outerThis._block = true;
         outerThis._page += 1;
-
+        outerThis.populateReplies(outerThis.getLoader(), repliesContainer);
         outerThis.fetchReplies(repliesContainer);
       }
     });
@@ -300,7 +304,7 @@ export default class RepliesFeed extends HTMLElement {
         :host {
           font-size: 16px;
           width: 100%;
-          padding: 0 0 30px;
+          padding: 0;
         }
 
         div.loader-container {
@@ -367,7 +371,6 @@ export default class RepliesFeed extends HTMLElement {
         .last {
           width: 100%;
           padding: 15px 15px;
-          border-bottom: var(--border);
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -376,6 +379,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last > h2,
         .empty > h2 {
+          width: 90%;
           margin: 5px 0;
           font-family: var(--font-text), sans-serif;
           text-align: center;
@@ -386,6 +390,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last p,
         .empty p {
+          width: 90%;
           margin: 0;
           text-align: center;
           font-family: var(--font-read), sans-serif;
@@ -425,8 +430,17 @@ export default class RepliesFeed extends HTMLElement {
         @media screen and (max-width:660px) {
           .last {
             width: 100%;
-            padding: 15px 0px;
+            padding: 15px 0 25px;
             border-bottom: var(--border);
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .empty {
+            width: 100%;
+            padding: 20px 0 30px;
             display: flex;
             flex-flow: column;
             align-items: center;

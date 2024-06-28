@@ -751,16 +751,16 @@ export default class ActionWrapper extends HTMLElement {
         }
 
         :host {
-          padding: 0;
           margin: 0;
           width: 100%;
           display: flex;
           flex-flow: column;
           gap: 0;
+          padding: 5px 0;
         }
 
         .actions.stats {
-          padding: 5px 0 0 0;
+          padding: 0;
           margin: 0 0 ${this.getAttribute('full') === 'true' ? '15px' : '0'} 0;
           display: flex;
           flex-flow: row;
@@ -792,7 +792,7 @@ export default class ActionWrapper extends HTMLElement {
         span.write.action > svg {
           width: 19px;
           height: 19px;
-          margin: -2px 0 0 0;
+          margin: -1px 0 0 0;
         }
 
         span.write.action span.line {
@@ -972,10 +972,6 @@ export default class ActionWrapper extends HTMLElement {
         @media screen and (max-width: 660px) {
           ::-webkit-scrollbar {
             -webkit-appearance: none;
-          }
-
-          .actions.stats {
-            padding: 10px 0;
           }
 
           a,
