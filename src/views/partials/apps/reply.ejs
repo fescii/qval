@@ -1,31 +1,16 @@
-<% var url = "/r/" + data.hash.toLowerCase(); %>
-<% var author = data.reply_author; %>
+<% var url = "/r/" + data.hash.toLowerCase(); -%>
+<% var author = data.reply_author; -%>
 
 <%# Separate the name into first and last name %>
-<% var name = author.name.split(" "); %>
+<% var name = author.name.split(" "); -%>
 
 <%# Check if the profile picture is null and overwrite it with the default picture %>
-<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + author.picture; %>
-
-<%# Check you %>
-<% var you = data.you ? "true" : "false"; %>
-
-<%# Check if user is subscribed to the topic and overwrite it with the default value %>
-<% var liked = data.liked ? "true" : "false"; %>
-
-<%# Check if the user is verified and overwrite it with the default value %>
-<% var author_verified = author.verified ? "true" : "false"; %>
-
-<%# Check if the user is following the author and overwrite it with the default value %>
-<% var author_follow = author.is_following ? "true" : "false"; %>
-
-<%# Check if bio is null and overwrite it with the default bio %>
-<% var bio = author.bio === null ? "This user has not added a bio yet." : author.bio; %>
+<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + author.picture; -%>
 
 <app-post story="reply" style="display: none;" tab="<%= data.tab %>" url="<%= url %>" hash="<%= data.hash %>" likes="<%= data.likes %>" 
-  replies="<%= data.replies %>" liked="<%= liked %>" views="<%= data.views %>" time="<%= data.createdAt %>" replies-url="<%= url %>/replies" 
-  likes-url="<%= url %>/likes" author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= you %>"
-  author-img="<%= picture %>" author-verified="<%= author_verified %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"
-  author-following="<%= author.following %>" author-follow="<%= author_follow %>" author-bio="<%= bio %>">
+  replies="<%= data.replies %>" liked="<%= data.liked ? 'true' : 'false' %>" views="<%= data.views %>" time="<%= data.createdAt %>" replies-url="/api/v1<%= url %>/replies" 
+  likes-url="/api/v1<%= url %>/likes" author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>"
+  author-img="<%= picture %>" author-verified="<%= author.verified ? 'true' : 'false' %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"
+  author-following="<%= author.following %>" author-follow="<%= author.is_following ? 'true' : 'false' %>" author-bio="<%= author.bio === null ? 'This user has not added a bio yet.' : author.bio %>">
   <%= data.content %>
 </app-post>
