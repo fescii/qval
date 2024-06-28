@@ -529,6 +529,10 @@ export default class ShareWrapper extends HTMLElement {
           .share-buttons > span.copy {
             cursor: default !important;
           }
+
+          .host:hover {
+            background: transparent;
+          }
   
           .overlay span.close {
             display: flex;

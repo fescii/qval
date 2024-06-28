@@ -253,7 +253,6 @@ export default class StorySection extends HTMLElement {
           width: max-content;
           color: var(--gray-color);
           padding: 3px 10px 3px 10px;
-         /* box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;*/
           background: var(--light-linear);
           font-family: var(--font-read), sans-serif;
           font-size: 0.8rem;

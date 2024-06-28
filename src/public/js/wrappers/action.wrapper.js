@@ -823,7 +823,6 @@ export default class ActionWrapper extends HTMLElement {
 
         span.stat,
         span.action {
-          /* border: var(--input-border); */
           min-height: 35px;
           height: 30px;
           width: max-content;
