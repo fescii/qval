@@ -24,7 +24,7 @@ const { getRelatedStories, getTopicStories } = require('./topic');
 
 const { voteController } = require('./vote');
 
-const { getStory, getStoryLikes } = require('./public');
+const { getStory, getStoryLikes, getReply, getReplyLikes } = require('./public');
 
 
 // Export all controllers as a single object
@@ -33,6 +33,6 @@ module.exports = {
   checkStoryBySlug, updateTitle, updateSlug, getTopicStories, getStoryLikes,
   likeStoryController, likeReplyController, findStories, publishAStory,
   viewContentController, createReply, updateReply, deleteReply, getStorySections,
-  findAuthorReplies, findAuthorStories, getRelatedStories, getStory,
-  createStorySection, updateStorySection, deleteStorySection
+  findAuthorReplies, findAuthorStories, getRelatedStories, getStory,getReplyLikes,
+  createStorySection, updateStorySection, deleteStorySection, getReply,
 }

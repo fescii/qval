@@ -1,13 +1,13 @@
 // Import find story by hash and by slug
 const {
-  findStoryBySlugOrHash
+  findStoryBySlugOrHash, findReplyByHash
 } = require('../../queries').storyQueries;
 
 const { actionQueue } = require('../../bull');
 
 
 /**
- * @controller {get} /t/:slug(:hash) Story
+ * @controller {get} /p/:slug(:hash) Story
  * @name getStory
  * @description This route will render the story page for the app.
  * @returns Page: Renders story page
@@ -64,7 +64,7 @@ const getStory = async (req, res) => {
 }
 
 /**
- * @controller {get} /t/:slug(:hash) Story
+ * @controller {get} /p/:slug(:hash) Story
  * @name getStoryLikes
  * @description This route will render the story page for the app.
  * @returns Page: Renders story page
@@ -143,9 +143,106 @@ const mapFields = (content, data) => {
   }
 }
 
+/**
+ * @controller {get} /r/:hash) Reply
+ * @name getReply
+ * @description - A controller to render the reply page
+ * @returns Page: Renders reply page
+*/
+const getReply = async (req, res) => {
+  //get the params from the request
+  let {hash} = req.params;
+
+  // get user from the request object
+  const user = req.user;
+
+
+  // query the database for the reply
+  const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
+
+  // if there is an error, render the error page
+  if (error) {
+    console.error(error);
+    return res.status(500).render('500')
+  }
+
+  // if there is no reply, render the 404 page
+  if (!reply) {
+    return res.status(404).render('404')
+  }
+
+  // add view to update views
+  const payload = {
+    kind: 'view',
+    hashes: {
+      target: reply.hash,
+    },
+    action: 'reply',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
+
+  // add tab to the reply object
+  reply.tab = 'replies';
+
+  res.render('pages/reply', {
+    data: reply
+  })
+}
+
+/**
+ * @controller {get} /r/:hash) Reply Likes
+ * @name getReplyLikes
+ * @description - A controller to render the reply page
+ * @returns Page: Renders reply page
+*/
+const getReplyLikes = async (req, res) => {
+  //get the params from the request
+  let {hash} = req.params;
+
+  // get user from the request object
+  const user = req.user;
+
+  // query the database for the reply
+  const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
+
+  // if there is an error, render the error page
+  if (error) {
+    console.error(error);
+    return res.status(500).render('500')
+  }
+
+  // if there is no reply, render the 404 page
+  if (reply) {
+    return res.status(404).render('404')
+  }
+
+  // add view to update views
+  const payload = {
+    kind: 'view',
+    hashes: {
+      target: reply.hash,
+    },
+    action: 'reply',
+    value: 1,
+  };
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', payload);
+
+  // add tab to the reply object
+  reply.tab = 'likes';
+
+  res.render('pages/reply', {
+    data: reply
+  })
+}
+
 
 
 // Export all public content controllers
 module.exports = {
-  getStory, getStoryLikes
+  getStory, getStoryLikes, getReply, getReplyLikes
 }

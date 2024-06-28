@@ -141,7 +141,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
@@ -199,7 +199,7 @@ const findReplyWhenLoggedOut = async hash => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies'],
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt'],
       where: { hash },
       include: [
         {
@@ -367,7 +367,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
@@ -428,7 +428,7 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies'],
+      attributes : ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt'],
       where: where,
       order: [order],
       limit: limit,

@@ -10,7 +10,7 @@ const  { hash_secret } = require("../../configs").envConfig;
 
 
 const { 
-  findStoryWhenLoggedIn, findStoryWhenLoggedOut,
+  findStoryWhenLoggedIn, findStoryWhenLoggedOut, findReplyWhenLoggedIn, findReplyWhenLoggedOut
 } = require('./helper');
 
 
@@ -381,11 +381,10 @@ const editSlug = async data => {
  * @returns {Object} - The topic object or null, and the error if any
 */
 const findStoryBySlugOrHash = async (query, user) => {
-  // console.log('User:', user, 'Query:', query, 'Find Topic By Slug Or Hash')
   try {
     // check if user is logged in
     if (user !== null) {
-      return await findStoryWhenLoggedIn(query, user.toUpperCase());
+      return await findStoryWhenLoggedIn(query, user);
     }
     else {
       return await findStoryWhenLoggedOut(query);
@@ -393,6 +392,28 @@ const findStoryBySlugOrHash = async (query, user) => {
   }
   catch (error) {
     return { topic: null, error: error}
+  }
+}
+
+/**
+ * @function findReplyByHash
+ * @description Query to find a reply by hash
+ * @param {String} hash - The hash of the reply
+ * @param {String} user - The hash of the user
+ * @returns {Object} - The reply object or null, and the error if any
+*/
+const findReplyByHash = async (hash, user) => {
+  try {
+    // check if user is logged in
+    if (user !== null) {
+      return await findReplyWhenLoggedIn(hash, user);
+    }
+    else {
+      return await findReplyWhenLoggedOut(hash);
+    }
+  }
+  catch (error) {
+    return { reply: null, error };
   }
 }
 
@@ -454,6 +475,6 @@ const removeStory = async hash => {
 module.exports = {
   addStory, checkIfStoryExists,
   findStory, editStory, editSlug,
-  findStoryBySlugOrHash, editTitle,
+  findStoryBySlugOrHash, editTitle, findReplyByHash,
   removeStory, findStoriesByQuery, publishStory
 };

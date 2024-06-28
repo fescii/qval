@@ -1,6 +1,6 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getStory, getStoryLikes
+  getStory, getStoryLikes, getReply, getReplyLikes
 } = require('../../controllers').storyController;
 
 const {
@@ -33,4 +33,13 @@ module.exports = app => {
 
   // Route for handling story likes
   app.get('/p/:story/likes', checkToken, getStoryLikes);
+
+  // Route to get a reply: handles reply page
+  app.get('/r/:hash', checkToken, getReply);
+
+  // Route to get reply likes
+  app.get('/r/:hash/likes', checkToken, getReplyLikes);
+
+  // Route to get a reply: handles reply page(replies)
+  app.get('/r/:hash/replies', checkToken, getReply);
 }

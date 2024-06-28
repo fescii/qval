@@ -1,11 +1,11 @@
 // Story all routes
 
-const { verifyToken } = require('../../middlewares').authMiddleware;
+const { verifyToken, checkToken } = require('../../middlewares').authMiddleware;
 const {
   checkReply, checkReplyContent
 } = require('../../middlewares').storyMiddleware;
 const {
-  createReply, updateReply, deleteReply, createStoryReply
+  createReply, updateReply, deleteReply, createStoryReply,
 } = require('../../controllers').storyController;
 
 
