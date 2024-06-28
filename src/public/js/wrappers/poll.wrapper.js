@@ -183,7 +183,6 @@ export default class PollWrapper extends HTMLElement {
       ${this.getAuthorContainer(mql.matches)}
       ${this.getMeta()}
       ${this.getStats()}
-      <form-container type="post"></form-container>
     `;
   }
 

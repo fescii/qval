@@ -180,7 +180,6 @@ export default class PollPost extends HTMLElement {
       ${this.getContent()}
       ${this.getPoll()}
       ${this.getFooter()}
-      <div class="form-container"></div>
     `;
   }
 

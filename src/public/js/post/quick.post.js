@@ -193,38 +193,6 @@ export default class QuickPost extends HTMLElement {
     }
   }
 
-  openForm = () => {
-    const writeBtn = this.shadowObj.querySelector('span.action.write');
-    const formContainer = this.shadowObj.querySelector('div.form-container');
-    if (writeBtn && formContainer) {
-      const formElement = this.getForm();
-
-      writeBtn.addEventListener('click', event => {
-        event.preventDefault();
-
-        // console.log(writeContainer);
-        // console.log(formElement);
-
-        // writeContainer.classList.toggle('active');
-        if (writeBtn.classList.contains('open')) {
-          writeBtn.classList.remove('open');
-
-          // adjust the margin top of the form container
-          formContainer.style.setProperty('margin-top', '0');
-          formContainer.innerHTML = '';
-        }
-        else {
-          writeBtn.classList.add('open');
-          // adjust the margin top of the form container
-          formContainer.style.setProperty('margin-top', '15px');
-
-          // Add the form to the form container
-          formContainer.insertAdjacentHTML('beforeend', formElement);
-        }
-      })
-    }
-  }
-
   getTemplate() {
     // Show HTML Here
     return `
@@ -238,7 +206,6 @@ export default class QuickPost extends HTMLElement {
       ${this.getHeader()}
       ${this.getContent()}
       ${this.getFooter()}
-      <div class="form-container"></div>
     `;
   }
 
