@@ -22,7 +22,7 @@
 <%# Check if bio is null and overwrite it with the default bio %>
 <% var bio = author.bio === null ? "This user has not added a bio yet." : author.bio; %>
 
-<app-post story="quick" style="display: none;" tab="<%= data.tab %>" url="<%= url %>" hash="<%= data.hash %>" likes="<%= data.likes %>" 
+<app-post story="reply" style="display: none;" tab="<%= data.tab %>" url="<%= url %>" hash="<%= data.hash %>" likes="<%= data.likes %>" 
   replies="<%= data.replies %>" liked="<%= liked %>" views="<%= data.views %>" time="<%= data.createdAt %>" replies-url="<%= url %>/replies" 
   likes-url="<%= url %>/likes" author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= you %>"
   author-img="<%= picture %>" author-verified="<%= author_verified %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"

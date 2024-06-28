@@ -98,7 +98,7 @@ export default class AppPost extends HTMLElement {
     switch (story) {
       case 'poll':
         return /*html */`
-          <poll-wrapper hash="${this.getAttribute('hash')}" url="${url}"
+          <poll-wrapper hash="${this.getAttribute('hash')}" url="${url}" kind="${this.getAttribute('story')}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
             options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
@@ -112,7 +112,7 @@ export default class AppPost extends HTMLElement {
         `
       default:
         return /* html */`
-          <post-wrapper hash="${this.getAttribute('hash')}" url="${url}"
+          <post-wrapper hash="${this.getAttribute('hash')}" url="${url}" kind="${this.getAttribute('story')}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}" author-you="${this.getAttribute('author-you')}"
             author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
