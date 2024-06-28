@@ -789,9 +789,8 @@ export default class VotesAuthor extends HTMLElement {
         }
 
         :host {
-          padding: 10px 0 15px 0;
+          padding: 10px 0 0 0;
           margin: 0;
-          border-bottom: var(--border);
           display: flex;
           flex-flow: column;
           gap: 15px;
@@ -954,9 +953,8 @@ export default class VotesAuthor extends HTMLElement {
           }
 
           :host {
-            padding: 10px 0 10px 0;
-            margin: 0 0 15px;
-            border-bottom: var(--border-mobile);
+            padding: 10px 0 0 0;
+            margin: 0;
           }
 
 

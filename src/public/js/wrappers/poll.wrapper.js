@@ -136,33 +136,22 @@ export default class PollWrapper extends HTMLElement {
 
   getMeta = () => {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
-
-    // Get total number of views
-    let views = this.getAttribute('views');
-
-    // views format
-    views = this.numberWithCommas(views);
-
-
     return /* html */`
       <div class="meta">
-        <span class="time">${dateObject.timeStr}</span>
-        <span class="sp">•</span>
+        <span class="sp">On</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
-        <span class="views">
-          <span class="no">${views}</span>
-          <span class="text">views</span>
-        </span>
+        <span class="sp">at</span>
+        <span class="time">${dateObject.timeStr}</span>
       </div>
     `
   }
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
+			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
+       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
@@ -178,9 +167,9 @@ export default class PollWrapper extends HTMLElement {
     // check mql for mobile view
     const mql = window.matchMedia('(max-width: 660px)');
     return `
+      ${this.getAuthorContainer(mql.matches)}
       ${this.getContent()}
       ${this.getPoll()}
-      ${this.getAuthorContainer(mql.matches)}
       ${this.getMeta()}
       ${this.getStats()}
     `;
@@ -264,11 +253,11 @@ export default class PollWrapper extends HTMLElement {
           line-height: 1.5;
           gap: 0;
           margin: 0;
-          padding: 0;
+          padding: 5px 0 10px;
         }
 
         .content p {
-          margin: 5px 0 0 0;
+          margin: 0 0 5px 0;
           padding: 0;
           line-height: 1.5;
           font-size: 1.05rem;
@@ -315,9 +304,9 @@ export default class PollWrapper extends HTMLElement {
 
         .meta {
           border-bottom: var(--border);
-          border-top: none;
-          margin: 0;
-          padding: 12px 0;
+          border-top: var(--border);
+          margin: 5px 0 0 0;
+          padding: 10px 0;
           display: flex;
           position: relative;
           color: var(--text-color);
@@ -337,16 +326,23 @@ export default class PollWrapper extends HTMLElement {
             -webkit-appearance: none;
           }
 
+          .content {
+            display: flex;
+            flex-flow: column;
+            color: var(--text-color);
+            line-height: 1.5;
+            gap: 0;
+            margin: 0;
+            padding: 5px 0 0;
+          }
+
           .meta {
-            border-bottom: var(--border-mobile);
-            margin: 5px 0 0 0;
-            padding: 12px 0;
             display: flex;
             position: relative;
             color: var(--text-color);
             align-items: center;
             font-family: var(--font-text), sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             gap: 5px;
             font-weight: 600;
           }

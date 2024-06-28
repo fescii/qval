@@ -121,23 +121,13 @@ export default class PostWrapper extends HTMLElement {
 
   getMeta = () => {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
-
-    // Get total number of views
-    let views = this.getAttribute('views');
-
-    // views format
-    views = this.numberWithCommas(views);
-
     return /* html */`
       <div class="meta">
-        <span class="time">${dateObject.timeStr}</span>
-        <span class="sp">•</span>
+        <span class="sp">On</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
-        <span class="views">
-          <span class="no">${views}</span>
-          <span class="text">views</span>
-        </span>
+        <span class="sp">at</span>
+        <span class="time">${dateObject.timeStr}</span>
       </div>
     `
   }
@@ -152,9 +142,9 @@ export default class PostWrapper extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
+			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
+       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
@@ -164,8 +154,8 @@ export default class PostWrapper extends HTMLElement {
     // check mql for mobile view
     const mql = window.matchMedia('(max-width: 660px)');
     return `
-      ${this.getContent()}
       ${this.getAuthorContainer(mql.matches)}
+      ${this.getContent()}
       ${this.getMeta()}
       ${this.getStats()}
     `;
@@ -174,7 +164,6 @@ export default class PostWrapper extends HTMLElement {
   getAuthorContainer = mql => {
     return mql ? this.getAuthor() : '';
   }
-
 
   getStyles() {
     return /* css */`
@@ -219,7 +208,6 @@ export default class PostWrapper extends HTMLElement {
 
         :host {
           font-size: 16px;
-          /* border: 1px solid #6b7280;*/
           display: flex;
           flex-flow: column;
           gap: 0;
@@ -238,16 +226,15 @@ export default class PostWrapper extends HTMLElement {
         .content {
           display: flex;
           flex-flow: column;
-          border-bottom: var(--border);
           color: var(--text-color);
           line-height: 1.5;
           gap: 0;
           margin: 0;
-          padding: 0 0 15px 0;
+          padding: 5px 0 10px;
         }
 
         .content p {
-          margin: 5px 0 0 0;
+          margin: 0 0 5px 0;
           padding: 0;
           line-height: 1.5;
           font-size: 1.05rem;
@@ -294,9 +281,9 @@ export default class PostWrapper extends HTMLElement {
 
         .meta {
           border-bottom: var(--border);
-          border-top: none;
-          margin: 0;
-          padding: 12px 0;
+          border-top: var(--border);
+          margin: 5px 0 0 0;
+          padding: 10px 0;
           display: flex;
           position: relative;
           color: var(--text-color);
@@ -305,229 +292,6 @@ export default class PostWrapper extends HTMLElement {
           gap: 5px;
           font-size: 1rem;
           font-weight: 600;
-        }
-
-        .stats.actions {
-          /* border: var(--input-border); */
-          padding: 5px 0 0 0;
-          margin: 0 0 15px 0;
-          display: flex;
-          align-items: center;
-          gap: 0;
-        }
-
-        .stats.actions > span.write.action {
-          cursor: pointer;
-          position: relative;
-          display: flex;
-          align-items: center;
-          font-family: var(--font-text) sans-serif;
-          font-size: 0.95rem;
-          justify-content: start;
-          gap: 5px;
-          padding: 5px 5px;
-          height: 30px;
-          border-radius: 50px;
-          font-weight: 500;
-          font-size: 1rem;
-          color: var(--gray-color);
-          -webkit-border-radius: 50px;
-          -moz-border-radius: 50px;
-          -ms-border-radius: 50px;
-          -o-border-radius: 50px;
-        }
-
-        .stats.actions > span.write.action > svg {
-          width: 19px;
-          height: 19px;
-          margin: -2px 0 0 0;
-        }
-
-        .stats.actions > span.write.action span.line {
-          background: var(--accent-linear);
-          position: absolute;
-          top: 30px;
-          left: 13px;
-          display: none;
-          width: 3px;
-          height: 20px;
-          border-radius: 5px;
-        }
-
-        .stats.actions > span.write.action.open span.line {
-          display: inline-block;
-        }
-
-        .stats.actions > span.write.action.open {
-          color: var(--accent-color);
-        }
-
-        .stats.actions > span.write.action.open > span.numbers {
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
-        .stats.actions > span.stat,
-        .stats.actions > span.action {
-          /* border: var(--input-border); */
-          min-height: 35px;
-          height: 30px;
-          width: max-content;
-          position: relative;
-          padding: 5px 10px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 5px;
-          font-size: 1rem;
-          font-weight: 400;
-          /* color: var(--action-color); */
-          color: var(--gray-color);
-          border-radius: 50px;
-          -webkit-border-radius: 50px;
-          -moz-border-radius: 50px;
-          -ms-border-radius: 50px;
-          -o-border-radius: 50px;
-        }
-
-        .stats.actions > span.stat.views {
-          gap: 2px;
-        }
-
-        .stats.actions > span.stat.views {
-          padding: 5px 5px;
-        }
-
-        .stats.actions > span:first-of-type {
-          margin: 0 0 0 -7px;
-        }
-
-        .stats.actions > span.play:hover,
-        .stats.actions > span.stat:hover,
-        .stats.actions > span.action:hover {
-          background: var(--hover-background);
-        }
-
-        .stats.actions > span.stat.views:hover {
-          background: inherit;
-        }
-
-        .stats.actions span.numbers {
-          /* border: var(--input-border); */
-          font-family: var(--font-main), sans-serif;
-          font-size: 1rem;
-          font-weight: 500;
-        }
-
-        .stats.actions > span {
-          /* border: var(--input-border); */
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 3px;
-          font-size: 1rem;
-          font-weight: 400;
-          /* color: var(--gray-color); */
-        }
-
-        .stats.actions > .stat > .numbers,
-        .stats.actions > .action > .numbers {
-          height: 21px;
-          min-height: 21px;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          overflow-y: scroll;
-          scroll-snap-type: y mandatory;
-          scroll-behavior: smooth;
-          scrollbar-width: none;
-          gap: 0;
-          align-items: start;
-          justify-content: start;
-          flex-flow: column;
-          transition: height 0.5s ease, min-height 0.5s ease; /* Specify the properties to transition */
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-          will-change: transform;
-        }
-
-        .stats.actions > span > .numbers::-webkit-scrollbar {
-          display: none !important;
-          visibility: hidden;
-        }
-
-        .stats.actions > span > .numbers > span {
-          /* border: 1px solid red; */
-          scroll-snap-align: start;
-          transition: height 0.5s ease, min-height 0.5s ease; /* Specify the properties to transition */
-          line-height: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 21px;
-          min-height: 21px;
-          padding: 3px 0;
-          margin: 0;
-          font-family: var(--font-main), sans-serif;
-          font-size: 0.95rem;
-        }
-
-        .stats.actions > span.true > .numbers > span,
-        .stats.actions > span.active > .numbers > span {
-          color: transparent;
-          background: var(--second-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
-        .stats.actions > span.up > .numbers > span {
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
-        .stats.actions > span.down > .numbers > span {
-          color: transparent;
-          background: var(--error-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
-        .stats.actions > span svg {
-          color: inherit;
-          width: 16px;
-          height: 16px;
-        }
-
-        .stats.actions > span.action.like svg {
-          margin: -1px 0 0 0;
-          width: 16px;
-          height: 16px;
-          transition: transform 0.5s ease;
-        }
-
-        .stats.actions > span.stat.views svg {
-          color: inherit;
-          width: 16px;
-          height: 16px;
-        }
-
-        .stats.actions > span.stat.up svg {
-          color: var(--accent-color);
-        }
-
-        .stats.actions > span.stat.down svg {
-          color: var(--error-color);
-        }
-
-        .stats.actions > span.true svg,
-        .stats.actions > span.active svg {
-          color: var(--alt-color);
         }
 
         @media screen and (max-width: 660px) {
@@ -540,26 +304,24 @@ export default class PostWrapper extends HTMLElement {
           }
 
           .content {
-            border-bottom: var(--border-mobile);
-            margin: 0 0 15px;
+            display: flex;
+            flex-flow: column;
+            color: var(--text-color);
+            line-height: 1.5;
+            gap: 0;
+            margin: 0;
+            padding: 5px 0 0;
           }
 
           .meta {
-            border-bottom: var(--border-mobile);
-            margin: 5px 0 0 0;
-            padding: 12px 0;
             display: flex;
             position: relative;
             color: var(--text-color);
             align-items: center;
             font-family: var(--font-text), sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             gap: 5px;
-            font-weight: 500;
-          }
-
-          .stats {
-            padding: 10px 0;
+            font-weight: 600;
           }
 
           a,

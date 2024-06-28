@@ -400,8 +400,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', 'max-content');
               actions.style.setProperty('max-height', 'max-content');
 
-              // actions.style.setProperty('padding', '5px 0 15px');
-              // actions.style.setProperty('border-bottom', 'var(--border-mobile)');
+              actions.style.setProperty('padding', '5px 0 15px');
+              actions.style.setProperty('border-bottom', 'var(--border)');
 
               // Collapse the content container
               svg.style.transform = 'rotate(180deg)';
@@ -416,8 +416,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', '0');
               stats.style.setProperty('max-height', '0');
 
-              // actions.style.setProperty('padding', '0');
-              // actions.style.setProperty('border-bottom', 'none');
+              actions.style.setProperty('padding', '0');
+              actions.style.setProperty('border-bottom', 'none');
 
               // Expand the content container
               svg.style.transform = 'rotate(0deg)';
@@ -925,14 +925,15 @@ export default class AuthorWrapper extends HTMLElement {
           :host {
             font-size: 16px;
             border-bottom: none;
-            border-top: var(--border-mobile);
-            border-bottom: var(--border-mobile);
+            /*border-top: var(--border-mobile);
+            border-bottom: var(--border-mobile); */
+            border: none;
           }
 
           .content-container {
             border: none;
             position: relative;
-            padding: 15px 0;
+            padding: 10px 0 5px;
             width: 100%;
             max-height: max-content;
             display: flex;
@@ -997,7 +998,7 @@ export default class AuthorWrapper extends HTMLElement {
           .content-container > svg {
             display: inline-block;
             position: absolute;
-            top: 25px;
+            top: 20px;
             right: 5px;
             color: var(--gray-color);
             cursor: default !important;

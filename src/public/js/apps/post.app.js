@@ -102,8 +102,8 @@ export default class AppPost extends HTMLElement {
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
             options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
-            end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
-            author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
+            end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}" author-you="${this.getAttribute('author-you')}"
+            author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">
@@ -114,8 +114,8 @@ export default class AppPost extends HTMLElement {
         return /* html */`
           <post-wrapper hash="${this.getAttribute('hash')}" url="${url}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
-            views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
-            author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
+            views="${this.getAttribute('views')}" time="${this.getAttribute('time')}" author-you="${this.getAttribute('author-you')}"
+            author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">

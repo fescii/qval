@@ -125,7 +125,6 @@ export default class StorySection extends HTMLElement {
 
   getContent = () => {
     return `
-      ${this.getAuthorTop()}
       ${this.getHeader()}
       <article class="article">
         ${this.innerHTML}
@@ -136,45 +135,26 @@ export default class StorySection extends HTMLElement {
   }
 
   getHeader = () => {
+    // check mql for mobile view
+    const mql = window.matchMedia('(max-width: 660px)');
     return `
+      ${this.getAuthorContainer(mql.matches)}
       <div class="head">
+        <span class="topic">${this.getAttribute('topic')}</span>
         <h1 class="story-title">${this.getAttribute('story-title')}</h1>
       </div>
     `
   }
 
-  getAuthorTop = () => {
-    let authorUrl = this.getAttribute('author-url');
-    authorUrl = authorUrl.trim().toLowerCase();
-    return /*html*/`
-      <div class="top-meta">
-        <span class="by">by</span>
-        ${this.getAuthorHover()}
-      </div>
-    `
-  }
-
-
   getMeta = () => {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
-
-    // Get total number of views
-    let views = this.getAttribute('views');
-
-    // views format
-    views = this.numberWithCommas(views);
-
-
     return /* html */`
       <div class="meta">
-        <span class="time">${dateObject.timeStr}</span>
-        <span class="sp">•</span>
+        <span class="sp">On</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
-        <span class="views">
-          <span class="no">${views}</span>
-          <span class="text">views</span>
-        </span>
+        <span class="sp">at</span>
+        <span class="time">${dateObject.timeStr}</span>
       </div>
     `
   }
@@ -187,15 +167,17 @@ export default class StorySection extends HTMLElement {
     `
   }
 
-  getAuthorHover = () => {
-    let url = this.getAttribute('author-url');
-    url = url.trim().toLowerCase();
+  getAuthorContainer = mql => {
+    return mql ? this.getAuthor() : '';
+  }
+
+  getAuthor = () => {
     return /* html */`
-			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
-        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
-      </hover-author>
+			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
+       bio="${this.getAttribute('author-bio')}">
+      </author-wrapper>
 		`
   }
 
@@ -260,75 +242,32 @@ export default class StorySection extends HTMLElement {
           gap: 0;
         }
 
-        .top-meta {
-          height: max-content;
-          padding: 5px 0 5px;
-          margin: 0 0 5px 0;
-          border-bottom: var(--border);
-          display: flex;
-          position: relative;
-          color: var(--gray-color);
-          align-items: center;
-          font-family: var(--font-mono),monospace;
-          gap: 5px;
-          font-size: 1rem;
-          line-height: 1.5;
-        }
-  
-        .top-meta > span.sp {
-          margin: 1px 0 0 0;
-        }
-  
-        .top-meta > time.time {
-          font-family: var(--font-main), sans-serif;
-          font-size: 0.93rem;
-          font-weight: 500;
-          margin: 1px 0 0 0;
-        }
-  
-        .top-meta a.link {
-          text-decoration: none;
-          color: transparent;
-          background-image: var(--action-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-  
-        .top-meta  a.author-link {
-          text-decoration: none;
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-        }
-
         div.head {
           display: flex;
           flex-flow: column;
           gap: 0;
-          margin: 0;
+          margin: 5px 0;
         }
 
         div.head > .topic {
           width: max-content;
-          color: var(--white-color);
-          margin: 5px 0;
-          padding: 3px 10px 4px 10px;
-          box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;
-          background: var(--accent-linear);
+          color: var(--gray-color);
+          padding: 3px 10px 3px 10px;
+         /* box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;*/
+          background: var(--light-linear);
           font-family: var(--font-read), sans-serif;
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           font-weight: 500;
-          border-radius: 50px;
-          -webkit-border-radius: 50px;
-          -moz-border-radius: 50px;
+          border-radius: 10px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
         }
 
         div.head > h1.story-title {
           margin: 0;
           padding: 0;
-          font-weight: 700;
-          font-size: 1.7rem;
+          font-weight: 600;
+          font-size: 1.6rem;
           line-height: 1.5;
           font-family: var(--font-main), sans-serif;
           color: var(--title-color);
@@ -337,8 +276,8 @@ export default class StorySection extends HTMLElement {
         .meta {
           border-bottom: var(--border);
           border-top: var(--border);
-          margin: 10px 0 0;
-          padding: 12px 0;
+          margin: 5px 0 0 0;
+          padding: 10px 0;
           display: flex;
           position: relative;
           color: var(--text-color);
@@ -350,7 +289,7 @@ export default class StorySection extends HTMLElement {
         }
 
         article.article {
-          margin: 3px 0 15px;
+          margin: 3px 0 0;
           display: flex;
           flex-flow: column;
           color: var(--read-color);
@@ -473,119 +412,21 @@ export default class StorySection extends HTMLElement {
             cursor: default !important;
           }
 
-          .top-meta {
-            border-bottom: var(--border-mobile);
-          }
-
           .meta {
-            border-bottom: var(--border-mobile);
-            border-top: none;
-            margin: 5px 0 0 0;
-            padding: 12px 0;
             display: flex;
             position: relative;
             color: var(--text-color);
             align-items: center;
             font-family: var(--font-text), sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             gap: 5px;
             font-weight: 600;
           }
 
-          .stats {
-            padding: 10px 0;
-          }
-
           a,
-          .stats > .stat {
-            cursor: default !important;
-          }
-
-          a,
-          .poll > .poll-options > .poll-option label,
-          span.stat,
           span.action {
             cursor: default !important;
           }
-
-          .stats.actions > span.play:hover,
-          .stats.actions > span.stat:hover,
-          .stats.actions > span.action:hover {
-            background: none;
-          }
-
-          .stats.actions > span.action.share > .overlay {
-            position: fixed;
-            background-color: var(--modal-overlay);
-            z-index: 100;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            display: none;
-          }
-
-          .stats.actions > span.action.share > .overlay span.close {
-            display: flex;
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-          }
-
-          .stats.actions > span.action.share .options {
-            display: flex;
-            flex-flow: row;
-            align-items: center;
-            justify-content: space-around;
-            z-index: 1;
-            gap: 0;
-            box-shadow: var(--card-box-shadow);
-            width: 100%;
-            padding: 15px 8px;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            left: 0;
-            background: var(--background);
-            border: var(--border-mobile);
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-          }
-
-          .stats.actions > span.action.share .options > .option {
-            display: flex;
-            flex-flow: column-reverse;
-            align-items: center;
-            justify-content: space-between;
-            gap: 5px;
-            padding: 10px;
-          }
-
-          .stats.actions > span.action.share .options > .option > svg {
-            width: 30px;
-            height: 30px;
-          }
-
-          .stats.actions > span.action.share .options > .option.code > svg {
-            width: 29px;
-            height: 29px;
-          }
-
-          .stats.actions > span.action.share .options > .option.more > svg {
-            width: 27px;
-            height: 27px;
-          }
-
-          .stats.actions > span.action.share .options > .option > span.text {
-            font-family: var(--font-read), sans-serif;
-            font-weight: 400;
-            font-size: 0.8rem;
-          }
-
         }
       </style>
     `;

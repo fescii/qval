@@ -43,7 +43,7 @@ export default class ShareWrapper extends HTMLElement {
       // Add event listener to the share button
       shareButton.addEventListener('click', e => {
         // prevent the default action
-        e.preventDefault()
+        // e.preventDefault()
 
         // prevent the propagation of the event
         e.stopPropagation();
@@ -590,38 +590,38 @@ export default class ShareWrapper extends HTMLElement {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            height: 43px;
-            width: 43px;
-            min-height: 43px;
-            min-width: 43px;
-            max-height: 43px;
-            max-width: 43px;
+            height: 45px;
+            width: 45px;
+            min-height: 45px;
+            min-width: 45px;
+            max-height: 45px;
+            max-width: 45px;
             padding: 2px;
             margin: 3px;
           }
 
           .share-buttons > span.copy > svg,
           .share-buttons > a > svg {
-            height: 18px;
-            width: 18px;
+            height: 23px;
+            width: 23px;
             display: flex;
             align-items: center;
             justify-content: center;
           }
 
           .share-buttons > a.facebook > svg {
-            height: 20px;
-            width: 20px;
+            height: 25px;
+            width: 25px;
           }
 
           .share-buttons > a.reddit > svg {
-            height: 21px;
-            width: 21px;
+            height: 26px;
+            width: 26px;
           }
 
           .share-buttons > a.telegram > svg {
-            height: 21px;
-            width: 21px;
+            height: 26px;
+            width: 26px;
           }
         }
       </style>
