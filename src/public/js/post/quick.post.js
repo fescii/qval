@@ -276,7 +276,7 @@ export default class QuickPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+      <app-post cliked="true" story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"

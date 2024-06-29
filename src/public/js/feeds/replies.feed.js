@@ -24,7 +24,7 @@ export default class RepliesFeed extends HTMLElement {
     // console.log('We are inside connectedCallback');
     const repliesContainer = this.shadowObj.querySelector('.replies');
 
-    this.initReplies(repliesContainer);
+    this.fetchReplies(repliesContainer);
 
     this.scrollEvent(repliesContainer);
   }
@@ -44,20 +44,6 @@ export default class RepliesFeed extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
-  }
-
-  initReplies = repliesContainer => {
-    const outerThis = this;
-    const url = `${this._url}?replies=${this._total}&page=${this._page}`;
-
-    if(!this._block && !this._empty) {
-      outerThis._empty = true;
-      outerThis._block = true;
-      setTimeout(() => {
-        // fetch the replies
-        outerThis.fetching(url, repliesContainer)
-      }, 3000);
-    }
   }
 
   fetching = (url, repliesContainer) => {
