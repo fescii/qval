@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { sequelize, Sequelize, Story, StorySection, Reply, User, Vote } = require('../../models').models;
+const { sequelize, Sequelize, Story, StorySection, Reply, User } = require('../../models').models;
 const Op = Sequelize.Op;
 
 
@@ -355,7 +355,6 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
     return { stories: null, error };
   }
 }
-
 
 /**
  * @function getRepliesWhenLoggedIn

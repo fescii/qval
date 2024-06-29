@@ -1,13 +1,16 @@
 // Importing the required modules, fns, configs, and utils...
 
 const {
-  getStoriesWhenLoggedIn, getStoriesWhenLoggedOut, 
   getRepliesWhenLoggedIn, getRepliesWhenLoggedOut
 } = require('./helper');
 
 const {
-  getUserReplies, getUserStories,
+  getUserReplies,
 } = require('./user');
+
+const {
+  getLikesWhenLoggedIn, getLikesWhenLoggedOut
+} = require('./likes');
 
 
 /**
@@ -195,7 +198,152 @@ const findReplyReplies = async (reqData) => {
   }
 }
 
+/**
+ * @function findStoryLikes
+ * @description a function that finds likes by author in the database: 10 at a time orderd by the date created
+ * @param {Object} reqData - The request data object
+ * @returns {Object} data - The likes object and error if any
+*/
+const findStoryLikes = async (reqData) => {
+  try {
+    const {
+      hash, user, totalLikes, page, limit
+    } = reqData;
+
+    // Contruct offset from page and limit
+    const offset = (page - 1) * limit;
+
+    // Find the likes
+    const where = { story: hash };
+    const order = [['createdAt', 'DESC']];
+
+    // initialize the likes to be null
+    let likes = null;
+
+    // check if user is logged in
+    if (user === null){
+      const fetchedLikes = await getLikesWhenLoggedOut(where, order, limit, offset);
+
+      // set the likes
+      likes = fetchedLikes;
+    }
+    else if (user !== null) {
+      const fetchedLikes =  await getLikesWhenLoggedIn(where, order, user, limit, offset);
+
+      // set the likes
+      likes = fetchedLikes;  
+    }
+
+    // calculate the total number of pages
+    const totalPages = Math.ceil(totalLikes / limit);
+
+    const last = page === totalPages;
+
+    // Check if the likes exist
+    if (likes === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          likes: [],
+          last: true,
+        }, error: null 
+      };
+    }
+
+    // create a data object
+    const data = {
+      likes: likes,
+      limit: limit,
+      offset: offset,
+      pages: totalPages,
+      last: last,
+    }
+
+    // return the likes
+    return { data: data, error: null };
+  }
+  catch (error) {
+    // return the error
+    return { data: null, error };
+  }
+}
+
+/**
+ * @function findReplyLikes
+ * @description a function that finds likes by author in the database: 10 at a time orderd by the date created
+ * @param {Object} reqData - The request data object
+ * @returns {Object} data - The likes object and error if any
+*/
+const findReplyLikes = async (reqData) => {
+  try {
+    const {
+      hash, user, totalLikes, page, limit
+    } = reqData;
+
+    // Contruct offset from page and limit
+    const offset = (page - 1) * limit;
+
+    // Find the likes
+    const where = { reply: hash };
+    const order = [['createdAt', 'DESC']];
+
+    // initialize the likes to be null
+    let likes = null;
+
+    // check if user is logged in
+    if (user === null){
+      const fetchedLikes = await getLikesWhenLoggedOut(where, order, limit, offset);
+
+      // set the likes
+      likes = fetchedLikes;
+    }
+    else if (user !== null) {
+      const fetchedLikes =  await getLikesWhenLoggedIn(where, order, user, limit, offset);
+
+      // set the likes
+      likes = fetchedLikes;  
+    }
+
+    // calculate the total number of pages
+    const totalPages = Math.ceil(totalLikes / limit);
+
+    const last = page === totalPages;
+
+    // Check if the likes exist
+    if (likes === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          likes: [],
+          last: true,
+        }, error: null 
+      };
+    }
+
+    // create a data object
+    const data = {
+      likes: likes,
+      limit: limit,
+      offset: offset,
+      pages: totalPages,
+      last: last,
+    }
+
+    // return the likes
+    return { data: data, error: null };
+  }
+  catch (error) {
+    // return the error
+    return { data: null, error };
+  }
+}
+
 // Export the module
 module.exports = {
-  findReplyReplies, findStoryReplies
+  findReplyReplies, findStoryReplies,
+  findReplyLikes, findStoryLikes
 };

@@ -1,5 +1,5 @@
 // import all queries from the storyQueues
-const { findReplyReplies, findStoryReplies } = require('../../queries').storyQueries;
+const { findReplyReplies, findStoryReplies, findStoryLikes, findReplyLikes } = require('../../queries').storyQueries;
 
 /**
  * @function getStoryReplies
@@ -132,7 +132,142 @@ const getReplyReplies = async(req, res, next) => {
   });
 }
 
+/**
+ * @function getStoryLikes
+ * @description Controller for finding all likes for a particular story
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getStoryLikes = async(req, res, next) => {
+  // get the story hash from the request params
+  const { hash } = req.params;
+
+  // get page from the query
+  let page = req.query.page || 1;
+
+  // get total likes from the query
+  let totalLikes = req.query.likes || 0;
+
+  // check if the story hash is available in the request object
+  if (!hash || !page || !totalLikes) {
+    const error = new Error('Story hash or page or total likes is undefined!');
+    return next(error);
+  }
+
+  // convert the page and total likes to integer with zero fallback
+  page = parseInt(page, 10) || 1;
+
+  totalLikes = parseInt(totalLikes, 10) || 0;
+
+  // create user hash from the request object
+  const user = req.user ? req.user.hash : null;
+
+  const reqData = {
+    hash: hash.toUpperCase(),
+    user,
+    totalLikes,
+    page,
+    limit: 10
+  }
+
+  // Find the likes
+  const {
+    data,
+    error
+  } = await findStoryLikes(reqData);
+
+  // check if there is an error
+  if (error) {
+    return next(error);
+  }
+
+  // check if there is no data
+  if (!data) {
+    return res.status(404).json({
+      success: false,
+      message: 'No likes found!'
+    });
+  }
+
+  // return the response
+  return res.status(200).json({
+    success: true,
+    message: data.likes ? 'Likes found!' : 'No likes found!',
+    data
+  });
+}
+
+/**
+ * @function getReplyLikes
+ * @description Controller for finding all likes for a particular reply
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object
+*/
+const getReplyLikes = async(req, res, next) => {
+  // get the reply hash from the request params
+  const { hash } = req.params;
+
+  // get page from the query
+  let page = req.query.page || 1;
+
+  // get total likes from the query
+  let totalLikes = req.query.likes || 0;
+
+  // check if the reply hash is available in the request object
+  if (!hash || !page || !totalLikes) {
+    const error = new Error('Reply hash or page or total likes is undefined!');
+    return next(error);
+  }
+
+  // convert the page and total likes to integer with zero fallback
+  page = parseInt(page, 10) || 1;
+
+  totalLikes = parseInt(totalLikes, 10) || 0;
+
+  // create user hash from the request object
+  const user = req.user ? req.user.hash : null;
+
+  const reqData = {
+    hash: hash.toUpperCase(),
+    user,
+    totalLikes,
+    page,
+    limit: 10
+  }
+
+  // Find the likes
+  const {
+    data,
+    error
+  } = await findReplyLikes(reqData);
+
+  // check if there is an error
+  if (error) {
+    return next(error);
+  }
+
+  // check if there is no data
+  if (!data) {
+    return res.status(404).json({
+      success: false,
+      message: 'No likes found!'
+    });
+  }
+
+  // return the response
+  return res.status(200).json({
+    success: true,
+    message: data.likes ? 'Likes found!' : 'No likes found!',
+    data
+  });
+}
+
 // export the controllers
 module.exports = {
-  getReplyReplies, getStoryReplies
+  getReplyReplies, getStoryReplies,
+  getStoryLikes, getReplyLikes
 }
