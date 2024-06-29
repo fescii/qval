@@ -289,7 +289,9 @@ export default class ProfileSection extends HTMLElement {
 
   getReplies = () => {
     return /* html */`
-      <replies-feed replies="all" url="/U0A89BA6/replies"></replies-feed>
+      <replies-feed hash="${this.getAttribute('hash')}" replies="${this.getAttribute('replies')}" page="1"
+        url="${this.getAttribute('replies-url')}" kind="replies">
+      </replies-feed>
     `
   }
 
