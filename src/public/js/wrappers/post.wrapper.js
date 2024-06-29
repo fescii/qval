@@ -115,7 +115,6 @@ export default class PostWrapper extends HTMLElement {
     // console.log(this)
     const text = this.innerHTML;
     const htmlText = this.parseHTML(text)
-    console.log('HTML:', htmlText)
     return `
       <div class="content">
         ${htmlText}

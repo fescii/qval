@@ -329,7 +329,7 @@ export default class PostSection extends HTMLElement {
 
         :host {
           font-size: 16px;
-          padding: 15px 0 0 0;
+          padding: 0;
           width: 100%;
           display: flex;
           flex-flow: column;
@@ -425,7 +425,6 @@ export default class PostSection extends HTMLElement {
 
         .tab-control > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .tab-control > ul.tab > li.active > .text {

@@ -111,11 +111,34 @@ export default class PollWrapper extends HTMLElement {
   }
 
   getContent = () => {
+    // console.log(this)
+    const text = this.innerHTML;
+    const htmlText = this.parseHTML(text)
     return `
       <div class="content">
-        ${this.innerHTML}
+        ${htmlText}
       </div>
     `;
+  }
+
+  // Function to detect and parse the text
+  parseHTML = text => {
+    // Create a temporary element to help with parsing
+    const tempElement = document.createElement('div');
+    
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // Create a textarea element to decode the HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      tempElement.innerHTML = textarea.value;
+    } else {
+        // Directly set the innerHTML for plain HTML
+      tempElement.innerHTML = text;
+    }
+    
+    // Return the parsed HTML
+    return tempElement.innerHTML;
   }
 
   getPoll = () =>  {

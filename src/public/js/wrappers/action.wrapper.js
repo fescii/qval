@@ -577,8 +577,8 @@ export default class ActionWrapper extends HTMLElement {
   }
 
   getForm = () => {
-    return `
-      <form-container type="reply"></form-container>
+    return /* html*/`
+      <form-container full="${this.getAttribute('full')}" type="reply"></form-container>
     `
   }
 
