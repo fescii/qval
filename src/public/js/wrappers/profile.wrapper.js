@@ -414,12 +414,12 @@ export default class ProfileWrapper extends HTMLElement {
       <div class="stats">
         <span class="stat followers">
           <span class="number">${followersFormatted}</span>
-          <span class="label">Followers</span>
+          <span class="label">${totalFollowers === 1 ? 'follower' : 'followers'}</span>
         </span>
         <span class="sp">•</span>
         <span class="stat following">
           <span class="number">${followingFormatted}</span>
-          <span class="label">Following</span>
+          <span class="label">following</span>
         </span>
       </div>
 		`

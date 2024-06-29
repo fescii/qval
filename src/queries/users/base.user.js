@@ -154,7 +154,7 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
     const user = await User.findOne({ 
       attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${currentUser}')`)),
           'is_following'
         ],
       ],

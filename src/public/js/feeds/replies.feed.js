@@ -24,9 +24,14 @@ export default class RepliesFeed extends HTMLElement {
     // console.log('We are inside connectedCallback');
     const repliesContainer = this.shadowObj.querySelector('.replies');
 
-    this.fetchReplies(repliesContainer);
+    // check if the total
+    if (this._total === 0) {
+      this.populateReplies(this.getEmptyMsg(), repliesContainer);
+    } else {
+      this.fetchReplies(repliesContainer);
 
-    this.scrollEvent(repliesContainer);
+      this.scrollEvent(repliesContainer);
+    }
   }
 
   disableScroll() {
@@ -347,7 +352,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .empty {
           width: 100%;
-          padding: 35px 0 30px;
+          padding: 10px 0 30px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -356,7 +361,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last {
           width: 100%;
-          padding: 15px 15px;
+          padding: 10px 15px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -365,10 +370,10 @@ export default class RepliesFeed extends HTMLElement {
 
         .last > h2,
         .empty > h2 {
-          width: 90%;
+          width: 100%;
           margin: 5px 0;
+          text-align: start;
           font-family: var(--font-text), sans-serif;
-          text-align: center;
           color: var(--text-color);
           line-height: 1.4;
           font-size: 1.2rem;
@@ -376,9 +381,9 @@ export default class RepliesFeed extends HTMLElement {
 
         .last p,
         .empty p {
-          width: 90%;
+          width: 100%;
           margin: 0;
-          text-align: center;
+          text-align: start;
           font-family: var(--font-read), sans-serif;
           color: var(--gray-color);
           line-height: 1.4;
@@ -416,7 +421,7 @@ export default class RepliesFeed extends HTMLElement {
         @media screen and (max-width:660px) {
           .last {
             width: 100%;
-            padding: 15px 0 25px;
+            padding: 10px 0 25px;
             border-bottom: var(--border);
             display: flex;
             flex-flow: column;
@@ -426,7 +431,7 @@ export default class RepliesFeed extends HTMLElement {
 
           .empty {
             width: 100%;
-            padding: 20px 0 30px;
+            padding: 10px 0 30px;
             display: flex;
             flex-flow: column;
             align-items: center;

@@ -22,12 +22,15 @@ export default class PeopleFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const peopleContainer = this.shadowObj.querySelector('.people');
 
-    this.fetchPeople(peopleContainer);
-
-    this.scrollEvent(peopleContainer);
+		// check total
+		if (this._total === 0) {
+			this.populatePeople(this.getEmptyMsg(this._kind), peopleContainer);
+		} else {
+			this.fetchPeople(peopleContainer);
+			this.scrollEvent(peopleContainer);
+		}
   }
 
   disableScroll() {
@@ -54,7 +57,7 @@ export default class PeopleFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && data.pages === 0) {
-            outerThis.populatePeople(outerThis.getEmptyMsg(), peopleContainer);
+            outerThis.populatePeople(outerThis.getEmptyMsg(outerThis._kind), peopleContainer);
           } 
           else if (data.last && data.pages > 0) {
             const content = outerThis.mapFields(data.people);
@@ -76,7 +79,7 @@ export default class PeopleFeed extends HTMLElement {
           }
         })
         .catch((error) => {
-					console.log(error)
+					// console.log(error)
           outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
         });
     });
@@ -213,16 +216,16 @@ export default class PeopleFeed extends HTMLElement {
 					<div class="empty">
 						<h2 class="title">The author has no followers yet!</h2>
 						<p class="next">
-							The author has no followers yet. You can be the first to follow the author or you can always come back later to check for new followers.
+							The user has no followers yet. You can be the first to follow the author or you can always come back later to check for new followers.
 						</p>
 					</div>
 				`
 			case 'following':
 				return `
 					<div class="empty">
-						<h2 class="title">The author is not following anyone yet!</h2>
+						<h2 class="title">The user is not following anyone yet!</h2>
 						<p class="next">
-							The author is not following anyone yet. You can always come back later to check.
+							The user is not following anyone yet. You can always come back later to check.
 						</p>
 					</div>
 				`
@@ -245,32 +248,32 @@ export default class PeopleFeed extends HTMLElement {
 					<div class="last">
 						<h2 class="title">No more likes!</h2>
 						<p class="next">
-							You have reached the end of the likes. You can always come back later to check for new likes.
+							You have reached the end of people who liked this post. You can always come back later to check for new likes.
 						</p>
 					</div>
 				`
 			case 'followers':
 				return `
 					<div class="last">
-						<h2 class="title">No more followers!</h2>
+						<h2 class="title">No more followers.</h2>
 						<p class="next">
-							You have reached the end of the followers. You can always come back later to check for new followers.
+							You have reached the people who are following this user. You can always come back later to check for new followers.
 						</p>
 					</div>
 				`
 			case 'following':
 				return `
 					<div class="last">
-						<h2 class="title">No more following!</h2>
+						<h2 class="title">No more people.</h2>
 						<p class="next">
-							You have reached the end of the following. You can always come back later to check for new following.
+							You have reached the end of the people who this user is following. You can always come back later to check for new people.
 						</p>
 					</div>
 				`
 			default:
 				return `
 					<div class="last">
-						<h2 class="title">No more data!</h2>
+						<h2 class="title">No more data.</h2>
 						<p class="next">
 							You have reached the end of the data. You can always come back later to check for new data.
 						</p>
@@ -403,7 +406,7 @@ export default class PeopleFeed extends HTMLElement {
 
         .empty {
           width: 100%;
-          padding: 35px 0 30px;
+          padding: 10px 0 30px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -412,7 +415,7 @@ export default class PeopleFeed extends HTMLElement {
 
         .last {
           width: 100%;
-          padding: 15px 15px;
+          padding: 10px 15px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -421,10 +424,10 @@ export default class PeopleFeed extends HTMLElement {
 
         .last > h2,
         .empty > h2 {
-          width: 90%;
-          margin: 5px 0;
+          width: 100%;
+          margin: 2px 0;
           font-family: var(--font-text), sans-serif;
-          text-align: center;
+          text-align: start;
           color: var(--text-color);
           line-height: 1.4;
           font-size: 1.2rem;
@@ -432,9 +435,9 @@ export default class PeopleFeed extends HTMLElement {
 
         .last p,
         .empty p {
-          width: 90%;
+          width: 100%;
           margin: 0;
-          text-align: center;
+          text-align: start;
           font-family: var(--font-read), sans-serif;
           color: var(--gray-color);
           line-height: 1.4;
@@ -472,8 +475,7 @@ export default class PeopleFeed extends HTMLElement {
         @media screen and (max-width:660px) {
           .last {
             width: 100%;
-            padding: 15px 0 25px;
-            border-bottom: var(--border);
+            padding: 10px 0 25px;
             display: flex;
             flex-flow: column;
             align-items: center;
@@ -482,12 +484,23 @@ export default class PeopleFeed extends HTMLElement {
 
           .empty {
             width: 100%;
-            padding: 20px 0 30px;
+            padding: 10px 0 30px;
             display: flex;
             flex-flow: column;
             align-items: center;
             justify-content: center;
           }
+
+					.last > h2,
+					.empty > h2 {
+						width: 100%;
+						margin: 2px 0;
+						font-family: var(--font-text), sans-serif;
+						text-align: start;
+						color: var(--text-color);
+						line-height: 1.4;
+						font-size: 1.2rem;
+					}
         }
       </style>
     `;

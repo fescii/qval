@@ -283,7 +283,7 @@ const fetchFollowersWhenLoggedIn = async (where, order, user, limit, offset) => 
     return connects.map(connect => {
       return {
         createdAt: connect.createdAt,
-        you: connect.to === user,
+        you: connect.from_user.hash === user,
         ...connect.from_user.dataValues,
       }
     });
@@ -335,7 +335,7 @@ const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => 
     return connects.map(connect => {
       return {
         createdAt: connect.createdAt,
-        you: connect.from === user,
+        you: connect.to_user.hash === user,
         ...connect.to_user.dataValues,
       }
     });

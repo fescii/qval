@@ -108,21 +108,17 @@ export default class ProfileSection extends HTMLElement {
             // update active attribute
             outerThis.setAttribute('active', tab.dataset.element);
 
-            switch (tab.dataset.element) {
-              case "stories":
-                contentContainer.innerHTML = outerThis.getStories();
-                break;
-              case "replies":
-                contentContainer.innerHTML = outerThis.getReplies();
-                break;
-              case "followers":
-                contentContainer.innerHTML = outerThis.getFollowers();
-              case "following":
-                contentContainer.innerHTML = outerThis.getFollowing();
-              default:
-                break;
-            }
+            const tabName = tab.dataset.element; 
 
+            if (tabName === "stories") {
+              contentContainer.innerHTML = outerThis.getStories();
+            } else if (tabName === "replies") {
+              contentContainer.innerHTML = outerThis.getReplies();
+            } else if (tabName === "followers") {
+              contentContainer.innerHTML = outerThis.getFollowers();
+            } else if (tabName === "following") {
+              contentContainer.innerHTML = outerThis.getFollowing();
+            }
           }
         })
       })
@@ -308,7 +304,7 @@ export default class ProfileSection extends HTMLElement {
   getFollowing = () => {
     return /*html*/`
       <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('following')}" page="1"
-        url="${this.getAttribute('following-url')}" kind="folling">
+        url="${this.getAttribute('following-url')}" kind="following">
       </people-feed>
     `
   }
@@ -450,7 +446,6 @@ export default class ProfileSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
@@ -463,7 +458,7 @@ export default class ProfileSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {

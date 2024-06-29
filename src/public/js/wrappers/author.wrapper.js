@@ -658,7 +658,7 @@ export default class AuthorWrapper extends HTMLElement {
 
    return /* html */`
      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
-       stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
+       stories-url="/api/v1${url}/stories" replies-url="api/v1${url}/replies" followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
        hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
        following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
