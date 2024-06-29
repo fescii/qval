@@ -206,7 +206,7 @@ const getReplyLikes = async (req, res) => {
 
   // query the database for the reply
   const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
-
+ 
   // if there is an error, render the error page
   if (error) {
     console.error(error);
@@ -214,7 +214,7 @@ const getReplyLikes = async (req, res) => {
   }
 
   // if there is no reply, render the 404 page
-  if (reply) {
+  if (!reply) {
     return res.status(404).render('404')
   }
 

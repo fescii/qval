@@ -275,8 +275,10 @@ export default class PostSection extends HTMLElement {
   }
 
   getLikes = () => {
-    return `
-      <people-feed hash="${this.getAttribute('hash')}" likes="${this.getAttribute('likes')}" url="${this.getAttribute('likes-url')}"></people-feed>
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" likes="${this.getAttribute('likes')}" page="1"
+        url="${this.getAttribute('likes-url')}" >
+      </people-feed>
     `
   }
 

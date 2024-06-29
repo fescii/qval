@@ -4,7 +4,7 @@ const { checkToken } = require('../../middlewares').authMiddleware;
 
 const {
   findAuthorStories, findAuthorReplies, getTopicStories, getRelatedStories,
-  getStoryReplies, getReplyReplies, getStoryLikes, getReplyLikes
+  getStoryReplies, getReplyReplies, fetchReplyLikes, fetchStoryLikes
 } = require('../../controllers').storyController;
 
 /**
@@ -25,24 +25,16 @@ module.exports = (app, url) => {
   });
   
   // Route for finding all stories by an author
-  app.get(`${url}/u/:hash/stories`,
-    checkToken, findAuthorStories
-  );
+  app.get(`${url}/u/:hash/stories`, checkToken, findAuthorStories);
 
   // Route for finding all replies by an author
-  app.get(`${url}/u/:hash/replies`,
-    checkToken, findAuthorReplies
-  );
+  app.get(`${url}/u/:hash/replies`, checkToken, findAuthorReplies);
 
   // Route for finding all stories by a topic
-  app.get(`${url}/t/:hash/stories`,
-    checkToken, getTopicStories
-  );
+  app.get(`${url}/t/:hash/stories`, checkToken, getTopicStories);
 
   // Route for finding related stories
-  app.get(`${url}/t/feeds/related`,
-    checkToken, getRelatedStories
-  );
+  app.get(`${url}/t/feeds/related`, checkToken, getRelatedStories);
   
   // Route to handle finding all story replies
   app.get(`${url}/p/:hash/replies`, checkToken, getStoryReplies)
@@ -51,8 +43,8 @@ module.exports = (app, url) => {
   app.get(`${url}/r/:hash/replies`, checkToken, getReplyReplies);
 
   // Route to handle finding all story likes
-  app.get(`${url}/p/:hash/likes`, checkToken, getStoryLikes);
+  app.get(`${url}/p/:hash/likes`, checkToken, fetchStoryLikes);
 
   // Route to handle finding all reply likes
-  app.get(`${url}/r/:hash/likes`, checkToken, getReplyLikes);
+  app.get(`${url}/r/:hash/likes`, checkToken, fetchReplyLikes);
 }

@@ -18,7 +18,7 @@ const { voteController } = require('./vote');
 
 const { getStory, getStoryLikes, getReply, getReplyLikes } = require('./public');
 
-const { getReplyReplies, getStoryReplies } = require('./feeds');
+const { getReplyReplies, getStoryReplies, fetchReplyLikes, fetchStoryLikes } = require('./feeds');
 
 
 // Export all controllers as a single object
@@ -29,4 +29,5 @@ module.exports = {
   getStoryReplies, viewContentController, createReply, updateReply, deleteReply, 
   getStorySections, findAuthorReplies, findAuthorStories, getRelatedStories, getStory, 
   getReplyLikes, createStorySection, updateStorySection, deleteStorySection, getReply,
+  fetchReplyLikes, fetchStoryLikes
 }

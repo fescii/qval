@@ -293,13 +293,13 @@ const findReplyLikes = async (reqData) => {
     let likes = null;
 
     // check if user is logged in
-    if (user === null){
+    if (!user){
       const fetchedLikes = await getLikesWhenLoggedOut(where, order, limit, offset);
 
       // set the likes
       likes = fetchedLikes;
     }
-    else if (user !== null) {
+    else {
       const fetchedLikes =  await getLikesWhenLoggedIn(where, order, user, limit, offset);
 
       // set the likes

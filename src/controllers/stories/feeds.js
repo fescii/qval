@@ -133,14 +133,14 @@ const getReplyReplies = async(req, res, next) => {
 }
 
 /**
- * @function getStoryLikes
+ * @function fetchStoryLikes
  * @description Controller for finding all likes for a particular story
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  * @returns {Object} - Returns response object
 */
-const getStoryLikes = async(req, res, next) => {
+const fetchStoryLikes = async(req, res, next) => {
   // get the story hash from the request params
   const { hash } = req.params;
 
@@ -200,14 +200,14 @@ const getStoryLikes = async(req, res, next) => {
 }
 
 /**
- * @function getReplyLikes
+ * @function fetchReplyLikes
  * @description Controller for finding all likes for a particular reply
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  * @returns {Object} - Returns response object
 */
-const getReplyLikes = async(req, res, next) => {
+const fetchReplyLikes = async(req, res, next) => {
   // get the reply hash from the request params
   const { hash } = req.params;
 
@@ -269,5 +269,5 @@ const getReplyLikes = async(req, res, next) => {
 // export the controllers
 module.exports = {
   getReplyReplies, getStoryReplies,
-  getStoryLikes, getReplyLikes
+  fetchStoryLikes, fetchReplyLikes
 }
