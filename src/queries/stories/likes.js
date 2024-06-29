@@ -32,11 +32,12 @@ const getLikesWhenLoggedIn = async (where, order, user, limit, offset) => {
       ],
     });
 
-    return data = likes.map(like => {
+    return likes.map(like => {
       return {
-        ...like.dataValues,
-        like_author: like.like_author.dataValues
-      };
+        createdAt: like.createdAt,
+        you: like.author === user,
+        ...like.like_author.dataValues,
+      }
     });
   }
   catch (error) {
@@ -69,7 +70,13 @@ const getLikesWhenLoggedOut = async (where, order, limit, offset) => {
       ],
     });
 
-    return likes;
+    return likes.map(like => {
+      return {
+        createdAt: like.createdAt,
+        you: false,
+        ...like.like_author.dataValues,
+      }
+    });
   }
   catch (error) {
     throw error;

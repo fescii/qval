@@ -157,6 +157,7 @@ export default class AppStory extends HTMLElement {
     return /* html */`
       <post-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Story" 
         author-hash="${this.getAttribute('author-hash')}" hash="${this.getAttribute('hash')}"
+        replies="${this.getAttribute('replies')}" likes="${this.getAttribute('likes')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">
       </post-section>
     `

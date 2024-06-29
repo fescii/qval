@@ -51,7 +51,6 @@ export default class PeopleFeed extends HTMLElement {
     this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
       response.json().then((result) => {
         if (result.success) {
-					console.log(data)
           const data = result.data;
           if (data.last && data.pages === 0) {
             outerThis.populatePeople(outerThis.getEmptyMsg(), peopleContainer);
@@ -76,6 +75,7 @@ export default class PeopleFeed extends HTMLElement {
           }
         })
         .catch((error) => {
+					// console.log(error)
           outerThis.populatePeople(outerThis.getWrongMessage(), peopleContainer);
         });
     });
@@ -123,18 +123,14 @@ export default class PeopleFeed extends HTMLElement {
   }
 
   mapFields = data => {
-    return data.map(reply => {
-      const author = reply.reply_author;
-      let name = author.name.split(" ");
-      let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
+    return data.map(user => {
+      let name = user.name.split(" ");
+      let picture = user.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : user.picture;
       return /*html*/`
-        <quick-post story="reply" hash="${reply.hash}" url="/r/${reply.hash}" likes="${reply.likes}" replies="${reply.replies}" liked="${reply.liked}"
-          views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" likes-url="/api/v1/r/${reply.hash}/likes"
-          author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}"
-          author-img="${picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
-          author-following="${author.following}" author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!': author.bio }">
-          ${reply.content}
-        </quick-post>
+				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}"
+          picture="${picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
+				</user-wrapper>
       `
     }).join('');
   }

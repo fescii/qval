@@ -16,8 +16,8 @@ const getStoryReplies = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total stories from the query
-  let totalReplies = req.query.stories || 0;
+  // get total replies from the query
+  let totalReplies = req.query.replies || 0;
 
   // check if the story hash is available in the request object
   if (!hash || !page || !totalReplies) {
@@ -33,12 +33,12 @@ const getStoryReplies = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalStories,
+    totalReplies,
     page: page = parseInt(page, 10) || 1,
     limit: 10
   }
 
-  // Find the stories
+  // Find the replies
   const {
     data,
     error
