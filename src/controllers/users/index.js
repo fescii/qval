@@ -6,9 +6,14 @@ const {
   updateProfilePassword, updateProfilePicture, updateProfileEmail
 } = require('./edit');
 
+const {
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing
+} = require('./public')
+
 // Export all users controllers
 module.exports = {
   register, checkIfEmailExits, followUser,
   updateProfileBio, updateProfileContact, updateProfileName,
-  updateProfilePassword, updateProfilePicture, updateProfileEmail
+  updateProfilePassword, updateProfilePicture, updateProfileEmail,
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing
 }

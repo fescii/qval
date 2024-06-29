@@ -18,20 +18,8 @@
 <%# Check if bio is null and overwrite it with the default bio %> 
 <% var bio = data.bio === null ? "This user has not added a bio yet." : data.bio %>
 
-<%#  Check if the user is logged in  %> 
-<% if (data.authenticated) { %>
-  <%#  This is the topic component  %> 
-  <app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
-    followers-url="<%= url %>/followers" following-url="<%= url %>/following" 
-    picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
-    following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">
-  </app-profile>
-  <%#  Add else if the user is not logged in  %> 
-<% } else { %>
-  <%#  This is the profile component  %> 
-  <app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
-    followers-url="<%= url %>/followers" following-url="<%= url %>/following" 
-    picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
-    following="<%= data.following %>" user-follow="false" bio="<%= bio %>">
-  </app-profile>
-<% } -%>
+<app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
+  followers-url="/api/v1<%= url %>/followers" following-url="/api/v1<%= url %>/following" 
+  picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
+  following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">
+</app-profile>

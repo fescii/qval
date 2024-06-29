@@ -1,5 +1,5 @@
 // import models
-const { sequelize, User} = require('../../models').models;
+const { Sequelize, sequelize, User} = require('../../models').models;
 
 // import bcrypt
 const bcrypt = require('bcrypt');
@@ -109,7 +109,7 @@ const getUserByHash = async (hash, currentUser) => {
  * @param {String} hash - The hash of the user
  * @returns {Object} - The user object or null, and the error if any
 */
-const getUser = async (hash, you=false, authenticated=false) => {
+const getUser = async (hash, you=false,) => {
   try {
     // Find the user by hash
     const user = await User.findOne({ 
@@ -130,9 +130,6 @@ const getUser = async (hash, you=false, authenticated=false) => {
 
     // if you are the user
     data.you = you;
-
-    // add authenticated to the user
-    data.authenticated = authenticated;
 
     return { user: data, error: null };
   }
@@ -157,14 +154,9 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
     const user = await User.findOne({ 
       attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
         [
-          sequelize.literal(`(
-          SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
-          FROM account.connects
-          WHERE connects.to = users.hash
-          AND connects.from = '${currentUser}'
-          )`),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)),
           'is_following'
-        ]
+        ],
       ],
       where: { hash }
     });

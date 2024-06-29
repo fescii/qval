@@ -116,7 +116,9 @@ export default class ProfileSection extends HTMLElement {
                 contentContainer.innerHTML = outerThis.getReplies();
                 break;
               case "followers":
-                contentContainer.innerHTML = outerThis.getPeople();
+                contentContainer.innerHTML = outerThis.getFollowers();
+              case "following":
+                contentContainer.innerHTML = outerThis.getFollowing();
               default:
                 break;
             }
@@ -207,7 +209,9 @@ export default class ProfileSection extends HTMLElement {
       case "replies":
         return this.getReplies();
       case "followers":
-        return this.getPeople();
+        return this.getFollowers();
+      case "following":
+        return this.getFollowing();
       default:
         return this.getStories();
     }
@@ -256,6 +260,9 @@ export default class ProfileSection extends HTMLElement {
           <li url="${url}/followers" data-element="followers" class="tab-item followers">
             <span class="text">Followers</span>
           </li>
+          <li url="${url}/following" data-element="following" class="tab-item following">
+            <span class="text">Following</span>
+          </li>
           <span class="line"></span>
         </ul>
       </div>
@@ -270,7 +277,9 @@ export default class ProfileSection extends HTMLElement {
       case "replies":
         return this.getReplies();
       case "followers":
-        return this.getPeople();
+        return this.getFollowers();
+      case "following":
+        return this.getFollowing();
       default:
         return this.getStories();
     }
@@ -288,10 +297,18 @@ export default class ProfileSection extends HTMLElement {
     `
   }
 
-  getPeople = () => {
+  getFollowers = () => {
     return /*html*/`
-      <people-feed hash="${this.getAttribute('hash')}" followers="${this.getAttribute('followers')}" page="1"
-        url="${this.getAttribute('followers-url')}">
+      <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('followers')}" page="1"
+        url="${this.getAttribute('followers-url')}" kind="followers">
+      </people-feed>
+    `
+  }
+
+  getFollowing = () => {
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('following')}" page="1"
+        url="${this.getAttribute('following-url')}" kind="folling">
       </people-feed>
     `
   }

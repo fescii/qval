@@ -243,7 +243,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
 }
 
 /**
- * @function getPeopleWhenLoggedIn
+ * @function fetchFollowersWhenLoggedIn
  * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
@@ -252,7 +252,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The people object and error if any
 */
-const getPeopleWhenLoggedIn = async (where, order, user, limit, offset) => {
+const fetchFollowersWhenLoggedIn = async (where, order, user, limit, offset) => {
   try {
     // Find the people from the connect table including the user
     const connects = await Connect.findAll({
@@ -264,10 +264,10 @@ const getPeopleWhenLoggedIn = async (where, order, user, limit, offset) => {
       include: [
         {
           model: User,
-          as: 'connect_user',
+          as: 'from_user',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
             [
-              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = connect_user.hash AND connects.from = '${user}')`)),
+              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = from_user.hash AND connects.from = '${user}')`)),
               'is_following'
             ],
           ]
@@ -284,7 +284,59 @@ const getPeopleWhenLoggedIn = async (where, order, user, limit, offset) => {
       return {
         createdAt: connect.createdAt,
         you: connect.to === user,
-        ...connect.connect_user.dataValues,
+        ...connect.from_user.dataValues,
+      }
+    });
+  }
+  catch (error) {
+    // throw the error
+    throw error;
+  }
+}
+
+/**
+ * @function fetchFollowingWhenLoggedIn
+ * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {String} user - The user hash
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The people object and error if any
+*/
+const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => {
+  try {
+    // Find the people from the connect table including the user
+    const connects = await Connect.findAll({
+      attributes: ['to', 'from', 'createdAt'],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          as: 'to_user',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+            [
+              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = to_user.hash AND connects.from = '${user}')`)),
+              'is_following'
+            ],
+          ]
+        },
+      ]
+    });
+
+    // Check if the connects exist
+    if (connects.length === 0) {
+      return null;
+    }
+
+    return connects.map(connect => {
+      return {
+        createdAt: connect.createdAt,
+        you: connect.from === user,
+        ...connect.to_user.dataValues,
       }
     });
   }
@@ -344,5 +396,5 @@ const getPeopleWhenLoggedOut = async (where, order, limit, offset) => {
 // Export the module
 module.exports = {
   findUserStory, findUserReply, getUserStories, getUserReplies,
-  getPeopleWhenLoggedIn, getPeopleWhenLoggedOut
+   getPeopleWhenLoggedOut, fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn
 };

@@ -8,7 +8,7 @@ const { likeStoryController, likeReplyController, viewContentController } = requ
 
 const { createReply, updateReply, deleteReply, createStoryReply } = require('./reply');
 
-const { findAuthorReplies, findAuthorStories } = require('./author');
+const { findAuthorReplies, findAuthorStories, findUserFollowers, findUserFollowing } = require('./author');
 
 const { createStorySection, updateStorySection, deleteStorySection, getStorySections } = require('./section');
 
@@ -29,5 +29,5 @@ module.exports = {
   getStoryReplies, viewContentController, createReply, updateReply, deleteReply, 
   getStorySections, findAuthorReplies, findAuthorStories, getRelatedStories, getStory, 
   getReplyLikes, createStorySection, updateStorySection, deleteStorySection, getReply,
-  fetchReplyLikes, fetchStoryLikes
+  fetchReplyLikes, fetchStoryLikes, findUserFollowers, findUserFollowing
 }

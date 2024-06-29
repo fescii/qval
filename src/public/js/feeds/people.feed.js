@@ -6,7 +6,8 @@ export default class PeopleFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._total = this.parseToNumber(this.getAttribute('likes'));
+    this._total = this.parseToNumber(this.getAttribute('total'));
+		this._kind = this.getAttribute('kind');
     this._pages = 1;
     this._url = this.getAttribute('url');
 
@@ -56,34 +57,34 @@ export default class PeopleFeed extends HTMLElement {
             outerThis.populatePeople(outerThis.getEmptyMsg(), peopleContainer);
           } 
           else if (data.last && data.pages > 0) {
-            const content = outerThis.mapFields(data.likes);
+            const content = outerThis.mapFields(data.people);
             outerThis.populatePeople(content, peopleContainer);
             outerThis.populatePeople(
-              outerThis.getLastMessage(), peopleContainer);
+            outerThis.getLastMessage(outerThis._kind), peopleContainer);
           } 
           else {
             outerThis._empty = false;
             outerThis._block = false;
             outerThis._pages = data.pages;
             
-            const content = outerThis.mapFields(data.likes);
+            const content = outerThis.mapFields(data.people);
             outerThis.populatePeople(content, peopleContainer);
             }
           }
           else {
-            outerThis.populatePeople(outerThis.getWrongMessage(), peopleContainer);
+            outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
           }
         })
         .catch((error) => {
-					// console.log(error)
-          outerThis.populatePeople(outerThis.getWrongMessage(), peopleContainer);
+					console.log(error)
+          outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
         });
     });
   }
 
   fetchPeople = peopleContainer => {
     const outerThis = this;
-    const url = `${this._url}?likes=${this._total}&page=${this._page}`;
+    const url = `${this._url}?total=${this._total}&page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -196,28 +197,86 @@ export default class PeopleFeed extends HTMLElement {
     `;
   }
 
-  getEmptyMsg = () => {
-    // get the next attribute
-    return `
-      <div class="empty">
-        <h2 class="title">No Likes found!</h2>
-        <p class="next">
-          The post has no likes yet. You can be the first to like it or you can always come back later to check for new likes.
-        </p>
-			</div>
-    `
+  getEmptyMsg = text => {
+    switch (text) {
+			case 'likes':
+				return `
+					<div class="empty">
+						<h2 class="title">No Likes found!</h2>
+						<p class="next">
+							The post has no likes yet. You can be the first to like it or you can always come back later to check for new likes.
+						</p>
+					</div>
+				`;
+			case 'followers':
+				return `
+					<div class="empty">
+						<h2 class="title">The author has no followers yet!</h2>
+						<p class="next">
+							The author has no followers yet. You can be the first to follow the author or you can always come back later to check for new followers.
+						</p>
+					</div>
+				`
+			case 'following':
+				return `
+					<div class="empty">
+						<h2 class="title">The author is not following anyone yet!</h2>
+						<p class="next">
+							The author is not following anyone yet. You can always come back later to check.
+						</p>
+					</div>
+				`
+			default:
+				return `
+					<div class="empty">
+						<h2 class="title">No data found!</h2>
+						<p class="next">
+							No data found. You can always come back later to check for new data.
+						</p>
+					</div>
+				`
+		}
   }
 
-  getLastMessage = () => {
-    // get the next attribute
-    return `
-      <div class="last">
-        <h2 class="title">No more likes!</h2>
-        <p class="next">
-          You have reached the end of the likes. You can always come back later to check for new likes.
-        </p>
-      </div>
-    `
+  getLastMessage = text => {
+    switch (text) {
+			case 'likes':
+				return `
+					<div class="last">
+						<h2 class="title">No more likes!</h2>
+						<p class="next">
+							You have reached the end of the likes. You can always come back later to check for new likes.
+						</p>
+					</div>
+				`
+			case 'followers':
+				return `
+					<div class="last">
+						<h2 class="title">No more followers!</h2>
+						<p class="next">
+							You have reached the end of the followers. You can always come back later to check for new followers.
+						</p>
+					</div>
+				`
+			case 'following':
+				return `
+					<div class="last">
+						<h2 class="title">No more following!</h2>
+						<p class="next">
+							You have reached the end of the following. You can always come back later to check for new following.
+						</p>
+					</div>
+				`
+			default:
+				return `
+					<div class="last">
+						<h2 class="title">No more data!</h2>
+						<p class="next">
+							You have reached the end of the data. You can always come back later to check for new data.
+						</p>
+					</div>
+				`
+		}
   }
 
   getWrongMessage = () => {

@@ -1,9 +1,9 @@
 // Import middlewares and controllers
-const { verifyToken } = require('../middlewares').authMiddleware;
+const { verifyToken } = require('../../middlewares').authMiddleware;
 const {
   updateProfilePicture, updateProfileBio, updateProfileName,
   updateProfileContact, updateProfilePassword, followUser
-} = require('../controllers').userController;
+} = require('../../controllers').userController;
 
 
 /**

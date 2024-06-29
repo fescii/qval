@@ -1,7 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getPerson, getUserReplies, getUserFollowers
-} = require('../../content').userContent;
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing
+} = require('../../controllers').userController;
 
 const {
   checkToken
@@ -36,4 +36,7 @@ module.exports = (app) => {
 
   // Route for handling user followers page
   app.get('/u/:hash/followers', checkToken, getUserFollowers);
+
+  // Route for handling user following page
+  app.get('/u/:hash/following', checkToken, getUserFollowing);
 }

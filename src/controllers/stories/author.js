@@ -274,6 +274,6 @@ const findUserFollowing = async(req, res, next) => {
 
 // export the controllers
 module.exports = {
-  findAuthorStories,
-  findAuthorReplies
+  findAuthorStories, findAuthorReplies,
+  findUserFollowers, findUserFollowing
 }

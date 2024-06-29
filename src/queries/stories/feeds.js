@@ -246,7 +246,7 @@ const findStoryLikes = async (reqData) => {
           limit: limit,
           offset: offset,
           pages: totalPages,
-          likes: [],
+          people: [],
           last: true,
         }, error: null 
       };
@@ -254,7 +254,7 @@ const findStoryLikes = async (reqData) => {
 
     // create a data object
     const data = {
-      likes: likes,
+      people: likes,
       limit: limit,
       offset: offset,
       pages: totalPages,
@@ -318,7 +318,7 @@ const findReplyLikes = async (reqData) => {
           limit: limit,
           offset: offset,
           pages: totalPages,
-          likes: [],
+          people: [],
           last: true,
         }, error: null 
       };
@@ -326,7 +326,7 @@ const findReplyLikes = async (reqData) => {
 
     // create a data object
     const data = {
-      likes: likes,
+      people: likes,
       limit: limit,
       offset: offset,
       pages: totalPages,

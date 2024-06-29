@@ -6,8 +6,8 @@ const {
 } = require('./helper');
 
 const {
-  getUserReplies, getUserStories,
-  getPeopleWhenLoggedIn, getPeopleWhenLoggedOut
+  getUserReplies, getUserStories, getPeopleWhenLoggedOut,
+  fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn
 } = require('./user');
 
 /**
@@ -226,7 +226,7 @@ const findFollowersByAuthor = async (reqData) => {
       followers = await getPeopleWhenLoggedOut(where, order, limit, offset);
     }
     else {
-      followers =  await getPeopleWhenLoggedIn(where, order, user, limit, offset); 
+      followers =  await fetchFollowersWhenLoggedIn(where, order, user, limit, offset); 
     }
 
     // calculate the total number of pages
@@ -241,7 +241,7 @@ const findFollowersByAuthor = async (reqData) => {
           limit: limit,
           offset: offset,
           pages: totalPages,
-          followers: [],
+          people: [],
           last: true,
         }, error: null 
       };
@@ -249,7 +249,7 @@ const findFollowersByAuthor = async (reqData) => {
 
     // create a data object
     const data = {
-      followers: followers,
+      people: followers,
       limit: limit,
       offset: offset,
       pages: totalPages,
@@ -292,7 +292,7 @@ const findFollowingByAuthor = async (reqData) => {
       following = await getPeopleWhenLoggedOut(where, order, limit, offset);
     }
     else {
-      following =  await getPeopleWhenLoggedIn(where, order, user, limit, offset); 
+      following =  await fetchFollowingWhenLoggedIn(where, order, user, limit, offset); 
     }
 
     // calculate the total number of pages
@@ -307,6 +307,7 @@ const findFollowingByAuthor = async (reqData) => {
           limit: limit,
           offset: offset,
           pages: totalPages,
+          people: [],
           last: true,
         }, error: null 
       };
@@ -314,7 +315,7 @@ const findFollowingByAuthor = async (reqData) => {
 
     // create a data object
     const data = {
-      following: following,
+      people: following,
       limit: limit,
       offset: offset,
       pages: totalPages,

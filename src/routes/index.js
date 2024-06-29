@@ -5,7 +5,7 @@ const topics = require('./topics');
 const stories = require('./stories');
 const users = require('./users');
 const {
-  joinPages, topicPages, userPages
+  joinPages, topicPages,
 } = require('./pages');
 
 module.exports = (app) => {
@@ -13,12 +13,11 @@ module.exports = (app) => {
   auth(app, '/api/v1/a');
   topics(app, '/api/v1/t');
   stories(app);
-  users(app, '/api/v1/u');
+  users(app);
 
   // public routes
   joinPages(app);
   topicPages(app);
-  userPages(app);
 
   // error routes
   errors(app);

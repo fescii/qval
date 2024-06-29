@@ -216,8 +216,8 @@ module.exports = (sequelize, Sequelize) => {
 	Code.belongsTo(User, { foreignKey: 'email', targetKey: 'email', as: 'user_code', onDelete: 'CASCADE' });
 
 	// Define associations for the Connect and User model
-	User.hasMany(Connect, { foreignKey: 'from', sourceKey: 'hash', onDelete: 'CASCADE' });
-	User.hasMany(Connect, { foreignKey: 'to', sourceKey: 'hash', onDelete: 'CASCADE' });
+	User.hasMany(Connect, { foreignKey: 'from', sourceKey: 'hash', as: 'user_following', onDelete: 'CASCADE' });
+	User.hasMany(Connect, { foreignKey: 'to', sourceKey: 'hash', as: 'user_followers', onDelete: 'CASCADE' });
 	Connect.belongsTo(User, { foreignKey: 'from', targetKey: 'hash', as: 'from_user', onDelete: 'CASCADE' });
 	Connect.belongsTo(User, { foreignKey: 'to', targetKey: 'hash', as: 'to_user', onDelete: 'CASCADE' });
 
