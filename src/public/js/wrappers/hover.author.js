@@ -69,12 +69,13 @@ export default class HoverAuthor extends HTMLElement {
     // get a.meta.link
     const content = this.shadowObj.querySelector('a.meta.link');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
+
         if (mql) {
           // change the display of the content container
           contentContainer.style.display = 'flex';
@@ -171,17 +172,14 @@ export default class HoverAuthor extends HTMLElement {
       // change the content of the content container
       contentContainer.innerHTML = content;
 
-      // Get full post
-      const profile =  outerThis.getProfile();
-
       // Activate view
-      outerThis.activateView(url, body, profile);
+      outerThis.activateView(url, body);
 
       // perfom actions
       outerThis.performActions();
 
       // Activate username link
-      outerThis.activateUsernameLink(url, body, profile);
+      outerThis.activateUsernameLink(url, body);
 
       if (mql) {
         const overlayBtn = outerThis.shadowObj.querySelector('span.pointer');
@@ -208,13 +206,16 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   // Open user profile
-  activateView = (url, body, profile) => {
+  activateView = (url, body) => {
     // get a.action.view
     const content = this.shadowObj.querySelector('.actions > a.action.view');
 
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
   
         // replace and push states
         this.replaceAndPushStates(url, body, profile);
@@ -225,13 +226,16 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   // Open user profile
-  activateUsernameLink = (url, body, profile) => {
+  activateUsernameLink = (url, body) => {
     // get div.name > a.username
     const content = this.shadowObj.querySelector('.top > .name > a.username');
 
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
   
         // replace and push states
         this.replaceAndPushStates(url, body, profile);

@@ -2,11 +2,12 @@
 
 const {
   getStoriesWhenLoggedIn, getStoriesWhenLoggedOut, 
-  getRepliesWhenLoggedIn, getRepliesWhenLoggedOut
+  getRepliesWhenLoggedIn, getRepliesWhenLoggedOut,
 } = require('./helper');
 
 const {
   getUserReplies, getUserStories,
+  getPeopleWhenLoggedIn, getPeopleWhenLoggedOut
 } = require('./user');
 
 /**
@@ -198,7 +199,139 @@ const findRepliesByAuthor = async (reqData) => {
   }
 }
 
+/**
+ * @function findFollowersByAuthor
+ * @description a function that finds followers by author in the database: 10 at a time orderd by the date created
+ * @param {Object} reqData - The request data object
+ * @returns {Object} data - The followers object and error if any
+*/
+const findFollowersByAuthor = async (reqData) => {
+  try {
+    const {
+      hash, user, totalFollowers, page, limit
+    } = reqData;
+
+    // Contruct offset from page and limit
+    const offset = (page - 1) * limit;
+
+    // Find the followers
+    const where = { to: hash };
+    const order = [['createdAt', 'DESC']];
+
+    // initialize the followers to be null
+    let followers = null;
+
+    // check if user is logged in
+    if (!user){
+      followers = await getPeopleWhenLoggedOut(where, order, limit, offset);
+    }
+    else {
+      followers =  await getPeopleWhenLoggedIn(where, order, user, limit, offset); 
+    }
+
+    // calculate the total number of pages
+    const totalPages = Math.ceil(totalFollowers / limit);
+
+    const last = page === totalPages;
+
+    // Check if the followers exist
+    if (followers === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          followers: [],
+          last: true,
+        }, error: null 
+      };
+    }
+
+    // create a data object
+    const data = {
+      followers: followers,
+      limit: limit,
+      offset: offset,
+      pages: totalPages,
+      last: last,
+    }
+
+    // return the followers
+    return { data: data, error: null };
+  }
+  catch (error) {
+    // return the error
+    return { data: null, error };
+  }
+}
+
+/**
+ * @function findFollowingByAuthor
+ * @description a function that finds following by author in the database: 10 at a time orderd by the date created
+ * @param {Object} reqData - The request data object
+ * @returns {Object} data - The following object and error if any
+*/
+const findFollowingByAuthor = async (reqData) => {
+  try {
+    const {
+      hash, user, totalFollowing, page, limit
+    } = reqData;
+
+    // Contruct offset from page and limit
+    const offset = (page - 1) * limit;
+
+    // Find the following
+    const where = { from: hash };
+    const order = [['createdAt', 'DESC']];
+
+    // initialize the following to be null
+    let following = null;
+
+    // check if user is logged in
+    if (!user){
+      following = await getPeopleWhenLoggedOut(where, order, limit, offset);
+    }
+    else {
+      following =  await getPeopleWhenLoggedIn(where, order, user, limit, offset); 
+    }
+
+    // calculate the total number of pages
+    const totalPages = Math.ceil(totalFollowing / limit);
+
+    const last = page === totalPages;
+
+    // Check if the following exist
+    if (following === null) {
+      return { 
+        data: {
+          limit: limit,
+          offset: offset,
+          pages: totalPages,
+          last: true,
+        }, error: null 
+      };
+    }
+
+    // create a data object
+    const data = {
+      following: following,
+      limit: limit,
+      offset: offset,
+      pages: totalPages,
+      last: last,
+    }
+
+    // return the following
+    return { data: data, error: null };
+  }
+  catch (error) {
+    // return the error
+    return { data: null, error };
+  }
+}
+
 // Export the module
 module.exports = {
-  findStoriesByAuthor, findRepliesByAuthor
+  findStoriesByAuthor, findRepliesByAuthor,
+  findFollowersByAuthor, findFollowingByAuthor
 };

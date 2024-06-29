@@ -181,13 +181,13 @@ export default class AppProfile extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <profile-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" hash="${this.getAttribute('hash')}"
-        stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
-        followers-url="${this.getAttribute('followers-url')}"
-        following-url="${this.getAttribute('following-url')}">
+      <profile-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" 
+        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}"
+        replies-url="${this.getAttribute('replies-url')}" replies="${this.getAttribute('replies')}"
+        followers-url="${this.getAttribute('followers-url')}" followers="${this.getAttribute('followers')}"
+        following-url="${this.getAttribute('following-url')}" following="${this.getAttribute('following')}">
       </profile-section>
     `
-
   }
 
   getHighlights = () => {

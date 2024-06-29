@@ -32,6 +32,10 @@ const getLikesWhenLoggedIn = async (where, order, user, limit, offset) => {
       ],
     });
 
+    if (likes.length === 0) {
+      return null;
+    }
+
     return likes.map(like => {
       return {
         createdAt: like.createdAt,
@@ -69,6 +73,10 @@ const getLikesWhenLoggedOut = async (where, order, limit, offset) => {
         }
       ],
     });
+
+    if (likes.length === 0) {
+      return null;
+    }
 
     return likes.map(like => {
       return {

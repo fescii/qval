@@ -148,7 +148,7 @@ const fetchStoryLikes = async(req, res, next) => {
   let page = req.query.page || 1;
 
   // get total likes from the query
-  let totalLikes = req.query.likes || 0;
+  let totalLikes = req.query.total || 0;
 
   // check if the story hash is available in the request object
   if (!hash || !page || !totalLikes) {
@@ -215,7 +215,7 @@ const fetchReplyLikes = async(req, res, next) => {
   let page = req.query.page || 1;
 
   // get total likes from the query
-  let totalLikes = req.query.likes || 0;
+  let totalLikes = req.query.total || 0;
 
   // check if the reply hash is available in the request object
   if (!hash || !page || !totalLikes) {

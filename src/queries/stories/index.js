@@ -1,5 +1,5 @@
 // import all queries 
-const { findStoriesByAuthor, findRepliesByAuthor } = require('./author');
+const { findStoriesByAuthor, findRepliesByAuthor, findFollowersByAuthor, findFollowingByAuthor } = require('./author');
 
 const {
   addStory, checkIfStoryExists, findStory,
@@ -26,5 +26,6 @@ module.exports = {
   editStory, findStoryBySlugOrHash, findStoriesByQuery, fetchStorySections,
   findStoriesByTopic, findRelatedStories, removeStory, findReplyByHash,
   addStorySection, editStorySection, removeStorySection, findReplyReplies,
-  likeReply, likeStory, viewContent, addReply, editReply, removeReply, findStoryReplies
+  likeReply, likeStory, viewContent, addReply, editReply, removeReply, findStoryReplies,
+  findFollowersByAuthor, findFollowingByAuthor
 };

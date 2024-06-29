@@ -60,12 +60,12 @@ export default class AuthorWrapper extends HTMLElement {
     // get a.meta.link
     const content = this.shadowObj.querySelector('a#username');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+        
+        // Get full post
+        const profile =  outerThis.getProfile();
         
         // replace and push states
         outerThis.replaceAndPushStates(url, body, profile);
@@ -81,12 +81,12 @@ export default class AuthorWrapper extends HTMLElement {
     // get a.meta.link
     const content = this.shadowObj.querySelector('a.action.view');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
         
         // replace and push states
         outerThis.replaceAndPushStates(url, body, profile);

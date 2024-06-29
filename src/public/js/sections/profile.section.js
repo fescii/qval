@@ -289,8 +289,10 @@ export default class ProfileSection extends HTMLElement {
   }
 
   getPeople = () => {
-    return /* html */`
-      <people-feed replies="all" url="/U0A89BA6/followers"></people-feed>
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" followers="${this.getAttribute('followers')}" page="1"
+        url="${this.getAttribute('followers-url')}">
+      </people-feed>
     `
   }
 
