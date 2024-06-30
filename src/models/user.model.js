@@ -82,6 +82,11 @@ module.exports = (sequelize, Sequelize) => {
 			defaultValue: 0,
 			allowNull: true,
 		},
+		replies : {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
 	},{
 			schema: 'account',
 			freezeTableName: true,

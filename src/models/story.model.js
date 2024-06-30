@@ -168,7 +168,7 @@ module.exports = (User, sequelize, Sequelize) => {
     await actionQueue.add('actionJob', {
       kind: 'user',
       hashes: {
-        target: story.hash,
+        target: story.author,
       },
       action: 'story',
       value: -1,

@@ -106,6 +106,16 @@ const addStory = async (user, data) => {
 // add a job to the queue
 const addJob = async story => {
   if (story.topics.length > 0) {
+    // add the job to the queue: to tagg the story to the topic
+    await actionQueue.add('actionJob', {
+      kind: 'tag',
+      hashes: {
+        target: story.hash,
+      },
+      action: 'topic',
+      value: story.topics,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  
     story.topics.map(async topic => {
       // add the job to the queue : to update the topic stories count
       await actionQueue.add('actionJob', {
@@ -116,16 +126,6 @@ const addJob = async story => {
         action: 'story',
         value: 1,
       }, { attempts: 3, backoff: 1000, removeOnComplete: true });
-
-      // add the job to the queue: to tagg the story to the topic
-      await actionQueue.add('actionJob', {
-        kind: 'tag',
-        hashes: {
-          target: story.hash,
-        },
-        action: 'topic',
-        value: story.topics,
-      }, { attempts: 3, backoff: 1000, removeOnComplete: true });
     });
   }
 
@@ -133,7 +133,7 @@ const addJob = async story => {
   await actionQueue.add('actionJob', {
     kind: 'user',
     hashes: {
-      target: story.hash,
+      target: story.author,
     },
     action: 'story',
     value: 1,
