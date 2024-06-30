@@ -453,7 +453,6 @@ export default class ProfileSection extends HTMLElement {
 
         .tab-control > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .tab-control > ul.tab > li.active > .text {

@@ -836,8 +836,11 @@ export default class VotesAuthor extends HTMLElement {
           right: 0;
           display: inline-block;
           z-index: 1;
-          width: 100%;
+          width: 70%;
           height: max-content;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
           padding: 2px 8px;
           transition: width 0.5s ease-in-out;
           -webkit-transition: width 0.5s ease-in-out;
