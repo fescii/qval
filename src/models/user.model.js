@@ -98,7 +98,6 @@ module.exports = (sequelize, Sequelize) => {
 			]
 	});
 
-
 	/**
 	 * @type {Model}
 	 * @name Code

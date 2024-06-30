@@ -26,8 +26,7 @@ const getTopic = async (req, res) => {
   const { topic, error } = await findTopicBySlugOrHash(param, user.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -77,8 +76,7 @@ const getTopicStories = async (req, res) => {
   const { topic, error } = await findTopicBySlugOrHash(param, user.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -128,8 +126,7 @@ const getTopicContributors = async (req, res) => {
   const { topic, error } = await findTopicBySlugOrHash(param, user.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 

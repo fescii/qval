@@ -28,8 +28,7 @@ const getStory = async (req, res) => {
   // console.log(story)
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -83,8 +82,7 @@ const getStoryLikes = async (req, res) => {
   const { story, error } = await findStoryBySlugOrHash(param, user.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -160,8 +158,7 @@ const getReply = async (req, res) => {
   const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -208,8 +205,7 @@ const getReplyLikes = async (req, res) => {
   const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
  
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 

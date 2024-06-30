@@ -82,7 +82,7 @@ const findUserReply = async (hash, user) => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
@@ -196,7 +196,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
   try {
     // Find the replies
     const replies = await Reply.findAll({
-      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies',
+      attributes : ['kind', 'author', 'reply', 'story', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),

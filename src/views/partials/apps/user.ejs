@@ -18,7 +18,8 @@
 <%# Check if bio is null and overwrite it with the default bio %> 
 <% var bio = data.bio === null ? "This user has not added a bio yet." : data.bio %>
 
-<app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
+<app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories" 
+  replies-url="/api/v1<%= url %>/replies" stories="<%= data.stories %>" replies="<%= data.replies %>" 
   followers-url="/api/v1<%= url %>/followers" following-url="/api/v1<%= url %>/following" 
   picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
   following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">

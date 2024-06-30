@@ -246,8 +246,9 @@ export default class StoryPost extends HTMLElement {
     return /* html */`
 			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
         picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
       </hover-author>
 		`
   }
@@ -259,6 +260,7 @@ export default class StoryPost extends HTMLElement {
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
         author-you="${this.getAttribute('author-you')}"
+        author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
         author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"

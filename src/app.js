@@ -58,5 +58,4 @@ const server = spdy.createServer(credentials, app);
 // app listen port
 server.listen(PORT, '192.168.68.49', () => {
   console.log(`Server is listening on port https://192.168.68.49:${PORT}`);
-}
-);
+});

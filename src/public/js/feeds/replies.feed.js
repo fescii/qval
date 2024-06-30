@@ -9,6 +9,7 @@ export default class RepliesFeed extends HTMLElement {
     this._total = this.parseToNumber(this.getAttribute('replies'));
     this._pages = 1;
     this._url = this.getAttribute('url');
+    this._kind = this.getAttribute('kind');
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
@@ -26,7 +27,7 @@ export default class RepliesFeed extends HTMLElement {
 
     // check if the total
     if (this._total === 0) {
-      this.populateReplies(this.getEmptyMsg(), repliesContainer);
+      this.populateReplies(this.getEmptyMsg(this._kind), repliesContainer);
     } else {
       this.fetchReplies(repliesContainer);
 
@@ -58,13 +59,13 @@ export default class RepliesFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && data.pages === 0) {
-            outerThis.populateReplies(outerThis.getEmptyMsg(), repliesContainer);
+            outerThis.populateReplies(outerThis.getEmptyMsg(outerThis._kind), repliesContainer);
           } 
           else if (data.last && data.pages > 0) {
             const content = outerThis.mapFields(data.replies);
             outerThis.populateReplies(content, repliesContainer);
             outerThis.populateReplies(
-              outerThis.getLastMessage(), repliesContainer);
+              outerThis.getLastMessage(outerThis._kind), repliesContainer);
           } 
           else {
             outerThis._empty = false;
@@ -204,28 +205,71 @@ export default class RepliesFeed extends HTMLElement {
     `;
   }
 
-  getEmptyMsg = () => {
+  getEmptyMsg = text => {
     // get the next attribute
+   if (text === "post") {
     return `
       <div class="empty">
         <h2 class="title">No replies found!</h2>
         <p class="next">
           The post has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
         </p>
-			</div>
+      </div>
     `
-  }
-
-  getLastMessage = () => {
-    // get the next attribute
+   } 
+   else if(text === "user") {
     return `
-      <div class="last">
-        <h2 class="title">No more replies!</h2>
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
         <p class="next">
-          You have reached the end of the replies. You can always come back later to check for new replies.
+          The user has no replies yet. You can come back later, once available they'll appear here.
         </p>
       </div>
     `
+   } else {
+    return `
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
+        <p class="next">
+          There are no replies yet. You can come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   }
+  }
+
+  getLastMessage = text => {
+    // get the next attribute
+    if (text === "post") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the post's replies. You can add a new reply or come back later to check for new replies.
+          </p>
+        </div>
+      `
+    } else if(text === "user") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the user's replies. You can always come back later to check for new replies.
+          </p>
+        </div>
+      `
+    }
+    else {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have reached the end of the replies. You can always come back later to check for new replies.
+          </p>
+        </div>
+      `
+    }
+   
   }
 
   getWrongMessage = () => {
@@ -361,7 +405,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last {
           width: 100%;
-          padding: 10px 15px;
+          padding: 10px 0 30px;
           display: flex;
           flex-flow: column;
           align-items: center;

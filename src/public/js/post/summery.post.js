@@ -137,7 +137,6 @@ export default class SummeryPost extends HTMLElement {
     `;
   }
 
-
   getReadTime = () => {
     return /*html*/ `
       <span class="time">${this.getAttribute('read-time')}</span>
@@ -204,6 +203,7 @@ export default class SummeryPost extends HTMLElement {
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
         author-you="${this.getAttribute('author-you')}"
+        author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
         author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"

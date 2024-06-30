@@ -24,8 +24,7 @@ const getPerson = async (req, res) => {
   const { user, error } = await getUserByHash(param, currentUser.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -62,8 +61,7 @@ const getUserReplies = async (req, res) => {
   const { user, error } = await getUserByHash(param, currentUser.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
@@ -100,8 +98,7 @@ const getUserFollowers = async (req, res) => {
   const { user, error } = await getUserByHash(param, currentUser.hash);
 
   // if there is an error, render the error page
-  if (error) {
-    console.error(error);
+  if (error) { 
     return res.status(500).render('500')
   }
 
