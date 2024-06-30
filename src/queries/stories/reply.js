@@ -70,18 +70,25 @@ const addReply = async data => {
 
 // add afterCreate hook to increment the replies count of the story/reply
 const addJob = async reply => {
-  // construct the job payload: for queueing
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: reply.kind,
     hashes: {
       target: reply.reply !== null ? reply.reply : reply.story,
     },
     action: 'reply',
     value: 1,
-  };
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  // add the job to the queue: to update the author's reply count
+  await actionQueue.add('actionJob', {
+    kind: 'user',
+    hashes: {
+      target: reply.author,
+    },
+    action: 'reply',
+    value: 1,
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 };
 
 

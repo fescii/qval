@@ -178,9 +178,9 @@ module.exports = (sequelize, Sequelize) => {
 	});
 
 	// add hook to connect model: afterCreate
-	Connect.afterCreate(async (connect, _options) => {
-		// construct queue payload
-		const payload = {
+	Connect.afterCreate(async connect => {
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', {
 			kind: 'user',
 			hashes: {
 				from: connect.from,
@@ -188,16 +188,13 @@ module.exports = (sequelize, Sequelize) => {
 			},
 			action: 'connect',
 			value: 1
-		};
-
-		// Add the connect to the queue
-		await actionQueue.add('actionJob', payload);
+		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
 
 	// add hook to connect model: afterDestroy
-	Connect.afterDestroy(async (connect, _options) => {
-		// construct queue payload
-		const payload = {
+	Connect.afterDestroy(async connect => {
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', {
 			kind: 'user',
 			hashes: {
 				from: connect.from,
@@ -205,10 +202,7 @@ module.exports = (sequelize, Sequelize) => {
 			},
 			action: 'connect',
 			value: -1
-		};
-
-		// Add the connect to the queue
-		await actionQueue.add('actionJob', payload);
+		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
 
 	// Define associations for the Code and User model

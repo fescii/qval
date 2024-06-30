@@ -1,10 +1,9 @@
 // hook fns: functions to udate hooks data in the database
 const {
-  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
-  updateUserFollowers, updateUserFollowing, updateStoryVotes,
-  updateStoryViews, updateStoryLikes, updateStoryReplies,
-  updateReplyViews, updateReplyReplies, updateReplyLikes,
-  viewContent
+  updateUserFollowers, updateUserFollowing, updateUserReplies, updateUserStories,
+  updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
+  updateStoryVotes, updateStoryViews, updateStoryLikes, updateStoryReplies, 
+  updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent
 } = require('./fns.hook');
 
 // import update tags query 
@@ -36,9 +35,9 @@ const actionHook = async data => {
     // switch the kind of data
     switch (data.kind) {
       case 'user':
-        const {from, to} = data.hashes;
+        const hashes = data.hashes;
         // call the user updator
-        await userUpdator(data.action, from, to, data.value);
+        await userUpdator(data.action, hashes, data.value);
         break;
       case 'topic':
         // call the topic updator
@@ -103,15 +102,22 @@ const actionHook = async data => {
  * @name userUpdator
  * @description A function that updates the user followers data
  * @param {String} action - The action to perform
- * @param {String} from - The from user hash
- * @param {String} to - The to user hash
+ * @param {Object} hashes - The user hashes
  * @param {Number} value - The value to update
 */
-const userUpdator = async (action, from, to, value) => {
+const userUpdator = async (action, hashes, value) => {
   if (action === 'connect') {
     // Update the user followers and following
-    await updateUserFollowers(to, value);
-    await updateUserFollowing(from, value);
+    await updateUserFollowers(hashes.to, value);
+    await updateUserFollowing(hashes.from, value);
+  }
+  else if (action === 'reply') {
+    // Update the user replies
+    await updateUserReplies(hashes.target, value);
+  }
+  else if (action === 'story') {
+    // Update the user stories
+    await updateUserStories(hashes.target, value);
   }
 }
 
@@ -135,6 +141,10 @@ const topicUpdator = async (action, topicHash, value) => {
   else if (action === 'view') {
     // Update the topic views
     await updateTopicViews(topicHash, value);
+  }
+  else if (action === 'story') {
+    // Update the topic stories
+    await updateTopicStories(topicHash, value);
   }
 }
 

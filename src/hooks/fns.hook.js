@@ -55,6 +55,60 @@ const updateUserFollowing = async (userHash, value) => {
 }
 
 /**
+ * @function updateUserStories
+ * @name updateUserStories
+ * @description A function that updates the user stories data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserStories = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user stories by the value: stories + 1 or stories - 1
+  await User.update(
+    { stories: Sequelize.literal(`stories + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+}
+
+/**
+ * @function updateUserReplies
+ * @name updateUserReplies
+ * @description A function that updates the user replies data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserReplies = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user replies by the value: replies + 1 or replies - 1
+  await User.update(
+    { replies: Sequelize.literal(`replies + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+}
+
+/**
  * @function updateTopicFollowers
  * @name updateTopicFollowers
  * @description A function that updates the topic followers data
@@ -133,6 +187,33 @@ const updateTopicSubscribers = async (topicHash, value) => {
   await Topic.update(
     { subscribers: Sequelize.literal(`subscribers + ${value}`)}, 
     { where: { hash: topicHash } 
+  });
+}
+
+/**
+ * @function updateTopicStories
+ * @name updateTopicStories
+ * @description A function that updates the topic stories data
+ * @param {String} topicSlug
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateTopicStories = async (topicSlug, value) => {
+  if (!topicSlug || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('Topic slug and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the topic stories by the value: stories + 1 or stories - 1
+  await Topic.update(
+    { stories: Sequelize.literal(`stories + ${value}`)}, 
+    { where: { slug: topicSlug } 
   });
 }
 
@@ -253,8 +334,8 @@ const updateStoryVotes = async (storyHash, option) => {
     // throw an error
     throw error;
   }
-  
 }
+
 
 /**
  * @function updateReplyLikes
@@ -360,8 +441,8 @@ const viewContent = async (user, target, kind) => {
 
 // Export the hook functions
 module.exports = {
-  updateUserFollowers, updateUserFollowing, viewContent,
-  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
+  updateUserFollowers, updateUserFollowing, updateUserStories, updateUserReplies,
+  viewContent, updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
   updateStoryLikes, updateStoryViews, updateStoryReplies, updateStoryVotes,
   updateReplyLikes, updateReplyViews, updateReplyReplies
 };

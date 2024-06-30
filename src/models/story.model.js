@@ -118,8 +118,8 @@ module.exports = (User, sequelize, Sequelize) => {
     ]
   });
 
-   // add afterSync hook to create the search column and create the GIN index
-   Story.afterSync(() => {
+  // add afterSync hook to create the search column and create the GIN index
+  Story.afterSync(() => {
     // Run the raw SQL query to add the `ts` column
     sequelize.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS search TSVECTOR
       GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(title, '')), 'A') || setweight(to_tsvector('english', coalesce(slug, '')), 'B') || setweight(to_tsvector('english', coalesce(content, '')), 'C')) STORED;
@@ -145,6 +145,35 @@ module.exports = (User, sequelize, Sequelize) => {
       order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
     })
   }
+
+  // add afterDestroy hook to decrement the total stories of the user / topic
+  Story.afterDestroy(async story => {
+    // construct the job payload: for queueing(for the topic)
+    // check if the story has topics
+    if (story.topics.length > 0) {
+      story.topics.map(async topic => {
+        // add the job to the queue
+        await actionQueue.add('actionJob', {
+          kind: 'topic',
+          hashes: {
+            target: topic,
+          },
+          action: 'story',
+          value: -1,
+        }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+      });
+    }
+
+    // construct the job payload: for queueing and add the job to the queue(for the user)
+    await actionQueue.add('actionJob', {
+      kind: 'user',
+      hashes: {
+        target: story.hash,
+      },
+      action: 'story',
+      value: -1,
+    },{ attempts: 3, backoff: 1000, removeOnComplete: true });
+  });
 
   /**
    * @type {Model}
@@ -242,18 +271,15 @@ module.exports = (User, sequelize, Sequelize) => {
 
   // addd afterCreate hook to increment the votes count of the story
   Vote.afterCreate(async vote => {
-    // construct the job payload: for queueing
-    const payload = {
+    // construct the job payload: for queueing || add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: 'story',
       hashes: {
         target: vote.story,
       },
       action: 'vote',
       value: vote.option,
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
 
@@ -362,19 +388,27 @@ module.exports = (User, sequelize, Sequelize) => {
 
   // add afterDestroy hook to decrement the replies count of the story/reply
   Reply.afterDestroy(async reply => {
-    // construct the job payload: for queueing
-    const payload = {
+    // construct the job payload: for queueing || add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: reply.kind,
       hashes: {
         target: reply.reply !== null ? reply.reply : reply.story,
       },
       action: 'reply',
       value: -1,
-    };
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
     // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    await actionQueue.add('actionJob', {
+      kind: 'user',
+      hashes: {
+        target: reply.author,
+      },
+      action: 'reply',
+      value: -1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
+  
 
   /**
    * @type {Model}
@@ -425,35 +459,29 @@ module.exports = (User, sequelize, Sequelize) => {
 
   // add afterCreate hook to increment the likes count of the story/reply
   Like.afterCreate(async like => {
-    // construct the job payload: for queueing
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: like.kind,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
       action: 'like',
       value: 1,
-    };
-    
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
 
   // add afterDestroy hook to decrement the likes count of the story/reply
   Like.afterDestroy(async like => {
-    // construct the job payload: for queueing
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: like.kind,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
       action: 'like',
       value: -1,
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
 
@@ -501,18 +529,15 @@ module.exports = (User, sequelize, Sequelize) => {
 
   // add afterCreate hook to increment the views count of the story, reply or topic
   View.afterCreate(async view => {
-    // construct the job payload: for queueing
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: view.kind,
       hashes: {
         target: view.target,
       },
       action: 'view',
       value: 1,
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
   //--- Defining the associations ---//
