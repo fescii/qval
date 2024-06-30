@@ -14,6 +14,7 @@ export default class PollPost extends HTMLElement {
   }
 
   connectedCallback() {
+    this.style.display = 'flex';
     // Open poll post
     this.openPollPost();
   }

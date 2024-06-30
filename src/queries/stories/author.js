@@ -19,16 +19,11 @@ const {
 const findStoriesByAuthor = async (reqData) => {
   try {
     const {
-      hash, user, totalStories, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
-
-    // check if stories is less than the limit + offset
-    if (totalStories < limit + offset) {
-      limit = totalStories - offset;
-    }
 
     // Find the stories
     const where = { author: hash, published: true};
@@ -72,29 +67,25 @@ const findStoriesByAuthor = async (reqData) => {
       stories = fetchedStories.stories;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(stories / limit);
-
-    const last = page === totalPages;
-
     // Check if the stories exist
     if (stories === null) {
       return { 
         data: {
+          stories: [],
           limit: limit,
           offset: offset,
-          pages: totalPages,
           last: true,
         }, error: null 
       };
     }
+
+    const last = stories.length < limit;
 
     // create a data object
     const data = {
       stories: stories,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 

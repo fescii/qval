@@ -253,7 +253,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = stories.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ],
         [

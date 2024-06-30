@@ -19,19 +19,14 @@ const findAuthorStories = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total stories from the query
-  let totalStories = req.query.stories || 0;
-
   // check if the author hash is available in the request object
-  if (!hash || !page || !totalStories) {
-    const error = new Error('Author hash or page or total stories is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Author hash or page is undefined!');
     return next(error);
   }
 
   // convert the page and total stories to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalStories = parseInt(totalStories, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -39,7 +34,6 @@ const findAuthorStories = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalStories,
     page,
     limit: 10
   }
@@ -59,6 +53,15 @@ const findAuthorStories = async(req, res, next) => {
   if (!data) {
     return res.status(404).json({
       success: false,
+      message: 'No stories found!'
+    });
+  }
+
+  // check if stories is empty
+  if (data.stories.length === 0) {
+    return res.status(404).json({
+      success: true,
+      data,
       message: 'No stories found!'
     });
   }

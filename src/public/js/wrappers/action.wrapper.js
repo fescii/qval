@@ -32,7 +32,8 @@ export default class ActionWrapper extends HTMLElement {
     // like post
     this.likePost();
     // Check if user has liked the post
-     const liked = this.convertToBool(this.getAttribute('liked'))
+    const liked = this.convertToBool(this.getAttribute('liked'))
+     
     // scroll likes
     this.scrollLikes(liked);
 
@@ -119,14 +120,10 @@ export default class ActionWrapper extends HTMLElement {
   // perfom actions
   performActions = (likeBtn, liked) => {
     // get url to 
-    let hash = this.getAttribute('hash');
-    // trim and convert to lowercase
-    hash = hash.trim().toLowerCase();
-
-    const kind = this.getAttribute('kind')
+    let baseUrl = this.getAttribute('url');
 
     // base api
-    const url = kind === "story" ? `/api/v1/s/${hash}/like` : `/api/v1/r/${hash}/like`
+    const url = `/api/v1${baseUrl}/like`
 
     const options = {
       method: 'POST',
@@ -433,6 +430,7 @@ export default class ActionWrapper extends HTMLElement {
 
         // If the user has liked the post, scroll to the next element
         if (liked) {
+          console.log('numbers', numbers)
           // Scroll to the next element
           // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });
           // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });

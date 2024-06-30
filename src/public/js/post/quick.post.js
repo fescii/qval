@@ -14,6 +14,7 @@ export default class QuickPost extends HTMLElement {
   }
 
   connectedCallback() {
+    this.style.display = 'flex';
     // Open read more
     this.openReadMore();
 

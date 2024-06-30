@@ -130,6 +130,7 @@ const findUserReply = async (hash, user) => {
  * @description a function that queries stories when user is logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
+ * @param {String} user - The user hash
  * @param {Number} limit - The limit for pagination
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The stories object and error if any
@@ -141,7 +142,7 @@ const getUserStories = async (where, order, user, limit, offset) => {
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
         // Check if the user has liked the story
         [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = stories.hash AND likes.author = '${user}')`)),
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
           'liked'
         ]
       ],
@@ -154,6 +155,12 @@ const getUserStories = async (where, order, user, limit, offset) => {
           model: User,
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+        },
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
         }
       ]
     });
@@ -169,8 +176,11 @@ const getUserStories = async (where, order, user, limit, offset) => {
         const data = story.dataValues;
         // add you to the story data
         data.you = true;
-        // add authenticated to the story data
-        data.authenticated = true;
+
+        // add story sections to the story
+        if (story.kind === 'story') {
+          data.story_sections = mapFields(data.content, story.story_sections);
+        }
 
         return data;
       }),
@@ -180,6 +190,31 @@ const getUserStories = async (where, order, user, limit, offset) => {
   catch (error) {
     // return the error
     return { stories: null, error };
+  }
+}
+
+const mapFields = (content, data) => {
+  let html = /*html*/`
+    <div class="intro">
+      ${content}
+    </div>
+  `;
+  
+  if (data.length <= 0) {
+    return html;
+  }
+  else {
+    const sections =  data.map(section => {
+      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      return /*html*/`
+        <div class="section" order="${section.order}" id="section${section.order}">
+          ${title}
+          ${section.content}
+        </div>
+      `
+    }).join('');
+
+    return `${html} ${sections}`;
   }
 }
 

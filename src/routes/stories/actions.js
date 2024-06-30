@@ -24,7 +24,7 @@ module.exports = (app, url) => {
 
 
   // Route for handling liking a story
-  app.post(`${url}/s/:hash/like`,
+  app.post(`${url}/p/:hash/like`,
     verifyToken, likeStoryController
   );
 
@@ -39,7 +39,7 @@ module.exports = (app, url) => {
   );
 
   // Route for handling voting
-  app.post(`${url}/s/:hash/vote/:option`,
+  app.post(`${url}/p/:hash/vote/:option`,
     verifyToken, voteController
   );
 }

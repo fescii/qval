@@ -3,6 +3,8 @@ export default class StoryPost extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this._data = this.getSummaryAndWords();
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -14,7 +16,7 @@ export default class StoryPost extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    this.style.display = 'flex';
     // get url
     let url = this.getAttribute('url');
 
@@ -26,6 +28,20 @@ export default class StoryPost extends HTMLElement {
 
      // Open Full post
     this.openFullPost(url, body);
+  }
+
+  getSummaryAndWords = () => {
+    // get this content
+    let content = this.innerHTML.toString();
+
+    // remove all html tags and clases and extra spaces and tabs
+    content = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+
+    // return the summary: first 200 characters
+    return {
+      summery: `${content.substring(0, 200)}...`,
+      words: content.split(' ').length
+    };
   }
 
   // Open Full post
@@ -175,14 +191,15 @@ export default class StoryPost extends HTMLElement {
     `;
   }
 
-  getHeader = () => {
-    return /*html*/`
-      <span class="read-time">
-        <span class="text">${this.getReadTime()} min read</span>
-        <span class="sp">•</span>
-        <span class="views">${this.getViews()} views</span>
-      </span>
-    `
+  calculateReadTime = () => {
+    // get the number of words
+    const words = this._data.words;
+
+    // calculate the read time
+    const readTime = Math.ceil(words / 150);
+
+    // return the read time
+    return readTime;
   }
 
   getReadTime = () => {
@@ -211,13 +228,28 @@ export default class StoryPost extends HTMLElement {
     let url = this.getAttribute('url');
     url = url.trim().toLowerCase();
     return /*html*/`
-			<h3 class="title">
-        <a href="${url}" class="link">${this.getAttribute('story-title')}</a>
-      </h3>
+      <div class="content">
+        <h3 class="title">
+          <a href="${url}" class="link">${this.getAttribute('story-title')}</a>
+        </h3>
+        ${this.getSummery()}
+      </div>
 		`;
   }
 
-  getFooter = () => {
+  getSummery = () => {
+    const summary = this._data.summery;
+
+    return /*html*/`
+      <div class="summery extra" id="summery">
+        <p>${summary}</p>
+        <div class="read-more">
+        </div>
+      </div>
+    `
+  }
+
+  getHeader = () => {
     let authorUrl = this.getAttribute('author-url');
     authorUrl = authorUrl.trim().toLowerCase();
     return /*html*/`
@@ -229,6 +261,17 @@ export default class StoryPost extends HTMLElement {
           ${this.getLapseTime(this.getAttribute('time'))}
         </time>
       </div>
+    `
+  }
+
+  getFooter = () => {
+    return /*html*/`
+      <span class="read-time">
+        <a class="read-full" href="${this.getAttribute('url')}">read</a>
+        <span class="text">${this.calculateReadTime()} min read</span>
+        <!--<span class="sp">•</span>
+        <span class="views">${this.getViews()} views</span> -->
+      </span>
     `
   }
 
@@ -316,25 +359,36 @@ export default class StoryPost extends HTMLElement {
         font-size: 16px;
         border-bottom: var(--border);
         font-family: var(--font-main), sans-serif;
-        padding: 10px 0 0;
+        padding: 5px 0 10px;
         margin: 0;
         width: 100%;
         display: flex;
         flex-flow: column;
-        gap: 5px;
+        gap: 0;
       }
 
       .read-time {
         color: var(--gray-color);
-        font-size: 0.9rem;
+        font-size: 1rem;
         font-family: var(--font-main),sans-serif;
+        font-weight: 500;
         display: flex;
         align-items: center;
         gap: 8px;
+        padding: 8px 0 0 0;
+      }
+
+      .read-time > a.read-full {
+        text-decoration: none;
+        color: var(--gray-color);
+        border: var(--border);
+        padding: 2.5px 12px 3px 12px;
+        border-radius: 10px;
+        font-size: 0.9rem;
       }
 
       .read-time .text .time {
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-main), sans-serif;
       }
 
       .read-time .views {
@@ -342,7 +396,7 @@ export default class StoryPost extends HTMLElement {
       }
 
       .read-time .views .views-no {
-        font-family: var(--font-main), monospace;
+        font-family: var(--font-main), sans-serif;
         font-size: 0.8rem;
       }
 
@@ -350,14 +404,62 @@ export default class StoryPost extends HTMLElement {
         display: inline-block;
         margin: 0 0 -2px;
       }
+      .content {
+        display: flex;
+        position: relative;
+        cursor: pointer;
+        flex-flow: column;
+        color: var(--text-color);
+        line-height: 1.4;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+      }
+
+      .content .read-more {
+        position: absolute;
+        bottom: -5px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        padding: 5px 0;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        min-height: 60px;
+        gap: 3px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: var(--font-text), sans-serif;
+        color: var(--gray-color);
+        background: var(--fade-linear-gradient);
+      }
+
+      .content .read-more svg {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin: 0 0 2px 0;
+      }
+
+      .content p {
+        margin: 0 0 5px 0;
+        padding: 0;
+        line-height: 1.4;
+        font-family: var(--font-text), sans-serif;
+      }
+
+      .content p:last-of-type {
+        margin: 0;
+      }
 
       h3.title {
         color: var(--text-color);
         font-family: var(--font-text), sans-serif;
         margin: 0;
         padding: 0;
-        font-size: 1.1rem;
-        font-weight: 500;
+        font-size: 1.2rem;
+        font-weight: 600;
         line-height: 1.4;
       }
 
@@ -417,6 +519,7 @@ export default class StoryPost extends HTMLElement {
         .meta a.reply-link,
         .meta div.author-name > a,
         a,
+        .content,
         .stats > .stat {
           cursor: default !important;
         }

@@ -54,14 +54,13 @@ export default class StoryFeed extends HTMLElement {
       response.json().then((result) => {
         if (result.success) {
           const data = result.data;
-          if (data.last && data.pages === 0) {
+          if (data.last && outerThis._page === 1 && data.stories.length === 0) {
             outerThis.populateStories(outerThis.getEmptyMsg(outerThis._kind), storiesContainer);
           } 
-          else if (data.last && data.pages > 0) {
+          else if (data.last && data.stories.length < 10) {
             const content = outerThis.mapFields(data.stories);
             outerThis.populateStories(content, storiesContainer);
-            outerThis.populateStories(
-              outerThis.getLastMessage(outerThis._kind), storiesContainer);
+            outerThis.populateStories(outerThis.getLastMessage(outerThis._kind), storiesContainer);
           } 
           else {
             outerThis._empty = false;
@@ -77,6 +76,7 @@ export default class StoryFeed extends HTMLElement {
           }
         })
         .catch((error) => {
+          console.log(error)
           outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
         });
     });
@@ -126,12 +126,13 @@ export default class StoryFeed extends HTMLElement {
   mapFields = data => {
     return data.map(story => {
       const author = story.story_author;
+      const url = `/p/${story.hash.toLowerCase()}`;
       let name = author.name.split(" ");
       let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
       
       if (story.kind === "post") {
         return /*html*/`
-          <quick-post story="quick" style="display: none;" tab="${story.tab}" url="${url}" hash="${story.hash}" likes="${story.likes}" 
+          <quick-post story="quick" url="${url}" hash="${story.hash}" likes="${story.likes}" 
             replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
             replies-url="/api/v1${url}/replies" likes-url="/api/v1${url}/likes" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
@@ -145,7 +146,7 @@ export default class StoryFeed extends HTMLElement {
       }
       else if(story.kind === "poll") {
         return /*html*/`
-          <poll-post story="poll" style="display: none;" tab="${story.tab}" url="${url}" hash="${story.hash}" likes="${story.likes}" 
+          <poll-post story="poll" url="${url}" hash="${story.hash}" likes="${story.likes}" 
             replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
             voted="${story.option ? 'true' : 'false'}" selected="${story.option}" end-time="${story.end}" replies-url="/api/v1${url}/replies" 
             likes-url="/api/v1${url}/likes" options='${story.poll}' votes="${story.votes}" 
@@ -160,7 +161,7 @@ export default class StoryFeed extends HTMLElement {
       }
       else if (story.kind === "story") {
         return /*html*/`
-          <story-post story="story" hash="${story.hash}" tab="${story.tab}" style="display: none;" url="${url}" 
+          <story-post story="story" hash="${story.hash}" style="display: none;" url="${url}" 
             topics="${story.topics}" story-title="${story.title}" time="${story.createdAt}" replies-url="/api/v1${url}/replies" 
             likes-url="/api/v1${url}/likes" replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" likes="${story.likes}" 
             views="${story.views}" 

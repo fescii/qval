@@ -14,7 +14,7 @@ export default class SummeryPost extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+     this.style.display = 'flex';
      // get url
      let url = this.getAttribute('url');
 
