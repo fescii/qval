@@ -58,10 +58,10 @@ export default class RepliesFeed extends HTMLElement {
       response.json().then((result) => {
         if (result.success) {
           const data = result.data;
-          if (data.last && data.pages === 0) {
+          if (data.last && outerThis._page === 1 && data.replies.length === 0) {
             outerThis.populateReplies(outerThis.getEmptyMsg(outerThis._kind), repliesContainer);
           } 
-          else if (data.last && data.pages > 0) {
+          else if (data.last && data.replies.length < 10) {
             const content = outerThis.mapFields(data.replies);
             outerThis.populateReplies(content, repliesContainer);
             outerThis.populateReplies(
@@ -324,7 +324,6 @@ export default class RepliesFeed extends HTMLElement {
       </div>
     `
   }
-
 
   getStyles() {
     return /* css */`

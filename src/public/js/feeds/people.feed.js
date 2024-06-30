@@ -56,10 +56,10 @@ export default class PeopleFeed extends HTMLElement {
       response.json().then((result) => {
         if (result.success) {
           const data = result.data;
-          if (data.last && data.pages === 0) {
+          if (data.last && outerThis._page === 1 && data.people.length === 0) {
             outerThis.populatePeople(outerThis.getEmptyMsg(outerThis._kind), peopleContainer);
           } 
-          else if (data.last && data.pages > 0) {
+          else if (data.last && data.people.length < 10) {
             const content = outerThis.mapFields(data.people);
             outerThis.populatePeople(content, peopleContainer);
             outerThis.populatePeople(

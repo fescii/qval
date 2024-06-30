@@ -89,19 +89,14 @@ const findAuthorReplies = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total replies from the query
-  let totalReplies = req.query.replies || 0;
-
   // check if the author hash is available in the request object
-  if (!hash || !page || !totalReplies) {
-    const error = new Error('Author hash or page or total replies is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Author hash or page is undefined!');
     return next(error);
   }
 
   // convert the page and total replies to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalReplies = parseInt(totalReplies, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -109,7 +104,6 @@ const findAuthorReplies = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalReplies,
     page,
     limit: 10
   }
@@ -156,19 +150,14 @@ const findUserFollowers = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total followers from the query
-  let totalFollowers = req.query.total || 0;
-
   // check if the author hash is available in the request object
-  if (!hash || !page || !totalFollowers) {
-    const error = new Error('Author hash or page or total followers is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Author hash or page is undefined!');
     return next(error);
   }
 
   // convert the page and total followers to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalFollowers = parseInt(totalFollowers, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -176,7 +165,6 @@ const findUserFollowers = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalFollowers,
     page,
     limit: 10
   }
@@ -223,19 +211,14 @@ const findUserFollowing = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total following from the query
-  let totalFollowing = req.query.total || 0;
-
   // check if the author hash is available in the request object
-  if (!hash || !page || !totalFollowing) {
-    const error = new Error('Author hash or page or total following is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Author hash or page is undefined!');
     return next(error);
   }
 
   // convert the page and total following to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalFollowing = parseInt(totalFollowing, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -243,7 +226,6 @@ const findUserFollowing = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalFollowing,
     page,
     limit: 10
   }

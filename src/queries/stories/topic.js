@@ -16,9 +16,8 @@ const {
 */
 const findStoriesByTopic = async (reqData) => {
   try {
-
     // dEstructure the request data
-    const { topic, user, totalStories, page, limit } = reqData;
+    const { topic, user, page, limit } = reqData;
 
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
@@ -57,11 +56,6 @@ const findStoriesByTopic = async (reqData) => {
       stories = fetchedStories.stories;
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalStories / limit);
-
-    const last = page === totalPages;
-
     // Check if the stories exist
     if (stories === null) {
       return { stories: {
@@ -72,12 +66,13 @@ const findStoriesByTopic = async (reqData) => {
       }, error: null };
     }
 
+    const last = stories.length < limit;
+
     // create a data object
     const data = {
       stories: stories,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -99,7 +94,7 @@ const findStoriesByTopic = async (reqData) => {
 const findRelatedStories = async (reqData) => {
   try {
     // Destructure the request data
-    const { topics, user, totalStories, page, limit } = reqData;
+    const { topics, user, page, limit } = reqData;
 
     // Contruct offset from page and limit
     const offset = (page - 1) * limit;
@@ -139,27 +134,22 @@ const findRelatedStories = async (reqData) => {
       stories = fetchedStories.stories;
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalStories / limit);
-
-    const last = page === totalPages;
-
     // Check if the stories exist
     if (stories === null) {
       return { stories: {
         limit: limit,
         offset: offset,
-        pages: totalPages,
         last: true,
       }, error: null };
     }
+
+    const last = stories.length < limit;
 
     // create a data object
     const data = {
       stories: stories,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 

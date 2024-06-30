@@ -22,7 +22,7 @@ const {
 const findStoryReplies = async (reqData) => {
   try {
     const {
-      hash, user, totalReplies, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -70,30 +70,25 @@ const findStoryReplies = async (reqData) => {
       replies = fetchedReplies.replies;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalReplies / limit);
-
-    const last = page === totalPages;
-
     // Check if the replies exist
     if (replies === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           replies: [],
           last: true,
         }, error: null 
       };
     }
 
+    const last = replies.length < limit;
+
     // create a data object
     const data = {
       replies: replies,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -115,7 +110,7 @@ const findStoryReplies = async (reqData) => {
 const findReplyReplies = async (reqData) => {
   try {
     const {
-      hash, user, totalReplies, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -163,29 +158,24 @@ const findReplyReplies = async (reqData) => {
       replies = fetchedReplies.replies;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalReplies / limit);
-
-    const last = page === totalPages;
-
     // Check if the replies exist
     if (replies === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           last: true,
         }, error: null 
       };
     }
+
+    const last = replies.length < limit;
 
     // create a data object
     const data = {
       replies: replies,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -207,7 +197,7 @@ const findReplyReplies = async (reqData) => {
 const findStoryLikes = async (reqData) => {
   try {
     const {
-      hash, user, totalLikes, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -234,30 +224,25 @@ const findStoryLikes = async (reqData) => {
       likes = fetchedLikes;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalLikes / limit);
-
-    const last = page === totalPages;
-
     // Check if the likes exist
     if (likes === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           people: [],
           last: true,
         }, error: null 
       };
     }
 
+    const last = likes.length < limit;
+
     // create a data object
     const data = {
       people: likes,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -279,7 +264,7 @@ const findStoryLikes = async (reqData) => {
 const findReplyLikes = async (reqData) => {
   try {
     const {
-      hash, user, totalLikes, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -306,30 +291,25 @@ const findReplyLikes = async (reqData) => {
       likes = fetchedLikes;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalLikes / limit);
-
-    const last = page === totalPages;
-
     // Check if the likes exist
     if (likes === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           people: [],
           last: true,
         }, error: null 
       };
     }
 
+    const last = people.length < limit;
+
     // create a data object
     const data = {
       people: likes,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 

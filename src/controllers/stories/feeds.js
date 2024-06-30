@@ -16,16 +16,11 @@ const getStoryReplies = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total replies from the query
-  let totalReplies = req.query.replies || 0;
-
   // check if the story hash is available in the request object
-  if (!hash || !page || !totalReplies) {
-    const error = new Error('Reply hash or page or total replies is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Reply hash or page is undefined!');
     return next(error);
   }
-
-  totalReplies = parseInt(totalReplies, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -33,7 +28,6 @@ const getStoryReplies = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalReplies,
     page: page = parseInt(page, 10) || 1,
     limit: 10
   }
@@ -80,19 +74,14 @@ const getReplyReplies = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total replies from the query
-  let totalReplies = req.query.replies || 0;
-
   // check if the reply hash is available in the request object
-  if (!hash || !page || !totalReplies) {
-    const error = new Error('Reply hash or page or total replies is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Reply hash or pageis undefined!');
     return next(error);
   }
 
   // convert the page and total replies to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalReplies = parseInt(totalReplies, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -100,7 +89,6 @@ const getReplyReplies = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalReplies,
     page,
     limit: 10
   }
@@ -147,19 +135,14 @@ const fetchStoryLikes = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total likes from the query
-  let totalLikes = req.query.total || 0;
-
   // check if the story hash is available in the request object
-  if (!hash || !page || !totalLikes) {
-    const error = new Error('Story hash or page or total likes is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Story hash or pageis undefined!');
     return next(error);
   }
 
   // convert the page and total likes to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalLikes = parseInt(totalLikes, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -167,7 +150,6 @@ const fetchStoryLikes = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalLikes,
     page,
     limit: 10
   }
@@ -214,19 +196,14 @@ const fetchReplyLikes = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
 
-  // get total likes from the query
-  let totalLikes = req.query.total || 0;
-
   // check if the reply hash is available in the request object
-  if (!hash || !page || !totalLikes) {
-    const error = new Error('Reply hash or page or total likes is undefined!');
+  if (!hash || !page) {
+    const error = new Error('Reply hash or page is undefined!');
     return next(error);
   }
 
   // convert the page and total likes to integer with zero fallback
   page = parseInt(page, 10) || 1;
-
-  totalLikes = parseInt(totalLikes, 10) || 0;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
@@ -234,7 +211,6 @@ const fetchReplyLikes = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    totalLikes,
     page,
     limit: 10
   }

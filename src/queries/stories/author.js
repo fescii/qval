@@ -107,7 +107,7 @@ const findStoriesByAuthor = async (reqData) => {
 const findRepliesByAuthor = async (reqData) => {
   try {
     const {
-      hash, user, totalReplies, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -155,29 +155,24 @@ const findRepliesByAuthor = async (reqData) => {
       replies = fetchedReplies.replies;  
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalReplies / limit);
-
-    const last = page === totalPages;
-
     // Check if the replies exist
     if (replies === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           last: true,
         }, error: null 
       };
     }
+
+    const last = replies.length < limit;
 
     // create a data object
     const data = {
       replies: replies,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -199,7 +194,7 @@ const findRepliesByAuthor = async (reqData) => {
 const findFollowersByAuthor = async (reqData) => {
   try {
     const {
-      hash, user, totalFollowers, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -220,30 +215,25 @@ const findFollowersByAuthor = async (reqData) => {
       followers =  await fetchFollowersWhenLoggedIn(where, order, user, limit, offset); 
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalFollowers / limit);
-
-    const last = page === totalPages;
-
     // Check if the followers exist
     if (followers === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           people: [],
           last: true,
         }, error: null 
       };
     }
 
+    const last = followers.length < limit;
+
     // create a data object
     const data = {
       people: followers,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
@@ -265,7 +255,7 @@ const findFollowersByAuthor = async (reqData) => {
 const findFollowingByAuthor = async (reqData) => {
   try {
     const {
-      hash, user, totalFollowing, page, limit
+      hash, user, page, limit
     } = reqData;
 
     // Contruct offset from page and limit
@@ -286,30 +276,24 @@ const findFollowingByAuthor = async (reqData) => {
       following =  await fetchFollowingWhenLoggedIn(where, order, user, limit, offset); 
     }
 
-    // calculate the total number of pages
-    const totalPages = Math.ceil(totalFollowing / limit);
-
-    const last = page === totalPages;
-
     // Check if the following exist
     if (following === null) {
       return { 
         data: {
           limit: limit,
           offset: offset,
-          pages: totalPages,
           people: [],
           last: true,
         }, error: null 
       };
     }
 
+    const last = following.length < limit;
     // create a data object
     const data = {
       people: following,
       limit: limit,
       offset: offset,
-      pages: totalPages,
       last: last,
     }
 
