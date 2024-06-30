@@ -217,6 +217,26 @@ export default class RepliesFeed extends HTMLElement {
       </div>
     `
    } 
+   else if(text === "reply") {
+    return `
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
+        <p class="next">
+          The reply has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   }
+   else if(text === "search") {
+    return `
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
+        <p class="next">
+          There are no replies found for this search. You can try a different searching using a different keyword.
+        </p>
+      </div>
+    `
+   }
    else if(text === "user") {
     return `
       <div class="empty">
@@ -249,7 +269,28 @@ export default class RepliesFeed extends HTMLElement {
           </p>
         </div>
       `
-    } else if(text === "user") {
+    } 
+    else if(text === "reply") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the reply's replies. You can add a new reply or come back later to check for new replies.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "search") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the search's results. You can try a different search using a different keyword.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "user") {
       return `
         <div class="last">
           <h2 class="title">No more replies!</h2>

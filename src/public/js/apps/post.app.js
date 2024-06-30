@@ -129,7 +129,7 @@ export default class AppPost extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <post-section  url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" 
+      <post-section kind="${this.getAttribute('story')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" 
         author-hash="${this.getAttribute('author-hash')}" hash="${this.getAttribute('hash')}" 
         replies="${this.getAttribute('replies')}" likes="${this.getAttribute('likes')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">

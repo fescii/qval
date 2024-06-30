@@ -61,8 +61,10 @@ const findStoryWhenLoggedIn = async (query, user) => {
     // add you you to the story
     data.you = user === data.author;
 
-    // add authenicated to the story
-    data.authenticated = true;
+    // add story sections to the story
+    if (story.kind === 'story') {
+      data.story_sections = mapFields(data.content, story.story_sections);
+    }
 
     // return the story
     return { 
@@ -102,7 +104,7 @@ const findStoryWhenLoggedOut = async query => {
           as: 'story_sections',
           attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
           order: [['order', 'ASC']]
-        }
+        },
       ]
     });
 
@@ -116,8 +118,10 @@ const findStoryWhenLoggedOut = async query => {
     // add you you to the story
     data.you = false;
 
-    // add authenicated to the story
-    data.authenticated = false;
+    // add story sections to the story
+    if (story.kind === 'story') {
+      data.story_sections = mapFields(data.content, story.story_sections);
+    }
 
     // return the story
     return { 
@@ -176,9 +180,6 @@ const findReplyWhenLoggedIn = async (hash, user) => {
     // add you you to the reply
     data.you = user === data.author;
 
-    // add authenicated to the reply
-    data.authenticated = true;
-
     // return the reply
     return { 
       reply: data,
@@ -222,9 +223,6 @@ const findReplyWhenLoggedOut = async hash => {
 
     // add you you to the reply
     data.you = false;
-
-    // add authenicated to the reply
-    data.authenticated = false;
 
     // return the reply
     return { 
@@ -278,6 +276,13 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
             ]
           ],
         },
+        // Include the story sections
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
+        }
       ]
     });
 
@@ -292,7 +297,10 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
         const data = story.dataValues;
         data.story_author = story.story_author.dataValues;
         data.you = user === data.author;
-        data.authenticated = true;
+        // add story sections to the story
+        if (story.kind === 'story') {
+          data.story_sections = mapFields(data.content, story.story_sections);
+        }
 
         return data;
       }),
@@ -329,6 +337,13 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
           model: User,
           as: 'story_author',
           attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+        },
+        // Include the story sections
+        {
+          model: StorySection,
+          as: 'story_sections',
+          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          order: [['order', 'ASC']]
         }
       ]
     });
@@ -343,7 +358,10 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
       stories: stories.map(story => {
         const data = story.dataValues;
         data.you = false;
-        data.authenticated = false;
+        // add story sections to the story
+        if (story.kind === 'story') {
+          data.story_sections = mapFields(data.content, story.story_sections);
+        }
 
         return data;
       }),
@@ -353,6 +371,31 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
   catch (error) {
     // return the error
     return { stories: null, error };
+  }
+}
+
+const mapFields = (content, data) => {
+  let html = /*html*/`
+    <div class="intro">
+      ${content}
+    </div>
+  `;
+  
+  if (data.length <= 0) {
+    return html;
+  }
+  else {
+    const sections =  data.map(section => {
+      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      return /*html*/`
+        <div class="section" order="${section.order}" id="section${section.order}">
+          ${title}
+          ${section.content}
+        </div>
+      `
+    }).join('');
+
+    return `${html} ${sections}`;
   }
 }
 

@@ -133,7 +133,6 @@ export default class ProfileSection extends HTMLElement {
             outerThis.updatePage(event.state.content)
           }
           else if (event.state.tab) {
-
             // Select the state tab
             const tab = outerThis.shadowObj.querySelector(`ul#tab > li.${event.state.tab}`);
 
@@ -284,6 +283,14 @@ export default class ProfileSection extends HTMLElement {
   getStories = () => {
     return /* html */`
       <stories-feed stories="all" url="/U0A89BA6/stories"></stories-feed>
+    `
+  }
+
+  getStories = () => {
+    return /*html*/`
+      <stories-feed hash="${this.getAttribute('hash')}" stories="${this.getAttribute('stories')}" page="1"
+        url="${this.getAttribute('stories-url')}"  kind="user">
+      </stories-feed>
     `
   }
 

@@ -269,7 +269,7 @@ export default class PostSection extends HTMLElement {
   getReplies = () => {
     return /*html*/`
       <replies-feed hash="${this.getAttribute('hash')}" replies="${this.getAttribute('replies')}" page="1"
-        url="${this.getAttribute('replies-url')}" >
+        url="${this.getAttribute('replies-url')}"  kind="${this.getAttribute('kind')}">
       </replies-feed>
     `
   }
@@ -277,7 +277,7 @@ export default class PostSection extends HTMLElement {
   getLikes = () => {
     return /*html*/`
       <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('likes')}" page="1"
-        url="${this.getAttribute('likes-url')}" kind="post">
+        url="${this.getAttribute('likes-url')}" kind="likes">
       </people-feed>
     `
   }
