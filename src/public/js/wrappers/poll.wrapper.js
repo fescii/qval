@@ -343,7 +343,7 @@ export default class PollWrapper extends HTMLElement {
 
         @media screen and (max-width: 660px) {
           :host {
-            margin: 0 0 15px;
+            margin: 0;
           }
 
           ::-webkit-scrollbar {

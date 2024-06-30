@@ -47,10 +47,28 @@ export default class StoryPost extends HTMLElement {
   // Open Full post
   openFullPost = (url, body) => {
     // get h3 > a.link
-    const content = this.shadowObj.querySelector('h3 > a.link');
+    const content = this.shadowObj.querySelector('div.content');
 
-    if(body && content) {
+    const openFull = this.shadowObj.querySelector('.read-time > a.read-full');
+
+    if(body && content && openFull) {
       content.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // scroll to the top of the page
+        window.scrollTo(0, 0);
+
+        // Get full post
+        const post =  this.getFullPost();
+  
+        // replace and push states
+        this.replaceAndPushStates(url, body, post);
+
+        body.innerHTML = post;
+      })
+
+      openFull.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -267,7 +285,12 @@ export default class StoryPost extends HTMLElement {
   getFooter = () => {
     return /*html*/`
       <span class="read-time">
-        <a class="read-full" href="${this.getAttribute('url')}">read</a>
+        <a class="read-full" href="${this.getAttribute('url')}">
+          <span>read</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path>
+          </svg>
+        </a>
         <span class="text">${this.calculateReadTime()} min read</span>
         <!--<span class="sp">•</span>
         <span class="views">${this.getViews()} views</span> -->
@@ -298,7 +321,7 @@ export default class StoryPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-story story="story" tab="replies" style="display: none;" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}"
+      <app-story  story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
         story-title="${this.getAttribute('story-title')}" time="${this.getAttribute('time')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
@@ -308,7 +331,7 @@ export default class StoryPost extends HTMLElement {
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
-        ${this.getAttribute('content')}
+        ${this.innerHTML}
       </app-story>
     `
   }
@@ -369,9 +392,8 @@ export default class StoryPost extends HTMLElement {
 
       .read-time {
         color: var(--gray-color);
-        font-size: 1rem;
-        font-family: var(--font-main),sans-serif;
-        font-weight: 500;
+        font-size: 0.95rem;
+        font-family: var(--font-main), sans-serif;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -381,10 +403,16 @@ export default class StoryPost extends HTMLElement {
       .read-time > a.read-full {
         text-decoration: none;
         color: var(--gray-color);
+        font-family: var(--font-main),sans-serif;
         border: var(--border);
-        padding: 2.5px 12px 3px 12px;
+        font-weight: 500;
+        padding: 2.5px 5px 3px 12px;
         border-radius: 10px;
-        font-size: 0.9rem;
+        font-size: 0.93rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
       }
 
       .read-time .text .time {
@@ -484,6 +512,12 @@ export default class StoryPost extends HTMLElement {
         margin: 1px 0 0 0;
       }
 
+      .meta > span.by {
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin: 0 0 1px 0;
+      }
+
       .meta > time.time {
         font-family: var(--font-main), sans-serif;
         font-size: 0.83rem;
@@ -519,16 +553,19 @@ export default class StoryPost extends HTMLElement {
         .meta a.reply-link,
         .meta div.author-name > a,
         a,
+        .content .read-more,
         .content,
         .stats > .stat {
           cursor: default !important;
         }
 
+        .read-time > a.read-full {
+          border: var(--border-mobile);
+        }
+  
+
         h3.title {
           color: var(--text-color);
-          margin: 0;
-          padding: 0;
-          font-size: 1rem;
           font-weight: 600;
           line-height: 1.5;
         }

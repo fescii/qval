@@ -278,7 +278,7 @@ export default class QuickPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-post cliked="true" story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+      <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
@@ -361,6 +361,12 @@ export default class QuickPost extends HTMLElement {
 
         .meta > span.sp {
           margin: 1px 0 0 0;
+        }
+
+        .meta > span.by {
+          font-weight: 500;
+          font-size: 0.93rem;
+          margin: 0 0 1px 1px;
         }
 
         .meta > time.time {

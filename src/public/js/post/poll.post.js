@@ -242,14 +242,14 @@ export default class PollPost extends HTMLElement {
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
-        end-time="${this.getAttribute('end-time')}"
+        end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-you="${this.getAttribute('author-you')}" author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
         author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
-        ${this.textContent}
+        ${this.innerHTML}
       </app-post>
     `
   }
@@ -323,6 +323,12 @@ export default class PollPost extends HTMLElement {
 
       .meta > span.sp {
         margin: 1px 0 0 0;
+      }
+
+      .meta > span.by {
+        font-weight: 500;
+        font-size: 0.93rem;
+        margin: 0 0 1px 1px;
       }
 
       .meta > time.time {
@@ -417,8 +423,12 @@ export default class PollPost extends HTMLElement {
           -webkit-appearance: none;
         }
 
+        #content,
+        .content {
+          cursor: unset;
+        }
+
         .meta a.reply-link,
-        .content,
         .meta div.author-name > a,
         a,{
           cursor: default !important;
@@ -426,7 +436,8 @@ export default class PollPost extends HTMLElement {
 
         a,
         span.stat,
-        span.action {
+        span.action ,
+        .content , #content,{
           cursor: default !important;
         }
       }

@@ -430,7 +430,6 @@ export default class ActionWrapper extends HTMLElement {
 
         // If the user has liked the post, scroll to the next element
         if (liked) {
-          console.log('numbers', numbers)
           // Scroll to the next element
           // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });
           // numbers.scrollTo({ top: nextElement.offsetTop - containerHeight + nextHeight, behavior: 'smooth' });

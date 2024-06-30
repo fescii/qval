@@ -124,14 +124,35 @@ export default class StorySection extends HTMLElement {
   }
 
   getContent = () => {
+    const htmlText = this.parseHTML(this.innerHTML);
     return `
       ${this.getHeader()}
       <article class="article">
-        ${this.innerHTML}
+        ${htmlText}
       </article>
       ${this.getMeta()}
       ${this.getStats()}
     `;
+  }
+
+  // Function to detect and parse the text
+  parseHTML = text => {
+    // Create a temporary element to help with parsing
+    const tempElement = document.createElement('div');
+    
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // Create a textarea element to decode the HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      tempElement.innerHTML = textarea.value;
+    } else {
+        // Directly set the innerHTML for plain HTML
+      tempElement.innerHTML = text;
+    }
+    
+    // Return the parsed HTML
+    return tempElement.innerHTML;
   }
 
   getHeader = () => {
@@ -263,7 +284,7 @@ export default class StorySection extends HTMLElement {
         }
 
         div.head > h1.story-title {
-          margin: 0;
+          margin: 8px 0 0 0;
           padding: 0;
           font-weight: 600;
           font-size: 1.6rem;
@@ -293,7 +314,7 @@ export default class StorySection extends HTMLElement {
           flex-flow: column;
           color: var(--read-color);
           font-family: var(--font-read), sans-serif;
-          gap: 15px;
+          gap: 0;
           font-size: 1rem;
           font-weight: 400;
         }
@@ -306,7 +327,7 @@ export default class StorySection extends HTMLElement {
         }
 
         article.article .section {
-          margin: 0;
+          margin: 15px 0 0 0;
           padding: 0;
           display: flex;
           flex-flow: column;
@@ -332,6 +353,11 @@ export default class StorySection extends HTMLElement {
           font-weight: 500;
           line-height: 1.5;
           margin: 5px 0;
+        }
+
+        article.article .intro p {
+          margin: 0 0 5px 0;
+          line-height: 1.5;
         }
 
         article.article p {

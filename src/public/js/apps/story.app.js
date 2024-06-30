@@ -131,7 +131,7 @@ export default class AppStory extends HTMLElement {
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
         author-bio="${this.getAttribute('author-bio')}">
-        ${this.textContent}
+        ${this.innerHTML}
       </story-section>
     `
   }

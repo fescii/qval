@@ -98,7 +98,7 @@ export default class StoryFeed extends HTMLElement {
 
   populateStories = (content, storiesContainer) => {
     // get the loader and remove it
-    const loader = storiesContainer.querySelector('story-loader');
+    const loader = storiesContainer.querySelector('.loader-container');
     if (loader){
       loader.remove();
     }
@@ -161,8 +161,8 @@ export default class StoryFeed extends HTMLElement {
       }
       else if (story.kind === "story") {
         return /*html*/`
-          <story-post story="story" hash="${story.hash}" style="display: none;" url="${url}" 
-            topics="${story.topics}" story-title="${story.title}" time="${story.createdAt}" replies-url="/api/v1${url}/replies" 
+          <story-post story="story" hash="${story.hash}" url="${url}" 
+            topics="${story.topics.length === 0 ? 'story' : story.topics }" story-title="${story.title}" time="${story.createdAt}" replies-url="/api/v1${url}/replies" 
             likes-url="/api/v1${url}/likes" replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" likes="${story.likes}" 
             views="${story.views}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
@@ -219,11 +219,15 @@ export default class StoryFeed extends HTMLElement {
     `;
   }
 
-  getLoader = () => {
-		return `
-			<story-loader speed="300"></story-loader>
-		`
-	}
+  getLoader() {
+    return /* html */`
+      <div class="loader-container">
+        <span id="btn-loader">
+          <span class="loader-alt"></span>
+        </span>
+      </div>
+    `
+  }
 
   getBody = () => {
     // language=HTML

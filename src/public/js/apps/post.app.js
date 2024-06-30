@@ -278,7 +278,7 @@ export default class AppPost extends HTMLElement {
             flex-flow: column;
             justify-content: flex-start;
             gap: 0;
-            min-height: 100dvh;
+            min-height: max-content;
           }
 
 					::-webkit-scrollbar {
