@@ -70,7 +70,6 @@ export default class RepliesFeed extends HTMLElement {
           else {
             outerThis._empty = false;
             outerThis._block = false;
-            outerThis._pages = data.pages;
             
             const content = outerThis.mapFields(data.replies);
             outerThis.populateReplies(content, repliesContainer);
