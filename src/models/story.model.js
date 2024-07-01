@@ -506,7 +506,7 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false,
     },
     target: {
       type: Sequelize.STRING,
@@ -538,6 +538,19 @@ module.exports = (User, sequelize, Sequelize) => {
       action: 'view',
       value: 1,
     }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+
+    // add the job to the queue: to update user total views
+    // check if kind is not topic
+    if (view.kind !== 'topic') {
+      await actionQueue.add('actionJob', {
+        kind: 'user',
+        hashes: {
+          target: view.author,
+        },
+        action: 'view',
+        value: 1,
+      }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+    }
   });
 
   //--- Defining the associations ---//
@@ -580,6 +593,10 @@ module.exports = (User, sequelize, Sequelize) => {
   // Reply --> Like association
   Reply.hasMany(Like, { foreignKey: 'reply', sourceKey: 'hash', as: 'reply_likes', onDelete: 'CASCADE' });
   Like.belongsTo(Reply, { foreignKey: 'reply', targetKey: 'hash',as: 'liked_reply', onDelete: 'CASCADE' });
+
+  // User --> View association
+  User.hasMany(View, { foreignKey: 'author', sourceKey: 'hash', as: 'authored_views', onDelete: 'CASCADE' });
+  View.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'view_author', onDelete: 'CASCADE' });
 
   return { Story, Reply, Like, View, StorySection, Vote }
 }

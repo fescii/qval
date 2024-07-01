@@ -82,6 +82,34 @@ const updateUserStories = async (userHash, value) => {
 }
 
 /**
+ * @function updateUserViews
+ * @name updateUserViews
+ * @description A function that updates the user views data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserViews = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user views by the value: views + 1 or views - 1
+  await User.update(
+    { views: Sequelize.literal(`views + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+
+}
+
+/**
  * @function updateUserReplies
  * @name updateUserReplies
  * @description A function that updates the user replies data
@@ -444,5 +472,5 @@ module.exports = {
   updateUserFollowers, updateUserFollowing, updateUserStories, updateUserReplies,
   viewContent, updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
   updateStoryLikes, updateStoryViews, updateStoryReplies, updateStoryVotes,
-  updateReplyLikes, updateReplyViews, updateReplyReplies
+  updateReplyLikes, updateReplyViews, updateReplyReplies, updateUserViews
 };

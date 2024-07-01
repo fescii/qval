@@ -25,6 +25,8 @@ module.exports = (sequelize, Sequelize) => {
 	 * @property {Number} followers - Number of followers the user has
 	 * @property {Number} following - Number of users the user is following
 	 * @property {Number} stories - Number of stories the user has published.
+	 * @property {Number} replies - Number of replies the user has published.
+	 * @property {Number} views - Number of content views the user has.
 	*/
 	const User = sequelize.define("users", {
 		id: {
@@ -83,6 +85,11 @@ module.exports = (sequelize, Sequelize) => {
 			allowNull: true,
 		},
 		replies : {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
+		views: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,

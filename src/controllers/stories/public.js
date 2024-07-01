@@ -37,18 +37,16 @@ const getStory = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: story.hash,
     },
+    user: story.author,
     action: 'story',
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the story object
   story.tab = 'replies';
@@ -87,18 +85,16 @@ const getStoryLikes = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: story.hash,
     },
     action: 'story',
+    user: story.author,
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the story object
   story.tab = 'likes';
@@ -134,18 +130,16 @@ const getReply = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: reply.hash,
     },
     action: 'reply',
+    user: reply.author,
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the reply object
   reply.tab = 'replies';
@@ -181,18 +175,16 @@ const getReplyLikes = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: reply.hash,
     },
     action: 'reply',
+    user: reply.author,
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the reply object
   reply.tab = 'likes';

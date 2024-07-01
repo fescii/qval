@@ -85,18 +85,16 @@ const getTopicStories = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: topic.hash,
     },
     action: 'topic',
+    user: topic.author,
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the topic object
   topic.tab = 'stories';
@@ -135,18 +133,16 @@ const getTopicContributors = async (req, res) => {
     return res.status(404).render('404')
   }
 
-  // add view to update views
-  const payload = {
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
     kind: 'view',
     hashes: {
       target: topic.hash,
     },
     action: 'topic',
+    user: topic.author,
     value: 1,
-  };
-
-  // add the job to the queue
-  await actionQueue.add('actionJob', payload);
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
 
   // add tab to the topic object
   topic.tab = 'contributors';

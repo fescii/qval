@@ -3,7 +3,7 @@ const {
   updateUserFollowers, updateUserFollowing, updateUserReplies, updateUserStories,
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
   updateStoryVotes, updateStoryViews, updateStoryLikes, updateStoryReplies, 
-  updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent
+  updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent, updateUserViews
 } = require('./fns.hook');
 
 // import update tags query 
@@ -118,6 +118,10 @@ const userUpdator = async (action, hashes, value) => {
   else if (action === 'story') {
     // Update the user stories
     await updateUserStories(hashes.target, value);
+  }
+  else if (action === 'view') {
+    // Update the user views
+    await updateUserViews(hashes.target, value);
   }
 }
 
