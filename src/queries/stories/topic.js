@@ -4,7 +4,8 @@ const Op = Sequelize.Op;
 
 // Import the helper functions
 const { 
-  getStoriesWhenLoggedIn, getStoriesWhenLoggedOut
+  getStoriesWhenLoggedIn, getStoriesWhenLoggedOut,
+  getTopicAuthorsWhenLoggedIn, getTopicAuthorsWhenLoggedOut
 } = require('./helper');
 
 
@@ -27,6 +28,7 @@ const findStoriesByTopic = async (reqData) => {
       published: true,
       topics: { [Op.contains]: [topic] } 
     };
+
     const order = [['createdAt', 'DESC']];
 
     // initialize the stories to be null
@@ -58,10 +60,10 @@ const findStoriesByTopic = async (reqData) => {
 
     // Check if the stories exist
     if (stories === null) {
-      return { stories: {
+      return { data: {
+        stories: [],
         limit: limit,
         offset: offset,
-        pages: totalPages,
         last: true,
       }, error: null };
     }
@@ -136,7 +138,8 @@ const findRelatedStories = async (reqData) => {
 
     // Check if the stories exist
     if (stories === null) {
-      return { stories: {
+      return { data: {
+        stories: [],
         limit: limit,
         offset: offset,
         last: true,
@@ -162,9 +165,97 @@ const findRelatedStories = async (reqData) => {
   }
 }
 
+/**
+ * @function findTopicContributors
+ * @description a function that finds the contributors of a topic in the database
+ * @param {Object} reqData - The request data object
+ * @returns {Object} data - The contributors object and error if any
+ * @returns {Object} - Returns response object
+*/
+const findTopicContributors = async (reqData) => {
+  try {
+    // Destructure the request data
+    const { hash, user, page, limit } = reqData;
+
+    // Contruct offset from page and limit
+    const offset = (page - 1) * limit;
+
+    // fetch the topic authors from Topic table
+    const topic = await Topic.findOne({
+      attributes: ['authors', 'hash', 'slug'],
+      where: { hash } 
+    });
+
+    // Check if the topic exists
+    if (topic === null) {
+      return { data: null, error: new Error('Topic not found!') };
+    }
+
+    // Find the stories
+    const where = {
+      hash: { [Op.in]: topic.authors }
+    };
+
+    const order = [['createdAt', 'DESC']];
+
+    // initialize the people to be null
+    let people = null;
+
+    // check if user is logged in
+    if (user !== null) {
+      const fetchedPeople =  await getTopicAuthorsWhenLoggedIn(where, order, user, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedPeople.error) {
+        throw fetchedPeople.error;
+      }
+
+      // set the people
+      people = fetchedPeople.people;  
+    }
+    else {
+      const fetchedPeople = await getTopicAuthorsWhenLoggedOut(where, order, limit, offset);
+
+      // If there is an error: throw the error
+      if (fetchedPeople.error) {
+        throw fetchedPeople.error;
+      }
+
+      // set the people
+      people = fetchedPeople.people;
+    }
+
+    // Check if the people exist
+    if (people === null) {
+      return { data: {
+        people: [],
+        limit: limit,
+        offset: offset,
+        last: true,
+      }, error: null };
+    }
+
+    const last = people.length < limit;
+
+    // create a data object
+    const data = {
+      people: people,
+      limit: limit,
+      offset: offset,
+      last: last,
+    }
+
+    // return the people
+    return { data: data, error: null };
+  }
+  catch (error) {
+    // return the error
+    return { data: null, error };
+  }
+}
+
 
 // Export the query functions
 module.exports = {
-  findStoriesByTopic,
-  findRelatedStories
+  findStoriesByTopic, findRelatedStories, findTopicContributors
 }

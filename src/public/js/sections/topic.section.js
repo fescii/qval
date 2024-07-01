@@ -279,14 +279,18 @@ export default class TopicSection extends HTMLElement {
   }
 
   getStories = () => {
-    return /* html */`
-      <stories-feed stories="all" url="/U0A89BA6/stories"></stories-feed>
+    return /*html*/`
+      <stories-feed hash="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
+        url="${this.getAttribute('stories-url')}"  kind="topic">
+      </stories-feed>
     `
   }
 
   getPeople = () => {
-    return /* html */`
-      <people-feed replies="all" url="/U0A89BA6/followers"></people-feed>
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" page="1"
+        url="${this.getAttribute('contributers-url')}" kind="topic">
+      </people-feed>
     `
   }
 
@@ -561,7 +565,7 @@ export default class TopicSection extends HTMLElement {
           color: inherit;
         }
 
-
+        article.article div.last,
         article.article div.empty {
           display: flex;
           flex-flow: column;
@@ -577,17 +581,23 @@ export default class TopicSection extends HTMLElement {
         article.article > div.empty > h2 {
           font-size: 1.3rem;
           font-weight: 700;
+          margin: 0;
           color: var(--title-color);
         }
 
+        article.article div.last > p,
         article.article > div.empty > p {
           font-size: 1rem;
+          margin: 0;
           text-align: center;
+          font-family: var(--font-text), sans-serif;
           color: var(--text-color);
         }
 
+        article.article div.last > a,
         article.article > div.empty > a {
           padding: 5px 20px;
+          margin: 5px 0 0 0;
           font-size: 1rem;
           font-weight: 500;
           border-radius: 12px;

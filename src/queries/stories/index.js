@@ -7,7 +7,7 @@ const {
   removeStory, editSlug, editTitle, publishStory, findReplyByHash
 } = require('./base');
 
-const { findStoriesByTopic, findRelatedStories } = require('./topic');
+const { findStoriesByTopic, findRelatedStories, findTopicContributors } = require('./topic');
 
 const { addStorySection, editStorySection, removeStorySection, fetchStorySections } = require('./section');
 
@@ -27,5 +27,5 @@ module.exports = {
   findStoriesByTopic, findRelatedStories, removeStory, findReplyByHash,
   addStorySection, editStorySection, removeStorySection, findReplyReplies,
   likeReply, likeStory, viewContent, addReply, editReply, removeReply, findStoryReplies,
-  findFollowersByAuthor, findFollowingByAuthor
+  findFollowersByAuthor, findFollowingByAuthor, findTopicContributors
 };

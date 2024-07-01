@@ -12,7 +12,7 @@ const { findAuthorReplies, findAuthorStories, findUserFollowers, findUserFollowi
 
 const { createStorySection, updateStorySection, deleteStorySection, getStorySections } = require('./section');
 
-const { getRelatedStories, getTopicStories } = require('./topic');
+const { getRelatedStories, getTopicStories, getTopicContributors } = require('./topic');
 
 const { voteController } = require('./vote');
 
@@ -29,5 +29,5 @@ module.exports = {
   getStoryReplies, viewContentController, createReply, updateReply, deleteReply, 
   getStorySections, findAuthorReplies, findAuthorStories, getRelatedStories, getStory, 
   getReplyLikes, createStorySection, updateStorySection, deleteStorySection, getReply,
-  fetchReplyLikes, fetchStoryLikes, findUserFollowers, findUserFollowing
+  fetchReplyLikes, fetchStoryLikes, findUserFollowers, findUserFollowing, getTopicContributors
 }

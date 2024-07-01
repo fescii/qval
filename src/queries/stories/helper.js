@@ -400,10 +400,99 @@ const mapFields = (content, data) => {
 }
 
 /**
+ * @function getTopicAuthorsWhenLoggedIn
+ * @description a function that queries topic authors when user is logged in
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {String} user - The user hash
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The topic authors object and error if any
+*/
+const getTopicAuthorsWhenLoggedIn = async (where, order, user, limit, offset) => {
+  try {
+    // Find the topic authors
+    const authors = await User.findAll({
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+        [
+          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)),
+          'is_following'
+        ]
+      ],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset
+    });
+
+    // Check if the topic authors exist
+    if (authors.length < 1) {
+      return { people: null, error: null };
+    }
+
+    // return the topic authors
+    return { 
+      people: authors.map(author => {
+        const data = author.dataValues;
+        data.you = user === data.hash;
+        return data;
+      }),
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { people: null, error };
+  }
+}
+
+/**
+ * @function getTopicAuthorsWhenLoggedOut
+ * @description a function that queries topic authors when user is logged out
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The topic authors object and error if any
+*/
+const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
+  try {
+    // Find the topic authors
+    const authors = await User.findAll({
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset
+    });
+
+    // Check if the topic authors exist
+    if (authors.length < 1) {
+      return { authors: null, error: null };
+    }
+
+    // return the topic authors
+    return { 
+      authors: authors.map(author => {
+        const data = author.dataValues;
+        data.you = false;
+        return data;
+      }),
+      error: null 
+    };
+  }
+  catch (error) {
+    // return the error
+    return { authors: null, error };
+  }
+}
+
+/**
  * @function getRepliesWhenLoggedIn
  * @description a function that queries replies when user is logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
+ * @param {String} user - The user hash
  * @param {Number} limit - The limit for pagination
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The replies object and error if any
@@ -514,5 +603,6 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
 // Export the module
 module.exports = {
   findStoryWhenLoggedIn, findStoryWhenLoggedOut, getStoriesWhenLoggedIn, getStoriesWhenLoggedOut,
-  findReplyWhenLoggedIn, findReplyWhenLoggedOut, getRepliesWhenLoggedIn, getRepliesWhenLoggedOut
+  findReplyWhenLoggedIn, findReplyWhenLoggedOut, getRepliesWhenLoggedIn, getRepliesWhenLoggedOut,
+  getTopicAuthorsWhenLoggedIn, getTopicAuthorsWhenLoggedOut
 };

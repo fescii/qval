@@ -25,11 +25,9 @@ export default class PeopleFeed extends HTMLElement {
     const peopleContainer = this.shadowObj.querySelector('.people');
 
 		// check total
-		if (this._total === 0) {
-			this.populatePeople(this.getEmptyMsg(this._kind), peopleContainer);
-		} else {
-			this.fetchPeople(peopleContainer);
-			this.scrollEvent(peopleContainer);
+		if (peopleContainer) {
+      this.fetchPeople(peopleContainer);
+			this.scrollEvent(peopleContainer);     
 		}
   }
 
@@ -86,7 +84,7 @@ export default class PeopleFeed extends HTMLElement {
 
   fetchPeople = peopleContainer => {
     const outerThis = this;
-    const url = `${this._url}?total=${this._total}&page=${this._page}`;
+    const url = `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -210,6 +208,15 @@ export default class PeopleFeed extends HTMLElement {
 						</p>
 					</div>
 				`;
+      case 'topic':
+        return `
+          <div class="empty">
+            <h2 class="title">No contributors yet!</h2>
+            <p class="next">
+              The topic has no contributors yet. You can be the first to contribute or you can always come back later to check for new contributors.
+            </p>
+          </div>
+        `
 			case 'followers':
 				return `
 					<div class="empty">
@@ -251,6 +258,15 @@ export default class PeopleFeed extends HTMLElement {
 						</p>
 					</div>
 				`
+      case 'topic': 
+        return `
+          <div class="last">
+            <h2 class="title">That's all the contributors!</h2>
+            <p class="next">
+              You have reached the end of the contributors. You can also become a contributor by clicking the contribute button.
+            </p>
+          </div>
+        `
 			case 'followers':
 				return `
 					<div class="last">

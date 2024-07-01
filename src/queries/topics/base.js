@@ -420,14 +420,13 @@ const mapFields = (data, hash) => {
   if (data.length <= 0) {
     return html = /*html*/`
       <div class="empty">
-        <h2 class="title">No Information</h2>
-        <p>The topic has no information yet. You cen be the first to add information to this topic.</p>
+        <p>The topic has no information yet. You can contribute to this topic by adding relevent information about the topic.</p>
         <a href="/t/${hash}/contribute" class="button">Contribute</a>
       </div>
     `;
   }
   else {
-    return data.map(section => {
+    const html = data.map(section => {
       const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
       return /*html*/`
         <div class="section" order="${section.order}" id="section${section.order}">
@@ -436,6 +435,15 @@ const mapFields = (data, hash) => {
         </div>
       `
     }).join('');
+
+    const last = /*html*/`
+      <div class="last">
+        <p>Do you have more information about this topic? You can contribute to this topic by adding or editing information.</p>
+        <a href="/t/${hash}/contribute" class="button">Contribute</a>
+      </div>
+    `
+
+    return html + last;
   }
 }
 

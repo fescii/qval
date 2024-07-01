@@ -615,7 +615,9 @@ export default class AppTopic extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <topic-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}">
+      <topic-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}"
+        slug="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
+        stories-url="${this.getAttribute('stories-url')}" contributers-url="${this.getAttribute('contributers-url')}">
         ${this.getArticle()}
       </topic-section>
     `

@@ -5,7 +5,7 @@ const { checkToken } = require('../../middlewares').authMiddleware;
 const {
   findAuthorStories, findAuthorReplies, getTopicStories, getRelatedStories,
   getStoryReplies, getReplyReplies, fetchReplyLikes, fetchStoryLikes,
-  findUserFollowers, findUserFollowing
+  findUserFollowers, findUserFollowing, getTopicContributors
 } = require('../../controllers').storyController;
 
 /**
@@ -38,7 +38,10 @@ module.exports = (app, url) => {
   app.get(`${url}/u/:hash/following`, checkToken, findUserFollowing);
 
   // Route for finding all stories by a topic
-  app.get(`${url}/t/:hash/stories`, checkToken, getTopicStories);
+  app.get(`${url}/t/:slug/stories`, checkToken, getTopicStories);
+
+  // Route for finding all contributors to a topic
+  app.get(`${url}/t/:hash/contributors`, checkToken, getTopicContributors);
 
   // Route for finding related stories
   app.get(`${url}/t/feeds/related`, checkToken, getRelatedStories);
