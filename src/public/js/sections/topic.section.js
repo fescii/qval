@@ -22,7 +22,8 @@ export default class TopicSection extends HTMLElement {
     const contentContainer = this.shadowObj.querySelector('div.feeds');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
 
-    this.fetchContent(contentContainer, tabContainer);
+    this.updateActiveTab(tabContainer);
+    this.activateTab(contentContainer, tabContainer);
   }
 
   disableScroll() {
@@ -42,17 +43,6 @@ export default class TopicSection extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  fetchContent = (contentContainer, tabContainer) => {
-    const outerThis = this;
-    const storyLoader = this.shadowObj.querySelector('story-loader');
-    const content = this.getContent(this._active);
-    setTimeout(() => {
-      storyLoader.remove();
-      contentContainer.insertAdjacentHTML('beforeend', content);
-      outerThis.updateActiveTab(tabContainer);
-      outerThis.activateTab(contentContainer, tabContainer);
-    }, 2000)
-  }
 
   updateActiveTab = tabContainer => {
     // Select tab with active class
@@ -232,7 +222,7 @@ export default class TopicSection extends HTMLElement {
     return /* html */`
       ${this.getTab()}
       <div class="feeds">
-        ${this.getLoader()}
+        ${this.getContent(this._active)}
       </div>
     `
   }

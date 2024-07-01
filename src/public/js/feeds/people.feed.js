@@ -145,7 +145,8 @@ export default class PeopleFeed extends HTMLElement {
         controller.abort();
         // add property to the error object
         reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        // Throw a custom error
+        // throw new Error('Request timed out');
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -430,7 +431,7 @@ export default class PeopleFeed extends HTMLElement {
 
         .last {
           width: 100%;
-          padding: 10px 15px;
+          padding: 10px 0;
           display: flex;
           flex-flow: column;
           align-items: center;

@@ -1,5 +1,5 @@
 // Importing the required modules, fns, configs, and utils...
-const { Sequelize} = require('../../models').models;
+const { Sequelize, Topic, TopicSection } = require('../../models').models;
 const Op = Sequelize.Op;
 
 // Import the helper functions
@@ -172,7 +172,7 @@ const findRelatedStories = async (reqData) => {
  * @returns {Object} data - The contributors object and error if any
  * @returns {Object} - Returns response object
 */
-const findTopicContributors = async (reqData) => {
+const findTopicContributors = async reqData => {
   try {
     // Destructure the request data
     const { hash, user, page, limit } = reqData;
@@ -182,8 +182,14 @@ const findTopicContributors = async (reqData) => {
 
     // fetch the topic authors from Topic table
     const topic = await Topic.findOne({
-      attributes: ['authors', 'hash', 'slug'],
-      where: { hash } 
+      attributes: ['author', 'hash', 'slug'],
+      where: { hash } ,
+      // include TopicSection and attribes (authors only)
+      include: [{
+        model: TopicSection,
+        as: 'topic_sections',
+        attributes: ['authors'],
+      }]
     });
 
     // Check if the topic exists
@@ -191,9 +197,16 @@ const findTopicContributors = async (reqData) => {
       return { data: null, error: new Error('Topic not found!') };
     }
 
+    const authors = [topic.author]
+
+    // map the authors to the authors array
+    topic.topic_sections.forEach(section => {
+      authors.push(...section.authors);
+    });
+
     // Find the stories
     const where = {
-      hash: { [Op.in]: topic.authors }
+      hash: { [Op.in]: authors }
     };
 
     const order = [['createdAt', 'DESC']];
