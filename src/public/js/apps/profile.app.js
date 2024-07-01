@@ -198,10 +198,9 @@ export default class AppProfile extends HTMLElement {
     let formattedUrl = url.toLowerCase();
 
     return /* html */`
-      <highlights-container url="${formattedUrl}/highlights" 
+      <highlights-container url="/api/v1${formattedUrl}/stats" 
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
-        stories="6376" replies="19863"
-        topics="236" views="726398" date-joined="2022-01-03T13:00:00+03:00">
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
       </highlights-container>
     `
   }

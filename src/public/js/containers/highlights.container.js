@@ -3,6 +3,8 @@ export default class HighlightsContainer extends HTMLElement {
 		// We are not even going to touch this.
 		super();
 
+    this._url = this.getAttribute('url');
+
 		// let's create our shadow root
 		this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -21,13 +23,70 @@ export default class HighlightsContainer extends HTMLElement {
 	}
 
 	fetchTopics = (contentContainer) => {
+    const outerThis = this;
 		const topicsLoader = this.shadowObj.querySelector('post-loader');
-		const content = this.getHighlights();
 		setTimeout(() => {
-			topicsLoader.remove();
-			contentContainer.insertAdjacentHTML('beforeend', content);
+      // fetch the user stats
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+  
+      this.fetchWithTimeout(this._url, options)
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          // check for success response
+          if (data.success) {
+            // update the content
+            const content = outerThis.getHighlights(data.data);
+            // remove the loader
+            topicsLoader.remove();
+            // insert the content
+            contentContainer.insertAdjacentHTML('beforeend', content);
+          }
+          else {
+            // display error message
+            const content = outerThis.getEmpty();
+            topicsLoader.remove();
+            contentContainer.insertAdjacentHTML('beforeend', content);
+          }
+        })
+        .catch(error => {
+          // display error message
+          const content = outerThis.getEmpty();
+          topicsLoader.remove();
+          contentContainer.insertAdjacentHTML('beforeend', content);
+        });
 		}, 2000)
 	}
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
 
   formatNumber = n => {
     if (n >= 0 && n <= 999) {
@@ -67,19 +126,6 @@ export default class HighlightsContainer extends HTMLElement {
     }
   }
 
-  // function to get the date in the format of "December 2021"
-  getMonthYear = isoDateStr => {
-    const dateIso = new Date(isoDateStr); // ISO strings with timezone are automatically handled
-    let userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // Convert posted time to the current timezone
-    const date = new Date(dateIso.toLocaleString('en-US', { timeZone: userTimezone }));
-
-    return `
-      ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-    `
-  }
-
 	getTemplate = () => {
 		// Show HTML Here
 		return `
@@ -103,24 +149,33 @@ export default class HighlightsContainer extends HTMLElement {
     `;
 	}
 
-  getHighlights = () => {
+  getHighlights = data => {
     // Get the number of followers, views, stories and topics
     const followers = this.parseToNumber(this.getAttribute('followers'));
-    const views = this.parseToNumber(this.getAttribute('views'));
+    const views = data.all;
     const stories = this.parseToNumber(this.getAttribute('stories'));
-    const topics = this.parseToNumber(this.getAttribute('topics'));
+    const topics = data.topics;
+
+    const replies = this.parseToNumber(this.getAttribute('replies'));
+
+    // get current and last month views
+    const currentMonthViews = data.current;
+    const lastMonthViews = data.last;
+
+    // calculate the percentage increase or decrease in views
+    const percentage = lastMonthViews === 0 ? 100 : ((currentMonthViews - lastMonthViews) / lastMonthViews) * 100;
+
+    // convert percentage to 1 decimal place if it is a decimal
+    const percentageFormatted = percentage % 1 === 0 ? percentage : percentage.toFixed(1);
+
+    // get the increase or decrease in views
+    const increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
 
     // format the number of followers, views, stories and topics
     const followersFormatted = this.formatNumber(followers);
     const viewsFormatted = this.formatNumber(views);
     const storiesFormatted = this.formatNumber(stories);
     const topicsFormatted = this.formatNumber(topics);
-
-    // gET join date
-    const joinDate = this.getAttribute('join-date');
-
-    // convert the join date to month and year
-    const joinDateFormatted = this.getMonthYear(joinDate);
 
     return /* html */`
       <p class="title">Highlights</p>
@@ -142,9 +197,10 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            <span class="numbers" id="views">${viewsFormatted}</span> content engagement this month
+            <span class="numbers" id="views">${viewsFormatted}</span> content views this month
           </span>
         </li>
+        ${increaseOrDecrease}
         <li class="item">
           <span class="icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
@@ -152,7 +208,17 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            <span class="numbers" id="stories">${storiesFormatted}</span> published stories
+            <span class="numbers" id="stories">${storiesFormatted}</span> published ${stories === 1 ? 'story' : 'stories'}
+          </span>
+        </li>
+        <li class="item">
+          <span class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+              <path d="M6.78 1.97a.75.75 0 0 1 0 1.06L3.81 6h6.44A4.75 4.75 0 0 1 15 10.75v2.5a.75.75 0 0 1-1.5 0v-2.5a3.25 3.25 0 0 0-3.25-3.25H3.81l2.97 2.97a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L1.47 7.28a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"></path>
+            </svg>
+          </span>
+          <span class="link">
+            <span class="numbers" id="replies">${replies}</span> replies addded so far
           </span>
         </li>
         <li class="item">
@@ -162,20 +228,50 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            subscribed to <span class="numbers" id="topics">${topicsFormatted}</span> topics
-          </span>
-        </li>
-        <li class="item">
-          <span class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-              <path d="M4.75 0a.75.75 0 0 1 .75.75V2h5V.75a.75.75 0 0 1 1.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 0 1 4.75 0ZM2.5 7.5v6.75c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V7.5Zm10.75-4H2.75a.25.25 0 0 0-.25.25V6h11V3.75a.25.25 0 0 0-.25-.25Z"></path>
-            </svg>
-          </span>
-          <span class="link">
-            Joined in ${joinDateFormatted}
+            subscribed to <span class="numbers" id="topics">${topicsFormatted}</span> topic${topics === 1 ? '' : 's'}
           </span>
         </li>
       </ul>
+    `
+  }
+
+  getIncrease = percentage => {
+    return /*html*/`
+      <li class="item">
+        <span class="icon increase">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M4.53 4.75A.75.75 0 0 1 5.28 4h6.01a.75.75 0 0 1 .75.75v6.01a.75.75 0 0 1-1.5 0v-4.2l-5.26 5.261a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L9.48 5.5h-4.2a.75.75 0 0 1-.75-.75Z"></path>
+          </svg>
+        </span>
+        <span class="link">
+          <span class="numbers" id="percentage">${percentage}%</span> increase in views this month
+        </span>
+      </li>
+    `
+  }
+
+  getDecrease = percentage => {
+    return /*html*/`
+      <li class="item">
+        <span class="icon decrease">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M4.22 4.179a.75.75 0 0 1 1.06 0l5.26 5.26v-4.2a.75.75 0 0 1 1.5 0v6.01a.75.75 0 0 1-.75.75H5.28a.75.75 0 0 1 0-1.5h4.2L4.22 5.24a.75.75 0 0 1 0-1.06Z"></path>
+          </svg>
+        </span>
+        <span class="link">
+          <span class="numbers" id="percentage">${percentage}%</span> decrease in views this month
+        </span>
+      </li>
+    `
+  }
+
+  getEmpty = () => {
+    return /* html */`
+      <p class="title">Highlights</p>
+      <div class="empty">
+        <p>User heighlights were not loaded, and error while fetching data</p>
+        <p>Try refreshing the page or check your internet connection. If the problem persists, please contact support.</p>
+      </div>
     `
   }
 
@@ -263,6 +359,25 @@ export default class HighlightsContainer extends HTMLElement {
           display: none;
           padding: 0 0 8px;
         }
+
+        div.empty {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
+        }
+
+        div.empty > p {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          color: var(--text-color);
+          font-family: var(--font-text), sans-serif;
+          font-size: 1rem;
+          font-weight: 400;
+        }
         
         ul.info {
           width: 100%;
@@ -310,6 +425,16 @@ export default class HighlightsContainer extends HTMLElement {
           height: 15px;
           width: 15px;
         }
+
+        ul.info > li.item > .icon.increase {
+          background: var(--accent-linear);
+          color: var(--white-color);
+        }
+
+        ul.info > li.item > .icon.decrease {
+          background: var(--error-linear);
+          color: var(--white-color);
+        }
         
         ul.info > li.item > .link {
           color: var(--text-color);
@@ -328,7 +453,15 @@ export default class HighlightsContainer extends HTMLElement {
           font-weight: 500;
           font-family: var(--font-main), sans-serif;
           font-size: 0.9rem;
-        }        
+        }
+        
+        ul.info > li.item.last {
+          background-color: var(--poll-background);
+          padding: 10px;
+          margin: 5px 0;
+          border-radius: 12px;
+          -webkit-border-radius: 12px;
+        }
 
 				@media screen and (max-width:660px) {
 					:host {

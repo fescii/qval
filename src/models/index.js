@@ -85,6 +85,7 @@ Object.assign(models, {
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
 });
 
+
 // Import database sync function
 const { syncDb } = require('./sync.models')(sequelize);
 

@@ -1,8 +1,7 @@
 // import models
-const { where } = require('sequelize');
-const { sequelize, Sequelize, Stories, Replies, Views, Subscribe, Like } = require('../../models');
-const { auth } = require('../../configs/mpesa.config');
+const { sequelize, Sequelize, View, Subscribe, Like } = require('../../models').models;
 
+// console.log(View)
 
 /**
  * @function getTotatTopicsUserIsSubscribedTo
@@ -19,15 +18,35 @@ const getTotalTopicsUserIsSubscribedTo = async author => {
   }
 }
 
+
 /**
  * @function getTotalUserViews
+ * @description Get user total views: all time
+ * @paramm {String} - user - User's hash
+ * @returns {Promise} - Promise (resolves user all time views | rejects with error)
+*/
+const  getTotalUserViews = async user => {
+  try {
+    return await View.count({
+      where: { 
+        author: user
+      }
+    });
+  } 
+  catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * @function getTotalUserViewsThisMonth
  * @description Get user stories and replies views(where view date is in the last 30 days.
  * @paramm {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies views | rejects with error)
 */
-const getTotalUserViews = async user => {
+const  getTotalUserViewsThisMonth = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: { 
         author: user,
         createdAt: { [Sequelize.Op.gt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) }
@@ -48,7 +67,7 @@ const getTotalUserViews = async user => {
 */
 const getTotalPreviousMonthUserViews = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: { 
         author: user,
         createdAt: { 
@@ -71,7 +90,7 @@ const getTotalPreviousMonthUserViews = async user => {
 */
 const getTotalUserRepliesViews = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: {
         author: user,
         kind: 'reply',
@@ -92,7 +111,7 @@ const getTotalUserRepliesViews = async user => {
 */
 const getTotalUserRepliesViewsLastMonth = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: {
         author: user,
         kind: 'reply',
@@ -116,7 +135,7 @@ const getTotalUserRepliesViewsLastMonth = async user => {
 */
 const getTotalUserStoriesViews = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: {
         author: user,
         kind: 'story',
@@ -138,7 +157,7 @@ const getTotalUserStoriesViews = async user => {
 */
 const getTotalUserStoriesViewsLastMonth = async user => {
   try {
-    return await Views.count({
+    return await View.count({
       where: {
         author: user,
         kind: 'story',
@@ -339,8 +358,8 @@ const getTotalUserReplyLikesLastMonth = async user => {
 
 // Export module
 module.exports = {
-  getTotalTopicsUserIsSubscribedTo, getTotalUserViews, getTotalPreviousMonthUserViews,
-  getTotalUserRepliesViews, getTotalUserRepliesViewsLastMonth, 
+  getTotalTopicsUserIsSubscribedTo, getTotalUserViewsThisMonth, getTotalPreviousMonthUserViews,
+  getTotalUserRepliesViews, getTotalUserRepliesViewsLastMonth, getTotalUserViews,
   getTotalUserStoriesViews, getTotalUserStoriesViewsLastMonth, 
   getTotalUserStoryLikes, getTotalUserReplyLikes, getTotalUserStoryLikesThisMonth, getTotalUserStoryLikesLastMonth,
   getTotalUserReplyLikesThisMonth, getTotalUserReplyLikesLastMonth
