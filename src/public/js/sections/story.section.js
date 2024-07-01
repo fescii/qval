@@ -313,7 +313,7 @@ export default class StorySection extends HTMLElement {
           display: flex;
           flex-flow: column;
           color: var(--read-color);
-          font-family: var(--font-read), sans-serif;
+          font-family: var(--font-text), sans-serif;
           gap: 0;
           font-size: 1rem;
           font-weight: 400;
