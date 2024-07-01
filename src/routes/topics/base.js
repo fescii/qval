@@ -1,15 +1,15 @@
-const { verifyToken } = require('../middlewares').authMiddleware;
+const { verifyToken } = require('../../middlewares').authMiddleware;
 const {
   createTopic, updateTopic, deleteTopic,
   createDraft, createTopicSection, updateDraft,
   updateTopicSection, deleteDraft, deleteTopicSection,
   acceptDraft, getTopicDrafts, getTopicSections,
   searchTopics, getTopicByHash, followTopic, subscribeTopic
-} = require('../controllers').topicController;
+} = require('../../controllers').topicController;
 
 const {
   checkDuplicateTopic, checkTopicActionPrivilege
-} = require('../middlewares').topicMiddleware;
+} = require('../../middlewares').topicMiddleware;
 
 /**
  * @function topicRoutes

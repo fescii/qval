@@ -9,7 +9,7 @@ const { validateLogin } = require('../../validators').userValidator;
 const { checkIfUserExits } = require('../../queries').userQueries;
 
 /**
- * @function login
+ * @function signin
  * @description Controller to login a user
  * @param {Object} req - Request object
  * @param {Object} res - Response object
@@ -17,7 +17,7 @@ const { checkIfUserExits } = require('../../queries').userQueries;
  * @returns {Object} - Returns response object
  *
 */
-const login = async (req, res, next) => {
+const signin = async (req, res, next) => {
   // Check if the payload is available in the request object
   if (!req.body) {
     const error = new Error('Payload data is not defined in the req object!');
@@ -125,5 +125,5 @@ const login = async (req, res, next) => {
  * Exporting all controllers
 */
 module.exports = {
-  login
+  signin
 }

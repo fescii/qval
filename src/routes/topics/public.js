@@ -1,7 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
   getTopic, getTopicStories, getTopicContributors
-} = require('../../content').topicContent;
+} = require('../../controllers').topicController;
 
 const {
   checkToken

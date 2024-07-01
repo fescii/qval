@@ -10,15 +10,10 @@ const {
 
 module.exports = (app) => {
   // apis routes
-  auth(app, '/api/v1/a');
-  topics(app, '/api/v1/t');
+  auth(app);
+  topics(app);
   stories(app);
   users(app);
-
-  // public routes
-  joinPages(app);
-  topicPages(app);
-
   // error routes
   errors(app);
 }

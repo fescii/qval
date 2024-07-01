@@ -1,9 +1,9 @@
 // Import find topic by hash and by slug
 const {
   findTopicBySlugOrHash
-} = require('../queries').topicQueries;
+} = require('../../queries').topicQueries;
 
-const { actionQueue } = require('../bull');
+const { actionQueue } = require('../../bull');
 
 
 /**
