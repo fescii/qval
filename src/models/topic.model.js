@@ -146,7 +146,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     },
     content: {
       type: Sequelize.TEXT,

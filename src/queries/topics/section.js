@@ -17,15 +17,15 @@ const addTopicSection = async (author, topic, data) => {
   // initialize transaction
   const transaction = await sequelize.transaction();
 
+  const insertData = {
+    ...data,
+    topic,
+    authors: [author]
+  }
+
   try {
     // Trying to create a topic to the database
-    const section = await TopicSection.create({
-      topic: topic,
-      order: data.order,
-      title: data.title,
-      content: data.content,
-      authors: [author]
-    }, {transaction});
+    const section = await TopicSection.create(insertData, {transaction});
 
     // adjust the order of the sections
     await adjustSectionOrders(section.topic, data.order, transaction, section.id);

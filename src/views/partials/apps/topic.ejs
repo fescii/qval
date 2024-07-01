@@ -9,11 +9,11 @@
 
 <app-topic style="display: none;" tab="<%= data.tab %>" subscribers="<%= data.subscribers %>" followers="<%= data.followers %>"
   stories="<%= data.stories %>" hash="<%= data.hash %>" subscribed="<%= data.is_subscribed ? 'true' : 'false' %>"
-  name="<%= data.name %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories"
+  name="<%= data.name %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories" summery="<%= data.summary %>"
   contributers-url="/api/v1<%= url %>/contributers" followers-url="/api/v1<%= url %>/followers"  topic-follow="<%= data.is_following ? 'true' : 'false' %>"
   author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>" author-stories="<%= author.stories %>"
   author-img="<%= picture %>" author-follow="<%= author.is_following ? 'true' : 'false' %>" author-replies="<%= author.replies %>"
   author-name="<%= author.name %>" author-followers="<%= author.followers %>" author-following="<%= author.following %>"
   author-verified="<%= author.verified ? 'true' : 'false' %>" author-bio="<%= author.bio === null ? 'This user has not added a bio yet.' : author.bio %>">
-  <%= data.summary %>
+  <%= data.topic_sections %>
 </app-topic>

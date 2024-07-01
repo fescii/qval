@@ -1,5 +1,5 @@
 const { hashConfig} = require('../../configs');
-const { sequelize, Sequelize, Topic, Section, Role, User } = require('../../models').models;
+const { sequelize, Sequelize, Topic, Section, TopicSection, Role, User } = require('../../models').models;
 const { RoleBase } = require('../../configs').platformConfig;
 const Op = Sequelize.Op;
 
@@ -146,12 +146,7 @@ const editTopic = async (hash, data) => {
 
     // If a topic exists, update the topic
     if (topic) {
-      // console.log(topic)
-      topic.name = data.name;
-      topic.slug = data.slug;
-      topic.about = data.about;
-
-      await topic.save({transaction});
+      await topic.update(data, {transaction});
 
       await transaction.commit();
 
@@ -316,6 +311,13 @@ const findTopicWhenLoggedIn = async (query, user) => {
             'is_following'
           ]
         ],
+      },
+      // include the sections of the topic
+      {
+        model: TopicSection,
+        as: 'topic_sections',
+        attributes: ['order', 'topic', 'title', 'content'],
+        order: [['order', 'ASC']],
       }
     ]
   });
@@ -327,7 +329,12 @@ const findTopicWhenLoggedIn = async (query, user) => {
 
   const data = topic.dataValues;
 
+  // add the topic author to the data object
   data.topic_author = topic.topic_author.dataValues;
+
+  // add the sections to the data object
+  data.topic_sections = mapFields(topic.topic_sections);
+  
   data.you = data.topic_author.hash === user;
 
   // If topic exists, return the topic
@@ -355,6 +362,13 @@ const findTopicWhenLoggedOut = async (query) => {
         model: User,
         as: 'topic_author',
         attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt', 'verified', 'replies', 'email'],
+      },
+      // include the sections of the topic
+      {
+        model: TopicSection,
+        as: 'topic_sections',
+        attributes: ['order', 'topic', 'title', 'content'],
+        order: [['order', 'ASC']],
       }
     ]
   });
@@ -363,6 +377,9 @@ const findTopicWhenLoggedOut = async (query) => {
   if (!topic) {
     return { topic: null, error: null}
   }
+
+  // add the topic sections to the data object
+  topic.topic_sections = mapFields(topic.topic_sections);
 
   // If topic exists, return the topic
   return {topic: topic, error: null}
@@ -396,6 +413,29 @@ const findTopicsByQuery = async (query) => {
   }
   catch (error) {
     return { topics: null, error: error}
+  }
+}
+
+const mapFields = (data, hash) => {
+  if (data.length <= 0) {
+    return html = /*html*/`
+      <div class="empty">
+        <h2 class="title">No Information</h2>
+        <p>The topic has no information yet. You cen be the first to add information to this topic.</p>
+        <a href="/t/${hash}/contribute" class="button">Contribute</a>
+      </div>
+    `;
+  }
+  else {
+    return data.map(section => {
+      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      return /*html*/`
+        <div class="section" order="${section.order}" id="section${section.order}">
+          ${title}
+          ${section.content}
+        </div>
+      `
+    }).join('');
   }
 }
 

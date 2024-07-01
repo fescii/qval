@@ -459,7 +459,7 @@ export default class TopicSection extends HTMLElement {
           display: flex;
           flex-flow: column;
           color: var(--read-color);
-          font-family: var(--font-read), sans-serif;
+          font-family: var(--font-text), sans-serif;
           gap: 10px;
           font-size: 1rem;
           font-weight: 400;
@@ -479,9 +479,9 @@ export default class TopicSection extends HTMLElement {
           flex-flow: column;
         }
 
-        article.article > .section h4.section-title {
+        article.article > .section h2.title {
           padding: 0 !important;
-          font-size: 1.3rem !important;
+          font-size: 1.5rem !important;
           font-weight: 500;
           line-height: 1.5;
           margin: 0;
@@ -497,12 +497,12 @@ export default class TopicSection extends HTMLElement {
           color: var(--title-color);
           font-weight: 500;
           line-height: 1.5;
-          margin: 5px 0;
+          margin: 10px 0;
         }
 
         article.article p {
-          margin: 5px 0;
-          line-height: 1.5;
+          margin: 0 0 5px 0;
+          line-height: 1.4;
         }
 
         article.article a {
@@ -530,7 +530,7 @@ export default class TopicSection extends HTMLElement {
           color: var(--gray-color);
           font-size: 1.5rem;
           line-height: 1;
-          margin: 0 0 0 -5px;
+          margin: 0;
         }
 
         article.article blockquote:after {
@@ -538,7 +538,7 @@ export default class TopicSection extends HTMLElement {
           color: var(--gray-color);
           font-size: 1.5rem;
           line-height: 1;
-          margin: 0 0 0 -5px;
+          margin: 0;
         }
 
         article.article hr {
@@ -559,6 +559,47 @@ export default class TopicSection extends HTMLElement {
           margin: 5px 0 15px 20px;
           padding: 0 0 0 15px;
           color: inherit;
+        }
+
+
+        article.article div.empty {
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin: 15px 0;
+          padding: 15px 10px;
+          background: var(--poll-background);
+          border-radius: 15px;
+        }
+
+        article.article > div.empty > h2 {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: var(--title-color);
+        }
+
+        article.article > div.empty > p {
+          font-size: 1rem;
+          text-align: center;
+          color: var(--text-color);
+        }
+
+        article.article > div.empty > a {
+          padding: 5px 20px;
+          font-size: 1rem;
+          font-weight: 500;
+          border-radius: 12px;
+          cursor: pointer;
+          color: var(--white-color) !important;
+          background: var(--accent-linear) !important;
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        article.article > div.empty > a:hover {
+          text-decoration: none;
         }
 
         @media screen and (max-width: 660px) {
