@@ -17,6 +17,7 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    this.style.display = 'flex';
     // onpopstate event
     this.onpopEvent();
 
@@ -549,12 +550,32 @@ export default class AppTopic extends HTMLElement {
             ${this.getStats()}
           </div>
           <div class="sub-text">
-            <p>${this.getAttribute('description')}</p>
+            ${this.parseHTML(this.innerHTML)}
           </div>
           ${this.getActions()}
         </div>
       </div>
     `
+  }
+
+  // Function to detect and parse the text
+  parseHTML = text => {
+    // Create a temporary element to help with parsing
+    const tempElement = document.createElement('div');
+    
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // Create a textarea element to decode the HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      tempElement.innerHTML = textarea.value;
+    } else {
+        // Directly set the innerHTML for plain HTML
+      tempElement.innerHTML = text;
+    }
+    
+    // Return the parsed HTML
+    return tempElement.innerHTML;
   }
 
   getTop = () => {
@@ -651,11 +672,11 @@ export default class AppTopic extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" 
-       user-follow="${this.getAttribute('author-follow')}" you="${this.getAttribute('author-you')}"
-       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
-       bio="${this.getAttribute('author-bio')}">
+			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
+        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
   }
@@ -813,6 +834,89 @@ export default class AppTopic extends HTMLElement {
           font-family: var(--font-text), sans-serif;
           margin: 0;
           color: var(--text-color);
+        }
+
+
+        .sub-text * {
+          font-size: 1.05rem;
+          line-height: 1.4;
+          font-family: var(--font-read), sans-serif;
+          color: inherit;
+          font-family: inherit;
+        }
+
+        .sub-text h6,
+        .sub-text h5,
+        .sub-text h4,
+        .sub-text h3,
+        .sub-text h1 {
+          padding: 0 !important;
+          font-size: 1.3rem !important;
+          color: var(--title-color);
+          font-weight: 500;
+          line-height: 1.5;
+          margin: 5px 0;
+        }
+
+        .sub-text p {
+          margin: 0 0 10px;
+          line-height: 1.4;
+        }
+
+        .sub-text a {
+          text-decoration: none;
+          cursor: pointer;
+          color: var(--anchor-color) !important;
+        }
+
+        .sub-text a:hover {
+          text-decoration: underline;
+        }
+
+        .sub-text blockquote {
+          margin: 10px 0;
+          padding: 5px 15px;
+          font-style: italic;
+          border-left: 2px solid var(--gray-color);
+          background: var(--background);
+          color: var(--text-color);
+          font-weight: 400;
+        }
+
+        .sub-text blockquote:before {
+          content: open-quote;
+          color: var(--gray-color);
+          font-size: 1.5rem;
+          line-height: 1;
+          margin: 0 0 0 -5px;
+        }
+
+        .sub-text blockquote:after {
+          content: close-quote;
+          color: var(--gray-color);
+          font-size: 1.5rem;
+          line-height: 1;
+          margin: 0 0 0 -5px;
+        }
+
+        .sub-text hr {
+          border: none;
+          background-color: var(--gray-color);
+          height: 1px;
+          margin: 10px 0;
+        }
+
+        .sub-text b,
+        .sub-text strong {
+          font-weight: 500;
+
+        }
+
+        .sub-text ul,
+        .sub-text ol {
+          margin: 5px 0 15px 20px;
+          padding: 0 0 0 15px;
+          color: inherit;
         }
 
         .stats {

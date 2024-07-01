@@ -305,7 +305,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
       {
         model: User,
         as: 'topic_author',
-        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
           [
             sequelize.literal(`(
             SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
@@ -325,32 +325,10 @@ const findTopicWhenLoggedIn = async (query, user) => {
     return { topic: null, error: null }
   }
 
-  const data =  {
-    author: topic.author,
-    hash: topic.hash,
-    name: topic.name,
-    slug: topic.slug,
-    summary: topic.summary,
-    followers: topic.followers,
-    subscribers: topic.subscribers,
-    stories: topic.stories,
-    views: topic.views,
-    is_following: topic.dataValues.is_following,
-    is_subscribed: topic.dataValues.is_subscribed,
-    topic_author: {
-      hash: topic.topic_author.hash,
-      bio: topic.topic_author.bio,
-      name: topic.topic_author.name,
-      verified: topic.topic_author.verified,
-      picture: topic.topic_author.picture,
-      followers: topic.topic_author.followers,
-      following: topic.topic_author.following,
-      stories: topic.topic_author.stories,
-      is_following: topic.topic_author.dataValues.is_following
-    },
-    you: topic.topic_author.hash === user,
-    authenticated: true
-  }
+  const data = topic.dataValues;
+
+  data.topic_author = topic.topic_author.dataValues;
+  data.you = data.topic_author.hash === user;
 
   // If topic exists, return the topic
   return { topic: data, error: null }
@@ -376,7 +354,7 @@ const findTopicWhenLoggedOut = async (query) => {
       {
         model: User,
         as: 'topic_author',
-        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt'],
+        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt', 'verified', 'replies', 'email'],
       }
     ]
   });
@@ -385,9 +363,6 @@ const findTopicWhenLoggedOut = async (query) => {
   if (!topic) {
     return { topic: null, error: null}
   }
-
-  // add login status to the topic
-  topic.authenticated = false;
 
   // If topic exists, return the topic
   return {topic: topic, error: null}
