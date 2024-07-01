@@ -4,9 +4,6 @@ const auth = require('./auth');
 const topics = require('./topics');
 const stories = require('./stories');
 const users = require('./users');
-const {
-  joinPages, topicPages,
-} = require('./pages');
 
 module.exports = (app) => {
   // apis routes
