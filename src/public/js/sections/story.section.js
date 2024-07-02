@@ -149,6 +149,7 @@ export default class StorySection extends HTMLElement {
   getTemplate() {
     // Show HTML Here
     return `
+      <span class="indicator"></span>
       ${this.getContent()}
       ${this.getStyles()}
     `;
@@ -157,7 +158,6 @@ export default class StorySection extends HTMLElement {
   getContent = () => {
     const htmlText = this.parseHTML(this.innerHTML);
     return `
-      <span class="indicator"></span>
       ${this.getHeader()}
       <article class="article">
         ${htmlText}
@@ -351,7 +351,7 @@ export default class StorySection extends HTMLElement {
         span.indicator {
           display: flex;
           z-index: 4;
-          width: 10%;
+          width: 0%;
           height: 3px;
           background: var(--accent-linear);
           border-radius: 5px;

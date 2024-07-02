@@ -213,6 +213,7 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   getStyles() {
+    const kind = this.getAttribute('type');
     return /* css */`
       <style>
         *,
@@ -263,7 +264,7 @@ export default class HeaderWrapper extends HTMLElement {
           position: sticky;
           top: 0;
           z-index: 10;
-          margin: 0 0 10px;
+          margin: ${kind === 'story' ? '0' : '0 0 10px'};
         }
 
         nav.nav {
