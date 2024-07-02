@@ -16,6 +16,12 @@ export default class StorySection extends HTMLElement {
   connectedCallback() {
     // open the url
     this.openUrl();
+
+    // get the content
+    const content = this.shadowObj.querySelector('.article');
+
+    // adjust the indicator
+    this.adjustIndicator(content);
   }
 
   // fn to take number and return a string with commas
@@ -151,6 +157,7 @@ export default class StorySection extends HTMLElement {
   getContent = () => {
     const htmlText = this.parseHTML(this.innerHTML);
     return `
+      <span class="indicator"></span>
       ${this.getHeader()}
       <article class="article">
         ${htmlText}
@@ -227,6 +234,59 @@ export default class StorySection extends HTMLElement {
 		`
   }
 
+  adjustIndicator = content => {
+    // get total height of the content(including padding and scroll height)
+    const totalHeight = content.scrollHeight;
+
+    // get the scroll position of the content
+    const scrollPosition = document.documentElement.scrollTop;
+
+    // calculate the percentage of the scroll position
+    const scrollPercentage = (scrollPosition / totalHeight) * 100;
+
+    // get the indicator
+    const indicator = this.shadowObj.querySelector('.indicator');
+
+    // if percentage is greater than 100, set the indicator to 100%
+    if (scrollPercentage + 8 >= 100) {
+      indicator.style.width = `100%`;
+      return;
+    }
+
+    // set the width of the indicator
+    indicator.style.width = `${scrollPercentage + 8}%`;
+
+
+    // add scroll event listener to body but check if the content is still in view
+    document.addEventListener('scroll', () => {
+      // get total height of the content(minus padding)
+      const totalHeight = content.scrollHeight;
+      // console.log("totalHeight: ", totalHeight);
+
+      // get the scroll position of the content in the y-axis
+      const scrollPosition = document.documentElement.scrollTop + 143;
+      // console.log("scrollPosition: ", scrollPosition);
+
+      // calculate the percentage of the scroll position
+      const scrollPercentage = (scrollPosition / totalHeight) * 100;
+
+      // if the scroll position is greater than the total height of the content, set the indicator to 100%
+      if (scrollPosition >= totalHeight) {
+        indicator.style.width = `100%`;
+        return;
+      }
+
+      // if percentage + 8  is greater than 100, set the indicator to 100%
+      if (scrollPercentage + 8 >= 100) {
+        indicator.style.width = `100%`;
+        return;
+      }
+
+      // set the width of the indicator
+      indicator.style.width = `${scrollPercentage + 8}%`;
+    })
+  }
+
   getStyles() {
     return /* css */`
       <style>
@@ -288,11 +348,24 @@ export default class StorySection extends HTMLElement {
           gap: 0;
         }
 
+        span.indicator {
+          display: flex;
+          z-index: 4;
+          width: 10%;
+          height: 3px;
+          background: var(--accent-linear);
+          border-radius: 5px;
+          transition: width 0.3s;
+          position: sticky;
+          top: 60px;
+          left: 0;
+        }
+
         div.head {
           display: flex;
           flex-flow: column;
           gap: 0;
-          margin: 5px 0;
+          margin: 15px 0 0;
         }
 
         div.head > .topic {
@@ -351,28 +424,12 @@ export default class StorySection extends HTMLElement {
           font-family: inherit;
         }
 
-        article.article .section {
-          margin: 15px 0 0 0;
-          padding: 0;
-          display: flex;
-          flex-flow: column;
-        }
-
-        article.article > .section h2.title {
-          padding: 0 !important;
-          font-size: 1.3rem !important;
-          color: var(--title-color);
-          font-weight: 500;
-          line-height: 1.5;
-          margin: 0;
-        }
-
         article.article h6,
         article.article h5,
         article.article h4,
         article.article h3,
         article.article h1 {
-          padding: 0 !important;
+          padding: 0;
           font-size: 1.3rem !important;
           color: var(--title-color);
           font-weight: 500;
@@ -446,6 +503,34 @@ export default class StorySection extends HTMLElement {
           color: inherit;
         }
 
+        article.article .section {
+          margin: 15px 0 0 0;
+          padding: 0;
+          display: flex;
+          flex-flow: column;
+        }
+
+        article.article > .section > h2.title {
+          font-size: 1.3rem !important;
+          color: var(--title-color);
+          font-weight: 500;
+          line-height: 1.5;
+          margin: 0;
+          padding: 0 0 0 13px;
+          position: relative;
+        }
+
+        article.article > .section h2.title:before {
+          content: "";
+          position: absolute;
+          bottom: 10%;
+          left: 0;
+          width: 4px;
+          height: 80%;
+          background: var(--accent-linear);
+          border-radius: 5px;
+        }
+
         @media screen and (max-width:660px) {
           :host {
             margin: 0 0 15px;
@@ -460,6 +545,18 @@ export default class StorySection extends HTMLElement {
 
           a {
             cursor: default !important;
+          }
+
+          span.indicator {
+            display: flex;
+            width: 10%;
+            height: 3px;
+            background: var(--accent-linear);
+            border-radius: 5px;
+            transition: width 0.3s;
+            position: sticky;
+            top: 50px;
+            left: 0;
           }
 
           .meta {
