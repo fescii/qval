@@ -111,7 +111,7 @@ const getAuthorContact = async (req, res, next) => {
   const {
     contact,
     error
-  } = await findAuthorContact(hash);
+  } = await findAuthorContact(hash.toUpperCase());
 
   // If error is not equal to undefined throw an error
   if (error) {

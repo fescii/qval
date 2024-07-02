@@ -27,6 +27,7 @@ export default class ProfileWrapper extends HTMLElement {
 
     // open highlights
     this.openHighlights();
+    this.openContact()
   }
 
   isLoggedIn = name => {
@@ -77,6 +78,24 @@ export default class ProfileWrapper extends HTMLElement {
 
         // Open the highlights popup
         body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
+  }
+
+  openContact = () => {
+    // Get body
+    const body = document.querySelector('body');
+    // Get the social action and subscribe action
+    const socialBtn = this.shadowObj.querySelector('.actions>.action#socials-action');
+
+    // add event listener to the social action
+    if (socialBtn) {
+      socialBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getContact());
       });
     }
   }
@@ -375,13 +394,11 @@ export default class ProfileWrapper extends HTMLElement {
     // Get name and check if it's greater than 20 characters
     const name = this.getAttribute('name');
 
-    // gET URL
-    const url = this.getAttribute('url');
-
     // Check if the name is greater than 20 characters: replace the rest with ...
     let displayName = name.length > 25 ? `${name.substring(0, 25)}..` : name;
 
     return /* html */ `
+    </contact-popup>
       <div class="top">
         <div class="avatar">
           <img src="${this.getAttribute('picture')}" alt="Author name">
@@ -514,6 +531,19 @@ export default class ProfileWrapper extends HTMLElement {
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
         stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
       </stats-popup>
+    `
+  }
+
+  getContact = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <contact-popup url="/api/v1${formattedUrl}/contact" name="${this.getAttribute('name')}">
+      </contact-popup>
     `
   }
 
