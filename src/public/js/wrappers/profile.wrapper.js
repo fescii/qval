@@ -690,7 +690,7 @@ export default class ProfileWrapper extends HTMLElement {
 
         .bio > p {
           all: inherit;
-          margin: 0;
+          margin: 0 0 5px;
         }
 
         .actions {

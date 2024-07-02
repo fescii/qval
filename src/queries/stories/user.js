@@ -417,7 +417,7 @@ const fetchFollowersWhenLoggeOut = async (where, order, limit, offset) => {
       return {
         createdAt: connect.createdAt,
         you: false,
-        ...connect.connect_user.dataValues,
+        ...connect.from_user.dataValues,
       }
     });
   }
