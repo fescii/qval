@@ -2,7 +2,8 @@
 const { verifyToken } = require('../../middlewares').authMiddleware;
 const {
   updateProfilePicture, updateProfileBio, updateProfileName,
-  updateProfileContact, updateProfilePassword, followUser
+  updateProfileContact, updateProfilePassword, followUser,
+  getAuthorContact
 } = require('../../controllers').userController;
 
 
@@ -56,4 +57,7 @@ module.exports = (app, url) => {
     verifyToken,
     followUser
   );
+
+  // Get author contact route
+  app.get(`${url}/:hash/contact`, getAuthorContact);
 };

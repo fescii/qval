@@ -1,5 +1,5 @@
 // Import base user queries
-const { addUser, checkIfUserExits } = require('../../queries').userQueries;
+const { addUser, checkIfUserExits, findAuthorContact } = require('../../queries').userQueries;
 
 // Import email validator
 const { validateEmail } = require('../../validators').userValidator;
@@ -95,7 +95,37 @@ const checkIfEmailExits = async (req, res, next) => {
   });
 }
 
+/**
+ * @function getAuthorContact
+ * @description Controller to get author contact details
+ * @param {Request} req - Request object
+ * @param {Response} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object || pass the error to the next middleware
+*/
+const getAuthorContact = async (req, res, next) => {
+  // Get the author hash from the request params
+  const { hash } = req.params;
+
+  // Get the author contact details
+  const {
+    contact,
+    error
+  } = await findAuthorContact(hash);
+
+  // If error is not equal to undefined throw an error
+  if (error) {
+    return next(error);
+  }
+
+  return res.status(200).send({
+    success: true,
+    contact,
+    message: "Contact details found!"
+  });
+}
+
 module.exports = {
-  register,
+  register, getAuthorContact,
   checkIfEmailExits
 };

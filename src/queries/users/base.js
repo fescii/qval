@@ -184,9 +184,32 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
   }
 }
 
+/**
+ * @module findAuthorContact
+ * @description a module that finds the author contact information: an object field
+ * @param {String} hash - The author hash
+ * @returns {Object} contact - The author contact object || null || error
+*/
+const findAuthorContact = async hash => {
+  try {
+    const user = await User.findOne({ where: { hash }, attributes: ['contact'] });
+
+    // Check if the user exists
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // return the contact
+    return { contact: user.contact, error: null };
+  } 
+  catch (error) {
+    return { contact: null, error };
+  }
+}
+
 
 // Export the queries
 module.exports = {
   addUser, getUserByHash,
-  checkIfUserExits
+  checkIfUserExits, findAuthorContact
 };

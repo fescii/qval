@@ -1,5 +1,8 @@
 // import all queries 
-const { findStoriesByAuthor, findRepliesByAuthor, findFollowersByAuthor, findFollowingByAuthor } = require('./author');
+const { 
+  findStoriesByAuthor, findRepliesByAuthor, 
+  findFollowersByAuthor, findFollowingByAuthor
+} = require('./author');
 
 const {
   addStory, checkIfStoryExists, findStory,
