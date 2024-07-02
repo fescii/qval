@@ -87,7 +87,7 @@ export default class RepliesFeed extends HTMLElement {
 
   fetchReplies = repliesContainer => {
     const outerThis = this;
-    const url = `${this._url}?replies=${this._total}&page=${this._page}`;
+    const url = `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;

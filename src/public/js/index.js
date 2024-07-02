@@ -93,6 +93,7 @@ import ActionWrapper from "./wrappers/action.wrapper.js";
 
 // import popups
 import JoinPopup from "./popups/join.popup.js";
+import UrlPopup from "./popups/url.popup.js";
 
 
 const initApp = () => {
@@ -188,6 +189,7 @@ const initApp = () => {
 
   // Register popups
   customElements.define("join-popup", JoinPopup);
+  customElements.define("url-popup", UrlPopup);
 }
 
 export default initApp;

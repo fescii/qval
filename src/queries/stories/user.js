@@ -382,7 +382,7 @@ const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => 
 }
 
 /**
- * @function getPeopleWhenLoggedOut
+ * @function fetchFollowersWhenLoggeOut
  * @description a query funtion to fetch all followers/following belonging to a particular user: when logged out
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
@@ -390,7 +390,7 @@ const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => 
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The people object and error if any
 */
-const getPeopleWhenLoggedOut = async (where, order, limit, offset) => {
+const fetchFollowersWhenLoggeOut = async (where, order, limit, offset) => {
   try {
     // Find the people from the connect table
     const connects = await Connect.findAll({
@@ -402,7 +402,7 @@ const getPeopleWhenLoggedOut = async (where, order, limit, offset) => {
       include: [
         {
           model: User,
-          as: 'connect_user',
+          as: 'from_user',
           attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies']
         },
       ]
@@ -427,9 +427,58 @@ const getPeopleWhenLoggedOut = async (where, order, limit, offset) => {
   }
 }
 
+/**
+ * @function fetchFollowingWhenLoggedOut
+ * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
+ * @param {Object} where - The where condition for the query: the where object
+ * @param {Array} order - The order for the query: the order array
+ * @param {Number} limit - The limit for pagination
+ * @param {Number} offset - The offset for pagination
+ * @returns {Object} data - The people object and error if any
+*/
+const fetchFollowingWhenLoggedOut = async (where, order, limit, offset) => {
+  try {
+    // Find the people from the connect table including the user
+    const connects = await Connect.findAll({
+      attributes: ['to', 'from', 'createdAt'],
+      where: where,
+      order: [order],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          as: 'to_user',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+        },
+      ]
+    });
+
+    // Check if the connects exist
+    if (connects.length === 0) {
+      return null;
+    }
+
+    return connects.map(connect => {
+      return {
+        createdAt: connect.createdAt,
+        you: false,
+        ...connect.to_user.dataValues,
+      }
+    });
+  }
+  catch (error) {
+    // throw the error
+    throw error;
+  }
+}
+
+
+
 
 // Export the module
 module.exports = {
   findUserStory, findUserReply, getUserStories, getUserReplies,
-   getPeopleWhenLoggedOut, fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn
+  fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn,
+  fetchFollowersWhenLoggeOut, fetchFollowingWhenLoggedOut
 };

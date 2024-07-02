@@ -1,4 +1,4 @@
-export default class JoinPopup extends HTMLElement {
+export default class UrlPopup extends HTMLElement {
   constructor() {
 
     // We are not even going to touch this.
@@ -20,65 +20,14 @@ export default class JoinPopup extends HTMLElement {
     // console.log('We are inside connectedCallback');
     this.disableScroll();
 
-    // Const body element
-    const body = document.querySelector('body');
-
-    // Handle action click
-    this.handleActionClick(body);
-
     // Select the close button & overlay
     const overlay = this.shadowObj.querySelector('.overlay');
-    const btn = this.shadowObj.querySelector('#close-btn');
+    const btns = this.shadowObj.querySelectorAll('.cancel-btn');
 
     // Close the modal
-    if (overlay && btn) {
-      this.closePopup(overlay, btn);
+    if (overlay && btns) {
+      this.closePopup(overlay, btns);
     }
-  }
-
-  // Open user profile
-  handleActionClick = (body) => {
-    const outerThis = this;
-    // get a.meta.link
-    const actions = this.shadowObj.querySelectorAll('.actions > a.action');
-
-    if(body && actions) { 
-      actions.forEach(content => {
-        content.addEventListener('click', event => {
-          event.preventDefault();
-
-          // get join
-          const join = outerThis.getJoin(content.dataset.name);
-
-          // get url
-          const url = content.dataset.name === 'login' ? outerThis.getAttribute('login') : outerThis.getAttribute('register');
-          
-          // replace and push states
-          outerThis.replaceAndPushStates(url, body, join);
-
-          body.innerHTML = join;
-        })
-      })
-    }
-  }
-
-  replaceAndPushStates = (url, body, join) => {
-    //Replace the content with the current url and body content
-    // get window location
-    const pageUrl = window.location.href;
-    window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
-      url, pageUrl
-    );
-
-    // Updating History State
-    window.history.pushState(
-      { page: 'page', content: join},
-      url, url
-    );
-
-    // update title of the document
-    document.title = 'Join | Register or Login to Qval';
   }
 
   disconnectedCallback() {
@@ -104,16 +53,18 @@ export default class JoinPopup extends HTMLElement {
   }
 
   // close the modal
-  closePopup = (overlay, btn) => {
+  closePopup = (overlay, btns) => {
     overlay.addEventListener('click', e => {
       e.preventDefault();
       this.remove();
     });
 
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      this.remove();
-    });
+    btns.forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        this.remove();
+      });
+    })
   }
 
   getTemplate() {
@@ -121,7 +72,7 @@ export default class JoinPopup extends HTMLElement {
     return `
       <div class="overlay"></div>
       <section id="content" class="content">
-        <span class="control" id="close-btn">
+        <span class="control cancel-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
             <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
             </svg>
@@ -134,15 +85,14 @@ export default class JoinPopup extends HTMLElement {
   getWelcome() {
     return `
       <div class="welcome">
-        <h2>You are not logged in.</h2>
+        <h2>You are leaving the application!</h2>
 				<p>
-          Please note that you need to be logged in order to perform certain actions on this platform.
-          Although you can still view content, you will not be able to interact with it.
-          If you do not have an account, you can create one by clicking the register button below.
+          You are about to leave the application and visit an external website. We are not responsible for the content of the external website.
+          By clicking continue, you will be redirected to below address <br> <span class="url">${this.getAttribute('url')}</span>
         </p>
         <div class="actions">
-          <a data-name="login" href="${this.getAttribute('login')}?next=${this.getAttribute('next')}" class="login action">Login</a>
-          <a data-name="register" href="${this.getAttribute('register')}?next=${this.getAttribute('next')}" class="register action">Register</a>
+          <span class="cancel-btn action">Cancel</span>
+          <a noopenner="true" blank="true" target="_blank" href="${this.getAttribute('url')}" class="action">Continue</a>
         </div>
 			</div>
     `
@@ -260,7 +210,24 @@ export default class JoinPopup extends HTMLElement {
           font-size: 1rem;
         }
 
+        .welcome p span.url {
+          display: flex;
+          padding: 0;
+          margin: 10px 0 0 0;
+          font-size: 0.95rem;
+          font-weight: 400;
+          border-radius: 5px;
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+          font-weight: 500;
+          align-items: center;
+          justify-content: center;
+        }
+
         .welcome > .actions {
+          grid-column: 1/3;
           margin: 20px 0 5px;
           width: 80%;
           display: flex;
@@ -270,8 +237,8 @@ export default class JoinPopup extends HTMLElement {
           gap: 30px;
         }
 
-        .welcome > .actions a {
-          background: var(--stage-no-linear);
+        .welcome > .actions .action {
+          background: var(--accent-linear);
           text-decoration: none;
           padding: 10px 20px;
           cursor: pointer;
@@ -286,8 +253,9 @@ export default class JoinPopup extends HTMLElement {
           border-radius: 15px;
         }
 
-        .welcome > .actions a:last-of-type {
-          background: var(--stage-active-linear);
+        .welcome > .actions .action.cancel-btn {
+          background: var(--poll-background);
+          color: var(--text-color);
         }
 
         .welcome > .info {
@@ -354,7 +322,7 @@ export default class JoinPopup extends HTMLElement {
           }
         }
         @media screen and ( max-width: 600px ){
-          :host{
+          :host {
             border: none;
             background-color: var(--modal-background);
             padding: 0px;
@@ -376,7 +344,7 @@ export default class JoinPopup extends HTMLElement {
 
           #content {
             box-sizing: border-box !important;
-            padding: 20px 0 0 0;
+            padding: 25px 0 0 0;
             margin: 0;
             width: 100%;
             max-width: 100%;
@@ -391,17 +359,23 @@ export default class JoinPopup extends HTMLElement {
           #content span.control {
             cursor: default !important;
             display: none;
-            top: 12px;
-            right: 12px;
+            top: 15px;
+            right: 15px;
           }
 
           .welcome {
             width: 100%;
             padding: 0 15px;
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
           }
 
           .welcome > h2 {
+            width: 100%;
             margin: 0 0 10px;
+            text-align: center;
           }
 
           .welcome > .actions {

@@ -17,6 +17,9 @@ export default class PollPost extends HTMLElement {
     this.style.display = 'flex';
     // Open poll post
     this.openPollPost();
+
+    // Open url
+    this.openUrl();
   }
 
   // Open quick post
@@ -165,6 +168,30 @@ export default class PollPost extends HTMLElement {
     else {
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
+  }
+
+  openUrl = () => {
+    // get all the links
+    const links = this.shadowObj.querySelectorAll('div#content a');
+    const body = document.querySelector('body');
+
+    // loop through the links
+    if (!links) return;
+
+    links.forEach(link => {
+      // add event listener to the link
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        // get the url
+        const url = link.getAttribute('href');
+
+        // link pop up
+        let linkPopUp = `<url-popup url="${url}"></url-popup>`
+
+        // open the popup
+        body.insertAdjacentHTML('beforeend', linkPopUp);
+      });
+    });
   }
 
   getTemplate() {

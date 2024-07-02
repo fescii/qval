@@ -24,6 +24,9 @@ export default class TopicSection extends HTMLElement {
 
     this.updateActiveTab(tabContainer);
     this.activateTab(contentContainer, tabContainer);
+
+    // Open url
+    this.openUrl();
   }
 
   disableScroll() {
@@ -42,7 +45,6 @@ export default class TopicSection extends HTMLElement {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
-
 
   updateActiveTab = tabContainer => {
     // Select tab with active class
@@ -208,6 +210,30 @@ export default class TopicSection extends HTMLElement {
       default:
         return this.getArticle();
     }
+  }
+
+  openUrl = () => {
+    // get all the links
+    const links = this.shadowObj.querySelectorAll('article.article > .section a');
+    const body = document.querySelector('body');
+
+    // loop through the links
+    if (!links) return;
+    
+    links.forEach(link => {
+      // add event listener to the link
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        // get the url
+        const url = link.getAttribute('href');
+
+        // link pop up
+        let linkPopUp = `<url-popup url="${url}"></url-popup>`
+
+        // open the popup
+        body.insertAdjacentHTML('beforeend', linkPopUp);
+      });
+    });
   }
 
   getTemplate() {

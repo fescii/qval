@@ -14,8 +14,8 @@ export default class PostWrapper extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
-
+    // open the url
+    this.openUrl();
   }
 
   disableScroll() {
@@ -103,6 +103,30 @@ export default class PostWrapper extends HTMLElement {
     return {dateStr: localDate, timeStr: localTime }
   }
 
+  openUrl = () => {
+    // get all the links
+    const links = this.shadowObj.querySelectorAll('div#content a');
+    const body = document.querySelector('body');
+
+    // loop through the links
+    if (!links) return;
+
+    links.forEach(link => {
+      // add event listener to the link
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        // get the url
+        const url = link.getAttribute('href');
+
+        // link pop up
+        let linkPopUp = `<url-popup url="${url}"></url-popup>`
+
+        // open the popup
+        body.insertAdjacentHTML('beforeend', linkPopUp);
+      });
+    });
+  }
+
   getTemplate() {
     // Show HTML Here
     return `
@@ -116,7 +140,7 @@ export default class PostWrapper extends HTMLElement {
     const text = this.innerHTML;
     const htmlText = this.parseHTML(text)
     return `
-      <div class="content">
+      <div class="content" id="content">
         ${htmlText}
       </div>
     `;

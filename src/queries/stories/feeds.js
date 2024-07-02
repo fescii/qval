@@ -303,7 +303,7 @@ const findReplyLikes = async (reqData) => {
       };
     }
 
-    const last = people.length < limit;
+    const last = likes.length < limit;
 
     // create a data object
     const data = {
