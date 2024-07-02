@@ -83,16 +83,18 @@ export default class UrlPopup extends HTMLElement {
   }
 
   getWelcome() {
+    const url = this.getAttribute('url');
+    let max = url.length > 50 ? url.substring(0, 50) + '...' : url;
     return `
       <div class="welcome">
-        <h2>You are leaving the application!</h2>
+        <h2>You are about to leave the application!</h2>
 				<p>
           You are about to leave the application and visit an external website. We are not responsible for the content of the external website.
-          By clicking continue, you will be redirected to below address <br> <span class="url">${this.getAttribute('url')}</span>
+          By clicking continue, you will be redirected to below address <br> <span class="url">${max}</span>
         </p>
         <div class="actions">
           <span class="cancel-btn action">Cancel</span>
-          <a noopenner="true" blank="true" target="_blank" href="${this.getAttribute('url')}" class="action">Continue</a>
+          <a noopenner="true" blank="true" target="_blank" href="${url}" class="action">Continue</a>
         </div>
 			</div>
     `
@@ -282,7 +284,6 @@ export default class UrlPopup extends HTMLElement {
 
         .welcome>.info a {
           color: var(--gray-color);
-          /* font-style: italic; */
           font-size: 1em;
         }
 
@@ -374,6 +375,8 @@ export default class UrlPopup extends HTMLElement {
 
           .welcome > h2 {
             width: 100%;
+            font-size: 1.35rem;
+            font-weight: 600;
             margin: 0 0 10px;
             text-align: center;
           }

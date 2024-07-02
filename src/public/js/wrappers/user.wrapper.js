@@ -464,7 +464,7 @@ export default class UserWrapper extends HTMLElement {
     }
     else {
       // check if bio is greater than 70 characters
-      let displayBio = bio.length > 70 ? `${bio.substring(0, 70)}..` : bio;
+      let displayBio = bio.length > 130 ? `${bio.substring(0, 130)}..` : bio;
 
       return /*html*/`
         <p class="bio">${displayBio}</p>
