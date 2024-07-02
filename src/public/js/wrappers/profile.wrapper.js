@@ -24,6 +24,9 @@ export default class ProfileWrapper extends HTMLElement {
 
     // perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights();
   }
 
   isLoggedIn = name => {
@@ -58,6 +61,24 @@ export default class ProfileWrapper extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  openHighlights = () => {
+    // Get body
+    const body = document.querySelector('body');
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
   }
 
   // perfom actions
@@ -346,7 +367,7 @@ export default class ProfileWrapper extends HTMLElement {
     return /* html */`
       ${this.getHeader()}
       ${this.getBio()}
-      ${this.getActions(this._you)}
+      ${this.getActions()}
 		`
   }
 
@@ -371,9 +392,9 @@ export default class ProfileWrapper extends HTMLElement {
             <h4 class="name">
               <span class="name">${displayName}</span>
             </h4>
-            <a href="${url.toLowerCase()}" class="username">
+            <span class="username">
               <span class="text">${this.getAttribute('hash')}</span>
-            </a>
+            </span>
           </div>
           ${this.getStats()}
         </div>
@@ -445,14 +466,14 @@ export default class ProfileWrapper extends HTMLElement {
     `
   }
 
-  getActions = you => {
+  getActions = () => {
     // You is true
     if (this._you) {
       return /*html*/`
         <div class="actions">
-          <span class="action you">You</span>
+          <span class="action highlights" id="highlights-action">stats</span>
           <a href="/profile" class="action edit" id="edit-action">Edit</a>
-          <a href="/settings" class="action settings" id="manage-action">Settings</a>
+          <span class="action socials" id="socials-action">socials</span>
         </div>
       `
     }
@@ -460,7 +481,8 @@ export default class ProfileWrapper extends HTMLElement {
       return /*html*/`
         <div class="actions">
           ${this.checkFollowing(this.getAttribute('user-follow'))}
-          <span class="action donate" id="donate-action">Donate</span>
+          <span class="action highlights" id="highlights-action">stats</span>
+          <span class="action socials" id="socials-action">socials</span>
         </div>
       `
     }
@@ -477,6 +499,22 @@ export default class ProfileWrapper extends HTMLElement {
 			  <span class="action follow" id="follow-action">Follow</span>
 			`
     }
+  }
+
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
+    `
   }
 
   getStyles() {
@@ -615,7 +653,7 @@ export default class ProfileWrapper extends HTMLElement {
           font-weight: 600;
         }
 
-        .top > .info > .name > a.username {
+        .top > .info > .name > span.username {
           color: var(--gray-color);
           font-family: var(--font-mono), monospace;
           font-size: 0.9rem;
@@ -626,21 +664,21 @@ export default class ProfileWrapper extends HTMLElement {
           align-items: center;
         }
 
-        .top > .info > .name > a.username svg {
+        .top > .info > .name > span.username svg {
           color: var(--gray-color);
           width: 15px;
           height: 15px;
           margin: 2px 0 0 0;
         }
 
-        .top > .info > .name > a.username:hover {
+        .top > .info > .name > span.username:hover {
           color: transparent;
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
         }
 
-        .top > .info > .name > a.username:hover svg {
+        .top > .info > .name > span.username:hover svg {
           color: var(--accent-color);
         }
 
@@ -731,6 +769,8 @@ export default class ProfileWrapper extends HTMLElement {
 
         .actions > .action.edit,
         .actions > .action.you,
+        .actions > .action.highlights,
+        .actions > .action.socials,
         .actions > .action.following,
         .actions > .action.settings {
           padding: 3.5px 18px;

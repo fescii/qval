@@ -176,6 +176,8 @@ export default class JoinPopup extends HTMLElement {
           justify-content: center;
           gap: 10px;
           z-index: 100;
+          width: 100%;
+          min-width: 100vw;
           position: fixed;
           right: 0;
           top: 0;
@@ -354,7 +356,7 @@ export default class JoinPopup extends HTMLElement {
           }
         }
         @media screen and ( max-width: 600px ){
-          :host{
+          :host {
             border: none;
             background-color: var(--modal-background);
             padding: 0px;
@@ -370,8 +372,6 @@ export default class JoinPopup extends HTMLElement {
             top: 0;
             bottom: 0;
             left: 0;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
           }
 
           #content {

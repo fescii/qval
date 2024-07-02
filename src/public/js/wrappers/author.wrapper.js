@@ -35,6 +35,9 @@ export default class AuthorWrapper extends HTMLElement {
 
     // Perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights(body);
   }
 
   isLoggedIn = name => {
@@ -51,6 +54,22 @@ export default class AuthorWrapper extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -624,14 +643,14 @@ export default class AuthorWrapper extends HTMLElement {
       return /*html*/`
         <span  class="action you">You</span>
         <a href="${url}" class="action view">view</a>
-        <a href="/profile" class="action view" id="manage-action">manage</a>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
     else {
       return /*html*/`
         <a href="${url}" class="action view">view</a>
         ${this.checkFollowing(this.getAttribute('user-follow'))}
-        <span class="action support" id="donate-action">donate</span>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
   }
@@ -664,6 +683,21 @@ export default class AuthorWrapper extends HTMLElement {
         name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
         following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
       </app-profile>
+    `
+  }
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
     `
   }
 
@@ -892,7 +926,7 @@ export default class AuthorWrapper extends HTMLElement {
         
         .actions > .action {
           border: var(--action-border);
-          padding: 2.5px 15px;
+          padding: 2.5px 15px 3.5px;
           background: none;
           border: var(--border-mobile);
           color: var(--gray-color);
@@ -916,7 +950,7 @@ export default class AuthorWrapper extends HTMLElement {
         
         .actions > .action.follow {
           border: none;
-          padding: 3px 15px;
+          padding: 3px 15px 4px;
           font-weight: 500;
           background: var(--accent-linear);
           color: var(--white-color);

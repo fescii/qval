@@ -570,25 +570,21 @@ export default class ShareWrapper extends HTMLElement {
 
           .title {
             color: var(--text-color);
-            font-family: var(--font-main), sans-serif;
-            font-size: 1.2rem;
+            width: 95%;
+            font-size: 1.35rem;
             font-weight: 600;
-            margin: 0;
-            padding: 10px 0;
+            margin: 0 0 10px;
+            padding: 10px 10px;
+            background-color: var(--poll-background);
+            text-align: center;
+            border-radius: 12px;
+            font-family: var(--font-read), sans-serif;
+            color: var(--text-color);
+            font-weight: 500;
           }
 
           span.pointer {
-            position: absolute;
-            top: 10px;
-            left: calc(50% - 15px);
-            width: 30px;
-            rotate: 0deg;
-            height: 5px;
-            cursor: pointer;
-            z-index: 1;
-            background: var(--dot-background);
-            border-left: none;
-            border-radius: 3px;
+            display: none;
           }
 
           .share-buttons > span.copy,

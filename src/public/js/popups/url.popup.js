@@ -100,17 +100,6 @@ export default class UrlPopup extends HTMLElement {
     `
   }
 
-  getJoin = action => {
-   return /* html */`
-    <app-logon name="${action}" next="${this.getAttribute('next')}" api-login="/api/v1/a/login" 
-      api-register="/api/v1/a/register" api-check-email="/api/v1/a/check-email" 
-      api-forgot-password="/api/v1/a/forgot-password" api-verify-token="/api/v1/a/verify-token" 
-      api-reset-password="/api/v1/a/reset-password" join-url="/join" login="/join/login" 
-      register="/join/register" forgot="/join/recover">
-    </app-logon>
-   `
-  }
-
   getStyles() {
     return /*css*/`
       <style>
@@ -128,6 +117,8 @@ export default class UrlPopup extends HTMLElement {
           justify-content: center;
           gap: 10px;
           z-index: 100;
+          width: 100%;
+          min-width: 100vw;
           position: fixed;
           right: 0;
           top: 0;
@@ -339,8 +330,6 @@ export default class UrlPopup extends HTMLElement {
             top: 0;
             bottom: 0;
             left: 0;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
           }
 
           #content {

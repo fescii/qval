@@ -94,6 +94,7 @@ import ActionWrapper from "./wrappers/action.wrapper.js";
 // import popups
 import JoinPopup from "./popups/join.popup.js";
 import UrlPopup from "./popups/url.popup.js";
+import StatsPopup from "./popups/stats.popup.js";
 
 
 const initApp = () => {
@@ -190,6 +191,7 @@ const initApp = () => {
   // Register popups
   customElements.define("join-popup", JoinPopup);
   customElements.define("url-popup", UrlPopup);
+  customElements.define("stats-popup", StatsPopup);
 }
 
 export default initApp;

@@ -150,7 +150,7 @@ export default class HighlightsContainer extends HTMLElement {
 	}
 
   getHighlights = data => {
-    // Get the number of followers, views, stories and topics
+        // Get the number of followers, views, stories and topics
     const followers = this.parseToNumber(this.getAttribute('followers'));
     const views = data.all;
     const stories = this.parseToNumber(this.getAttribute('stories'));
@@ -162,24 +162,30 @@ export default class HighlightsContainer extends HTMLElement {
     const currentMonthViews = data.current;
     const lastMonthViews = data.last;
 
-    // calculate the percentage increase or decrease in views
-    const percentage = lastMonthViews === 0 ? 100 : ((currentMonthViews - lastMonthViews) / lastMonthViews) * 100;
-
-    // convert percentage to 1 decimal place if it is a decimal
-    const percentageFormatted = percentage % 1 === 0 ? percentage : percentage.toFixed(1);
-
-    // get the increase or decrease in views
-    const increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
-
     let name = this.getAttribute('name');
 
     if (name) {
       name = name.split(' ');
 
       name = name[0];
+      name = name.toLowerCase();
     }
     else {
-      name = 'this user'
+      name = 'User'
+    }
+
+    // calculate the percentage increase or decrease in views
+    const percentage = lastMonthViews === 0 ? 100 : ((currentMonthViews - lastMonthViews) / lastMonthViews) * 100;
+
+    let increaseOrDecrease = this.getLevel(name);
+
+    // check if last month views is 0 and this month views is also 0
+    if (lastMonthViews > 0 || currentMonthViews > 0) {
+      // convert percentage to 1 decimal place if it is a decimal
+      const percentageFormatted = percentage % 1 === 0 ? percentage : percentage.toFixed(1);
+
+      // get the increase or decrease in views
+      increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
     }
 
     // format the number of followers, views, stories and topics
@@ -219,7 +225,7 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            <span class="numbers" id="stories">${storiesFormatted}</span> published ${stories === 1 ? 'story' : 'stories'}
+            <span class="numbers" id="stories">${storiesFormatted}</span> published ${stories === 1 ? 'story' : 'stories'}/${stories === 1 ? 'post' : 'posts'}
           </span>
         </li>
         <li class="item">
@@ -256,6 +262,21 @@ export default class HighlightsContainer extends HTMLElement {
         </span>
         <span class="link">
           <span class="numbers" id="percentage">${percentage}%</span> increase in views this month
+        </span>
+      </li>
+    `
+  }
+
+  getLevel = name => {
+    return /*html*/`
+      <li class="item">
+        <span class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+          </svg>
+        </span>
+        <span class="link">
+          ${name} has no content views yet
         </span>
       </li>
     `
@@ -463,7 +484,9 @@ export default class HighlightsContainer extends HTMLElement {
           color: var(--text-color);
           font-weight: 500;
           font-family: var(--font-main), sans-serif;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
+          display: inline-block;
+          margin: 0 0 -2px 0;
         }
         
         ul.info > li.item.last {
