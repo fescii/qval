@@ -144,6 +144,11 @@ const getUserStories = async (where, order, user, limit, offset) => {
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
           'liked'
+        ],
+
+        [
+          Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
+          'option'
         ]
       ],
       where: where,

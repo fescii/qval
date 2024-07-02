@@ -24,13 +24,13 @@ export default class HoverAuthor extends HTMLElement {
     // Get the media query list
     const mql = window.matchMedia('(max-width: 660px)');
 
-     // get url
-     let url = this.getAttribute('url');
+    // get url
+    let url = this.getAttribute('url');
 
-     url = url.trim().toLowerCase();
+    url = url.trim().toLowerCase();
  
-     // Get the body
-     const body = document.querySelector('body');
+    // Get the body
+    const body = document.querySelector('body');
 
     const contentContainer = this.shadowObj.querySelector('div.content-container');
 
@@ -60,6 +60,24 @@ export default class HoverAuthor extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = (body, contentContainer) => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        contentContainer.style.display = 'none';
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -180,6 +198,9 @@ export default class HoverAuthor extends HTMLElement {
 
       // Activate username link
       outerThis.activateUsernameLink(url, body);
+
+      // open Highlights
+      outerThis.openHighlights(body, contentContainer);
 
       if (mql) {
         const overlayBtn = outerThis.shadowObj.querySelector('span.pointer');
@@ -716,14 +737,14 @@ export default class HoverAuthor extends HTMLElement {
       return /*html*/`
         <span class="action you">You</span>
         <a href="${url}" class="action view" id="view-action">view</a>
-        <a href="/profile" class="action manage" id="manage-action">manage</a>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
     else {
       return /*html*/`
         <a href="${url}" class="action view" id="view-action">view</a>
         ${this.checkFollowing(this.getAttribute('user-follow'))}
-        <span class="action support" id="donate-action">donate</span>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
   }
@@ -765,6 +786,21 @@ export default class HoverAuthor extends HTMLElement {
         name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
         following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
       </app-profile>
+    `
+  }
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
     `
   }
 
@@ -1074,7 +1110,7 @@ export default class HoverAuthor extends HTMLElement {
           align-items: center;
           text-transform: lowercase;
           justify-content: center;
-          padding: 1px 15px;
+          padding: 1px 15px 2px;
           border-radius: 10px;
           -webkit-border-radius: 10px;
           -moz-border-radius: 10px;
@@ -1086,7 +1122,7 @@ export default class HoverAuthor extends HTMLElement {
         
         .actions > .action.follow {
           border: none;
-          padding: 2px 15px;
+          padding: 2px 15px 3px;
           font-weight: 500;
           background: var(--accent-linear);
           color: var(--white-color);

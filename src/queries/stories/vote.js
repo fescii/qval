@@ -13,6 +13,8 @@ const addVote = async (user, story, option) => {
   // add author & parent to the data
   const data = { author: user, story, option };
 
+  console.log('data', data);
+
   try {
     // create a new vote
     const vote = await Vote.findOrCreate({

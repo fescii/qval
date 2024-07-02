@@ -771,7 +771,7 @@ export default class AuthorWrapper extends HTMLElement {
           flex-flow: row;
           align-items: center;
           padding: 5px 5px 8px;
-          background: linear-gradient(90deg, #fcff9e 0%, #f09c4ecc 100%);
+          background: var(--poll-background);
           border-radius: 10px;
           gap: 5px;
         }
@@ -796,14 +796,14 @@ export default class AuthorWrapper extends HTMLElement {
         }
 
         .top > .avatar > .icon {
-          background: #e3ffe7;
+          background: var(--poll-background);
           position: absolute;
           bottom: -1px;
           right: -2px;
           width: 20px;
           height: 20px;
           z-index: 1;
-          display: none;
+          display: flex;
           align-items: center;
           justify-content: center;
           border-radius: 50%;
@@ -960,8 +960,6 @@ export default class AuthorWrapper extends HTMLElement {
           :host {
             font-size: 16px;
             border-bottom: none;
-            /*border-top: var(--border-mobile);
-            border-bottom: var(--border-mobile); */
             border: none;
           }
 
@@ -1013,6 +1011,10 @@ export default class AuthorWrapper extends HTMLElement {
             background: none;
             border-radius: 10px;
             gap: 5px;
+          }
+
+          .top > .avatar > .icon {
+            background: var(--background);
           }
 
           ::-webkit-scrollbar {
