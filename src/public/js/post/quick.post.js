@@ -233,7 +233,7 @@ export default class QuickPost extends HTMLElement {
     const contentLength = contentStr.length;
 
     // Check if content length is greater than 400
-    if (contentLength > 400) {
+    if (contentLength > 600) {
       return /*html*/`
         <div class="content extra" id="content">
           ${content}

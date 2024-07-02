@@ -171,6 +171,17 @@ export default class HighlightsContainer extends HTMLElement {
     // get the increase or decrease in views
     const increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
 
+    let name = this.getAttribute('name');
+
+    if (name) {
+      name = name.split(' ');
+
+      name = name[0];
+    }
+    else {
+      name = 'this user'
+    }
+
     // format the number of followers, views, stories and topics
     const followersFormatted = this.formatNumber(followers);
     const viewsFormatted = this.formatNumber(views);
@@ -187,7 +198,7 @@ export default class HighlightsContainer extends HTMLElement {
             </svg>
           </span>
           <span class="link">
-            <span class="numbers" id="followers">${followersFormatted}</span> ${followers === 1 ? 'person' : 'people'} follows fredrick
+            <span class="numbers" id="followers">${followersFormatted}</span> ${followers === 1 ? 'person' : 'people'} follows ${name.toLowerCase()}
           </span>
         </li>
         <li class="item">

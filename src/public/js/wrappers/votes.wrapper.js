@@ -135,7 +135,7 @@ export default class VotesAuthor extends HTMLElement {
     hash = hash.trim().toLowerCase();
 
     // base api
-    const url = `/api/v1/s/${hash}/vote/${option}`;
+    const url = `/api/v1/p/${hash}/vote/${option}`;
 
     // define options 
     const options = {
@@ -424,7 +424,7 @@ export default class VotesAuthor extends HTMLElement {
             const selectedOption = e.target.parentElement;
 
             // Get the selected option name
-            const selectedOptionName = selectedOption.dataset.name;
+            const selectedOptionName = outerThis.parseToNumber(selectedOption.dataset.name);
 
             // Get the new options
             const newOptions = outerThis._options.map(option => {

@@ -39,7 +39,7 @@ export default class StoryPost extends HTMLElement {
 
     // return the summary: first 200 characters
     return {
-      summery: `${content.substring(0, 200)}...`,
+      summery: `${content.substring(0, 500)}...`,
       words: content.split(' ').length
     };
   }
