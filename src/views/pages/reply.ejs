@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%# Head/Meta  Start  %>
+  <% var image = "/static/img/fav.png" -%>
+  <%# Check if content is null %>
+  <% if (data.content == null) { data.content = "This reply has no content." } -%>
+  <%- include('../partials/meta', {
+    title: 'Reply | by ' + data.author, image: image, description: data.content.length > 90 ? data.content.substring(0, 90) + "..." : data.content
+  }); -%>
+  <%# Head/Meta  End %>
+
+  <body>
+    <%# App Logon page Start %>
+      <%- include('../partials/apps/reply', data); -%>
+    <%# App Logon page End %>
+  </body>
+
+</html>

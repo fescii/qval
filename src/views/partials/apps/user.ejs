@@ -4,7 +4,7 @@
 <% var name = data.name.split(" ") %>
 
 <%#  check if the profile picture is null and overwrite it with the default picture  %> 
-<% var picture = data.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : "/static/users/" + data.picture %>
+<% var picture = data.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : data.picture %>
 
 <%# Check you %>
 <% var you = data.you ? "true" : "false" %>
@@ -18,20 +18,9 @@
 <%# Check if bio is null and overwrite it with the default bio %> 
 <% var bio = data.bio === null ? "This user has not added a bio yet." : data.bio %>
 
-<%#  Check if the user is logged in  %> 
-<% if (data.authenticated) { %>
-  <%#  This is the topic component  %> 
-  <app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
-    followers-url="<%= url %>/followers" following-url="<%= url %>/following" 
-    picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
-    following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">
-  </app-profile>
-  <%#  Add else if the user is not logged in  %> 
-<% } else { %>
-  <%#  This is the profile component  %> 
-  <app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="<%= url %>/stories" replies-url="<%= url %>/replies"
-    followers-url="<%= url %>/followers" following-url="<%= url %>/following" 
-    picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
-    following="<%= data.following %>" user-follow="false" bio="<%= bio %>">
-  </app-profile>
-<% } -%>
+<app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories" 
+  replies-url="/api/v1<%= url %>/replies" stories="<%= data.stories %>" replies="<%= data.replies %>" 
+  followers-url="/api/v1<%= url %>/followers" following-url="/api/v1<%= url %>/following" 
+  picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
+  following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">
+</app-profile>

@@ -1,4 +1,4 @@
-const { User, Topic, Story, Reply, sequelize, Sequelize } = require('../models').models;
+const { User, Topic, Story, Reply, View, sequelize, Sequelize } = require('../models').models;
 
 /**
  * @function updateUserFollowers
@@ -50,6 +50,88 @@ const updateUserFollowing = async (userHash, value) => {
   // Update the user following by the value: following + 1 or following - 1
   await User.update(
     { following: Sequelize.literal(`following + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+}
+
+/**
+ * @function updateUserStories
+ * @name updateUserStories
+ * @description A function that updates the user stories data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserStories = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user stories by the value: stories + 1 or stories - 1
+  await User.update(
+    { stories: Sequelize.literal(`stories + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+}
+
+/**
+ * @function updateUserViews
+ * @name updateUserViews
+ * @description A function that updates the user views data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserViews = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user views by the value: views + 1 or views - 1
+  await User.update(
+    { views: Sequelize.literal(`views + ${value}`)}, 
+    { where: { hash: userHash } 
+  });
+
+}
+
+/**
+ * @function updateUserReplies
+ * @name updateUserReplies
+ * @description A function that updates the user replies data
+ * @param {String} userHash
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateUserReplies = async (userHash, value) => {
+  if (!userHash || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('User hash and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the user replies by the value: replies + 1 or replies - 1
+  await User.update(
+    { replies: Sequelize.literal(`replies + ${value}`)}, 
     { where: { hash: userHash } 
   });
 }
@@ -137,6 +219,33 @@ const updateTopicSubscribers = async (topicHash, value) => {
 }
 
 /**
+ * @function updateTopicStories
+ * @name updateTopicStories
+ * @description A function that updates the topic stories data
+ * @param {String} topicSlug
+ * @param {Number} value
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateTopicStories = async (topicSlug, value) => {
+  if (!topicSlug || !value || typeof value !== 'number') {
+    // throw an error
+    throw new Error('Topic slug and value are required!, value must be a number');
+  }
+
+  // value can be -1 or 1
+  if (value !== -1 && value !== 1) {
+    // throw an error
+    throw new Error('Value can only be -1 or 1');
+  }
+
+  // Update the topic stories by the value: stories + 1 or stories - 1
+  await Topic.update(
+    { stories: Sequelize.literal(`stories + ${value}`)}, 
+    { where: { slug: topicSlug } 
+  });
+}
+
+/**
  * @function updateStoryLikes
  * @name updateStoryLikes
  * @description A function that updates the story likes data
@@ -216,6 +325,45 @@ const updateStoryReplies = async (storyHash, value) => {
     { where: { hash: storyHash } 
   });
 }
+
+/**
+ * @function updateStoryVotes
+ * @name updateStoryVotes
+ * @description A function that updates the story votes data: check on votes array in the story model and increment the array of option(index) by 1
+ * @param {String} storyHash - The hash of the story
+ * @param {Number} option - The index of the option to increment
+ * @returns {Promise<void>} - Returns a promise of void data
+*/
+const updateStoryVotes = async (storyHash, option) => {
+  if (!storyHash || !option || typeof option !== 'number') {
+    // throw an error
+    throw new Error('Story hash and option are required!, option must be a number');
+  }
+  try {
+    // get the story 
+    const story = await Story.findOne({
+      attributes: ['id', 'votes', 'kind'],
+      where: {hash: storyHash}
+    });
+
+    if(!story || story.kind !== 'poll') return;
+
+    // check array lenth against votes'
+    if (story.votes.lenth < option - 1) return;
+
+    // update votes
+    let voted = story.votes.map((vote, index) => {
+      return index === option - 1 ? vote + 1 : vote;
+    })
+
+    // Update the story votes by the option: consider postgres index array increment
+    await story.update({votes: voted});
+  } catch (error) {
+    // throw an error
+    throw error;
+  }
+}
+
 
 /**
  * @function updateReplyLikes
@@ -298,11 +446,31 @@ const updateReplyReplies = async (replyHash, value) => {
   });
 }
 
+/**
+ * @function viewContent
+ * @description Query to add a view to a story or reply or a topic, or user profile
+ * @param {String} user - The hash of the user viewing the content || can be null
+ * @param {String} target - The hash of the content being viewed
+ * @returns {Object} - The view object or null, and the error if any
+*/
+const viewContent = async (user, target, kind) => {
+  try {
+    // create a view object
+    await View.create({author: user, target, kind});
+
+    // return the view object
+    return { viewed: true, error: null };
+  }
+  catch (error) {
+    return { viewed: null, error };
+  }
+}
+
 
 // Export the hook functions
 module.exports = {
-  updateUserFollowers, updateUserFollowing,
-  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
-  updateStoryLikes, updateStoryViews, updateStoryReplies,
-  updateReplyLikes, updateReplyViews, updateReplyReplies
+  updateUserFollowers, updateUserFollowing, updateUserStories, updateUserReplies,
+  viewContent, updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
+  updateStoryLikes, updateStoryViews, updateStoryReplies, updateStoryVotes,
+  updateReplyLikes, updateReplyViews, updateReplyReplies, updateUserViews
 };

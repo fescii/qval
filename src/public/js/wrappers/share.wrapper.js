@@ -16,6 +16,74 @@ export default class ShareWrapper extends HTMLElement {
   connectedCallback() {
     // Copy link
     this.copyLink();
+
+    // Watch for media query changes
+    const mql = window.matchMedia('(max-width: 660px)');
+    this.openShare(mql.matches);
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
+  }
+
+  // fn to open the share overlay
+  openShare = mql => {
+    // Get share button
+    const shareButton = this.shadowObj.querySelector('div.host');
+
+    // Check if the overlay exists
+    if (shareButton) {
+      // Get overlay
+      const overlay = shareButton.querySelector('.share.overlay');
+
+      const content = shareButton.querySelector('.share > .content');
+
+      const close = shareButton.querySelector('span.close')
+
+      // Add event listener to the share button
+      shareButton.addEventListener('click', e => {
+        // prevent the default action
+        // e.preventDefault()
+
+        // prevent the propagation of the event
+        e.stopPropagation();
+
+        // Toggle the overlay
+        overlay.classList.add('active');
+        // disable scroll
+
+        if (mql) {
+          this.disableScroll()
+        }
+
+        if (!mql) {
+          // add event to run once when the overlay is active: when user click outside the overlay
+          document.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+  
+            // Check if the target is not the overlay
+            if (!content.contains(e.target)) {
+              // Remove the active class
+              overlay.classList.remove('active');
+              this.enableScroll()
+            }
+          }, { once: true });
+        }
+        else {
+          // add event to run once when the overlay is active: when user click outside the overlay
+          close.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+  
+            overlay.classList.remove('active');
+            this.enableScroll()
+          }, { once: true });
+        }
+      });
+    }
   }
 
   // Handle copy link
@@ -99,8 +167,19 @@ export default class ShareWrapper extends HTMLElement {
 
   getContent = () => {
     return /* html */`
-      <div class="share">
-        ${this.getShareOptions()}
+      <div class="host">
+        <span class="icon">
+          <span class="sp">•</span>
+          <span class="sp">•</span>
+        </span>
+        <div class="share overlay">
+          <span class="close"></span>
+          <div class="content">
+            <span class="pointer"></span>
+            <p class="title">Share</p>
+            ${this.getShareOptions()}
+          </div>
+        </div>
       </div>
 		`
   }
@@ -234,42 +313,112 @@ export default class ShareWrapper extends HTMLElement {
           text-decoration: none;
         }
 
-        :host {
-          font-size: 16px;
-          padding: 15px 0;
-          border-bottom: var(--border);
-          margin: 0;
+        .host {
+          position: relative;
+          min-height: 35px;
+          height: 30px;
+          width: max-content;
+          position: relative;
+          padding: 5px 10px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          font-size: 1rem;
+          font-weight: 400;
+          color: var(--action-color);
+          color: var(--gray-color);
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          -ms-border-radius: 50px;
+          -o-border-radius: 50px;
+        }
+
+        .host:hover {
+          background: var(--hover-background);
+        }
+
+        span.icon {
+          padding: 0;
           width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: max-content;
+          gap: 0;
+          overflow-x: scroll;
+          scrollbar-width: none;
+          -webkit-scrollbar-width: none;
+        }
+
+        span.icon > span.sp {
+          font-size: 1.2rem;
+        }
+
+        span.pointer {
+          position: absolute;
+          top: -6px;
+          left: calc(50% - 6px);
+          width: 12px;
+          rotate: 45deg;
+          height: 12px;
+          cursor: pointer;
+          z-index: 1;
+          background: var(--background);
+          border-left: var(--border);
+          border-top: var(--border);
+          border-radius: 3px;
+        }
+
+        .share {
+          display: none;
+          position: absolute;
+          top: 35px;
+          z-index: 4;
+          left: calc(50% - 100px);
+          padding: 0;
+          border: var(--border);
+          background: var(--background);
+          box-shadow: var(--card-box-shadow);
+          width: 200px;
+          max-width: 200px;
+          height: max-content;
+          border-radius: 12px;
+        }
+
+        .content {
           display: flex;
           flex-flow: column;
-          gap: 0;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          padding: 5px 10px 10px 10px;
+        }
+
+        .share.active {
+          display: flex;
         }
 
         .title {
           color: var(--text-color);
-          font-family: var(--font-text), sans-serif;
-          font-size: 1.2rem;
-          font-weight: 600;
+          font-family: var(--font-main), sans-serif;
+          font-size: 1rem;
+          font-weight: 500;
           margin: 0;
-          padding: 0 0 10px;
+          padding: 0;
         }
 
         .share-buttons {
           padding: 0;
           width: 100%;
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          width: max-content;
           gap: 10px;
-          overflow-x: scroll;
-          scrollbar-width: none;
-          -webkit-scrollbar-width: none;
-        }
-
-        .share-buttons::-webkit-scrollbar {
-          display: none;
-          visibility: hidden;
         }
 
         .share-buttons > span.copy,
@@ -285,6 +434,7 @@ export default class ShareWrapper extends HTMLElement {
           max-height: 30px;
           max-width: 30px;
           padding: 2px;
+          margin: 3px;
           border-radius: 50px;
           -webkit-border-radius: 50px;
           -moz-border-radius: 50px;
@@ -352,13 +502,129 @@ export default class ShareWrapper extends HTMLElement {
             -webkit-appearance: none;
           }
 
-          :host {
-            border-bottom: var(--border-mobile);
+          .host {
+            margin: 0;
+          }
+
+          .share {
+            position: fixed;
+            z-index: 100;
+            background: transparent;
+            background: var(--modal-overlay);
+            padding: 0;
+            margin: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            min-height: 100dvh;
+            min-width: 100dvw;
+            height: 100%;
+            width: 100%;
+            border-radius: 0;
+            border: none;
+            transition: all 300ms ease-in-out;
           }
 
           a,
+          span.pointer,
+          .host,
           .share-buttons > span.copy {
             cursor: default !important;
+          }
+
+          .host:hover {
+            background: transparent;
+          }
+  
+          .overlay span.close {
+            display: flex;
+            position: absolute;
+            background: var(--modal-overlay);
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+          }
+
+          .share .content {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1;
+            gap: 0;
+            box-shadow: var(--card-box-shadow);
+            width: 100%;
+            padding: 15px 8px;
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            left: 0;
+            background: var(--background);
+            border: var(--story-border-mobile);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+          }
+
+          .title {
+            color: var(--text-color);
+            width: 95%;
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin: 0 0 10px;
+            padding: 10px 10px;
+            background-color: var(--poll-background);
+            text-align: center;
+            border-radius: 12px;
+            font-family: var(--font-read), sans-serif;
+            color: var(--text-color);
+            font-weight: 500;
+          }
+
+          span.pointer {
+            display: none;
+          }
+
+          .share-buttons > span.copy,
+          .share-buttons > a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            height: 45px;
+            width: 45px;
+            min-height: 45px;
+            min-width: 45px;
+            max-height: 45px;
+            max-width: 45px;
+            padding: 2px;
+            margin: 3px;
+          }
+
+          .share-buttons > span.copy > svg,
+          .share-buttons > a > svg {
+            height: 23px;
+            width: 23px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .share-buttons > a.facebook > svg {
+            height: 25px;
+            width: 25px;
+          }
+
+          .share-buttons > a.reddit > svg {
+            height: 26px;
+            width: 26px;
+          }
+
+          .share-buttons > a.telegram > svg {
+            height: 26px;
+            width: 26px;
           }
         }
       </style>

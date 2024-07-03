@@ -171,8 +171,8 @@ export default class AppProfile extends HTMLElement {
     // trim white spaces and convert to lowercase
     let formattedUrl = url.toLowerCase();
     return /* html */`
-      <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}"
-        url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
+      <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}" replies="${this.getAttribute('replies')}"
+        url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}" stories="${this.getAttribute('stories')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}"
         bio="${this.getAttribute('bio')}">
       </profile-wrapper>
@@ -181,13 +181,13 @@ export default class AppProfile extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <profile-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" hash="${this.getAttribute('hash')}"
-        stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
-        followers-url="${this.getAttribute('followers-url')}"
-        following-url="${this.getAttribute('following-url')}">
+      <profile-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" 
+        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}"
+        replies-url="${this.getAttribute('replies-url')}" replies="${this.getAttribute('replies')}"
+        followers-url="${this.getAttribute('followers-url')}" followers="${this.getAttribute('followers')}"
+        following-url="${this.getAttribute('following-url')}" following="${this.getAttribute('following')}">
       </profile-section>
     `
-
   }
 
   getHighlights = () => {
@@ -198,10 +198,9 @@ export default class AppProfile extends HTMLElement {
     let formattedUrl = url.toLowerCase();
 
     return /* html */`
-      <highlights-container url="${formattedUrl}/highlights" 
+      <highlights-container url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
-        stories="6376" replies="19863"
-        topics="236" views="726398" date-joined="2022-01-03T13:00:00+03:00">
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
       </highlights-container>
     `
   }

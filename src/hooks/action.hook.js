@@ -1,10 +1,13 @@
 // hook fns: functions to udate hooks data in the database
 const {
-  updateTopicFollowers, updateTopicSubscribers, updateTopicViews,
-  updateUserFollowers, updateUserFollowing,
-  updateStoryViews, updateStoryLikes, updateStoryReplies,
-  updateReplyViews, updateReplyReplies, updateReplyLikes,
+  updateUserFollowers, updateUserFollowing, updateUserReplies, updateUserStories,
+  updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
+  updateStoryVotes, updateStoryViews, updateStoryLikes, updateStoryReplies, 
+  updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent, updateUserViews
 } = require('./fns.hook');
+
+// import update tags query 
+const { tagStory } = require('../queries').topicQueries;
 
 /**
  * @function actionHook
@@ -32,9 +35,9 @@ const actionHook = async data => {
     // switch the kind of data
     switch (data.kind) {
       case 'user':
-        const {from, to} = data.hashes;
+        const hashes = data.hashes;
         // call the user updator
-        await userUpdator(data.action, from, to, data.value);
+        await userUpdator(data.action, hashes, data.value);
         break;
       case 'topic':
         // call the topic updator
@@ -47,6 +50,36 @@ const actionHook = async data => {
       case 'reply':
         // call the reply updator
         await replyUpdator(data.action, data.hashes.target, data.value);
+        break;
+      case 'tag':
+        // call add tag to story
+        console.log('The data:', data.hashes.target, data.value);
+        const reqData =  {
+          hash: data.hashes.target,
+          topics: data.value
+        }
+        const {tagged, error } = await tagStory(reqData);
+
+        if (error) {
+          console.log('Error processing the job')
+          console.log(error)
+        }
+
+        if (!tagged) {
+          console.log('Tgging job failed')
+        }
+        break;
+      case 'view':
+        const viewObj = await viewContent(data.user, data.hashes.target, data.action);
+        if (viewObj.error) {
+          console.log('Error processing the view job')
+          console.log(viewObj.error)
+        }
+
+        if (!viewObj.viewed) {
+          console.log('View job failed')
+        }
+
         break;
       default:
         // Log the error
@@ -69,15 +102,26 @@ const actionHook = async data => {
  * @name userUpdator
  * @description A function that updates the user followers data
  * @param {String} action - The action to perform
- * @param {String} from - The from user hash
- * @param {String} to - The to user hash
+ * @param {Object} hashes - The user hashes
  * @param {Number} value - The value to update
 */
-const userUpdator = async (action, from, to, value) => {
+const userUpdator = async (action, hashes, value) => {
   if (action === 'connect') {
     // Update the user followers and following
-    await updateUserFollowers(to, value);
-    await updateUserFollowing(from, value);
+    await updateUserFollowers(hashes.to, value);
+    await updateUserFollowing(hashes.from, value);
+  }
+  else if (action === 'reply') {
+    // Update the user replies
+    await updateUserReplies(hashes.target, value);
+  }
+  else if (action === 'story') {
+    // Update the user stories
+    await updateUserStories(hashes.target, value);
+  }
+  else if (action === 'view') {
+    // Update the user views
+    await updateUserViews(hashes.target, value);
   }
 }
 
@@ -102,6 +146,10 @@ const topicUpdator = async (action, topicHash, value) => {
     // Update the topic views
     await updateTopicViews(topicHash, value);
   }
+  else if (action === 'story') {
+    // Update the topic stories
+    await updateTopicStories(topicHash, value);
+  }
 }
 
 /**
@@ -124,6 +172,10 @@ const storyUpdator = async (action, storyHash, value) => {
   else if (action === 'reply') {
     // Update the story replies
     await updateStoryReplies(storyHash, value);
+  }
+  else if (action === 'vote') {
+    // Update the story votes
+    await updateStoryVotes(storyHash, value);
   }
 }
 

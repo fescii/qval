@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%# Head/Meta  Start  %>
+  <% var title = data.title ? 'Story | ' + data.title : 'Post | by ' + data.author -%>
+  <% var image = "/static/img/fav.png" %>
+  <%# Check if content is null %>
+  <% if (data.content == null) { data.content = "This story has no content." } -%>
+  <%# Trancate content to 160 characters and add ... %>
+  <% var description = data.content.length > 90 ? data.content.substring(0, 90) + "..." : data.content -%>
+  <%- include('../partials/meta', {
+    title: title, image: image, description: description
+  }); -%>
+  <%# Head/Meta  End %>
+
+  <body>
+    <%# App Logon page Start %>
+      <%- include('../partials/apps/story', data); -%>
+    <%# App Logon page End %>
+  </body>
+
+</html>

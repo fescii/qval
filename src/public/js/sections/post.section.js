@@ -267,14 +267,18 @@ export default class PostSection extends HTMLElement {
   }
 
   getReplies = () => {
-    return `
-      <replies-feed replies="all" url="/U0A89BA6/replies"></replies-feed>
+    return /*html*/`
+      <replies-feed hash="${this.getAttribute('hash')}" replies="${this.getAttribute('replies')}" page="1"
+        url="${this.getAttribute('replies-url')}"  kind="${this.getAttribute('kind')}">
+      </replies-feed>
     `
   }
 
   getLikes = () => {
-    return `
-      <people-feed replies="all" url="/U0A89BA6/followers"></people-feed>
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('likes')}" page="1"
+        url="${this.getAttribute('likes-url')}" kind="likes">
+      </people-feed>
     `
   }
 
@@ -327,7 +331,7 @@ export default class PostSection extends HTMLElement {
 
         :host {
           font-size: 16px;
-          padding: 15px 0;
+          padding: 0;
           width: 100%;
           display: flex;
           flex-flow: column;
@@ -352,7 +356,6 @@ export default class PostSection extends HTMLElement {
 
         .tab-control {
           border-bottom: var(--border);
-          border-top: var(--border);
           background-color: var(--background);
           display: flex;
           flex-flow: column;
@@ -364,7 +367,6 @@ export default class PostSection extends HTMLElement {
         }
 
         .tab-control > .author {
-          /* border-top: var(--border); */
           border-bottom: var(--border);
           padding: 10px 0;
           display: flex;
@@ -420,12 +422,10 @@ export default class PostSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .tab-control > ul.tab > li.active > .text {
@@ -433,7 +433,7 @@ export default class PostSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {
@@ -458,8 +458,7 @@ export default class PostSection extends HTMLElement {
           }
 
           .tab-control {
-            border-bottom: var(--border-mobile);
-            border-top: var(--border-mobile);
+            border-bottom: var(--border);
             margin: 0;
             position: sticky;
             top: 50px;

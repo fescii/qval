@@ -31,7 +31,6 @@ Author URL: https://femar.co.ke
   --tab-background: #d0d7de33;
   --stat-background: #f1f1f1;
 
-
   --font-main: "Inter";
   --font-text: "DM Sans";
   --font-mono: 'Jetbrains Mono';
@@ -39,6 +38,7 @@ Author URL: https://femar.co.ke
 
   --card-box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2);
   --card-box-shadow-alt: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;
 
   --scroll-bar-background: #DDDDD7;
   --scroll-bar-linear: linear-gradient(#53595f, #627ea0);

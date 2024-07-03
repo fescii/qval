@@ -48,6 +48,9 @@ export default class UserWrapper extends HTMLElement {
 
     // perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights(body);
   }
 
   isLoggedIn = name => {
@@ -64,6 +67,22 @@ export default class UserWrapper extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -464,7 +483,7 @@ export default class UserWrapper extends HTMLElement {
     }
     else {
       // check if bio is greater than 70 characters
-      let displayBio = bio.length > 70 ? `${bio.substring(0, 70)}..` : bio;
+      let displayBio = bio.length > 130 ? `${bio.substring(0, 130)}..` : bio;
 
       return /*html*/`
         <p class="bio">${displayBio}</p>
@@ -497,7 +516,7 @@ export default class UserWrapper extends HTMLElement {
 
     if (you) {
       return /*html*/`
-        <span  class="action you">You</span>
+        <span class="action highlights" id="highlights-action">stats</span>
         <a href="${url}" class="action view" id="view-action">view</a>
         <a href="/profile" class="action manage" id="manage-action">manage</a>
       `
@@ -506,7 +525,7 @@ export default class UserWrapper extends HTMLElement {
       return /*html*/`
         <a href="${url}" class="action view" id="view-action">view</a>
         ${this.checkFollowing(this.getAttribute('user-follow'))}
-        <span class="action donate" id="donate-action">donate</span>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
   }
@@ -542,12 +561,12 @@ export default class UserWrapper extends HTMLElement {
       <div class="stats">
         <span class="stat followers">
           <span class="number">${followersFormatted}</span>
-          <span class="label">Followers</span>
+          <span class="label">${totalFollowers === 1 ? 'follower' : 'followers'}</span>
         </span>
         <span class="sp">•</span>
         <span class="stat following">
           <span class="number">${followingFormatted}</span>
-          <span class="label">Following</span>
+          <span class="label">following</span>
         </span>
       </div>
 		`
@@ -561,13 +580,29 @@ export default class UserWrapper extends HTMLElement {
     url = url.trim().toLowerCase();
 
    return /* html */`
-     <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
-       stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
-       hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
-       name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
-       following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
-     </app-profile>
+      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
+        followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
+        hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
+        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
+        following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
+      </app-profile>
    `
+  }
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
+    `
   }
 
   getStyles() {
@@ -785,7 +820,7 @@ export default class UserWrapper extends HTMLElement {
         
         .actions > .action {
           border: var(--action-border);
-          padding: 2.5px 15px;
+          padding: 2.5px 15px 4px;
           background: none;
           font-family: var(--font-main), sans-serif;
           border: var(--border-mobile);
@@ -811,7 +846,7 @@ export default class UserWrapper extends HTMLElement {
         
         .actions > .action.follow {
           border: none;
-          padding: 3px 15px;
+          padding: 3px 15px 4px;
           font-weight: 500;
           background: var(--accent-linear);
           color: var(--white-color);
@@ -820,7 +855,6 @@ export default class UserWrapper extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            border-bottom: var(--border-mobile);
           }
 
           .actions > .action,

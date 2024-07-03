@@ -35,6 +35,9 @@ export default class AuthorWrapper extends HTMLElement {
 
     // Perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights(body);
   }
 
   isLoggedIn = name => {
@@ -54,18 +57,34 @@ export default class AuthorWrapper extends HTMLElement {
     }
   }
 
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
+  }
+
   // Open user profile
   handleUserClick = (url, body) => {
     const outerThis = this;
     // get a.meta.link
     const content = this.shadowObj.querySelector('a#username');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+        
+        // Get full post
+        const profile =  outerThis.getProfile();
         
         // replace and push states
         outerThis.replaceAndPushStates(url, body, profile);
@@ -81,12 +100,12 @@ export default class AuthorWrapper extends HTMLElement {
     // get a.meta.link
     const content = this.shadowObj.querySelector('a.action.view');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
         
         // replace and push states
         outerThis.replaceAndPushStates(url, body, profile);
@@ -400,8 +419,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', 'max-content');
               actions.style.setProperty('max-height', 'max-content');
 
-              // actions.style.setProperty('padding', '5px 0 15px');
-              // actions.style.setProperty('border-bottom', 'var(--border-mobile)');
+              actions.style.setProperty('padding', '5px 0 15px');
+              actions.style.setProperty('border-bottom', 'var(--border)');
 
               // Collapse the content container
               svg.style.transform = 'rotate(180deg)';
@@ -416,8 +435,8 @@ export default class AuthorWrapper extends HTMLElement {
               bio.style.setProperty('max-height', '0');
               stats.style.setProperty('max-height', '0');
 
-              // actions.style.setProperty('padding', '0');
-              // actions.style.setProperty('border-bottom', 'none');
+              actions.style.setProperty('padding', '0');
+              actions.style.setProperty('border-bottom', 'none');
 
               // Expand the content container
               svg.style.transform = 'rotate(0deg)';
@@ -624,14 +643,14 @@ export default class AuthorWrapper extends HTMLElement {
       return /*html*/`
         <span  class="action you">You</span>
         <a href="${url}" class="action view">view</a>
-        <a href="/profile" class="action view" id="manage-action">manage</a>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
     else {
       return /*html*/`
         <a href="${url}" class="action view">view</a>
         ${this.checkFollowing(this.getAttribute('user-follow'))}
-        <span class="action support" id="donate-action">donate</span>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
   }
@@ -657,13 +676,29 @@ export default class AuthorWrapper extends HTMLElement {
     url = url.trim().toLowerCase();
 
    return /* html */`
-     <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
-       stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
-       hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
-       name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
-       following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
-     </app-profile>
-   `
+      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
+        followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
+        hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
+        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
+        following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
+      </app-profile>
+    `
+  }
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
+    `
   }
 
   getStyles() {
@@ -736,7 +771,7 @@ export default class AuthorWrapper extends HTMLElement {
           flex-flow: row;
           align-items: center;
           padding: 5px 5px 8px;
-          background: linear-gradient(90deg, #fcff9e 0%, #f09c4ecc 100%);
+          background: var(--poll-background);
           border-radius: 10px;
           gap: 5px;
         }
@@ -761,14 +796,14 @@ export default class AuthorWrapper extends HTMLElement {
         }
 
         .top > .avatar > .icon {
-          background: #e3ffe7;
+          background: var(--poll-background);
           position: absolute;
           bottom: -1px;
           right: -2px;
           width: 20px;
           height: 20px;
           z-index: 1;
-          display: none;
+          display: flex;
           align-items: center;
           justify-content: center;
           border-radius: 50%;
@@ -891,7 +926,7 @@ export default class AuthorWrapper extends HTMLElement {
         
         .actions > .action {
           border: var(--action-border);
-          padding: 2.5px 15px;
+          padding: 2.5px 15px 3.5px;
           background: none;
           border: var(--border-mobile);
           color: var(--gray-color);
@@ -915,7 +950,7 @@ export default class AuthorWrapper extends HTMLElement {
         
         .actions > .action.follow {
           border: none;
-          padding: 3px 15px;
+          padding: 3px 15px 4px;
           font-weight: 500;
           background: var(--accent-linear);
           color: var(--white-color);
@@ -925,14 +960,13 @@ export default class AuthorWrapper extends HTMLElement {
           :host {
             font-size: 16px;
             border-bottom: none;
-            border-top: var(--border-mobile);
-            border-bottom: var(--border-mobile);
+            border: none;
           }
 
           .content-container {
             border: none;
             position: relative;
-            padding: 15px 0;
+            padding: 10px 0 5px;
             width: 100%;
             max-height: max-content;
             display: flex;
@@ -979,6 +1013,10 @@ export default class AuthorWrapper extends HTMLElement {
             gap: 5px;
           }
 
+          .top > .avatar > .icon {
+            background: var(--background);
+          }
+
           ::-webkit-scrollbar {
             -webkit-appearance: none;
           }
@@ -997,7 +1035,7 @@ export default class AuthorWrapper extends HTMLElement {
           .content-container > svg {
             display: inline-block;
             position: absolute;
-            top: 25px;
+            top: 20px;
             right: 5px;
             color: var(--gray-color);
             cursor: default !important;

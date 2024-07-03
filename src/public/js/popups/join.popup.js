@@ -176,6 +176,8 @@ export default class JoinPopup extends HTMLElement {
           justify-content: center;
           gap: 10px;
           z-index: 100;
+          width: 100%;
+          min-width: 100vw;
           position: fixed;
           right: 0;
           top: 0;
@@ -354,7 +356,7 @@ export default class JoinPopup extends HTMLElement {
           }
         }
         @media screen and ( max-width: 600px ){
-          :host{
+          :host {
             border: none;
             background-color: var(--modal-background);
             padding: 0px;
@@ -370,13 +372,11 @@ export default class JoinPopup extends HTMLElement {
             top: 0;
             bottom: 0;
             left: 0;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
           }
 
           #content {
             box-sizing: border-box !important;
-            padding: 25px 0 0 0;
+            padding: 20px 0 0 0;
             margin: 0;
             width: 100%;
             max-width: 100%;
@@ -390,8 +390,9 @@ export default class JoinPopup extends HTMLElement {
 
           #content span.control {
             cursor: default !important;
-            top: 15px;
-            right: 15px;
+            display: none;
+            top: 12px;
+            right: 12px;
           }
 
           .welcome {
@@ -404,13 +405,13 @@ export default class JoinPopup extends HTMLElement {
           }
 
           .welcome > .actions {
-            width: 90%;
+            width: 100%;
           }
 
-          .welcome > .actions a {
+          .welcome > .actions .action {
             background: var(--stage-no-linear);
             text-decoration: none;
-            padding: 5px 20px;
+            padding: 7px 20px 8px;
             cursor: default;
             margin: 10px 0;
             width: 120px;

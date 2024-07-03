@@ -24,13 +24,13 @@ export default class HoverAuthor extends HTMLElement {
     // Get the media query list
     const mql = window.matchMedia('(max-width: 660px)');
 
-     // get url
-     let url = this.getAttribute('url');
+    // get url
+    let url = this.getAttribute('url');
 
-     url = url.trim().toLowerCase();
+    url = url.trim().toLowerCase();
  
-     // Get the body
-     const body = document.querySelector('body');
+    // Get the body
+    const body = document.querySelector('body');
 
     const contentContainer = this.shadowObj.querySelector('div.content-container');
 
@@ -40,6 +40,10 @@ export default class HoverAuthor extends HTMLElement {
 
     // handle user click
     this.handleUserClick(mql.matches, url, body, contentContainer);
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   isLoggedIn = name => {
@@ -59,18 +63,37 @@ export default class HoverAuthor extends HTMLElement {
     }
   }
 
+  openHighlights = (body, contentContainer) => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        contentContainer.style.display = 'none';
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
+  }
+
   // Open user profile
   handleUserClick = (mql, url, body, contentContainer) => {
     const outerThis = this;
     // get a.meta.link
     const content = this.shadowObj.querySelector('a.meta.link');
 
-    // Get full post
-    const profile =  this.getProfile();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
+
         if (mql) {
           // change the display of the content container
           contentContainer.style.display = 'flex';
@@ -124,6 +147,8 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
+
+          outerThis.disableScroll();
         });
 
         // add mouse leave event listener
@@ -133,6 +158,7 @@ export default class HoverAuthor extends HTMLElement {
 
           // remove the content from the content container
           contentContainer.innerHTML = outerThis.getLoader();
+          outerThis.enableScroll();
         });
       }
       else {
@@ -147,6 +173,8 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
+
+          outerThis.disableScroll();
         });
       }
     }
@@ -162,17 +190,17 @@ export default class HoverAuthor extends HTMLElement {
       // change the content of the content container
       contentContainer.innerHTML = content;
 
-      // Get full post
-      const profile =  outerThis.getProfile();
-
       // Activate view
-      outerThis.activateView(url, body, profile);
+      outerThis.activateView(url, body);
 
       // perfom actions
       outerThis.performActions();
 
       // Activate username link
-      outerThis.activateUsernameLink(url, body, profile);
+      outerThis.activateUsernameLink(url, body);
+
+      // open Highlights
+      outerThis.openHighlights(body, contentContainer);
 
       if (mql) {
         const overlayBtn = outerThis.shadowObj.querySelector('span.pointer');
@@ -187,6 +215,8 @@ export default class HoverAuthor extends HTMLElement {
   
             // change the display of the content container
             contentContainer.style.display = 'none';
+
+            outerThis.enableScroll();
   
             // remove the content from the content container
             contentContainer.innerHTML = outerThis.getLoader();
@@ -197,13 +227,16 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   // Open user profile
-  activateView = (url, body, profile) => {
+  activateView = (url, body) => {
     // get a.action.view
     const content = this.shadowObj.querySelector('.actions > a.action.view');
 
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
   
         // replace and push states
         this.replaceAndPushStates(url, body, profile);
@@ -214,13 +247,16 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   // Open user profile
-  activateUsernameLink = (url, body, profile) => {
+  activateUsernameLink = (url, body) => {
     // get div.name > a.username
     const content = this.shadowObj.querySelector('.top > .name > a.username');
 
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const profile =  outerThis.getProfile();
   
         // replace and push states
         this.replaceAndPushStates(url, body, profile);
@@ -643,7 +679,7 @@ export default class HoverAuthor extends HTMLElement {
       <div class="stats">
         <span class="stat followers">
           <span class="number">${followersFormatted}</span>
-          <span class="label">Followers</span>
+          <span class="label">${totalFollowers === 1 ? 'follower' : 'followers'}</span>
         </span>
         <span class="sp">•</span>
         <span class="stat following">
@@ -701,14 +737,14 @@ export default class HoverAuthor extends HTMLElement {
       return /*html*/`
         <span class="action you">You</span>
         <a href="${url}" class="action view" id="view-action">view</a>
-        <a href="/profile" class="action manage" id="manage-action">manage</a>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
     else {
       return /*html*/`
         <a href="${url}" class="action view" id="view-action">view</a>
         ${this.checkFollowing(this.getAttribute('user-follow'))}
-        <span class="action support" id="donate-action">donate</span>
+        <span class="action highlights" id="highlights-action">stats</span>
       `
     }
   }
@@ -736,19 +772,35 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   getProfile = () => {
-     // get url
-     let url = this.getAttribute('url');
+    // get url
+    let url = this.getAttribute('url');
   
-     // trim white spaces and convert to lowercase
-     url = url.trim().toLowerCase();
+    // trim white spaces and convert to lowercase
+    url = url.trim().toLowerCase();
 
     return /* html */`
       <app-profile you="${this.getAttribute('you')}" url="${url}" tab="stories"
-        stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
+        followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
         hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
         name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
         following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
       </app-profile>
+    `
+  }
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
     `
   }
 
@@ -1058,7 +1110,7 @@ export default class HoverAuthor extends HTMLElement {
           align-items: center;
           text-transform: lowercase;
           justify-content: center;
-          padding: 1px 15px;
+          padding: 1px 15px 2px;
           border-radius: 10px;
           -webkit-border-radius: 10px;
           -moz-border-radius: 10px;
@@ -1070,7 +1122,7 @@ export default class HoverAuthor extends HTMLElement {
         
         .actions > .action.follow {
           border: none;
-          padding: 2px 15px;
+          padding: 2px 15px 3px;
           font-weight: 500;
           background: var(--accent-linear);
           color: var(--white-color);
@@ -1086,6 +1138,24 @@ export default class HoverAuthor extends HTMLElement {
           .actions > .action,
           span.action {
             cursor: default !important;
+          }
+
+          a.meta.link {
+            height: max-content;
+            display: flex;
+            height: 30px;
+            align-items: center;
+            font-family: var(--font-mono),monospace;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-decoration: none;
+            text-decoration: none;
+            color: transparent;
+            background: var(--accent-linear);
+            background-clip: text;
+            -webkit-background-clip: text;
           }
 
           .content-container {

@@ -17,6 +17,7 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    this.style.display = 'flex';
     // onpopstate event
     this.onpopEvent();
 
@@ -504,7 +505,6 @@ export default class AppTopic extends HTMLElement {
       return /* html */`
         ${this.getTop()}
         ${this.getHeader()}
-        ${this.getAuthor()}
         ${this.getSection()}
       `;
     }
@@ -549,12 +549,42 @@ export default class AppTopic extends HTMLElement {
             ${this.getStats()}
           </div>
           <div class="sub-text">
-            <p>${this.getAttribute('description')}</p>
+            ${this.parseContent(this.getAttribute('summery'))}
           </div>
           ${this.getActions()}
         </div>
       </div>
     `
+  }
+
+  parseContent = content => {
+    // split the content by the next line
+    const lines = content.split('\n');
+
+    // create a paragraph for each line
+    return lines.map(line => {
+      return `<p>${line}</p>`;
+    }).join('');
+  }
+
+  // Function to detect and parse the text
+  parseHTML = text => {
+    // Create a temporary element to help with parsing
+    const tempElement = document.createElement('div');
+    
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // Create a textarea element to decode the HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      tempElement.innerHTML = textarea.value;
+    } else {
+        // Directly set the innerHTML for plain HTML
+      tempElement.innerHTML = text;
+    }
+    
+    // Return the parsed HTML
+    return tempElement.innerHTML;
   }
 
   getTop = () => {
@@ -578,42 +608,16 @@ export default class AppTopic extends HTMLElement {
   getArticle = () => {
     return /* html */`
       <article class="article">
-        <div class="section" id="section1">
-          <p>Health is a state of complete physical, mental and social well-being and not merely the absence of disease or infirmity.</p>
-           <p> The enjoyment of the highest attainable standard of health is one of the fundamental rights of every human being without distinction</p>
-            <blockquote>
-              Health is a state of complete physical, mental and social well-being and not merely the absence of disease or infirmity.
-            </blockquote>
-           <p> It covers the following</p>
-           <ul>
-              <li>Health</li>
-              <li>Mental Health</li>
-              <li>Physical Health</li>
-            </ul>
-        </div>
-        <div class="section" id="section2">
-          <h4 class="section-title">Health</h4>
-          <p>Health is a state of complete physical, mental and social well-being and not merely the absence of disease or infirmity.</p>
-           <p> The enjoyment of the highest attainable standard of health is one of the fundamental rights of every human being without distinction</p>
-           <p> It covers all aspects of health, including physical, mental, and social well-being.</p>
-        </div>
-        <div class="section" id="section3">
-          <h4 class="section-title">Mental Health</h4>
-          <p>Mental health is a state of well-being in which an individual realizes his or her own abilities, can cope with the normal stresses of life, can work productively and is able to make a contribution to his or her community.</p>
-          <p> Mental health is fundamental to our collective and individual ability as humans to think, emote, interact with each other, earn a living and enjoy life.</p>
-        </div>
-        <div class="section" id="section4">
-          <h4 class="section-title">Physical Health</h4>
-          <p>Physical health is critical for overall well-being and is the most visible of the various dimensions of health, which also include social, intellectual, emotional, spiritual and environmental health.</p>
-          <p> Physical health is a necessary component for mental health and vice versa.</p>
-        </div>
+       ${this.parseHTML(this.innerHTML)}
       </article>
     `
   }
 
   getSection = () => {
     return /* html */`
-      <topic-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}">
+      <topic-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}"
+        slug="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
+        stories-url="${this.getAttribute('stories-url')}" contributers-url="${this.getAttribute('contributers-url')}">
         ${this.getArticle()}
       </topic-section>
     `
@@ -651,11 +655,11 @@ export default class AppTopic extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-picture')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" 
-       user-follow="${this.getAttribute('author-follow')}" you="${this.getAttribute('author-you')}"
-       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
-       bio="${this.getAttribute('author-bio')}">
+			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
+        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
   }

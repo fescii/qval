@@ -148,7 +148,8 @@ export default class FormContainer extends HTMLElement {
 	      :host {
           font-size: 16px;
           background-color: var(--background);
-          padding: 0;
+          border-bottom: ${this.getAttribute('full') === "true" ? 'var(--border)' : 'none'};
+          padding: ${this.getAttribute('full') === "true" ? '0 0 15px 0' : '0'};
           display: flex;
           flex-flow: column;
           gap: 0;
@@ -168,7 +169,6 @@ export default class FormContainer extends HTMLElement {
 
         form.reply > textarea {
           border: none;
-          /* border: var(--input-border); */
           padding: 4px 0;
           margin: 0;
           width: calc(100% - 35px);

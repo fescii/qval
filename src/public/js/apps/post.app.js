@@ -98,12 +98,13 @@ export default class AppPost extends HTMLElement {
     switch (story) {
       case 'poll':
         return /*html */`
-          <poll-wrapper hash="${this.getAttribute('hash')}" upvotes="${this.getAttribute('upvotes')}" url="${url}"
+          <poll-wrapper hash="${this.getAttribute('hash')}" url="${url}" kind="${this.getAttribute('story')}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
             views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
             options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
-            end-time="${this.getAttribute('end-time')}"
-            author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
+            end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}" author-you="${this.getAttribute('author-you')}"
+            author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+            author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">
@@ -112,10 +113,11 @@ export default class AppPost extends HTMLElement {
         `
       default:
         return /* html */`
-          <post-wrapper hash="${this.getAttribute('hash')}" upvotes="${this.getAttribute('upvotes')}" url="${url}"
+          <post-wrapper hash="${this.getAttribute('hash')}" url="${url}" kind="${this.getAttribute('story')}"
             replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
-            views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
-            author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
+            views="${this.getAttribute('views')}" time="${this.getAttribute('time')}" author-you="${this.getAttribute('author-you')}"
+            author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+            author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
             author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
             author-bio="${this.getAttribute('author-bio')}">
@@ -127,7 +129,9 @@ export default class AppPost extends HTMLElement {
 
   getSection = () => {
     return /* html */`
-      <post-section  url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" hash="${this.getAttribute('author-hash')}"
+      <post-section kind="${this.getAttribute('story')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Post" 
+        author-hash="${this.getAttribute('author-hash')}" hash="${this.getAttribute('hash')}" 
+        replies="${this.getAttribute('replies')}" likes="${this.getAttribute('likes')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">
       </post-section>
     `
@@ -145,9 +149,10 @@ export default class AppPost extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
-       bio="${this.getAttribute('author-bio')}">
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
+        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
+        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
   }
@@ -273,7 +278,7 @@ export default class AppPost extends HTMLElement {
             flex-flow: column;
             justify-content: flex-start;
             gap: 0;
-            min-height: 100dvh;
+            min-height: max-content;
           }
 
 					::-webkit-scrollbar {

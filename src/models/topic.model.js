@@ -146,7 +146,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     },
     content: {
       type: Sequelize.TEXT,
@@ -315,34 +315,28 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
 
   // add a hook to the Subscribe model to add a job to the queue
   Subscribe.afterCreate(async subscribe => {
-    // construct the job payload
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: 'topic',
       hashes: {
         topic: subscribe.topic,
       },
       action: 'subscribe',
       value: 1
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
   // add a hook to the Subscribe model to add a job to the queue
   Subscribe.afterDestroy(async subscribe => {
-    // construct the job payload
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: 'topic',
       hashes: {
         topic: subscribe.topic,
       },
       action: 'subscribe',
       value: -1
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
 
@@ -385,34 +379,28 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
 
   // add a hook to the Follow model to add a job to the queue
   Follow.afterCreate(async follow => {
-    // construct the job payload
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: 'topic',
       hashes: {
         target: follow.topic,
       },
       action: 'follow',
       value: 1
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
   // add a hook to the Follow model to add a job to the queue
   Follow.afterDestroy(async follow => {
-    // construct the job payload
-    const payload = {
+    // add the job to the queue
+    await actionQueue.add('actionJob', {
       kind: 'topic',
       hashes: {
         target: follow.topic,
       },
       action: 'follow',
       value: -1
-    };
-
-    // add the job to the queue
-    await actionQueue.add('actionJob', payload);
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
 
   // Defining the associations on the User and Topic models

@@ -108,19 +108,17 @@ export default class ProfileSection extends HTMLElement {
             // update active attribute
             outerThis.setAttribute('active', tab.dataset.element);
 
-            switch (tab.dataset.element) {
-              case "stories":
-                contentContainer.innerHTML = outerThis.getStories();
-                break;
-              case "replies":
-                contentContainer.innerHTML = outerThis.getReplies();
-                break;
-              case "followers":
-                contentContainer.innerHTML = outerThis.getPeople();
-              default:
-                break;
-            }
+            const tabName = tab.dataset.element; 
 
+            if (tabName === "stories") {
+              contentContainer.innerHTML = outerThis.getStories();
+            } else if (tabName === "replies") {
+              contentContainer.innerHTML = outerThis.getReplies();
+            } else if (tabName === "followers") {
+              contentContainer.innerHTML = outerThis.getFollowers();
+            } else if (tabName === "following") {
+              contentContainer.innerHTML = outerThis.getFollowing();
+            }
           }
         })
       })
@@ -135,7 +133,6 @@ export default class ProfileSection extends HTMLElement {
             outerThis.updatePage(event.state.content)
           }
           else if (event.state.tab) {
-
             // Select the state tab
             const tab = outerThis.shadowObj.querySelector(`ul#tab > li.${event.state.tab}`);
 
@@ -207,7 +204,9 @@ export default class ProfileSection extends HTMLElement {
       case "replies":
         return this.getReplies();
       case "followers":
-        return this.getPeople();
+        return this.getFollowers();
+      case "following":
+        return this.getFollowing();
       default:
         return this.getStories();
     }
@@ -256,6 +255,9 @@ export default class ProfileSection extends HTMLElement {
           <li url="${url}/followers" data-element="followers" class="tab-item followers">
             <span class="text">Followers</span>
           </li>
+          <li url="${url}/following" data-element="following" class="tab-item following">
+            <span class="text">Following</span>
+          </li>
           <span class="line"></span>
         </ul>
       </div>
@@ -270,27 +272,43 @@ export default class ProfileSection extends HTMLElement {
       case "replies":
         return this.getReplies();
       case "followers":
-        return this.getPeople();
+        return this.getFollowers();
+      case "following":
+        return this.getFollowing();
       default:
         return this.getStories();
     }
   }
 
   getStories = () => {
-    return /* html */`
-      <stories-feed stories="all" url="/U0A89BA6/stories"></stories-feed>
+    return /*html*/`
+      <stories-feed hash="${this.getAttribute('hash')}" stories="${this.getAttribute('stories')}" page="1"
+        url="${this.getAttribute('stories-url')}"  kind="user">
+      </stories-feed>
     `
   }
 
   getReplies = () => {
     return /* html */`
-      <replies-feed replies="all" url="/U0A89BA6/replies"></replies-feed>
+      <replies-feed hash="${this.getAttribute('hash')}" replies="${this.getAttribute('replies')}" page="1"
+        url="${this.getAttribute('replies-url')}" kind="user">
+      </replies-feed>
     `
   }
 
-  getPeople = () => {
-    return /* html */`
-      <people-feed replies="all" url="/U0A89BA6/followers"></people-feed>
+  getFollowers = () => {
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('followers')}" page="1"
+        url="${this.getAttribute('followers-url')}" kind="followers">
+      </people-feed>
+    `
+  }
+
+  getFollowing = () => {
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" total="${this.getAttribute('following')}" page="1"
+        url="${this.getAttribute('following-url')}" kind="following">
+      </people-feed>
     `
   }
 
@@ -431,12 +449,10 @@ export default class ProfileSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .tab-control > ul.tab > li.active > .text {
@@ -444,7 +460,7 @@ export default class ProfileSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {

@@ -26,8 +26,13 @@ const sumArray = async (arr) => arr.reduce((accumulator, currentValue) => accumu
  * @returns {String} - The slugified text
 */
 const slugify = (text) => {
-  return text.trim().replace(/\s+/g, ' ').
-    toLowerCase().replace(/\s+/g, '-');
+  // return text.trim().replace(/\s+/g, ' ').
+  //   toLowerCase().replace(/\s+/g, '-');
+
+  // remove all commas, periods, and other punctuation
+  // replace all spaces with hyphens
+  // remove all non-alphanumeric characters
+  return text.trim().replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, '-').toLowerCase();
 }
 
 /**

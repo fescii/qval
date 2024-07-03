@@ -22,7 +22,11 @@ export default class TopicSection extends HTMLElement {
     const contentContainer = this.shadowObj.querySelector('div.feeds');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
 
-    this.fetchContent(contentContainer, tabContainer);
+    this.updateActiveTab(tabContainer);
+    this.activateTab(contentContainer, tabContainer);
+
+    // Open url
+    this.openUrl();
   }
 
   disableScroll() {
@@ -40,18 +44,6 @@ export default class TopicSection extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
-  }
-
-  fetchContent = (contentContainer, tabContainer) => {
-    const outerThis = this;
-    const storyLoader = this.shadowObj.querySelector('story-loader');
-    const content = this.getContent(this._active);
-    setTimeout(() => {
-      storyLoader.remove();
-      contentContainer.insertAdjacentHTML('beforeend', content);
-      outerThis.updateActiveTab(tabContainer);
-      outerThis.activateTab(contentContainer, tabContainer);
-    }, 2000)
   }
 
   updateActiveTab = tabContainer => {
@@ -220,6 +212,30 @@ export default class TopicSection extends HTMLElement {
     }
   }
 
+  openUrl = () => {
+    // get all the links
+    const links = this.shadowObj.querySelectorAll('article.article > .section a');
+    const body = document.querySelector('body');
+
+    // loop through the links
+    if (!links) return;
+    
+    links.forEach(link => {
+      // add event listener to the link
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        // get the url
+        const url = link.getAttribute('href');
+
+        // link pop up
+        let linkPopUp = `<url-popup url="${url}"></url-popup>`
+
+        // open the popup
+        body.insertAdjacentHTML('beforeend', linkPopUp);
+      });
+    });
+  }
+
   getTemplate() {
     // Show HTML Here
     return /* html */`
@@ -232,7 +248,7 @@ export default class TopicSection extends HTMLElement {
     return /* html */`
       ${this.getTab()}
       <div class="feeds">
-        ${this.getLoader()}
+        ${this.getContent(this._active)}
       </div>
     `
   }
@@ -279,14 +295,18 @@ export default class TopicSection extends HTMLElement {
   }
 
   getStories = () => {
-    return /* html */`
-      <stories-feed stories="all" url="/U0A89BA6/stories"></stories-feed>
+    return /*html*/`
+      <stories-feed hash="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
+        url="${this.getAttribute('stories-url')}"  kind="topic">
+      </stories-feed>
     `
   }
 
   getPeople = () => {
-    return /* html */`
-      <people-feed replies="all" url="/U0A89BA6/followers"></people-feed>
+    return /*html*/`
+      <people-feed hash="${this.getAttribute('hash')}" page="1"
+        url="${this.getAttribute('contributers-url')}" kind="topic">
+      </people-feed>
     `
   }
 
@@ -424,7 +444,6 @@ export default class TopicSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
@@ -436,7 +455,7 @@ export default class TopicSection extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {
@@ -460,7 +479,7 @@ export default class TopicSection extends HTMLElement {
           display: flex;
           flex-flow: column;
           color: var(--read-color);
-          font-family: var(--font-read), sans-serif;
+          font-family: var(--font-text), sans-serif;
           gap: 10px;
           font-size: 1rem;
           font-weight: 400;
@@ -480,9 +499,9 @@ export default class TopicSection extends HTMLElement {
           flex-flow: column;
         }
 
-        article.article > .section h4.section-title {
+        article.article > .section h2.title {
           padding: 0 !important;
-          font-size: 1.3rem !important;
+          font-size: 1.5rem !important;
           font-weight: 500;
           line-height: 1.5;
           margin: 0;
@@ -498,12 +517,12 @@ export default class TopicSection extends HTMLElement {
           color: var(--title-color);
           font-weight: 500;
           line-height: 1.5;
-          margin: 5px 0;
+          margin: 10px 0;
         }
 
         article.article p {
-          margin: 5px 0;
-          line-height: 1.5;
+          margin: 0 0 5px 0;
+          line-height: 1.4;
         }
 
         article.article a {
@@ -531,7 +550,7 @@ export default class TopicSection extends HTMLElement {
           color: var(--gray-color);
           font-size: 1.5rem;
           line-height: 1;
-          margin: 0 0 0 -5px;
+          margin: 0;
         }
 
         article.article blockquote:after {
@@ -539,7 +558,7 @@ export default class TopicSection extends HTMLElement {
           color: var(--gray-color);
           font-size: 1.5rem;
           line-height: 1;
-          margin: 0 0 0 -5px;
+          margin: 0;
         }
 
         article.article hr {
@@ -560,6 +579,53 @@ export default class TopicSection extends HTMLElement {
           margin: 5px 0 15px 20px;
           padding: 0 0 0 15px;
           color: inherit;
+        }
+
+        article.article div.last,
+        article.article div.empty {
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin: 15px 0;
+          padding: 15px 10px;
+          background: var(--poll-background);
+          border-radius: 15px;
+        }
+
+        article.article > div.empty > h2 {
+          font-size: 1.3rem;
+          font-weight: 700;
+          margin: 0;
+          color: var(--title-color);
+        }
+
+        article.article div.last > p,
+        article.article > div.empty > p {
+          font-size: 1rem;
+          margin: 0;
+          text-align: center;
+          font-family: var(--font-text), sans-serif;
+          color: var(--text-color);
+        }
+
+        article.article div.last > a,
+        article.article > div.empty > a {
+          padding: 5px 20px;
+          margin: 5px 0 0 0;
+          font-size: 1rem;
+          font-weight: 500;
+          border-radius: 12px;
+          cursor: pointer;
+          color: var(--white-color) !important;
+          background: var(--accent-linear) !important;
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        article.article > div.empty > a:hover {
+          text-decoration: none;
         }
 
         @media screen and (max-width: 660px) {

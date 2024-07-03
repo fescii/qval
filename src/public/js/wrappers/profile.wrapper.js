@@ -24,6 +24,10 @@ export default class ProfileWrapper extends HTMLElement {
 
     // perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights();
+    this.openContact()
   }
 
   isLoggedIn = name => {
@@ -58,6 +62,42 @@ export default class ProfileWrapper extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  openHighlights = () => {
+    // Get body
+    const body = document.querySelector('body');
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#highlights-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
+  }
+
+  openContact = () => {
+    // Get body
+    const body = document.querySelector('body');
+    // Get the social action and subscribe action
+    const socialBtn = this.shadowObj.querySelector('.actions>.action#socials-action');
+
+    // add event listener to the social action
+    if (socialBtn) {
+      socialBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getContact());
+      });
+    }
   }
 
   // perfom actions
@@ -346,7 +386,7 @@ export default class ProfileWrapper extends HTMLElement {
     return /* html */`
       ${this.getHeader()}
       ${this.getBio()}
-      ${this.getActions(this._you)}
+      ${this.getActions()}
 		`
   }
 
@@ -354,13 +394,11 @@ export default class ProfileWrapper extends HTMLElement {
     // Get name and check if it's greater than 20 characters
     const name = this.getAttribute('name');
 
-    // gET URL
-    const url = this.getAttribute('url');
-
     // Check if the name is greater than 20 characters: replace the rest with ...
     let displayName = name.length > 25 ? `${name.substring(0, 25)}..` : name;
 
     return /* html */ `
+    </contact-popup>
       <div class="top">
         <div class="avatar">
           <img src="${this.getAttribute('picture')}" alt="Author name">
@@ -371,9 +409,9 @@ export default class ProfileWrapper extends HTMLElement {
             <h4 class="name">
               <span class="name">${displayName}</span>
             </h4>
-            <a href="${url.toLowerCase()}" class="username">
+            <span class="username">
               <span class="text">${this.getAttribute('hash')}</span>
-            </a>
+            </span>
           </div>
           ${this.getStats()}
         </div>
@@ -414,12 +452,12 @@ export default class ProfileWrapper extends HTMLElement {
       <div class="stats">
         <span class="stat followers">
           <span class="number">${followersFormatted}</span>
-          <span class="label">Followers</span>
+          <span class="label">${totalFollowers === 1 ? 'follower' : 'followers'}</span>
         </span>
         <span class="sp">•</span>
         <span class="stat following">
           <span class="number">${followingFormatted}</span>
-          <span class="label">Following</span>
+          <span class="label">following</span>
         </span>
       </div>
 		`
@@ -445,14 +483,14 @@ export default class ProfileWrapper extends HTMLElement {
     `
   }
 
-  getActions = you => {
+  getActions = () => {
     // You is true
     if (this._you) {
       return /*html*/`
         <div class="actions">
-          <span class="action you">You</span>
+          <span class="action highlights" id="highlights-action">stats</span>
           <a href="/profile" class="action edit" id="edit-action">Edit</a>
-          <a href="/settings" class="action settings" id="manage-action">Settings</a>
+          <span class="action socials" id="socials-action">socials</span>
         </div>
       `
     }
@@ -460,7 +498,8 @@ export default class ProfileWrapper extends HTMLElement {
       return /*html*/`
         <div class="actions">
           ${this.checkFollowing(this.getAttribute('user-follow'))}
-          <span class="action donate" id="donate-action">Donate</span>
+          <span class="action highlights" id="highlights-action">stats</span>
+          <span class="action socials" id="socials-action">socials</span>
         </div>
       `
     }
@@ -477,6 +516,35 @@ export default class ProfileWrapper extends HTMLElement {
 			  <span class="action follow" id="follow-action">Follow</span>
 			`
     }
+  }
+
+
+  getHighlights = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <stats-popup url="/api/v1${formattedUrl}/stats" name="${this.getAttribute('name')}"
+        followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" 
+        stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}">
+      </stats-popup>
+    `
+  }
+
+  getContact = () => {
+    // get url
+    const url = this.getAttribute('url');
+  
+    // trim white spaces and convert to lowercase
+    let formattedUrl = url.toLowerCase();
+
+    return /* html */`
+      <contact-popup url="/api/v1${formattedUrl}/contact" name="${this.getAttribute('name')}">
+      </contact-popup>
+    `
   }
 
   getStyles() {
@@ -615,7 +683,7 @@ export default class ProfileWrapper extends HTMLElement {
           font-weight: 600;
         }
 
-        .top > .info > .name > a.username {
+        .top > .info > .name > span.username {
           color: var(--gray-color);
           font-family: var(--font-mono), monospace;
           font-size: 0.9rem;
@@ -626,21 +694,21 @@ export default class ProfileWrapper extends HTMLElement {
           align-items: center;
         }
 
-        .top > .info > .name > a.username svg {
+        .top > .info > .name > span.username svg {
           color: var(--gray-color);
           width: 15px;
           height: 15px;
           margin: 2px 0 0 0;
         }
 
-        .top > .info > .name > a.username:hover {
+        .top > .info > .name > span.username:hover {
           color: transparent;
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
         }
 
-        .top > .info > .name > a.username:hover svg {
+        .top > .info > .name > span.username:hover svg {
           color: var(--accent-color);
         }
 
@@ -690,7 +758,7 @@ export default class ProfileWrapper extends HTMLElement {
 
         .bio > p {
           all: inherit;
-          margin: 0;
+          margin: 0 0 5px;
         }
 
         .actions {
@@ -731,6 +799,8 @@ export default class ProfileWrapper extends HTMLElement {
 
         .actions > .action.edit,
         .actions > .action.you,
+        .actions > .action.highlights,
+        .actions > .action.socials,
         .actions > .action.following,
         .actions > .action.settings {
           padding: 3.5px 18px;

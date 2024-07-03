@@ -25,6 +25,8 @@ module.exports = (sequelize, Sequelize) => {
 	 * @property {Number} followers - Number of followers the user has
 	 * @property {Number} following - Number of users the user is following
 	 * @property {Number} stories - Number of stories the user has published.
+	 * @property {Number} replies - Number of replies the user has published.
+	 * @property {Number} views - Number of content views the user has.
 	*/
 	const User = sequelize.define("users", {
 		id: {
@@ -82,6 +84,16 @@ module.exports = (sequelize, Sequelize) => {
 			defaultValue: 0,
 			allowNull: true,
 		},
+		replies : {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
+		views: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: true,
+		},
 	},{
 			schema: 'account',
 			freezeTableName: true,
@@ -92,7 +104,6 @@ module.exports = (sequelize, Sequelize) => {
 				}
 			]
 	});
-
 
 	/**
 	 * @type {Model}
@@ -178,9 +189,9 @@ module.exports = (sequelize, Sequelize) => {
 	});
 
 	// add hook to connect model: afterCreate
-	Connect.afterCreate(async (connect, _options) => {
-		// construct queue payload
-		const payload = {
+	Connect.afterCreate(async connect => {
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', {
 			kind: 'user',
 			hashes: {
 				from: connect.from,
@@ -188,16 +199,13 @@ module.exports = (sequelize, Sequelize) => {
 			},
 			action: 'connect',
 			value: 1
-		};
-
-		// Add the connect to the queue
-		await actionQueue.add('actionJob', payload);
+		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
 
 	// add hook to connect model: afterDestroy
-	Connect.afterDestroy(async (connect, _options) => {
-		// construct queue payload
-		const payload = {
+	Connect.afterDestroy(async connect => {
+		// Add the connect to the queue
+		await actionQueue.add('actionJob', {
 			kind: 'user',
 			hashes: {
 				from: connect.from,
@@ -205,10 +213,7 @@ module.exports = (sequelize, Sequelize) => {
 			},
 			action: 'connect',
 			value: -1
-		};
-
-		// Add the connect to the queue
-		await actionQueue.add('actionJob', payload);
+		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
 
 	// Define associations for the Code and User model
@@ -216,8 +221,8 @@ module.exports = (sequelize, Sequelize) => {
 	Code.belongsTo(User, { foreignKey: 'email', targetKey: 'email', as: 'user_code', onDelete: 'CASCADE' });
 
 	// Define associations for the Connect and User model
-	User.hasMany(Connect, { foreignKey: 'from', sourceKey: 'hash', onDelete: 'CASCADE' });
-	User.hasMany(Connect, { foreignKey: 'to', sourceKey: 'hash', onDelete: 'CASCADE' });
+	User.hasMany(Connect, { foreignKey: 'from', sourceKey: 'hash', as: 'user_following', onDelete: 'CASCADE' });
+	User.hasMany(Connect, { foreignKey: 'to', sourceKey: 'hash', as: 'user_followers', onDelete: 'CASCADE' });
 	Connect.belongsTo(User, { foreignKey: 'from', targetKey: 'hash', as: 'from_user', onDelete: 'CASCADE' });
 	Connect.belongsTo(User, { foreignKey: 'to', targetKey: 'hash', as: 'to_user', onDelete: 'CASCADE' });
 
