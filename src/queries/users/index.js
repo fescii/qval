@@ -5,9 +5,10 @@ const {
 } = require('./edit');
 const { connectToUser } = require('./action');
 const { addUser, checkIfUserExits, getUserByHash , findAuthorContact } = require('./base');
+const { getRecommendedUsers } = require('./top');
 
 module.exports = {
-  editBio, editContact, editPassword,
+  editBio, editContact, editPassword, getRecommendedUsers,
   editEmail, editName, editPicture, getUserByHash,
   connectToUser, addUser, checkIfUserExits, findAuthorContact
 };

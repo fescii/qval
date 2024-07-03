@@ -150,7 +150,7 @@ export default class HighlightsContainer extends HTMLElement {
 	}
 
   getHighlights = data => {
-        // Get the number of followers, views, stories and topics
+    // Get the number of followers, views, stories and topics
     const followers = this.parseToNumber(this.getAttribute('followers'));
     const views = data.all;
     const stories = this.parseToNumber(this.getAttribute('stories'));

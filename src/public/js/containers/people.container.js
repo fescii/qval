@@ -3,6 +3,8 @@ export default class PeopleContainer extends HTMLElement {
 		// We are not even going to touch this.
 		super();
 
+		this._url = this.getAttribute('url') || '/api/v1/users/recommended';
+
 		// let's create our shadow root
 		this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -20,14 +22,85 @@ export default class PeopleContainer extends HTMLElement {
 		this.fetchPeople(contentContainer);
 	}
 
-	fetchPeople = (contentContainer) => {
+	fetchPeople = contentContainer => {
+    const outerThis = this;
 		const peopleLoader = this.shadowObj.querySelector('people-loader');
-		const content = this.getPeople();
 		setTimeout(() => {
-			peopleLoader.remove();
-			contentContainer.insertAdjacentHTML('beforeend', content);
+      // fetch the user stats
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+  
+      this.fetchWithTimeout(this._url, options)
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          // check for success response
+          if (data.success) {
+            // update the content
+            const content = outerThis.mapUsers(data.people);
+            // remove the loader
+            peopleLoader.remove();
+            // insert the content
+            contentContainer.insertAdjacentHTML('beforeend', content);
+          }
+          else {
+            // display error message
+            const content = outerThis.getEmpty();
+            peopleLoader.remove();
+            contentContainer.insertAdjacentHTML('beforeend', content);
+          }
+        })
+        .catch(error => {
+          // display error message
+          const content = outerThis.getEmpty();
+          peopleLoader.remove();
+          contentContainer.insertAdjacentHTML('beforeend', content);
+        });
 		}, 2000)
 	}
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+	mapUsers = data => {
+    return data.map(user => {
+      let name = user.name.split(" ");
+      let picture = user.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : user.picture;
+      return /*html*/`
+				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
+          picture="${picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
+				</user-wrapper>
+      `
+    }).join('');
+  }
+
 
 	getTemplate = () => {
 		// Show HTML Here
@@ -83,6 +156,15 @@ export default class PeopleContainer extends HTMLElement {
 				bio="Oink! I'm Porky Pig, always up for some fun and mischief.">
 			</user-wrapper>
 		`
+  }
+
+  getEmpty = () => {
+    return /* html */`
+      <div class="empty">
+        <p>No authors recommendation found at the moment.</p>
+				<p> There might an issues, try refreshing the page or check back later.</p>
+      </div>
+    `
   }
 
 	getStyles() {
@@ -156,6 +238,25 @@ export default class PeopleContainer extends HTMLElement {
 				  gap: 10px;
 				  width: 100%;
 				}
+
+				div.empty {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
+        }
+
+        div.empty > p {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          color: var(--text-color);
+          font-family: var(--font-text), sans-serif;
+          font-size: 1rem;
+          font-weight: 400;
+        }
 
 				.title {
           display: flex;
