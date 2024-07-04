@@ -1,5 +1,5 @@
 // Import models
-const { Sequelize, sequelize, Story, User, Reply } = require('../../models').models;
+const { Sequelize, sequelize, Story, StorySection, User, Reply } = require('../../models').models;
 
 
 // Map story fields(sections) to html
@@ -51,16 +51,20 @@ const trendingStoriesWhenLoggedIn = async (user, offset, limit) => {
           Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
           'option'
         ],
-        [sequelize.literal(`SELECT COUNT(id) FROM story.views WHERE views.target = stories.hash AND views.createdAt > ${thirtyDaysAgo.toISOString()}`), 'views_last_30_days']
+        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = stories.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
       ],
-      group: [
-        'stories.kind', 'stories.author', 'stories.hash', 'stories.title', 'stories.content', 
-        'stories.slug', 'stories.topics', 'stories.poll', 'stories.votes', 'stories.views', 
-        'stories.replies', 'stories.likes', 'stories.end', 'stories.createdAt', 'stories.updatedAt',
+      group: [ "stories.id", "stories.kind", "stories.author", "stories.hash", "stories.title", 
+        "stories.content", "stories.slug", "stories.topics", "stories.poll", 
+        "stories.votes", "stories.views", "stories.replies", "stories.likes", "stories.end", 
+        "stories.createdAt", "stories.updatedAt", "story_author.id", "story_author.hash", 
+        "story_author.bio","story_author.name", "story_author.picture", "story_author.followers", 
+        "story_author.following", "story_author.stories", "story_author.verified", "story_author.replies", 
+        "story_author.email", "story_sections.kind", "story_sections.content", "story_sections.order", 
+        "story_sections.id", "story_sections.title" 
       ],
       order: [
         [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC']
+        ['createdAt', 'DESC'],
         ['replies', 'DESC'],
       ],
       include: [
@@ -122,23 +126,28 @@ const trendingStoriesWhenLoggedOut = async (offset, limit) => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const stories = await Story.findAll({
       attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
-        [sequelize.literal(`SELECT COUNT(id) FROM story.views WHERE views.target = stories.hash AND views.createdAt > ${thirtyDaysAgo.toISOString()}`), 'views_last_30_days']
+        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = stories.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
       ],
-      group: [
-        'stories.kind', 'stories.author', 'stories.hash', 'stories.title', 'stories.content', 
-        'stories.slug', 'stories.topics', 'stories.poll', 'stories.votes', 'stories.views', 
-        'stories.replies', 'stories.likes', 'stories.end', 'stories.createdAt', 'stories.updatedAt'
+      group: [ "stories.id", "stories.kind", "stories.author", "stories.hash", "stories.title", 
+        "stories.content", "stories.slug", "stories.topics", "stories.poll", 
+        "stories.votes", "stories.views", "stories.replies", "stories.likes", "stories.end", 
+        "stories.createdAt", "stories.updatedAt", "story_author.id", "story_author.hash", 
+        "story_author.bio","story_author.name", "story_author.picture", "story_author.followers", 
+        "story_author.following", "story_author.stories", "story_author.verified", "story_author.replies", 
+        "story_author.email", "story_sections.kind", "story_sections.content", "story_sections.order", 
+        "story_sections.id", "story_sections.title" 
       ],
       order: [
         [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC']
         ['replies', 'DESC'],
+        ['likes', 'DESC'],
+        ['createdAt', 'DESC'],
       ],
       include: [
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
         },
         // Include the story sections
         {
@@ -188,22 +197,25 @@ const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const replies = await Reply.findAll({
-      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM reply.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
           'liked'
         ],
-        [sequelize.literal(`SELECT COUNT(id) FROM story.views WHERE views.target = replies.hash AND views.createdAt > ${thirtyDaysAgo.toISOString()}`), 'views_last_30_days']
+        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = replies.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
       ],
-      group: [
-        'replies.hash', 'replies.bio', 'replies.name', 'replies.picture', 'replies.followers', 'replies.following', 
-        'replies.stories', 'replies.verified', 'replies.replies', 'replies.email'
+      group: [ "replies.id", "replies.kind", "replies.author", "replies.story", "replies.reply", "replies.hash",
+        "replies.content", "replies.views", "replies.likes", "replies.replies", "replies.createdAt", "replies.updatedAt",
+        "reply_author.id", "reply_author.hash", "reply_author.bio", "reply_author.name", "reply_author.picture",
+        "reply_author.followers", "reply_author.following", "reply_author.stories", "reply_author.verified", "reply_author.replies",
+        "reply_author.email"
       ],
       order: [
         [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC']
         ['replies', 'DESC'],
+        ['likes', 'DESC'],
+        ['createdAt', 'DESC'],
       ],
       include: [
         {
@@ -232,7 +244,6 @@ const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
       const data = reply.dataValues;
       data.reply_author = reply.reply_author.dataValues;
       data.you = user === data.author;
-      data.reply_story = reply.reply_story.dataValues;
       return data;
     });
   }
@@ -252,16 +263,18 @@ const trendingRepliesWhenLoggedOut = async (offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const replies = await Reply.findAll({
-      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-        [sequelize.literal(`SELECT COUNT(id) FROM story.views WHERE views.target = replies.hash AND views.createdAt > ${thirtyDaysAgo.toISOString()}`), 'views_last_30_days']
+      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
+        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = replies.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
       ],
-      group: [
-        'replies.hash', 'replies.bio', 'replies.name', 'replies.picture', 'replies.followers', 'replies.following', 
-        'replies.stories', 'replies.verified', 'replies.replies', 'replies.email'
+      group: [ "replies.id", "replies.kind", "replies.author", "replies.story", "replies.reply", "replies.hash",
+        "replies.content", "replies.views", "replies.likes", "replies.replies", "replies.createdAt", "replies.updatedAt",
+        "reply_author.id", "reply_author.hash", "reply_author.bio", "reply_author.name", "reply_author.picture",
+        "reply_author.followers", "reply_author.following", "reply_author.stories", "reply_author.verified", "reply_author.replies",
+        "reply_author.email"
       ],
       order: [
         [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC']
+        ['createdAt', 'DESC'],
         ['replies', 'DESC'],
       ],
       include: [
@@ -286,7 +299,6 @@ const trendingRepliesWhenLoggedOut = async (offset, limit) => {
       const data = reply.dataValues;
       data.you = false;
       data.reply_author = reply.reply_author.dataValues;
-      data.reply_story = reply.reply_story.dataValues;
       return data;
     });
   }

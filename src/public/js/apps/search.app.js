@@ -9,7 +9,7 @@ export default class AppSearch extends HTMLElement {
     this._tab = this.getAttribute('tab');
 
     // get query
-    this._query = this.getAttribute('query') || '';
+    this._query = this.getAttribute('query');
 
     //Get url in lowercase
     this._url = this.getAttribute('url').trim().toLowerCase();
@@ -18,6 +18,19 @@ export default class AppSearch extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = () => {
+    const query = this.getAttribute('query');
+
+    if (query !== '' && query !== null && query !== 'null') {
+      // update query
+      this._query = query;
+    }
+    else {
+      // update query
+      this._query = null;
+    }
   }
 
   setTitle = () => {
@@ -33,17 +46,11 @@ export default class AppSearch extends HTMLElement {
     // Activate tab
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
-
-    // update active tab
-    this.updateActiveTab(this._tab);
-
-
+  
     if (contentContainer && tabContainer) {
+      this.updateActiveTab(this._tab, tabContainer);
       this.activateTab(contentContainer, tabContainer);
     }
-
-    // Scroll to top of the page
-    window.scrollTo(0, 0);
 
     // watch for mql changes
     const mql = window.matchMedia('(max-width: 660px)');
@@ -52,17 +59,17 @@ export default class AppSearch extends HTMLElement {
   }
 
   // watch for mql changes
-  watchMediaQuery = (mql, contentContainer) => {
+  watchMediaQuery = mql => {
     mql.addEventListener('change', () => {
       // Re-render the component
       this.render();
 
-      // update active tab
-      this.updateActiveTab(this.getAttribute('tab'));
+      const contentContainer = this.shadowObj.querySelector('div.content-container');
+      const tabContainer = this.shadowObj.querySelector('ul#tab');
 
-      //activate tab
-      if (contentContainer) {
-        this.activateTab(contentContainer);
+      if (contentContainer && tabContainer) {
+        this.updateActiveTab(this.getAttribute('tab'), tabContainer)
+        this.activateTab(contentContainer, tabContainer);;
       }
     });
   }
@@ -84,7 +91,7 @@ export default class AppSearch extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  updateActiveTab = active => {
+  updateActiveTab = (active, tabContainer) => {
     // Select tab with active class
     const tab = this.shadowObj.querySelector(`ul#tab > li.${active}`);
 
@@ -135,28 +142,11 @@ export default class AppSearch extends HTMLElement {
           // update tab attribute  and this._tab
           this._tab = tab.dataset.element;
 
-          // get tab url attribute
-          let url = tab.getAttribute('url');
-
-          // check if this._query is empty or null, if not update url
-          if (this._query !== '' && this._query !== null && this._query !== 'null') {
-            url = `${url}/$?q=${this._query}`;
-          }
-
-          console.log('URL: ', url);
-
-          // get current feed
-          const currentFeed = outerThis.selectCurrentFeed(tab.dataset.element);
-
-          // Updating History State
-          window.history.pushState(
-            { tab: tab.dataset.element, content: currentFeed },
-            tab.dataset.element, `${url}`
-          );
-
           switch (tab.dataset.element) {
             case "stories":
               contentContainer.innerHTML = outerThis.getStories();
+            case "replies":
+              contentContainer.innerHTML = outerThis.getReplies();
               break;
             case "topics":
               contentContainer.innerHTML = outerThis.getTopics();
@@ -169,68 +159,6 @@ export default class AppSearch extends HTMLElement {
         }
       })
     });
-
-    // Update state on window.onpopstate
-    window.onpopstate = event => {
-      // This event will be triggered when the browser's back button is clicked
-
-      // console.log(event.state);
-      if (event.state) {
-        if (event.state.page) {
-          outerThis.updatePage(event.state.content)
-        }
-        else if (event.state.tab) {
-
-          // Select the state tab
-          const tab = outerThis.shadowObj.querySelector(`ul#tab > li.${event.state.tab}`);
-
-          if (tab) {
-            activeTab.classList.remove('active');
-
-            tab.classList.add('active');
-            activeTab = tab;
-
-            // update tab attribute  and this._tab
-            outerThis._tab = event.state.tab;
-
-            // Calculate half tab width - 10px
-            const tabWidth = (tab.offsetWidth / 2) - 20;
-
-            // Update the line
-            line.style.left = `${tab.offsetLeft + tabWidth}px`;
-
-            outerThis.updateState(event.state, contentContainer);
-
-            // Update tab
-            outerThis._tab = tab.dataset.element;
-          }
-        }
-      }
-      else {
-        // Select li with class name as current and content Container
-        const currentTab = outerThis.shadowObj.querySelector(`ul#tab > li.tab-item.${this.getAttribute('tab')}`);
-        if (currentTab) {
-          activeTab.classList.remove('active');
-          activeTab = currentTab;
-          currentTab.classList.add('active');
-
-          // update tab attribute  and this._tab
-          outerThis._tab = currentTab.dataset.element;
-
-          console.log('Current Tab: ', currentTab.dataset.element);
-
-          // Calculate half tab width - 10px
-          const tabWidth = (currentTab.offsetWidth / 2) - 20;
-
-          line.style.left = `${currentTab.offsetLeft + tabWidth}px`;
-
-          outerThis.updateDefault(contentContainer);
-
-          // Update active attribute
-          outerThis._tab = currentTab.dataset.element;
-        }
-      }
-    };
   }
 
   updatePage = content => {
@@ -255,6 +183,8 @@ export default class AppSearch extends HTMLElement {
     switch (tab) {
       case "stories":
         return this.getStories();
+      case "replies":
+        return this.getReplies();
       case "topics":
         return this.getTopics();
       case "people":
@@ -354,6 +284,8 @@ export default class AppSearch extends HTMLElement {
     switch (active) {
       case "stories":
         return this.getStories();
+      case "replies":
+        return this.getReplies();
       case "people":
         return this.getPeople();
       case "topic":
@@ -364,20 +296,32 @@ export default class AppSearch extends HTMLElement {
   }
 
   getStories = () => {
-    return `
-      <stories-feed stories="all" url="${this._url}/stories"></stories-feed>
+    const trending = this.getAttribute('trending-stories');
+    const stories = this.getAttribute('stories-url');
+    return /*html*/`
+      <stories-feed page="1"
+        url="${this._query ? stories : trending}" kind="search">
+      </stories-feed>
     `
   }
 
-  getTopics = () => {
-    return `
-      <topics-feed topics="all" url="${this._url}/topics"></topics-feed>
+  getReplies = () => {
+    const replies = this.getAttribute('replies');
+    const trending = this.getAttribute('trending-replies');
+    return /* html */`
+      <replies-feed replies="${this.getAttribute('replies')}" page="1"
+        url="${this._query ? replies : trending}" kind="search">
+      </replies-feed>
     `
   }
 
   getPeople = () => {
-    return `
-      <people-feed replies="all" url="${this._url}/people"></people-feed>
+    const people = this.getAttribute('people');
+    const trending = this.getAttribute('trending-people');
+    return /*html*/`
+      <people-feed page="1"
+        url="${this._query ? people : trending}" kind="search">
+      </people-feed>
     `
   }
 
@@ -405,21 +349,19 @@ export default class AppSearch extends HTMLElement {
   }
 
   getTab = () => {
-    // Get url 
-    let url = this.getAttribute('url');
-
-    // convert url to lowercase
-    url = url.toLowerCase();
     return /* html */`
       <div class="tab-control">
         <ul id="tab" class="tab">
-          <li url="${url}/stories" data-element="stories" class="tab-item stories">
+          <li data-element="stories" class="tab-item stories">
             <span class="text">Stories</span>
           </li>
-          <li url="${url}/topics" data-element="topics" class="tab-item topics">
+          <li data-element="replies" class="tab-item replies">
+            <span class="text">Replies</span>
+          </li>
+          <li data-element="topics" class="tab-item topics">
             <span class="text">Topics</span>
           </li>
-          <li url="${url}/people" data-element="people" class="tab-item people">
+          <li data-element="people" class="tab-item people">
             <span class="text">People</span>
           </li>
           <span class="line"></span>
@@ -638,7 +580,6 @@ export default class AppSearch extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
@@ -650,7 +591,7 @@ export default class AppSearch extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {

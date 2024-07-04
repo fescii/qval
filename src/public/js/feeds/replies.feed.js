@@ -6,7 +6,6 @@ export default class RepliesFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._total = this.parseToNumber(this.getAttribute('replies'));
     this._pages = 1;
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
@@ -25,12 +24,9 @@ export default class RepliesFeed extends HTMLElement {
     // console.log('We are inside connectedCallback');
     const repliesContainer = this.shadowObj.querySelector('.replies');
 
-    // check if the total
-    if (this._total === 0) {
-      this.populateReplies(this.getEmptyMsg(this._kind), repliesContainer);
-    } else {
+    // check if the container exists
+    if (repliesContainer) {
       this.fetchReplies(repliesContainer);
-
       this.scrollEvent(repliesContainer);
     }
   }
