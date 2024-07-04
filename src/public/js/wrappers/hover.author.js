@@ -282,6 +282,7 @@ export default class HoverAuthor extends HTMLElement {
 
   // perfom actions
   performActions = () => {
+    const contentContainer = this.shadowObj.querySelector('div.content-container');
     const outerThis = this;
     // get body 
     const body = document.querySelector('body');
@@ -317,7 +318,7 @@ export default class HoverAuthor extends HTMLElement {
         // Check if the user is authenticated
         if (!this._authenticated) {
           // Open the join popup
-          this.openJoin(body);
+          this.openJoin(body, contentContainer);
         } 
         else {
           // Update the follow button
@@ -337,6 +338,7 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   followUser = (url, options, followBtn, followed) => {
+    const contentContainer = this.shadowObj.querySelector('div.content-container');
     const outerThis = this;
     this.fetchWithTimeout(url, options)
       .then(response => {
@@ -348,7 +350,7 @@ export default class HoverAuthor extends HTMLElement {
             const body = document.querySelector('body');
 
             // Open the join popup
-            outerThis.openJoin(body);
+            outerThis.openJoin(body, contentContainer);
 
             // revert the follow button
             outerThis.updateFollowBtn(followed, followBtn);
@@ -474,7 +476,9 @@ export default class HoverAuthor extends HTMLElement {
     
   }
 
-  openJoin = body => {
+  openJoin = (body, contentContainer) => {
+    // change the display of the content container
+    contentContainer.style.display = 'none';
     // Insert getJoin beforeend
     body.insertAdjacentHTML('beforeend', this.getJoin());
   }

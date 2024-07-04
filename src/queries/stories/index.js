@@ -22,8 +22,6 @@ const { addReply, editReply, removeReply } = require('./reply');
 
 const { findReplyReplies, findStoryReplies, findStoryLikes, findReplyLikes } = require('./feeds');
 
-const searchQueries = require('./search');
-
 // Export all queries as a single object
 module.exports = {
   findStoriesByAuthor, findRepliesByAuthor, editTitle, editSlug, findReplyLikes,
@@ -32,6 +30,5 @@ module.exports = {
   findStoriesByTopic, findRelatedStories, removeStory, findReplyByHash,
   addStorySection, editStorySection, removeStorySection, findReplyReplies,
   likeReply, likeStory, viewContent, addReply, editReply, removeReply, findStoryReplies,
-  findFollowersByAuthor, findFollowingByAuthor, findTopicContributors,
-  searchQueries
+  findFollowersByAuthor, findFollowingByAuthor, findTopicContributors
 };

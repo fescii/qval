@@ -140,7 +140,11 @@ export default class AppSearch extends HTMLElement {
           activeTab = tab;
 
           // update tab attribute  and this._tab
-          this._tab = tab.dataset.element;
+          outerThis._tab = tab.dataset.element;
+          outerThis.setAttribute('tab', outerThis._tab);
+
+          // update tab attribute  and this._tab
+          outerThis._tab = tab.dataset.element;
 
           switch (tab.dataset.element) {
             case "stories":
@@ -293,6 +297,16 @@ export default class AppSearch extends HTMLElement {
       default:
         return this.getStories();
     }
+  }
+
+  getTopics = () => {
+    const trending = this.getAttribute('trending-topics');
+    const topics = this.getAttribute('topics-url');
+    return /*html*/`
+      <topics-feed page="1"
+        url="${this._query ? topics : trending}" kind="search">
+      </topics-feed>
+    `
   }
 
   getStories = () => {

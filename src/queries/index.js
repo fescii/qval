@@ -5,8 +5,10 @@ const roleQueries = require('./roles');
 const userQueries = require('./users');
 const storyQueries = require('./stories');
 const statsQueries = require('./stats');
+const searchQueries = require('./search');
 
 module.exports = {
   authQueries, topicQueries, roleQueries,
-  storyQueries, userQueries, statsQueries
+  storyQueries, userQueries, statsQueries,
+  searchQueries
 }

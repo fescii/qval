@@ -40,7 +40,7 @@ import PeopleFeed from "./feeds/people.feed.js";
 import StoriesFeed from "./feeds/stories.feed.js";
 import RepliesFeed from "./feeds/replies.feed.js";
 import StatFeed from "./feeds/stat.feed.js";
-import TopicFeed from "./feeds/topics.feed.js";
+import TopicFeed from "./feeds/topic.feed.js";
 
 
 // Import forms

@@ -6,7 +6,6 @@ export default class StoryFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._pages = 1;
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
 
@@ -91,7 +90,7 @@ export default class StoryFeed extends HTMLElement {
       setTimeout(() => {
         // fetch the stories
         outerThis.fetching(url, storiesContainer)
-      }, 3000);
+      }, 1000);
     }
   }
 

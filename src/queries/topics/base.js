@@ -274,19 +274,11 @@ const findTopicWhenLoggedIn = async (query, user) => {
     // attributes including a subquery to check whether the user is following the topic and is subscribed to the topic
     attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 
       [
-        Sequelize.fn('EXISTS', Sequelize.literal(`(
-          SELECT 1 FROM "topic"."followers" AS t_followers
-          WHERE t_followers.topic = topics.hash
-          AND t_followers.author = '${user}'
-        )`)),
+        Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."followers" AS t_followers WHERE t_followers.topic = topics.hash AND t_followers.author = '${user}')`)),
         'is_following'
       ],
       [
-        Sequelize.fn('EXISTS', Sequelize.literal(`(
-          SELECT 1 FROM "topic"."subscribers" AS t_subscribers
-          WHERE t_subscribers.topic = topics.hash
-          AND t_subscribers.author = '${user}'
-        )`)),
+        Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."subscribers" AS t_subscribers WHERE t_subscribers.topic = topics.hash AND t_subscribers.author = '${user}')`)),
         'is_subscribed'
       ]
     ],
@@ -302,12 +294,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
         as: 'topic_author',
         attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
           [
-            sequelize.literal(`(
-            SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
-            FROM account.connects
-            WHERE connects.to = topic_author.hash
-            AND connects.from = '${user}'
-            )`),
+            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = topic_author.hash AND connects.from = '${user}')`)),
             'is_following'
           ]
         ],
@@ -333,7 +320,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
   data.topic_author = topic.topic_author.dataValues;
 
   // add the sections to the data object
-  data.topic_sections = mapFields(topic.topic_sections);
+  data.topic_sections = mapFields(topic.topic_sections, data.hash);
   
   data.you = data.topic_author.hash === user;
 
@@ -379,7 +366,7 @@ const findTopicWhenLoggedOut = async (query) => {
   }
 
   // add the topic sections to the data object
-  topic.topic_sections = mapFields(topic.topic_sections);
+  topic.topic_sections = mapFields(topic.topic_sections, topic.hash);
 
   // If topic exists, return the topic
   return {topic: topic, error: null}

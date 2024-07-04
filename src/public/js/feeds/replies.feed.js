@@ -91,7 +91,7 @@ export default class RepliesFeed extends HTMLElement {
       setTimeout(() => {
         // fetch the replies
         outerThis.fetching(url, repliesContainer)
-      }, 3000);
+      }, 1000);
     }
   }
 

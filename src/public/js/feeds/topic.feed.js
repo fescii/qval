@@ -1,4 +1,4 @@
-export default class PeopleFeed extends HTMLElement {
+export default class TopicFeed extends HTMLElement {
   constructor() {
     // We are not even going to touch this.
     super();
@@ -6,10 +6,8 @@ export default class PeopleFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._total = this.parseToNumber(this.getAttribute('total'));
-		this._kind = this.getAttribute('kind');
-    this._pages = 1;
     this._url = this.getAttribute('url');
+    this._kind = this.getAttribute('kind');
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
@@ -22,13 +20,14 @@ export default class PeopleFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    const peopleContainer = this.shadowObj.querySelector('.people');
+    // console.log('We are inside connectedCallback');
+    const topicsContainer = this.shadowObj.querySelector('.topics');
 
-		// check total
-		if (peopleContainer) {
-      this.fetchPeople(peopleContainer);
-			this.scrollEvent(peopleContainer);     
-		}
+    // check if the total
+    if (topicsContainer) {
+      this.fetchReplies(topicsContainer);
+      this.scrollEvent(topicsContainer);
+    }
   }
 
   disableScroll() {
@@ -48,41 +47,40 @@ export default class PeopleFeed extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  fetching = (url, peopleContainer) => {
+  fetching = (url, topicsContainer) => {
     const outerThis = this;
     this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
       response.json().then((result) => {
         if (result.success) {
           const data = result.data;
-          if (data.last && outerThis._page === 1 && data.people.length === 0) {
-            outerThis.populatePeople(outerThis.getEmptyMsg(outerThis._kind), peopleContainer);
+          if (data.last && outerThis._page === 1 && data.topics.length === 0) {
+            outerThis.populateStories(outerThis.getEmptyMsg(outerThis._kind), topicsContainer);
           } 
-          else if (data.last && data.people.length < 10) {
-            const content = outerThis.mapFields(data.people);
-            outerThis.populatePeople(content, peopleContainer);
-            outerThis.populatePeople(
-            outerThis.getLastMessage(outerThis._kind), peopleContainer);
+          else if (data.last && data.topics.length < 10) {
+            const content = outerThis.mapFields(data.topics);
+            outerThis.populateStories(content, topicsContainer);
+            outerThis.populateStories(outerThis.getLastMessage(outerThis._kind), topicsContainer);
           } 
           else {
             outerThis._empty = false;
             outerThis._block = false;
             
-            const content = outerThis.mapFields(data.people);
-            outerThis.populatePeople(content, peopleContainer);
+            const content = outerThis.mapFields(data.topics);
+            outerThis.populateStories(content, topicsContainer);
             }
           }
           else {
-            outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
+            outerThis.populateStories(outerThis.getWrongMessage(), topicsContainer);
           }
         })
         .catch((error) => {
-					// console.log(error)
-          outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
+          console.log(error)
+          outerThis.populateStories(outerThis.getWrongMessage(), topicsContainer);
         });
     });
   }
 
-  fetchPeople = peopleContainer => {
+  fetchReplies = topicsContainer => {
     const outerThis = this;
     const url = `${this._url}?page=${this._page}`;
 
@@ -90,31 +88,31 @@ export default class PeopleFeed extends HTMLElement {
       outerThis._empty = true;
       outerThis._block = true;
       setTimeout(() => {
-        // fetch the likes
-        outerThis.fetching(url, peopleContainer)
+        // fetch the topics
+        outerThis.fetching(url, topicsContainer)
       }, 1000);
     }
   }
 
-  populatePeople = (content, peopleContainer) => {
+  populateStories = (content, topicsContainer) => {
     // get the loader and remove it
-    const loader = peopleContainer.querySelector('.loader-container');
+    const loader = topicsContainer.querySelector('.loader-container');
     if (loader){
       loader.remove();
     }
 
     // insert the content
-    peopleContainer.insertAdjacentHTML('beforeend', content);
+    topicsContainer.insertAdjacentHTML('beforeend', content);
   }
   
-  scrollEvent = peopleContainer => {
+  scrollEvent = topicsContainer => {
     const outerThis = this;
     window.addEventListener('scroll', function () {
       let margin = document.body.clientHeight - window.innerHeight - 150;
       if (window.scrollY > margin && !outerThis._empty && !outerThis._block) {
         outerThis._page += 1;
-        outerThis.populatePeople(outerThis.getLoader(), peopleContainer);
-        outerThis.fetchPeople(peopleContainer);
+        outerThis.populateStories(outerThis.getLoader(), topicsContainer);
+        outerThis.fetchReplies(topicsContainer);
       }
     });
 
@@ -124,12 +122,18 @@ export default class PeopleFeed extends HTMLElement {
   }
 
   mapFields = data => {
-    return data.map(user => {
+    return data.map(topic => {
+      const author = topic.topic_author;
+      const url = `/t/${topic.hash.toLowerCase()}`;
       return /*html*/`
-				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
-          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
-          following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
-				</user-wrapper>
+        <topic-wrapper hash="${topic.hash}" name="${topic.slug}" description="${topic.summary}"
+          topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}"
+          subscribers="236" followers="9734" stories="75624"
+          author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
+          author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
+          author-following="${author.following}" author-follow="${topic.is_following}" author-bio="${author.bio}.">
+          ${topic.topic_sections}
+        </topic-wrapper>
       `
     }).join('');
   }
@@ -143,8 +147,7 @@ export default class PeopleFeed extends HTMLElement {
         controller.abort();
         // add property to the error object
         reject({ name: 'AbortError', message: 'Request timed out' });
-        // Throw a custom error
-        // throw new Error('Request timed out');
+        // reject(new Error('Request timed out'));
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -190,110 +193,119 @@ export default class PeopleFeed extends HTMLElement {
   getBody = () => {
     // language=HTML
     return `
-			<div class="people">
+			<div class="topics">
 				${this.getLoader()}
       </div>
     `;
   }
 
   getEmptyMsg = text => {
-    switch (text) {
-			case 'likes':
-				return `
-					<div class="empty">
-						<h2 class="title">No Likes found!</h2>
-						<p class="next">
-							The post has no likes yet. You can be the first to like it or you can always come back later to check for new likes.
-						</p>
-					</div>
-				`;
-      case 'topic':
-        return `
-          <div class="empty">
-            <h2 class="title">No contributors yet!</h2>
-            <p class="next">
-              The topic has no contributors yet. You can be the first to contribute or you can always come back later to check for new contributors.
-            </p>
-          </div>
-        `
-			case 'followers':
-				return `
-					<div class="empty">
-						<h2 class="title">The author has no followers yet!</h2>
-						<p class="next">
-							The user has no followers yet. You can be the first to follow the author or you can always come back later to check for new followers.
-						</p>
-					</div>
-				`
-			case 'following':
-				return `
-					<div class="empty">
-						<h2 class="title">The user is not following anyone yet!</h2>
-						<p class="next">
-							The user is not following anyone yet. You can always come back later to check.
-						</p>
-					</div>
-				`
-			default:
-				return `
-					<div class="empty">
-						<h2 class="title">No data found!</h2>
-						<p class="next">
-							No data found. You can always come back later to check for new data.
-						</p>
-					</div>
-				`
-		}
+    // get the next attribute
+   if (text === "feed") {
+    return `
+      <div class="empty">
+        <h2 class="title">No topics</h2>
+        <p class="next">
+          There are no topics/posts yet. You can come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   } 
+   else if(text === "user") {
+    return `
+      <div class="empty">
+        <h2 class="title">No stories or posts</h2>
+        <p class="next">
+          The user has not posted any stories yet. You can come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   } 
+   else if(text === "search") {
+    return `
+      <div class="empty">
+        <h2 class="title">No stories found!</h2>
+        <p class="next">
+          There are no stories/posts found. You can try searching with a different keyword.
+        </p>
+      </div>
+    `
+   }
+   else if(text === "topic") {
+    return `
+      <div class="empty">
+        <h2 class="title">No stories found!</h2>
+        <p class="next">
+          No stories/posts found for this topic. You can try coming back later.
+        </p>
+      </div>
+    `
+   }
+   else {
+    return `
+      <div class="empty">
+        <h2 class="title"> No stories found!</h2>
+        <p class="next">
+          There are no stories/posts found. You can try coming back later.
+        </p>
+      </div>
+    `
+   }
   }
 
   getLastMessage = text => {
-    switch (text) {
-			case 'likes':
-				return `
-					<div class="last">
-						<h2 class="title">No more likes!</h2>
-						<p class="next">
-							You have reached the end of people who liked this post. You can always come back later to check for new likes.
-						</p>
-					</div>
-				`
-      case 'topic': 
-        return `
-          <div class="last">
-            <h2 class="title">That's all the contributors!</h2>
-            <p class="next">
-              You have reached the end of the contributors. You can also become a contributor by clicking the contribute button.
-            </p>
-          </div>
-        `
-			case 'followers':
-				return `
-					<div class="last">
-						<h2 class="title">No more followers.</h2>
-						<p class="next">
-							You have reached the people who are following this user. You can always come back later to check for new followers.
-						</p>
-					</div>
-				`
-			case 'following':
-				return `
-					<div class="last">
-						<h2 class="title">No more people.</h2>
-						<p class="next">
-							You have reached the end of the people who this user is following. You can always come back later to check for new people.
-						</p>
-					</div>
-				`
-			default:
-				return `
-					<div class="last">
-						<h2 class="title">No more data.</h2>
-						<p class="next">
-							You have reached the end of the data. You can always come back later to check for new data.
-						</p>
-					</div>
-				`
-		}
+    // get the next attribute
+    if (text === "feed") {
+      return `
+        <div class="last">
+          <h2 class="title">That's all for now!</h2>
+          <p class="next">
+            You have reached the end of the stories. You can always come back later or refresh the page to check for new stories.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "user") {
+      return `
+        <div class="last">
+          <h2 class="title">That's all the user's stories!</h2>
+          <p class="next">
+            You have exhausted all of the user's stories. You can always come back later to check for new stories.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "search") {
+      return `
+        <div class="last">
+          <h2 class="title">That's all the results!</h2>
+          <p class="next">
+            You have reached the end of the search results. You can try searching with a different keyword.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "topic") {
+      return `
+        <div class="last">
+          <h2 class="title">That's all the topic stories!</h2>
+          <p class="next">
+            You have reached the end of the topic stories. You can come back later to check for new stories.
+          </p>
+        </div>
+      `
+    }
+    else {
+      return `
+        <div class="last">
+          <h2 class="title">That's all!</h2>
+          <p class="next">
+            You have reached the end of the stories. You can always come back later or refresh the page to check for new stories.
+          </p>
+        </div>
+      `
+    }
+   
   }
 
   getWrongMessage = () => {
@@ -429,7 +441,7 @@ export default class PeopleFeed extends HTMLElement {
 
         .last {
           width: 100%;
-          padding: 10px 0;
+          padding: 10px 0 30px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -439,9 +451,9 @@ export default class PeopleFeed extends HTMLElement {
         .last > h2,
         .empty > h2 {
           width: 100%;
-          margin: 2px 0;
-          font-family: var(--font-text), sans-serif;
+          margin: 5px 0;
           text-align: start;
+          font-family: var(--font-text), sans-serif;
           color: var(--text-color);
           line-height: 1.4;
           font-size: 1.2rem;
@@ -478,7 +490,7 @@ export default class PeopleFeed extends HTMLElement {
           border-radius: 5px;
         }
 
-        div.people {
+        div.topics {
           padding: 0;
           width: 100%;
           display: flex;
@@ -490,6 +502,7 @@ export default class PeopleFeed extends HTMLElement {
           .last {
             width: 100%;
             padding: 10px 0 25px;
+            border-bottom: var(--border);
             display: flex;
             flex-flow: column;
             align-items: center;
@@ -504,17 +517,6 @@ export default class PeopleFeed extends HTMLElement {
             align-items: center;
             justify-content: center;
           }
-
-					.last > h2,
-					.empty > h2 {
-						width: 100%;
-						margin: 2px 0;
-						font-family: var(--font-text), sans-serif;
-						text-align: start;
-						color: var(--text-color);
-						line-height: 1.4;
-						font-size: 1.2rem;
-					}
         }
       </style>
     `;

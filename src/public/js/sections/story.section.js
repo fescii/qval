@@ -248,13 +248,13 @@ export default class StorySection extends HTMLElement {
     const indicator = this.shadowObj.querySelector('.indicator');
 
     // if percentage is greater than 100, set the indicator to 100%
-    if (scrollPercentage + 2 >= 100) {
+    if (scrollPercentage >= 100) {
       indicator.style.width = `100%`;
       return;
     }
 
     // set the width of the indicator
-    indicator.style.width = `${scrollPercentage + 2}%`;
+    indicator.style.width = `${scrollPercentage}%`;
 
 
     // add scroll event listener to body but check if the content is still in view
@@ -277,13 +277,13 @@ export default class StorySection extends HTMLElement {
       }
 
       // if percentage + 8  is greater than 100, set the indicator to 100%
-      if (scrollPercentage + 2 >= 100) {
+      if (scrollPercentage >= 100) {
         indicator.style.width = `100%`;
         return;
       }
 
       // set the width of the indicator
-      indicator.style.width = `${scrollPercentage + 2}%`;
+      indicator.style.width = `${scrollPercentage}%`;
     })
   }
 
