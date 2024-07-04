@@ -1,6 +1,6 @@
 // Import all necessary modules, fns, and configs...
 const { hashConfig } = require('../../configs');
-const { sequelize, Sequelize, Reply } = require('../../models').models;
+const { sequelize, Reply } = require('../../models').models;
 
 
 const { actionQueue } = require('../../bull');

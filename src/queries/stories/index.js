@@ -6,7 +6,7 @@ const {
 
 const {
   addStory, checkIfStoryExists, findStory,
-  editStory, findStoryBySlugOrHash, findStoriesByQuery,
+  editStory, findStoryBySlugOrHash,
   removeStory, editSlug, editTitle, publishStory, findReplyByHash
 } = require('./base');
 
@@ -26,7 +26,7 @@ const { findReplyReplies, findStoryReplies, findStoryLikes, findReplyLikes } = r
 module.exports = {
   findStoriesByAuthor, findRepliesByAuthor, editTitle, editSlug, findReplyLikes,
   addStory, checkIfStoryExists, findStory, addVote, publishStory, findStoryLikes,
-  editStory, findStoryBySlugOrHash, findStoriesByQuery, fetchStorySections,
+  editStory, findStoryBySlugOrHash, fetchStorySections,
   findStoriesByTopic, findRelatedStories, removeStory, findReplyByHash,
   addStorySection, editStorySection, removeStorySection, findReplyReplies,
   likeReply, likeStory, viewContent, addReply, editReply, removeReply, findStoryReplies,

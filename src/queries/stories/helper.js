@@ -309,7 +309,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
   }
   catch (error) {
     // return the error
-    console.log(error)
+    // console.log(error)
     return { stories: null, error };
   }
 }

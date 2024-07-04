@@ -22,7 +22,7 @@ export default class AppSearch extends HTMLElement {
 
   setTitle = () => {
     // update title of the document
-    document.title = 'Search - Discover and connect with people, topics and stories';
+    document.title = 'Search | Discover and connect with people, topics and stories';
   }
 
   render() {

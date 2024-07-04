@@ -74,7 +74,7 @@ const getRecommendedUsersWhenLoggedIn = async hash => {
         'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
       ],
       order: [
-        [sequelize.literal('views'), 'DESC'],
+        [sequelize.literal('views_last_30_days'), 'DESC'],
         ['followers', 'DESC'],
         ['stories', 'DESC'],
         ['replies', 'DESC'],
@@ -132,7 +132,7 @@ const getRecommendedUsersWhenNotLoggedIn = async () => {
         'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
       ],
       order: [
-        [sequelize.literal('views'), 'DESC'],
+        [sequelize.literal('views_last_30_days'), 'DESC'],
         ['followers', 'DESC'],
         ['stories', 'DESC'],
         ['replies', 'DESC'],
