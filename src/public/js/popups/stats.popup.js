@@ -515,7 +515,7 @@ export default class StatsPopup extends HTMLElement {
           font-weight: 600;
           margin: 0 0 10px;
           padding: 10px 10px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           text-align: center;
           border-radius: 12px;
           font-family: var(--font-read), sans-serif;
@@ -581,7 +581,7 @@ export default class StatsPopup extends HTMLElement {
           border-radius: 50px;
           -webkit-border-radius: 50px;
           -moz-border-radius: 50px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           color: var(--gray-color);
           font-size: 0.9rem;
           font-weight: 500;
@@ -625,7 +625,7 @@ export default class StatsPopup extends HTMLElement {
         }
         
         ul.highlights > li.item.last {
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           padding: 10px;
           margin: 5px 0;
           border-radius: 12px;
@@ -692,7 +692,7 @@ export default class StatsPopup extends HTMLElement {
             font-size: 1.2rem;
             margin: 0 0 10px;
             padding: 10px 10px;
-            background-color: var(--poll-background);
+            background-color: var(--gray-background);
             text-align: center;
             border-radius: 12px;
           }

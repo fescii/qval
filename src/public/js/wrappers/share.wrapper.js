@@ -575,7 +575,7 @@ export default class ShareWrapper extends HTMLElement {
             font-weight: 600;
             margin: 0 0 10px;
             padding: 10px 10px;
-            background-color: var(--poll-background);
+            background-color: var(--gray-background);
             text-align: center;
             border-radius: 12px;
             font-family: var(--font-read), sans-serif;

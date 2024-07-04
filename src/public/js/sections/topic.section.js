@@ -590,7 +590,7 @@ export default class TopicSection extends HTMLElement {
           gap: 10px;
           margin: 15px 0;
           padding: 15px 10px;
-          background: var(--poll-background);
+          background: var(--gray-background);
           border-radius: 15px;
         }
 

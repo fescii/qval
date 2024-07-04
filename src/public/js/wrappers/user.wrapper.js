@@ -483,7 +483,7 @@ export default class UserWrapper extends HTMLElement {
     }
     else {
       // check if bio is greater than 70 characters
-      let displayBio = bio.length > 130 ? `${bio.substring(0, 130)}..` : bio;
+      let displayBio = bio.length > 150 ? `${bio.substring(0, 150)}..` : bio;
 
       return /*html*/`
         <p class="bio">${displayBio}</p>
@@ -516,9 +516,9 @@ export default class UserWrapper extends HTMLElement {
 
     if (you) {
       return /*html*/`
+        <span class="action you" id="you-action">you</span>
         <span class="action highlights" id="highlights-action">stats</span>
         <a href="${url}" class="action view" id="view-action">view</a>
-        <a href="/profile" class="action manage" id="manage-action">manage</a>
       `
     }
     else {
@@ -842,6 +842,8 @@ export default class UserWrapper extends HTMLElement {
 
         .actions > .action.you {
           text-transform: capitalize;
+          border: none;
+          background: var(--gray-background);
         }
         
         .actions > .action.follow {

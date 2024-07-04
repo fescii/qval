@@ -353,7 +353,7 @@ export default class StorySection extends HTMLElement {
           z-index: 4;
           width: 0%;
           height: 3px;
-          background: var(--accent-linear);
+          background: var(--alt-linear);
           border-radius: 5px;
           transition: width 0.3s;
           position: sticky;
@@ -551,7 +551,6 @@ export default class StorySection extends HTMLElement {
             display: flex;
             width: 10%;
             height: 3px;
-            background: var(--accent-linear);
             border-radius: 5px;
             transition: width 0.3s;
             position: sticky;

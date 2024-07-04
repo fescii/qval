@@ -446,7 +446,7 @@ export default class HighlightsContainer extends HTMLElement {
           border-radius: 50px;
           -webkit-border-radius: 50px;
           -moz-border-radius: 50px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           color: var(--gray-color);
           font-size: 0.9rem;
           font-weight: 500;
@@ -490,7 +490,7 @@ export default class HighlightsContainer extends HTMLElement {
         }
         
         ul.info > li.item.last {
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           padding: 10px;
           margin: 5px 0;
           border-radius: 12px;

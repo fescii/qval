@@ -476,7 +476,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last p.next > .url,
         .empty  p.next > .url {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--gray-color);
           padding: 2px 5px;
           font-size: 0.95rem;
@@ -489,7 +489,7 @@ export default class RepliesFeed extends HTMLElement {
           color: var(--error-color);
           font-weight: 500;
           font-size: 0.9rem;
-          background: var(--poll-background);
+          background: var(--gray-background);
           padding: 2px 5px;
           border-radius: 5px;
         }

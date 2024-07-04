@@ -17,106 +17,145 @@ const getRecommendedUsers = async hash => {
   try {
     // check if the requesting user is null
     if (!hash) {
-      // Define the query to get the top 5 recommended users
-      const users = await User.findAll({
-        attributes: {
-          include: ['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies',
-            [Sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE author = users.hash AND createdAt > NOW() - INTERVAL '30 DAY')`), 'views']
-          ]
-        },
-        order: [
-          [Sequelize.literal('views'), 'DESC'],
-          ['followers', 'DESC'],
-          ['stories', 'DESC'],
-          ['replies', 'DESC'],
-        ],
-        limit: 5
-      });
+      // get the top 5 recommended users when the user is not logged in
+      const users = await getRecommendedUsersWhenNotLoggedIn();
 
       // Return the results
       return { people: users, error: null };
     }
     else {
-      // Define the query to get the top 5 recommended users
-      // const users = await User.findAll({
-      //   attributes: [
-      //     'hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies',
-      //     [Sequelize.fn('COUNT', Sequelize.col('authored_views.id')), 'views'],
-      //     [Sequelize.literal(`CASE WHEN user_followers.from IS NOT NULL THEN TRUE ELSE FALSE END`), 'is_following']
-      //   ],
-      //   include: [
-      //     {
-      //       model: View,
-      //       as: 'authored_views',
-      //       attributes: [],
-      //       where: {
-      //         createdAt: {
-      //           [Sequelize.Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      //         }
-      //       },
-      //       required: false
-      //     },
-      //     {
-      //       model: Connect,
-      //       as: 'user_followers',
-      //       attributes: [],
-      //       where: {
-      //         to: Sequelize.col('users.hash')
-      //       },
-      //       required: false
-      //     }
-      //   ],
-      //   order: [
-      //     [Sequelize.literal('views'), 'DESC'],
-      //     ['followers', 'DESC'],
-      //     ['stories', 'DESC'],
-      //     ['replies', 'DESC'],
-      //   ],
-      //   limit: 5
-      // });
+      // get the top 5 recommended users when the user is logged in
+      const users = await getRecommendedUsersWhenLoggedIn(hash);
+      
 
-      // user literal query
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      // map users to check if user is the current user
+      const usersMap = users.map(user => {
+        const data = user.dataValues;
 
-      const users = await User.findAll({
-        attributes: [
-          'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified',
-          [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days'],
-          [sequelize.literal(`CASE WHEN COUNT(user_followers.id) > 0 THEN TRUE ELSE FALSE END`), 'is_following']
-        ],
-        group: ['User.id', 'User.hash', 'User.name', 'User.email', 'User.bio', 'User.picture', 
-          'User.followers', 'User.following', 'User.stories', 'User.replies', 'User.verified'],
-        order: [
-          [sequelize.literal('views'), 'DESC'],
-          ['followers', 'DESC'],
-          ['stories', 'DESC'],
-          ['replies', 'DESC'],
-        ],
-        include: [
-          {
-            model: View,
-            as: 'authored_views',
-            attributes: [],
-            where: {
-              createdAt: {
-                [Sequelize.Op.gt]: thirtyDaysAgo
-              }
-            },
-            required: false
-          },
-        ],
-        limit: 5
+        // check if the user is the current user
+        data.you = data.hash === hash;
+
+        return data;
       });
 
-      // console.log('users', users)
-
       // Return the results
-      return { people: users, error: null };
+      return { people: usersMap, error: null };
     }
 
   }
   catch (error) {
     return { people: null, error };
+  }
+};
+
+
+
+/**
+ * @function getRecommendedUsersWhenLoggedIn
+ * @description A query function to get the top 5 recommended users based on the following criteria:
+ * 1. Users who have the most followers
+ * 2. Users with the most content views in the past 30 days
+ * 3. If a user has both the most followers and the most content views, they should be ranked higher
+ * @param {String} hash - The hash of the user requesting the data
+ * @returns {Promise<Array>} - A promise that resolves to an array of the top 5 recommended users
+*/
+const getRecommendedUsersWhenLoggedIn = async hash => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    // Define the query to get the top 5 recommended users
+    return await User.findAll({
+      attributes: [
+        'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified',
+        [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days'],
+        [sequelize.literal(`CASE WHEN COUNT(user_followers.id) > 0 THEN TRUE ELSE FALSE END`), 'is_following']
+      ],
+      group: [
+        'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
+        'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
+      ],
+      order: [
+        [sequelize.literal('views'), 'DESC'],
+        ['followers', 'DESC'],
+        ['stories', 'DESC'],
+        ['replies', 'DESC'],
+      ],
+      include: [
+        {
+          model: View,
+          as: 'authored_views',
+          attributes: [],
+          where: {
+            createdAt: {
+              [Sequelize.Op.gt]: thirtyDaysAgo
+            }
+          },
+          required: false
+        },
+        {
+          model: Connect,
+          as: 'user_followers',
+          attributes: [],
+          where: {
+            from: hash
+          },
+          required: false
+        }
+      ],
+      limit: 5,
+      subQuery: false
+    });
+  }
+  catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * @function getRecommendedUsersWhenNotLoggedIn
+ * @description A query function to get the top 5 recommended users based on the following criteria:
+ * 1. Users who have the most followers
+ * 2. Users with the most content views in the past 30 days
+ * 3. If a user has both the most followers and the most content views, they should be ranked higher
+ * @returns {Promise<Array>} - A promise that resolves to an array of the top 5 recommended users
+*/
+const getRecommendedUsersWhenNotLoggedIn = async () => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    // Define the query to get the top 5 recommended users
+    return await User.findAll({
+      attributes: [
+        'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified',
+        [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days']
+      ],
+      group: [
+        'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
+        'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
+      ],
+      order: [
+        [sequelize.literal('views'), 'DESC'],
+        ['followers', 'DESC'],
+        ['stories', 'DESC'],
+        ['replies', 'DESC'],
+      ],
+      include: [
+        {
+          model: View,
+          as: 'authored_views',
+          attributes: [],
+          where: {
+            createdAt: {
+              [Sequelize.Op.gt]: thirtyDaysAgo
+            }
+          },
+          required: false
+        }
+      ],
+      limit: 5,
+      subQuery: false
+    });
+  }
+  catch (error) {
+    throw error;
   }
 };
 

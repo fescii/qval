@@ -771,7 +771,7 @@ export default class AuthorWrapper extends HTMLElement {
           flex-flow: row;
           align-items: center;
           padding: 5px 5px 8px;
-          background: var(--poll-background);
+          background: var(--gray-background);
           border-radius: 10px;
           gap: 5px;
         }
@@ -796,7 +796,7 @@ export default class AuthorWrapper extends HTMLElement {
         }
 
         .top > .avatar > .icon {
-          background: var(--poll-background);
+          background: var(--gray-background);
           position: absolute;
           bottom: -1px;
           right: -2px;
