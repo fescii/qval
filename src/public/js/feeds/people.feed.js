@@ -125,11 +125,9 @@ export default class PeopleFeed extends HTMLElement {
 
   mapFields = data => {
     return data.map(user => {
-      let name = user.name.split(" ");
-      let picture = user.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : user.picture;
       return /*html*/`
 				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
-          picture="${picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
           following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
 				</user-wrapper>
       `

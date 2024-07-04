@@ -126,16 +126,13 @@ export default class StoryFeed extends HTMLElement {
     return data.map(story => {
       const author = story.story_author;
       const url = `/p/${story.hash.toLowerCase()}`;
-      let name = author.name.split(" ");
-      let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
-      
       if (story.kind === "post") {
         return /*html*/`
           <quick-post story="quick" url="${url}" hash="${story.hash}" likes="${story.likes}" 
             replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
             replies-url="/api/v1${url}/replies" likes-url="/api/v1${url}/likes" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${picture}" 
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
             author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
@@ -150,7 +147,7 @@ export default class StoryFeed extends HTMLElement {
             voted="${story.option ? 'true' : 'false'}" selected="${story.option}" end-time="${story.end}" replies-url="/api/v1${url}/replies" 
             likes-url="/api/v1${url}/likes" options='${story.poll}' votes="${story.votes}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${picture}" 
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
             author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
@@ -166,7 +163,7 @@ export default class StoryFeed extends HTMLElement {
             views="${story.views}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
             author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" 
-            author-img="${picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
+            author-img="${author.picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
             author-followers="${author.followers}" author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.story_sections}

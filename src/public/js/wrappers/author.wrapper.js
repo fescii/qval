@@ -496,18 +496,19 @@ export default class AuthorWrapper extends HTMLElement {
 
   getBody = () => {
     return /* html */`
-      <div data-expanded="false" class="content-container">
+      <div data-expanded="true" class="content-container">
         ${this.getContent()}
       </div>
     `
   }
 
   getContent = () => {
+    const mql = window.matchMedia('(max-width: 660px)');
     return /* html */`
       ${this.getSvg()}
 		  ${this.getHeader()}
       ${this.getStats()}
-      ${this.getBio()}
+      ${this.getBio(mql.matches)}
       ${this.getActions()}
 		`
   }
@@ -541,10 +542,7 @@ export default class AuthorWrapper extends HTMLElement {
 
     return /* html */ `
       <div class="top">
-        <div class="avatar">
-          <img src="${this.getAttribute('picture')}" alt="Author name">
-          ${this.checkVerified(this.getAttribute('verified'))}
-        </div>
+        ${this.getPicture(this.getAttribute('picture'))}
         <div class="name">
           <h4 class="name">
             <span class="name">${displayName}</span>
@@ -558,6 +556,30 @@ export default class AuthorWrapper extends HTMLElement {
         </div>
       </div>
     `
+  }
+
+  getPicture = picture => {
+    // check if picture is empty || null || === "null"
+    if (picture === '' || picture === null || picture === 'null') {
+      return /*html*/`
+        <div class="avatar svg">
+          <div class="svg-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+            </svg>
+          </div>
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+    else {
+      return /*html*/`
+        <div class="avatar">
+          <img src="${picture}" alt="Author picture">
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
   }
 
   checkVerified = verified => {
@@ -604,18 +626,22 @@ export default class AuthorWrapper extends HTMLElement {
 		`
   }
 
-  getBio = () => {
+  getBio = mql => {
     // Get bio content
     let bio = this.getAttribute('bio') || 'The user has not added their bio yet.'
 
     // trim white spaces
     bio = bio.trim();
 
-    // separate by new lines
-    const bioArray = bio.split('\n');
+    let bioLines = bio.length > 150 ? `<p>${bio.substring(0, 150)}..</p>` : `<p>${bio}</p>`;
 
-    // trim each line and ignore empty lines
-    const bioLines = bioArray.map(line => line.trim()).filter(line => line !== '').map(line => `<p>${line}</p>`).join('');
+    if (!mql) {
+      // separate by new lines
+      const bioArray = bio.split('\n');
+
+      // trim each line and ignore empty lines
+      bioLines = bioArray.map(line => line.trim()).filter(line => line !== '').map(line => `<p>${line}</p>`).join('');
+    }
 
     return /*html*/`
       <div class="bio">
@@ -785,6 +811,28 @@ export default class AuthorWrapper extends HTMLElement {
           -moz-border-radius: 50%;
         }
 
+        .top > .avatar.svg {
+          background: var(--gray-background);
+        }
+
+        .top > .avatar > .svg-avatar {
+          border: var(--border);
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+        }
+
+        .top > .avatar > .svg-avatar svg {
+          width: 25px;
+          height: 25px;
+          color: var(--gray-color);
+        }
+
         .top > .avatar > img {
           width: 100%;
           height: 100%;
@@ -946,6 +994,11 @@ export default class AuthorWrapper extends HTMLElement {
 
         .actions > .action.you {
           text-transform: capitalize;
+          padding: 3px 15px 4px;
+          cursor: default;
+          pointer-events: none;
+          border: none;
+          background: var(--gray-background);
         }
         
         .actions > .action.follow {
@@ -963,6 +1016,10 @@ export default class AuthorWrapper extends HTMLElement {
             border: none;
           }
 
+          .top > .avatar > .svg-avatar {
+            border: none;
+          }
+
           .content-container {
             border: none;
             position: relative;
@@ -972,7 +1029,7 @@ export default class AuthorWrapper extends HTMLElement {
             display: flex;
             flex-flow: column;
             align-items: start;
-            gap: 0;
+            gap: 8px;
             transition: all 0.3s ease;
             -webkit-transition: all 0.3s ease;
             -moz-transition: all 0.3s ease;
@@ -985,21 +1042,21 @@ export default class AuthorWrapper extends HTMLElement {
           .content-container > .actions {
             transition: all 0.5s ease;
             border: none;
-            max-height: 0;
+            max-height: max-content;
             margin: 0;
             padding: 0;
             overflow: hidden;
           }
 
-          .actions {
-            border: none;
+          .content-container > .actions {
+            border-bottom: var(--border);
             display: flex;
             font-family: var(--font-main), sans-serif;
             width: 100%;
             flex-flow: row;
             align-items: center;
             gap: 12px;
-            padding: 5px 0 0 0;
+            padding: 5px 0 15px;
           }
 
           .top {
@@ -1036,6 +1093,7 @@ export default class AuthorWrapper extends HTMLElement {
             display: inline-block;
             position: absolute;
             top: 20px;
+            rotate: 180deg;
             right: 5px;
             color: var(--gray-color);
             cursor: default !important;

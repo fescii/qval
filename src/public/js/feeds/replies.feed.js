@@ -129,14 +129,12 @@ export default class RepliesFeed extends HTMLElement {
   mapFields = data => {
     return data.map(reply => {
       const author = reply.reply_author;
-      let name = author.name.split(" ");
-      let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
       return /*html*/`
         <quick-post story="reply" hash="${reply.hash}" url="/r/${reply.hash}" likes="${reply.likes}" replies="${reply.replies}" liked="${reply.liked}"
           views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" likes-url="/api/v1/r/${reply.hash}/likes"
           author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}"
           author-stories="${author.stories}" author-replies="${author.replies}"
-          author-img="${picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
+          author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
           author-following="${author.following}" author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!': author.bio }">
           ${reply.content}
         </quick-post>
@@ -216,13 +214,23 @@ export default class RepliesFeed extends HTMLElement {
         </p>
       </div>
     `
-   } 
+   }
    else if(text === "reply") {
     return `
       <div class="empty">
         <h2 class="title">No replies found!</h2>
         <p class="next">
           The reply has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   }
+   else if(text === "story") {
+    return `
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
+        <p class="next">
+          The story has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
         </p>
       </div>
     `
@@ -276,6 +284,16 @@ export default class RepliesFeed extends HTMLElement {
           <h2 class="title">No more replies!</h2>
           <p class="next">
             You have exhausted all of the reply's replies. You can add a new reply or come back later to check for new replies.
+          </p>
+        </div>
+      `
+    }
+    else if(text === "story") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the story's replies. You can add a new reply or come back later to check for new replies.
           </p>
         </div>
       `

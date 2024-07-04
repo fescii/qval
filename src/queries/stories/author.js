@@ -161,6 +161,7 @@ const findRepliesByAuthor = async (reqData) => {
     if (replies === null) {
       return { 
         data: {
+          replies: [],
           limit: limit,
           offset: offset,
           last: true,

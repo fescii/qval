@@ -86,10 +86,7 @@ export default class PersonWrapper extends HTMLElement {
 
     return /*html*/`
       <div class="head">
-        <div class="image">
-          <img src="${this.getAttribute('picture')}" alt="User profile">
-          ${this.checkVerified(this.getAttribute('verified'))}
-        </div>
+        ${this.getPicture(this.getAttribute('picture'))}
         <div class="name">
           <h4 class="uid">${displayName}</h4>
           <a href="${url.toLowerCase()}" class="username" id="username">
@@ -102,6 +99,30 @@ export default class PersonWrapper extends HTMLElement {
       </div>
       ${this.checkFollow(this.getAttribute('user-follow'))}
     `
+  }
+
+  getPicture = picture => {
+    // check if picture is empty || null || === "null"
+    if (picture === '' || picture === null || picture === 'null') {
+      return /*html*/`
+        <div class="avatar svg">
+          <div class="svg-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+            </svg>
+          </div>
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+    else {
+      return /*html*/`
+        <div class="avatar">
+          <img src="${picture}" alt="Author picture">
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
   }
 
   checkFollow = following => {
@@ -227,7 +248,7 @@ export default class PersonWrapper extends HTMLElement {
           gap: 10px;
         }
 
-        .head > .image {
+        .head > .avatar {
           position: relative;
           width: 80px;
           height: 80px;
@@ -239,7 +260,31 @@ export default class PersonWrapper extends HTMLElement {
           -moz-border-radius: 50px;
         }
 
-        .head > .image img {
+        .head > .avatar.svg {
+          background: var(--gray-background);
+        }
+
+        .head > .avatar > .svg-avatar {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          font-size: 1.5rem;
+        }
+
+        .head > .avatar > .svg-avatar svg {
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          color: var(--gray-color);
+          margin: 0 0 3px 0;
+        }
+
+        .head > .avater img {
           width: 100%;
           height: 100%;
           overflow: hidden;
@@ -249,7 +294,7 @@ export default class PersonWrapper extends HTMLElement {
           -moz-border-radius: 50px;
         }
 
-        .head > .image > .icon {
+        .head > .avatar > .icon {
           background: var(--user-background);
           position: absolute;
           bottom: 0px;
@@ -263,7 +308,7 @@ export default class PersonWrapper extends HTMLElement {
           border-radius: 50%;
         }
         
-        .head > .image > .icon svg {
+        .head > .avatar > .icon svg {
           width: 20px;
           height: 20px;
           color: var(--accent-color);

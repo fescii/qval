@@ -400,10 +400,7 @@ export default class ProfileWrapper extends HTMLElement {
     return /* html */ `
     </contact-popup>
       <div class="top">
-        <div class="avatar">
-          <img src="${this.getAttribute('picture')}" alt="Author name">
-          ${this.checkVerified(this.getAttribute('verified'))}
-        </div>
+        ${this.getPicture(this.getAttribute('picture'))}
         <div class="info">
           <div class="name">
             <h4 class="name">
@@ -417,6 +414,30 @@ export default class ProfileWrapper extends HTMLElement {
         </div>
       </div>
     `
+  }
+
+  getPicture = picture => {
+    // check if picture is empty || null || === "null"
+    if (picture === '' || picture === null || picture === 'null') {
+      return /*html*/`
+        <div class="avatar svg">
+          <div class="svg-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+            </svg>
+          </div>
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+    else {
+      return /*html*/`
+        <div class="avatar">
+          <img src="${picture}" alt="Author picture">
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
   }
 
   checkVerified = verified => {
@@ -518,7 +539,6 @@ export default class ProfileWrapper extends HTMLElement {
     }
   }
 
-
   getHighlights = () => {
     // get url
     const url = this.getAttribute('url');
@@ -619,6 +639,29 @@ export default class ProfileWrapper extends HTMLElement {
           border-radius: 50%;
           -webkit-border-radius: 50%;
           -moz-border-radius: 50%;
+        }
+
+        .top > .avatar.svg {
+          background: var(--gray-background);
+        }
+
+        .top > .avatar > .svg-avatar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+        }
+
+        .top > .avatar > .svg-avatar svg {
+          width: 50px;
+          height: 50px;
+          color: var(--gray-color);
+          display: inline-block;
+          margin: 0 0 5px 0;
         }
 
         .top > .avatar > img {
@@ -795,10 +838,14 @@ export default class ProfileWrapper extends HTMLElement {
 
         .actions > .action.you {
           text-transform: capitalize;
+          padding: 3px 15px 4px;
+          cursor: default;
+          pointer-events: none;
+          border: none;
+          background: var(--gray-background);
         }
 
         .actions > .action.edit,
-        .actions > .action.you,
         .actions > .action.highlights,
         .actions > .action.socials,
         .actions > .action.following,

@@ -148,7 +148,7 @@ export default class AppProfile extends HTMLElement {
 
         <section class="side">
           ${this.getHighlights()}
-          <people-container url="/api/v1/users/recommended" title="Recommended" type="profile"></people-container>
+          <people-container url="/api/v1/users/recommended" type="profile"></people-container>
           ${this.getInfo()}
         </section>
       `;

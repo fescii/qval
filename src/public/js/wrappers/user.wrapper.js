@@ -446,10 +446,7 @@ export default class UserWrapper extends HTMLElement {
     return /* html */ `
       <div class="author">
         <div class="author-info">
-          <div class="avatar">
-            <img src="${this.getAttribute('picture')}" alt="Author name">
-            ${this.checkVerified(this.getAttribute('verified'))}
-          </div>
+          ${this.getPicture(this.getAttribute('picture'))}
           <div class="name">
             <h4 class="name">
               <span class="name">${displayName}</span>
@@ -469,6 +466,30 @@ export default class UserWrapper extends HTMLElement {
         ${this.checkYou(this._you)}
       </div>
     `
+  }
+
+  getPicture = picture => {
+    // check if picture is empty || null || === "null"
+    if (picture === '' || picture === null || picture === 'null') {
+      return /*html*/`
+        <div class="avatar svg">
+          <div class="svg-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+            </svg>
+          </div>
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+    else {
+      return /*html*/`
+        <div class="avatar">
+          <img src="${picture}" alt="Author picture">
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
   }
 
   getBio = () => {
@@ -690,6 +711,10 @@ export default class UserWrapper extends HTMLElement {
           -webkit-border-radius: 50%;
           -moz-border-radius: 50%;
         }
+
+        .author-info > .avatar.svg {
+          background: var(--gray-background);
+        }
         
         .author-info > .avatar > img {
           width: 100%;
@@ -699,6 +724,25 @@ export default class UserWrapper extends HTMLElement {
           border-radius: 50%;
           -webkit-border-radius: 50%;
           -moz-border-radius: 50%;
+        }
+
+        .author-info > .avatar.svg > .svg-avatar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+        }
+
+        .author-info > .avatar.svg > .svg-avatar > svg {
+          width: 26px;
+          height: 26px;
+          color: var(--gray-color);
+          display: flex;
+          margin: 0 0 2px 0;
         }
         
         .author-info > .avatar > .icon {
@@ -842,6 +886,9 @@ export default class UserWrapper extends HTMLElement {
 
         .actions > .action.you {
           text-transform: capitalize;
+          padding: 3px 15px 4px;
+          cursor: default;
+          pointer-events: none;
           border: none;
           background: var(--gray-background);
         }

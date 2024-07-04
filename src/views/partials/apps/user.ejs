@@ -1,26 +1,7 @@
 <% var url = "/u/" + data.hash.toLowerCase() %>
-
-<%# Separate the name into first and last name %> 
-<% var name = data.name.split(" ") %>
-
-<%#  check if the profile picture is null and overwrite it with the default picture  %> 
-<% var picture = data.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : data.picture %>
-
-<%# Check you %>
-<% var you = data.you ? "true" : "false" %>
-
-<%# Check if the user is verified and overwrite it with the default value %> 
-<%  var author_verified = data.verified ? "true" : "false" %>
-
-<%# Check if the user is following the user and overwrite it with the default value %> 
-<%  var author_follow = data.is_following ? "true" : "false" %>
-
-<%# Check if bio is null and overwrite it with the default bio %> 
-<% var bio = data.bio === null ? "This user has not added a bio yet." : data.bio %>
-
-<app-profile tab="<%= data.tab %>" you="<%= you %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories" 
+<app-profile tab="<%= data.tab %>" you="<%= data.you ? 'true' : 'false' %>" hash="<%= data.hash %>" url="<%= url %>" stories-url="/api/v1<%= url %>/stories" 
   replies-url="/api/v1<%= url %>/replies" stories="<%= data.stories %>" replies="<%= data.replies %>" 
   followers-url="/api/v1<%= url %>/followers" following-url="/api/v1<%= url %>/following" 
-  picture="<%= picture %>" verified="<%= author_verified %>" name="<%= data.name %>" followers="<%= data.followers %>"
-  following="<%= data.following %>" user-follow="<%= author_follow %>" bio="<%= bio %>">
+  picture="<%= data.picture %>" verified="<%= data.verified ? 'true' : 'false' %>" name="<%= data.name %>" followers="<%= data.followers %>"
+  following="<%= data.following %>" user-follow="<%= data.is_following ? 'true' : 'false' %>" bio="<%= data.bio === null ? 'This user has not added a bio yet.' : data.bio %>">
 </app-profile>

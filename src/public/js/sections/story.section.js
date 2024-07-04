@@ -248,13 +248,13 @@ export default class StorySection extends HTMLElement {
     const indicator = this.shadowObj.querySelector('.indicator');
 
     // if percentage is greater than 100, set the indicator to 100%
-    if (scrollPercentage + 8 >= 100) {
+    if (scrollPercentage + 2 >= 100) {
       indicator.style.width = `100%`;
       return;
     }
 
     // set the width of the indicator
-    indicator.style.width = `${scrollPercentage + 8}%`;
+    indicator.style.width = `${scrollPercentage + 2}%`;
 
 
     // add scroll event listener to body but check if the content is still in view
@@ -264,7 +264,7 @@ export default class StorySection extends HTMLElement {
       // console.log("totalHeight: ", totalHeight);
 
       // get the scroll position of the content in the y-axis
-      const scrollPosition = document.documentElement.scrollTop + 143;
+      const scrollPosition = document.documentElement.scrollTop;
       // console.log("scrollPosition: ", scrollPosition);
 
       // calculate the percentage of the scroll position
@@ -277,13 +277,13 @@ export default class StorySection extends HTMLElement {
       }
 
       // if percentage + 8  is greater than 100, set the indicator to 100%
-      if (scrollPercentage + 8 >= 100) {
+      if (scrollPercentage + 2 >= 100) {
         indicator.style.width = `100%`;
         return;
       }
 
       // set the width of the indicator
-      indicator.style.width = `${scrollPercentage + 8}%`;
+      indicator.style.width = `${scrollPercentage + 2}%`;
     })
   }
 
