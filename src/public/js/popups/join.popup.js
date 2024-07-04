@@ -76,9 +76,6 @@ export default class JoinPopup extends HTMLElement {
       { page: 'page', content: join},
       url, url
     );
-
-    // update title of the document
-    document.title = 'Join | Register or Login to Qval';
   }
 
   disconnectedCallback() {

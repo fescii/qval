@@ -3,6 +3,8 @@ export default class AppTopic extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle(this.getAttribute('name'));
+
     // check if the user is authenticated
     this._authenticated = this.isLoggedIn('x-random-token');
 
@@ -10,6 +12,10 @@ export default class AppTopic extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = title => {
+    document.title = `Topic | ${title}`;
   }
 
   render() {

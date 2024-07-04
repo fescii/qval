@@ -103,9 +103,6 @@ export default class StoryPost extends HTMLElement {
       { page: 'page', content: post},
       url, url
     );
-
-    // update title of the document
-    document.title = `Story | ${this.getAttribute('story-title')}`;
   }
 
   disableScroll() {

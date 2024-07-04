@@ -6,6 +6,8 @@ export default class AppLogon extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // check if the user is authenticated
     this._authenticated = this.isLoggedIn('x-random-token');
 
@@ -34,6 +36,10 @@ export default class AppLogon extends HTMLElement {
     };
 
     this.render();
+  }
+
+  setTitle = () => {
+    document.title = 'Qval - Join, Login, Recover, and Explore';
   }
 
   render() {

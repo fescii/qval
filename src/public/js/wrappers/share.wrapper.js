@@ -395,7 +395,7 @@ export default class ShareWrapper extends HTMLElement {
           align-items: center;
           justify-content: center;
           gap: 5px;
-          padding: 5px 10px 10px 10px;
+          padding: 5px 12px 15px 12px;
         }
 
         .share.active {
@@ -404,11 +404,16 @@ export default class ShareWrapper extends HTMLElement {
 
         .title {
           color: var(--text-color);
-          font-family: var(--font-main), sans-serif;
-          font-size: 1rem;
+          width: 95%;
+          font-size: 1.35rem;
+          font-weight: 600;
+          margin: 0 0 5px;
+          padding: 0 10px;
+          text-align: center;
+          border-radius: 12px;
+          font-family: var(--font-read), sans-serif;
+          color: var(--text-color);
           font-weight: 500;
-          margin: 0;
-          padding: 0;
         }
 
         .share-buttons {

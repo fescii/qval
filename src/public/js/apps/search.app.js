@@ -3,6 +3,8 @@ export default class AppSearch extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // Get default tab
     this._tab = this.getAttribute('tab');
 
@@ -16,6 +18,11 @@ export default class AppSearch extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = () => {
+    // update title of the document
+    document.title = 'Search - Discover and connect with people, topics and stories';
   }
 
   render() {

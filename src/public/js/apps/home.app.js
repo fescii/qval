@@ -3,10 +3,17 @@ export default class AppHome extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = () => {
+    // update title of the document
+    document.title = 'Home - Create and contribute to ideas that can change the world';
   }
 
   render() {

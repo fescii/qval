@@ -3,6 +3,8 @@ export default class AppUser extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     this._open = false;
 
     this._current = this.getAttribute('current') || 'stats';
@@ -11,6 +13,11 @@ export default class AppUser extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = () => {
+    // update title of the document
+    document.title = 'Account - Manage your account settings, and view your stats';
   }
 
   render() {

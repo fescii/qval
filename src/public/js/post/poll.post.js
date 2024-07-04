@@ -65,9 +65,6 @@ export default class PollPost extends HTMLElement {
       { page: 'page', content: post},
       url, url
     );
-
-    // update title of the document
-    document.title = `Post | ${this.getAttribute('hash')}`;
   }
 
   disableScroll() {

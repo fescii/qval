@@ -3,6 +3,8 @@ export default class AppStory extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle(this.getAttribute('story-title'));
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -11,6 +13,11 @@ export default class AppStory extends HTMLElement {
     this._content = this.innerHTML
 
     this.render();
+  }
+
+  setTitle = title => {
+    // update title of the document
+    document.title = `Story | ${title}`;
   }
 
 

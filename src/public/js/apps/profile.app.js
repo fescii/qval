@@ -3,6 +3,8 @@ export default class AppProfile extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // Check if you is true and convert to boolean
     this._you = this.getAttribute('you') === 'true';
 
@@ -10,6 +12,11 @@ export default class AppProfile extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = () => {
+    // update title of the document
+    document.title = `User | ${this.getAttribute('name')}`;
   }
 
   render() {

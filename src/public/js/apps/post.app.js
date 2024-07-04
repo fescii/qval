@@ -3,10 +3,19 @@ export default class AppPost extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle(this.getAttribute('story'));
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = kind => {
+    // capitalize the first letter
+    kind = kind.charAt(0).toUpperCase() + kind.slice(1);
+    // update title of the document
+    document.title = `${kind} | by ${this.getAttribute('author-hash')}`;
   }
 
   render() {

@@ -126,9 +126,6 @@ export default class HoverAuthor extends HTMLElement {
       { page: 'page', content: profile},
       url, url
     );
-
-    // update title of the document
-    document.title = `User | ${this.getAttribute('name')}`;
   }
 
   mouseEvents = (url, mql, contentContainer) => {

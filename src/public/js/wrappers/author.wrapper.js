@@ -129,9 +129,6 @@ export default class AuthorWrapper extends HTMLElement {
       { page: 'page', content: profile},
       url, url
     );
-
-    // update title of the document
-    document.title = `User | ${this.getAttribute('name')}`;
   }
 
   disableScroll() {
