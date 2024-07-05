@@ -141,7 +141,7 @@ export default class TopicFeed extends HTMLElement {
       const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
       return /*html*/`
         <topic-wrapper hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
-          topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}"
+          topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
           subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
           author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"

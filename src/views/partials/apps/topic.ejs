@@ -2,7 +2,7 @@
 <% var author = data.topic_author %>
 <% var noHtmlContent = data.summary.replace(/<\/?[^>]+(>|$)/g, "") %>
 <app-topic style="display: none;" tab="<%= data.tab %>" subscribers="<%= data.subscribers %>" followers="<%= data.followers %>"
-  stories="<%= data.stories %>" hash="<%= data.hash %>" subscribed="<%= data.is_subscribed ? 'true' : 'false' %>"
+  stories="<%= data.stories %>" hash="<%= data.hash %>" subscribed="<%= data.is_subscribed ? 'true' : 'false' %>" views="<%= data.views %>"
   name="<%= data.name %>" url="<%= url %>" stories-url="/api/v1/t/<%= data.slug %>/stories" 
   summary="<%= noHtmlContent %>" slug="<%= data.slug %>" contributers-url="/api/v1<%= url %>/contributors"
   contributers-url="/api/v1<%= url %>/contributers" followers-url="/api/v1<%= url %>/followers"  topic-follow="<%= data.is_following ? 'true' : 'false' %>"

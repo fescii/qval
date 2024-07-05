@@ -177,7 +177,7 @@ export default class AppSearch extends HTMLElement {
       outerThis.setAttribute('url', outerThis._url);
 
       // update search bar url by adding query
-      window.history.pushState({ path: outerThis._url }, '', outerThis._url);
+      window.history.replaceState(null, null, outerThis._url);
 
       // update tab attribute
       outerThis.setAttribute('tab', 'stories');

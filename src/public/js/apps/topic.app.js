@@ -679,9 +679,9 @@ export default class AppTopic extends HTMLElement {
     url = url.trim().toLowerCase();
     return /* html */`
       <div class="actions">
-        ${this.checkSubscribed(this.getAttribute('subscribed'))}
-        <a href="${url}/edit" class="action edit" id="edit-action">contribute</a>
+        <a href="${url}/edit" class="action edit" id="edit-action">edit</a>
         ${this.checkFollow(this.getAttribute('topic-follow'))}
+        ${this.checkSubscribed(this.getAttribute('subscribed'))}
       </div>
     `
   }

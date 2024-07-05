@@ -29,6 +29,9 @@ export default class TopicWrapper extends HTMLElement {
 
     // perform actions
     this.performActions();
+
+    // open highlights
+    this.openHighlights(body);
   }
 
   isLoggedIn = name => {
@@ -45,6 +48,22 @@ export default class TopicWrapper extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#stats-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -466,10 +485,11 @@ export default class TopicWrapper extends HTMLElement {
     let apiUrl = `/api/v1/t/${this.getAttribute('hash')}`;
 
    return /* html */`
-    <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}" followers="${this.getAttribute('followers')}" 
+    <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}"
+      followers="${this.getAttribute('followers')}" views="${this.getAttribute('views')}"
       stories="${this.getAttribute('stories')}" subscribed="${this.getAttribute('subscribed')}" topic-follow="${this.getAttribute('topic-follow')}"
       name="${this.getAttribute('name')}" url="${url}" summary="${this.getAttribute('description')}" slug="${this.getAttribute('slug')}"
-      stories-url="${apiUrl}/stories" contributers-url="${apiUrl}/contributors"  followers-url="${apiUrl}/followers" 
+      stories-url="${apiUrl}/stories" contributers-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 
       author-hash="${this.getAttribute('author-hash')}" author-you="${this.getAttribute('author-you')}" 
       author-stories="${this.getAttribute('author-stories')}" author-img="${this.getAttribute('author-img')}" 
       author-follow="${this.getAttribute('author-follow')}" author-replies="${this.getAttribute('author-replies')}" 
@@ -480,6 +500,16 @@ export default class TopicWrapper extends HTMLElement {
     </app-topic>
    `
  }
+
+ getHighlights = () => {
+
+  return /* html */`
+    <topic-popup url="/api/v1/t/${this.getAttribute('hash').toLowerCase()}/stats" name="${this.getAttribute('name')}" views="${this.getAttribute('views')}"
+      followers="${this.getAttribute('followers')}" subscribers="${this.getAttribute('subscribers')}" 
+      stories="${this.getAttribute('stories')}">
+    </copic-popup>
+  `
+}
 
 
   getStyles() {

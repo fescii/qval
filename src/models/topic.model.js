@@ -103,22 +103,6 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_topic_idx ON topic.topics USING GIN(search)`);
   });
 
-  // add prototype to search: name_slug_search
-  Topic.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
-    return await Topic.findAll({
-      attributes: ['id', 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt', 'updatedAt'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
-        '@@',
-        tsQuery
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
-
   /**
    * @type {Model}
    * @name TopicSection
@@ -402,6 +386,91 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       value: -1
     }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
+
+
+  // add prototype to search: name_slug_search
+  Topic.search = async queryOptions => {
+    const { query, user, offset, limit } = queryOptions;
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+    if(user !== null) {
+      return await Topic.findAll({
+        attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
+          // Check if the user has followed the topic
+          [
+            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."followers" AS t_followers WHERE t_followers.topic = topics.hash AND t_followers.author = '${user}')`)),
+            'is_following'
+          ],
+          [
+            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."subscribers" AS t_subscribers WHERE t_subscribers.topic = topics.hash AND t_subscribers.author = '${user}')`)),
+            'is_subscribed'
+          ],
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+          ],
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
+          '@@',
+          tsQuery
+        ),
+        include: [
+          {
+            model: User,
+            as: 'topic_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+              [
+                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = topic_author.hash AND connects.from = '${user}')`)),
+                'is_following'
+              ]
+            ],
+          },
+          // Include the topic sections
+          {
+            model: TopicSection,
+            as: 'topic_sections',
+            attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
+            order: [['order', 'ASC']]
+          }
+        ],
+        order: [sequelize.literal(`rank DESC`), ['followers', 'DESC']],
+        limit: limit,
+        offset: offset
+      })
+    }
+    else {
+      return await Topic.findAll({
+        attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`),
+            'rank',
+          ],
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
+          '@@',
+          tsQuery
+        ),
+        include: [
+          {
+            model: User,
+            as: 'topic_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          },
+          // Include the topic sections
+          {
+            model: TopicSection,
+            as: 'topic_sections',
+            attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
+            order: [['order', 'ASC']]
+          }
+        ],
+        order: [sequelize.literal(`rank DESC`), ['followers', 'DESC']],
+        limit: limit,
+        offset: offset
+      })
+    }
+  }
 
   // Defining the associations on the User and Topic models
   User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash', as: 'user_topics', onDelete: 'CASCADE' });

@@ -1,10 +1,10 @@
 const {
-  getUserStats
+  getTopicStats
 } = require('../../controllers').statsController;
 
 /**
- * @function userStatsRoute
- * @description a modular function that registers all stats route for user
+ * @function topicStatsRoute
+ * @description a modular function that registers all stats route for topic
  * @param {Object} app - The express app
  * @param {String} url - The base url, usually '/api/v1' or '/api/v1/s'
  * @returns {void}
@@ -20,5 +20,5 @@ module.exports = (app, url) => {
   });
   
   // Route for finding all stories by an author
-  app.get(`${url}/u/:hash/stats`, getUserStats);
+  app.get(`${url}/t/:hash/stats`, getTopicStats);
 }

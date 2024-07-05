@@ -17,23 +17,42 @@ const findTopicsByQuery = async reqData => {
     const offset = (page - 1) * limit;
 
     // trim the query
-    query = query.trim();
+    let queryStr = query.trim();
 
     // refine the query: make the query to match containing, starting or ending with the query
-    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
+    queryStr = queryStr.split(' ').map((q) => `${q.toLowerCase()}:*`).join(' | ');
 
     // add query to back to the req data
     const queryOptions = {
       user: user,
-      query: query,
+      query: queryStr,
       offset: offset,
       limit: limit,
     }
     
     // build the query(vector search)
-    const topics = await Topic.search(queryOptions);
+    let topics = await Topic.search(queryOptions);
+
+    // if topics is empty, return an empty array
+    if (topics.length < 1) {
+      return { 
+        data: {
+          topics: [],
+          limit: limit,
+          offset: offset,
+          last: true,
+        },
+        error: null 
+      }
+    }
 
     const last = topics.length < limit;
+
+    topics = topics.map(topic => {
+      const data = topic.dataValues;
+      data.you = user === data.author;
+      return data;
+    })
 
     // create a data object
     return { 

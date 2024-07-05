@@ -2,7 +2,7 @@
 const {
   trendingReplies, trendingStories, search,
   trendingTopics, trendingUsers, searchStories,
-  searchReplies
+  searchReplies, searchTopics, searchUsers
 } = require('../../controllers').searchController;
 
 const {
@@ -16,7 +16,7 @@ const {
  * @param {Object} app - The express app
  * @returns {void} - No return
 */
-module.exports = (app, url) => {
+module.exports = app => {
   app.use((_req, res, next) => {
     res.header(
       "Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Access-Control-Allow-Methods",
@@ -44,6 +44,12 @@ module.exports = (app, url) => {
   // Route for handling trending topics
   app.get('/api/v1/q/trending/topics', checkToken, trendingTopics);
 
+  // Route for handling search topics
+  app.get('/api/v1/q/topics', checkToken, searchTopics);
+
   // Route for handling trending people
   app.get('/api/v1/q/trending/people', checkToken, trendingUsers);
+
+  // Route for handling search people
+  app.get('/api/v1/q/people', checkToken, searchUsers);
 }

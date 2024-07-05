@@ -105,6 +105,18 @@ module.exports = (sequelize, Sequelize) => {
 			]
 	});
 
+	// add afterSync hook to create the search column and create the GIN index
+  User.afterSync(() => {
+    // Run the raw SQL query to add the `ts` column
+    sequelize.query(`
+      ALTER TABLE account.users ADD COLUMN IF NOT EXISTS search tsvector
+      GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(name, '')), 'A')) STORED;
+    `);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS search_user_idx ON account.users USING GIN(search)`);
+  });
+
 	/**
 	 * @type {Model}
 	 * @name Code
@@ -215,6 +227,47 @@ module.exports = (sequelize, Sequelize) => {
 			value: -1
 		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
+
+
+	// add prototype to search: name_slug_search
+  User.search = async queryOptions => {
+    const { query, user, offset, limit } = queryOptions;
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+    if(user !== null) {
+      return await User.findAll({
+        attributes: [
+					'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified', 'views',
+        	[Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)), 'is_following'],
+          [sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank'],
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.col('name')),
+          '@@',
+          tsQuery
+        ),
+        order: [sequelize.literal(`rank DESC`), ['views', 'DESC']],
+        limit: limit,
+        offset: offset
+      })
+    }
+    else {
+			return await User.findAll({
+        attributes: [
+					'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified', 'views',
+          [sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank'],
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.col('name')),
+          '@@',
+          tsQuery
+        ),
+        order: [sequelize.literal(`rank DESC`), ['views', 'DESC']],
+        limit: limit,
+        offset: offset
+      })
+		}
+  }
 
 	// Define associations for the Code and User model
 	User.hasMany(Code, { foreignKey: 'email', sourceKey: 'email', onDelete: 'CASCADE' });

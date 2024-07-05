@@ -96,6 +96,7 @@ import JoinPopup from "./popups/join.popup.js";
 import UrlPopup from "./popups/url.popup.js";
 import StatsPopup from "./popups/stats.popup.js";
 import ContactPopup from "./popups/contact.popup.js";
+import TopicPopup from "./popups/topic.popup.js";
 
   // Register apps
   customElements.define("app-home", AppHome);
@@ -191,3 +192,4 @@ import ContactPopup from "./popups/contact.popup.js";
   customElements.define("url-popup", UrlPopup);
   customElements.define("stats-popup", StatsPopup);
   customElements.define("contact-popup", ContactPopup);
+  customElements.define("topic-popup", TopicPopup);

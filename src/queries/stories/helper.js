@@ -473,7 +473,7 @@ const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
 
     // return the topic authors
     return { 
-      authors: authors.map(author => {
+      people: authors.map(author => {
         const data = author.dataValues;
         data.you = false;
         return data;
@@ -483,7 +483,7 @@ const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
   }
   catch (error) {
     // return the error
-    return { authors: null, error };
+    return { people: null, error };
   }
 }
 

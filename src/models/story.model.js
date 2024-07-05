@@ -617,7 +617,7 @@ module.exports = (User, sequelize, Sequelize) => {
       return await Reply.findAll({
         attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
           [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+            sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
           ],
           [
             Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),

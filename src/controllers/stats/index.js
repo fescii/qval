@@ -1,7 +1,6 @@
-const {
-  getUserStats
-} = require('./user');
+const { getUserStats } = require('./user');
+const { getTopicStats } = require('./topic');
 
 module.exports = {
-  getUserStats
+  getUserStats, getTopicStats
 }
