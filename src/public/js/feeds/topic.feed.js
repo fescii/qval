@@ -8,11 +8,21 @@ export default class TopicFeed extends HTMLElement {
     this._page = this.parseToNumber(this.getAttribute('page'));
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
+    this._query = this.setQuery(this.getAttribute('query'));
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = query => {
+    // if the query is null || empty
+    if(!query || query === "" || query !== "true") {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -82,7 +92,8 @@ export default class TopicFeed extends HTMLElement {
 
   fetchReplies = topicsContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    // const url = `${this._url}?page=${this._page}`;
+    const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -124,18 +135,53 @@ export default class TopicFeed extends HTMLElement {
   mapFields = data => {
     return data.map(topic => {
       const author = topic.topic_author;
+      const sections = topic.topic_sections;
       const url = `/t/${topic.hash.toLowerCase()}`;
+      // Remove all HTML tags
+      const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
       return /*html*/`
-        <topic-wrapper hash="${topic.hash}" name="${topic.slug}" description="${topic.summary}"
+        <topic-wrapper hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
           topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}"
-          subscribers="236" followers="9734" stories="75624"
+          subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
           author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
-          author-following="${author.following}" author-follow="${topic.is_following}" author-bio="${author.bio}.">
-          ${topic.topic_sections}
+          author-following="${author.following}" author-follow="${author.is_following}"
+          author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
+          ${this.mapTopicSections(sections, topic.hash)}
         </topic-wrapper>
       `
     }).join('');
+  }
+
+  mapTopicSections = (data, hash) => {
+    if (data.length <= 0) {
+      return /*html*/`
+        <div class="empty">
+          <p>The topic has no information yet. You can contribute to this topic by adding relevent information about the topic.</p>
+          <a href="/t/${hash}/contribute" class="button">Contribute</a>
+        </div>
+      `;
+    }
+    else {
+      const html = data.map(section => {
+        const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+        return /*html*/`
+          <div class="section" order="${section.order}" id="section${section.order}">
+            ${title}
+            ${section.content}
+          </div>
+        `
+      }).join('');
+  
+      const last = /*html*/`
+        <div class="last">
+          <p>Do you have more information about this topic? You can contribute to this topic by adding or editing information.</p>
+          <a href="/t/${hash}/contribute" class="button">Contribute</a>
+        </div>
+      `
+  
+      return html + last;
+    }
   }
 
   fetchWithTimeout = (url, options, timeout = 9000) => {
@@ -211,22 +257,12 @@ export default class TopicFeed extends HTMLElement {
       </div>
     `
    } 
-   else if(text === "user") {
-    return `
-      <div class="empty">
-        <h2 class="title">No stories or posts</h2>
-        <p class="next">
-          The user has not posted any stories yet. You can come back later, once available they'll appear here.
-        </p>
-      </div>
-    `
-   } 
    else if(text === "search") {
     return `
       <div class="empty">
-        <h2 class="title">No stories found!</h2>
+        <h2 class="title">No topics found!</h2>
         <p class="next">
-          There are no stories/posts found. You can try searching with a different keyword.
+          No topics found for this search. You can try searching with a different keyword.
         </p>
       </div>
     `
@@ -234,9 +270,9 @@ export default class TopicFeed extends HTMLElement {
    else if(text === "topic") {
     return `
       <div class="empty">
-        <h2 class="title">No stories found!</h2>
+        <h2 class="title">No topics found!</h2>
         <p class="next">
-          No stories/posts found for this topic. You can try coming back later.
+          No topics found for this topic. You can come back later, once available they'll appear here.
         </p>
       </div>
     `
@@ -244,9 +280,9 @@ export default class TopicFeed extends HTMLElement {
    else {
     return `
       <div class="empty">
-        <h2 class="title"> No stories found!</h2>
+        <h2 class="title"> No topics found!</h2>
         <p class="next">
-          There are no stories/posts found. You can try coming back later.
+          No topics found. You can come back later, once available they'll appear here.
         </p>
       </div>
     `
@@ -260,7 +296,7 @@ export default class TopicFeed extends HTMLElement {
         <div class="last">
           <h2 class="title">That's all for now!</h2>
           <p class="next">
-            You have reached the end of the stories. You can always come back later or refresh the page to check for new stories.
+            You have reached the end of the topics. You can always come back later to check for new topics.
           </p>
         </div>
       `
@@ -268,9 +304,9 @@ export default class TopicFeed extends HTMLElement {
     else if(text === "user") {
       return `
         <div class="last">
-          <h2 class="title">That's all the user's stories!</h2>
+          <h2 class="title">That's all for now!</h2>
           <p class="next">
-            You have exhausted all of the user's stories. You can always come back later to check for new stories.
+            You have exhausted all of the user's topics. You can always come back later to check for new topics.
           </p>
         </div>
       `
@@ -288,9 +324,9 @@ export default class TopicFeed extends HTMLElement {
     else if(text === "topic") {
       return `
         <div class="last">
-          <h2 class="title">That's all the topic stories!</h2>
+          <h2 class="title">That's all for now!</h2>
           <p class="next">
-            You have reached the end of the topic stories. You can come back later to check for new stories.
+            You have reached the end of the related topics. You can always come back later or refresh the page to check for new topics.
           </p>
         </div>
       `
@@ -300,7 +336,7 @@ export default class TopicFeed extends HTMLElement {
         <div class="last">
           <h2 class="title">That's all!</h2>
           <p class="next">
-            You have reached the end of the stories. You can always come back later or refresh the page to check for new stories.
+            You have reached the end of the topics. You can always come back later or refresh the page to check for new topics.
           </p>
         </div>
       `

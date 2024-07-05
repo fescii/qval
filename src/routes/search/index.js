@@ -1,7 +1,8 @@
 // Import necessary modules, middlewares, and controllers
 const {
   trendingReplies, trendingStories, search,
-  trendingTopics, trendingUsers
+  trendingTopics, trendingUsers, searchStories,
+  searchReplies
 } = require('../../controllers').searchController;
 
 const {
@@ -31,8 +32,14 @@ module.exports = (app, url) => {
   // Route for handling  trending stories
   app.get('/api/v1/q/trending/stories', checkToken, trendingStories);
 
+  // Route for handling search stories
+  app.get('/api/v1/q/stories', checkToken, searchStories);
+
   // Route for handling trending replies
   app.get('/api/v1/q/trending/replies', checkToken, trendingReplies);
+
+  // Route for handling search replies
+  app.get('/api/v1/q/replies', checkToken, searchReplies);
 
   // Route for handling trending topics
   app.get('/api/v1/q/trending/topics', checkToken, trendingTopics);

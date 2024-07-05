@@ -1,9 +1,10 @@
 <% var url = "/t/" + data.hash.toLowerCase() %>
-<% author = data.topic_author %>
+<% var author = data.topic_author %>
+<% var noHtmlContent = data.summary.replace(/<\/?[^>]+(>|$)/g, "") %>
 <app-topic style="display: none;" tab="<%= data.tab %>" subscribers="<%= data.subscribers %>" followers="<%= data.followers %>"
   stories="<%= data.stories %>" hash="<%= data.hash %>" subscribed="<%= data.is_subscribed ? 'true' : 'false' %>"
   name="<%= data.name %>" url="<%= url %>" stories-url="/api/v1/t/<%= data.slug %>/stories" 
-  summery="<%= data.summary %>" slug="<%= data.slug %>" contributers-url="/api/v1<%= url %>/contributors"
+  summary="<%= noHtmlContent %>" slug="<%= data.slug %>" contributers-url="/api/v1<%= url %>/contributors"
   contributers-url="/api/v1<%= url %>/contributers" followers-url="/api/v1<%= url %>/followers"  topic-follow="<%= data.is_following ? 'true' : 'false' %>"
   author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>" author-stories="<%= author.stories %>"
   author-img="<%= author.picture %>" author-follow="<%= author.is_following ? 'true' : 'false' %>" author-replies="<%= author.replies %>"

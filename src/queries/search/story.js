@@ -18,21 +18,34 @@ const findStoriesByQuery = async (reqData) => {
     const offset = (page - 1) * limit;
 
     // trim the query
-    query = query.trim();
+    let queryStr = query.trim();
 
     // refine the query: make the query to match containing, starting or ending with the query
-    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
+    queryStr = queryStr.split(' ').map((q) => `${q}:*`).join(' | ');
 
     // add query to back to the req data
     const queryOptions = {
       user: user,
-      query: query,
+      query: queryStr,
       offset: offset,
       limit: limit,
     }
     
     // build the query(vector search)
-    const stories = await Story.search(queryOptions);
+    let stories = await Story.search(queryOptions);
+
+    // return the stories: map the stories' dataValues
+    stories =  stories.map(story => {
+      const data = story.dataValues;
+      data.story_author = story.story_author.dataValues;
+      data.you = user === data.author;
+      // add story sections to the story
+      if (story.kind === 'story') {
+        data.story_sections = mapFields(data.content, story.story_sections);
+      }
+
+      return data;
+    });
 
     const last = stories.length < limit;
 

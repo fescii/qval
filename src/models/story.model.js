@@ -129,23 +129,6 @@ module.exports = (User, sequelize, Sequelize) => {
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_story_idx ON story.stories USING GIN(search)`);
   });
 
-
-  // add search property to the story model
-  Story.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
-    return await Story.findAll({
-      attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies', 'end', 'createdAt', 'updatedAt'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
-        '@@',
-        tsQuery,
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
-
   // add afterDestroy hook to decrement the total stories of the user / topic
   Story.afterDestroy(async story => {
     // construct the job payload: for queueing(for the topic)
@@ -370,22 +353,6 @@ module.exports = (User, sequelize, Sequelize) => {
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_reply_idx ON story.replies USING GIN(search)`);
   });
 
-  // add search property to the reply model
-  Reply.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-    
-    return await Reply.findAll({
-      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
-        '@@',
-        tsQuery,
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
-
   // add afterDestroy hook to decrement the replies count of the story/reply
   Reply.afterDestroy(async reply => {
     // construct the job payload: for queueing || add the job to the queue
@@ -552,6 +519,158 @@ module.exports = (User, sequelize, Sequelize) => {
       }, { attempts: 3, backoff: 1000, removeOnComplete: true });
     }
   });
+
+
+  // add search property to the story model
+  Story.search = async queryOptions => {
+    const { user, query, offset, limit } = queryOptions;
+
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+
+    // check if user is not null
+    if (user !== null) {
+      return await Story.findAll({
+        attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+          ],
+          [
+            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
+            'liked'
+          ],
+          [
+            Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
+            'option'
+          ]
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
+          '@@',
+          tsQuery,
+        ),
+        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
+        offset: offset,
+        limit: limit,
+        include: [
+          {
+            model: User,
+            as: 'story_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+              [
+                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
+                'is_following'
+              ]
+            ],
+          },
+          // Include the story sections
+          {
+            model: StorySection,
+            as: 'story_sections',
+            attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+            order: [['order', 'ASC']]
+          }
+        ],
+      });
+    } else {
+      return await Story.findAll({
+        attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+          ],
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
+          '@@',
+          tsQuery,
+        ),
+        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
+        offset: offset,
+        limit: limit,
+        include: [
+          {
+            model: User,
+            as: 'story_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          },
+          // Include the story sections
+          {
+            model: StorySection,
+            as: 'story_sections',
+            attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+            order: [['order', 'ASC']]
+          }
+        ],
+      });
+    }
+  }
+
+  // add search property to the reply model
+  Reply.search = async queryOptions => {
+    const { user, query, offset, limit } = queryOptions;
+
+    // Combine the tsquery strings without using colon-based match types
+    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
+    
+    // check if user is not null
+    if (user !== null) {
+      return await Reply.findAll({
+        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+          ],
+          [
+            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
+            'liked'
+          ]
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
+          '@@',
+          tsQuery,
+        ),
+        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
+        offset: offset,
+        limit: limit,
+        include: [
+          {
+            model: User,
+            as: 'reply_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+              [
+                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
+                'is_following'
+              ]
+            ],
+          }
+        ],
+      });
+    } else {
+      return await Reply.findAll({
+        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
+          [
+            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+          ]
+        ],
+        where: sequelize.where(
+          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
+          '@@',
+          tsQuery,
+        ),
+        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
+        offset: offset,
+        limit: limit,
+        include: [
+          {
+            model: User,
+            as: 'reply_author',
+            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          }
+        ],
+      });
+    }
+  }
+
 
   //--- Defining the associations ---//
   // User <--> Story

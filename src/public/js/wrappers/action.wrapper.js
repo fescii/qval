@@ -698,11 +698,11 @@ export default class ActionWrapper extends HTMLElement {
     const shareUrl = `${host}${url}`;
 
     // Get the tilte of the story
-    const title = this.getAttribute('summery');
+    const title = this.getAttribute('summary');
 
 
     return /* html */`
-      <share-wrapper url="${shareUrl.toLowerCase()}" summery="${title}"></share-wrapper>
+      <share-wrapper url="${shareUrl.toLowerCase()}" summary="${title}"></share-wrapper>
     `
   }
 

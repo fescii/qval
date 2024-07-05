@@ -3,8 +3,6 @@ export default class AppSearch extends HTMLElement {
     // We are not even going to touch this.
     super();
 
-    this.setTitle();
-
     // Get default tab
     this._tab = this.getAttribute('tab');
 
@@ -14,28 +12,56 @@ export default class AppSearch extends HTMLElement {
     //Get url in lowercase
     this._url = this.getAttribute('url').trim().toLowerCase();
 
+    this._active = null;
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
+
+    this.setTitle();
 
     this.render();
   }
 
   setQuery = () => {
-    const query = this.getAttribute('query');
+    // Check if query q is in the url and update the query
+    const url = new URL(window.location.href);
+    const q = url.searchParams.get('q');
 
-    if (query !== '' && query !== null && query !== 'null') {
+    if (q !== '' && q !== null && q !== 'null') {
       // update query
-      this._query = query;
+      this._query = q;
+      this.setAttribute('query', q);
     }
     else {
-      // update query
-      this._query = null;
+      const query = this.getAttribute('query');
+
+      if (query !== '' && query !== null && query !== 'null') {
+        // update query
+        this._query = query;
+      }
+      else {
+        // update query
+        this._query = null;
+      }
+    }
+  }
+
+  updateInput = form => {
+    // update input value
+    if(this._query) {
+      form.querySelector('input').value = this._query;
     }
   }
 
   setTitle = () => {
     // update title of the document
-    document.title = 'Search | Discover and connect with people, topics and stories';
+    // document.title = 'Search | Discover and connect with people, topics and stories';
+    if (this._query) {
+      document.title = `Search | ${this._query}`;
+    }
+    else {
+      document.title = 'Search | Discover and connect with people, topics and stories';
+    }
   }
 
   render() {
@@ -46,10 +72,13 @@ export default class AppSearch extends HTMLElement {
     // Activate tab
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
+    const form = this.shadowObj.querySelector('form.search');
   
-    if (contentContainer && tabContainer) {
+    if (contentContainer && tabContainer && form) {
       this.updateActiveTab(this._tab, tabContainer);
       this.activateTab(contentContainer, tabContainer);
+      this.activateForm(form, tabContainer, contentContainer);
+      this.updateInput(form);
     }
 
     // watch for mql changes
@@ -66,10 +95,13 @@ export default class AppSearch extends HTMLElement {
 
       const contentContainer = this.shadowObj.querySelector('div.content-container');
       const tabContainer = this.shadowObj.querySelector('ul#tab');
-
-      if (contentContainer && tabContainer) {
-        this.updateActiveTab(this.getAttribute('tab'), tabContainer)
-        this.activateTab(contentContainer, tabContainer);;
+      const form = this.shadowObj.querySelector('form.search');
+    
+      if (contentContainer && tabContainer && form) {
+        this.updateActiveTab(this._tab, tabContainer);
+        this.activateTab(contentContainer, tabContainer);
+        this.activateForm(form, tabContainer, contentContainer);
+        this.updateInput(form);
       }
     });
   }
@@ -101,6 +133,9 @@ export default class AppSearch extends HTMLElement {
     if (tab && line) {
       tab.classList.add('active');
 
+      // update active tab
+      this._active = tab;
+
       // Calculate half tab width - 10px
       const tabWidth = (tab.offsetWidth/2) - 20;
 
@@ -114,12 +149,66 @@ export default class AppSearch extends HTMLElement {
     }
   }
 
+  activateForm = (form, tabContainer, contentContainer) => {
+    const outerThis = this;
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const query = form.querySelector('input').value;
+
+      if (query.trim() === '') {
+        return;
+      }
+
+      // update query
+      outerThis._query = query;
+
+      // update query attribute
+      outerThis.setAttribute('query', outerThis._query);
+
+      // update title of the document
+      document.title = `Search | ${query}`;
+
+      // update url
+      outerThis._url = `/search?q=${query}`;
+
+      // update url attribute
+      outerThis.setAttribute('url', outerThis._url);
+
+      // update search bar url by adding query
+      window.history.pushState({ path: outerThis._url }, '', outerThis._url);
+
+      // update tab attribute
+      outerThis.setAttribute('tab', 'stories');
+
+      // get tab container
+      const tab = outerThis.getContainer('stories');
+
+      // remove active tab
+      outerThis.removeActiveTab(tabContainer);
+
+      // Set active tab
+      outerThis.updateActiveTab('stories', tabContainer);
+
+      // update content
+      contentContainer.innerHTML = tab;
+    });
+  }
+
+  removeActiveTab = tabContainer => {
+    // remove active tab
+    const activeTab = tabContainer.querySelector('li.tab-item.active');
+    if (activeTab) {
+      activeTab.classList.remove('active');
+    }
+  }
+
   activateTab = (contentContainer, tabContainer) => {
     const outerThis = this;
 
     const line = tabContainer.querySelector('span.line');
     const tabItems = tabContainer.querySelectorAll('li.tab-item');
-    let activeTab = tabContainer.querySelector('li.tab-item.active');
 
     tabItems.forEach(tab => {
       tab.addEventListener('click', e => {
@@ -131,13 +220,13 @@ export default class AppSearch extends HTMLElement {
 
         line.style.left = `${tab.offsetLeft + tabWidth}px`;
 
-        if (tab.dataset.element === activeTab.dataset.element) {
+        if (tab.dataset.element === outerThis._active.dataset.element) {
           return;
         }
         else {
-          activeTab.classList.remove('active');
+          outerThis._active.classList.remove('active');
           tab.classList.add('active');
-          activeTab = tab;
+          outerThis._active = tab;
 
           // update tab attribute  and this._tab
           outerThis._tab = tab.dataset.element;
@@ -292,7 +381,7 @@ export default class AppSearch extends HTMLElement {
         return this.getReplies();
       case "people":
         return this.getPeople();
-      case "topic":
+      case "topics":
         return this.getTopics();
       default:
         return this.getStories();
@@ -304,7 +393,8 @@ export default class AppSearch extends HTMLElement {
     const topics = this.getAttribute('topics-url');
     return /*html*/`
       <topics-feed page="1"
-        url="${this._query ? topics : trending}" kind="search">
+        url="${this._query ? topics + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
       </topics-feed>
     `
   }
@@ -314,27 +404,30 @@ export default class AppSearch extends HTMLElement {
     const stories = this.getAttribute('stories-url');
     return /*html*/`
       <stories-feed page="1"
-        url="${this._query ? stories : trending}" kind="search">
+        url="${this._query ? stories + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
       </stories-feed>
     `
   }
 
   getReplies = () => {
-    const replies = this.getAttribute('replies');
+    const replies = this.getAttribute('replies-url');
     const trending = this.getAttribute('trending-replies');
     return /* html */`
-      <replies-feed replies="${this.getAttribute('replies')}" page="1"
-        url="${this._query ? replies : trending}" kind="search">
+      <replies-feed page="1"
+        url="${this._query ? replies + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
       </replies-feed>
     `
   }
 
   getPeople = () => {
-    const people = this.getAttribute('people');
+    const people = this.getAttribute('people-url');
     const trending = this.getAttribute('trending-people');
     return /*html*/`
       <people-feed page="1"
-        url="${this._query ? people : trending}" kind="search">
+        url="${this._query ? people + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
       </people-feed>
     `
   }

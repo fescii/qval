@@ -215,7 +215,7 @@ export default class StorySection extends HTMLElement {
   getStats = () => {
     return /*html*/`
       <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summery="${this.getAttribute('story-title')}">
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summary="${this.getAttribute('story-title')}">
       </action-wrapper>
     `
   }

@@ -6,14 +6,23 @@ export default class RepliesFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._pages = 1;
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
+    this._query = this.setQuery(this.getAttribute('query'));
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = query => {
+    // if the query is null || empty
+    if(!query || query === "" || query !== "true") {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -83,7 +92,8 @@ export default class RepliesFeed extends HTMLElement {
 
   fetchReplies = repliesContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    // const url = `${this._url}?page=${this._page}`;
+    const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;

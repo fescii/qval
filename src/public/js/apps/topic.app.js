@@ -555,7 +555,7 @@ export default class AppTopic extends HTMLElement {
             ${this.getStats()}
           </div>
           <div class="sub-text">
-            ${this.parseContent(this.getAttribute('summery'))}
+            ${this.parseContent(this.getAttribute('summary'))}
           </div>
           ${this.getActions()}
         </div>
@@ -564,13 +564,14 @@ export default class AppTopic extends HTMLElement {
   }
 
   parseContent = content => {
-    // split the content by the next line
-    const lines = content.split('\n');
-
-    // create a paragraph for each line
-    return lines.map(line => {
-      return `<p>${line}</p>`;
-    }).join('');
+    // Remove all HTML tags
+    const noHtmlContent = content.replace(/<\/?[^>]+(>|$)/g, "");
+  
+    // Split the content by the next line
+    const lines = noHtmlContent.split('\n');
+  
+    // Create a paragraph for each line
+    return lines.map(line => `<p>${line}</p>`).join('');
   }
 
   // Function to detect and parse the text

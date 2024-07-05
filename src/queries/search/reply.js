@@ -17,23 +17,43 @@ const findRepliesByQuery = async reqData => {
     const offset = (page - 1) * limit;
 
     // trim the query
-    query = query.trim();
+    let queryStr = query.trim();
 
     // refine the query: make the query to match containing, starting or ending with the query
-    query = query.split(' ').map((q) => `${q}:*`).join(' | ');
+    queryStr = queryStr.split(' ').map((q) => `${q.toLowerCase()}:*`).join(' | ');
 
     // add query to back to the req data
     const queryOptions = {
       user: user,
-      query: query,
+      query: queryStr,
       offset: offset,
       limit: limit,
     }
     
     // build the query(vector search)
-    const replies = await Reply.search(queryOptions);
+    let replies = await Reply.search(queryOptions);
+
+
+    // check if length is 0
+    if (replies.length < 1) {
+      return {
+        data: {
+          replies: [],
+          limit: limit,
+          offset: offset,
+          last: true,
+        },
+        error: null
+      }
+    }
 
     const last = replies.length < limit;
+
+    replies = replies.map(reply => {
+      const data = reply.dataValues;
+      data.you = user === data.author;
+      return data;
+    })
 
     // create a data object
     return { 

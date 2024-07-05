@@ -114,7 +114,7 @@ export default class UsersStat extends HTMLElement {
     return /* html */`
       <div class="title">
         <h4 class="text">Account</h4>
-        <span class="desc">Your account summery</span>
+        <span class="desc">Your account summary</span>
       </div>
     `
   }

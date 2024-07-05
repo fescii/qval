@@ -94,38 +94,6 @@ const findTrendingTopics = async reqData => {
   }
 }
 
-
-const mapTopicFields = (data, hash) => {
-  if (data.length <= 0) {
-    return html = /*html*/`
-      <div class="empty">
-        <p>The topic has no information yet. You can contribute to this topic by adding relevent information about the topic.</p>
-        <a href="/t/${hash}/contribute" class="button">Contribute</a>
-      </div>
-    `;
-  }
-  else {
-    const html = data.map(section => {
-      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
-      return /*html*/`
-        <div class="section" order="${section.order}" id="section${section.order}">
-          ${title}
-          ${section.content}
-        </div>
-      `
-    }).join('');
-
-    const last = /*html*/`
-      <div class="last">
-        <p>Do you have more information about this topic? You can contribute to this topic by adding or editing information.</p>
-        <a href="/t/${hash}/contribute" class="button">Contribute</a>
-      </div>
-    `
-
-    return html + last;
-  }
-}
-
 /**
  * @function trendingTopicsWhenLoggedIn
  * @description Query to finding trending topics when logged in: using views in the last 30 days
@@ -194,8 +162,6 @@ const trendingTopicsWhenLoggedIn = async (user, offset, limit) => {
     // return the topics: map the topics' dataValues
     return  topics.map(topic => {
       const data = topic.dataValues;
-      // add the topic sections to the data object
-      topic.topic_sections = mapTopicFields(topic.topic_sections, topic.hash);
       data.you = user === data.author;
       return data;
     });
@@ -219,18 +185,6 @@ const trendingTopicsWhenLoggedOut = async (offset, limit) => {
       attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
         [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = topics.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
       ],
-      group: [ "topics.id", "topics.author", "topics.hash", "topics.name", "topics.slug", "topics.summary",
-        "topics.followers", "topics.subscribers", "topics.stories", "topics.views", "topic_author.id", "topic_author.hash", 
-        "topic_author.bio", "topic_author.name", "topic_author.picture", "topic_author.followers", "topic_author.following",
-        "topic_author.stories", "topic_author.verified", "topic_author.replies", "topic_author.email", "topic_sections.kind", 
-        "topic_sections.content", "topic_sections.order", "topic_sections.id", "topic_sections.title"
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['followers', 'DESC'],
-        ['stories', 'DESC'],
-        ['createdAt', 'DESC'],
-      ],
       include: [
         {
           model: User,
@@ -241,12 +195,25 @@ const trendingTopicsWhenLoggedOut = async (offset, limit) => {
         {
           model: TopicSection,
           as: 'topic_sections',
-          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
+          attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
           order: [['order', 'ASC']]
         }
       ],
+      group: [ "topics.id", "topics.author", "topics.hash", "topics.name", "topics.slug", "topics.summary",
+        "topics.followers", "topics.subscribers", "topics.stories", "topics.views", "topic_author.id", "topic_author.hash", 
+        "topic_author.bio", "topic_author.name", "topic_author.picture", "topic_author.followers", "topic_author.following",
+        "topic_author.stories", "topic_author.verified", "topic_author.replies", "topic_author.email", "topic_sections.id", 
+        "topic_sections.content", "topic_sections.order", "topic_sections.id", "topic_sections.title"
+      ],
+      order: [
+        [sequelize.literal('views_last_30_days'), 'DESC'],
+        ['followers', 'DESC'],
+        ['stories', 'DESC'],
+        ['createdAt', 'DESC'],
+      ],
       limit: limit,
       offset: offset,
+      subQuery: false
     });
 
     // Check if the topics exist
@@ -257,8 +224,6 @@ const trendingTopicsWhenLoggedOut = async (offset, limit) => {
     // return the topics: map the topics' dataValues
     return  topics.map(topic => {
       const data = topic.dataValues;
-      // add the topic sections to the data object
-      topic.topic_sections = mapTopicFields(topic.topic_sections, topic.hash);
       data.you = false;
       return data;
     });

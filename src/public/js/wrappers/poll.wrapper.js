@@ -180,7 +180,7 @@ export default class PollWrapper extends HTMLElement {
   getStats = () =>  {
     return /*html*/`
       <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
   }

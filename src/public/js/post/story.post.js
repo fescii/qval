@@ -41,7 +41,7 @@ export default class StoryPost extends HTMLElement {
 
     // return the summary: first 200 characters
     return {
-      summery: `${content.substring(0, 500)}...`,
+      summary: `${content.substring(0, 500)}...`,
       words: content.split(' ').length
     };
   }
@@ -279,10 +279,10 @@ export default class StoryPost extends HTMLElement {
   }
 
   getSummery = () => {
-    const summary = this._data.summery;
+    const summary = this._data.summary;
 
     return /*html*/`
-      <div class="summery extra" id="summery">
+      <div class="summary extra" id="summary">
         <p>${summary}</p>
         <div class="read-more">
         </div>

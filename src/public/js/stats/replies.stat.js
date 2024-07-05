@@ -114,7 +114,7 @@ export default class RepliesStat extends HTMLElement {
     return /* html */`
       <div class="title">
         <h4 class="text">Replies</h4>
-        <span class="desc">Your replies summery</span>
+        <span class="desc">Your replies summary</span>
       </div>
     `
   }
