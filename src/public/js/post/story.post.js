@@ -33,15 +33,22 @@ export default class StoryPost extends HTMLElement {
   }
 
   getSummaryAndWords = () => {
+    const mql = window.matchMedia('(max-width: 660px)');
     // get this content
     let content = this.innerHTML.toString();
 
     // remove all html tags and clases and extra spaces and tabs
     content = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
+    let summary = content.substring(0, 500);
+
+    if (mql.matches) {
+      summary = content.substring(0, 250);
+    }
+
     // return the summary: first 200 characters
     return {
-      summary: `${content.substring(0, 500)}...`,
+      summary: `${summary}...`,
       words: content.split(' ').length
     };
   }

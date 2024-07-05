@@ -50,6 +50,7 @@ export default class AppSearch extends HTMLElement {
     // update input value
     if(this._query) {
       form.querySelector('input').value = this._query;
+      this.setKey(form);
     }
   }
 
@@ -168,10 +169,13 @@ export default class AppSearch extends HTMLElement {
       outerThis.setAttribute('query', outerThis._query);
 
       // update title of the document
-      document.title = `Search | ${query}`;
+      document.title = `Search query -  ${query}`;
 
       // update url
       outerThis._url = `/search?q=${query}`;
+
+      // update setKey
+      outerThis.setKey(form);
 
       // update url attribute
       outerThis.setAttribute('url', outerThis._url);
@@ -323,6 +327,27 @@ export default class AppSearch extends HTMLElement {
     });
 
     return html;
+  }
+
+  setKey = form => {
+    const key = this.shadowObj.querySelector('p.search > span.key');
+
+    if (key) {
+      if (this._query) {
+        key.textContent = this._query;
+      }
+      else {
+        key.parentElement.remove();
+      }
+    }
+    else {
+      if (this._query) {
+        const html = /* html */`<p class="search">Search results for <span class="key">${this._query}</span></p>`;
+    
+        form.insertAdjacentHTML('afterend', html);
+      }
+    }
+    
   }
 
   getBody = () => {
@@ -546,6 +571,22 @@ export default class AppSearch extends HTMLElement {
           min-height: 100vh;
         }
 
+        p.search {
+          font-size: 1.15rem;
+          font-weight: 500;
+          color: var(--text-color);
+          font-family: var(--font-text);
+          margin: 0 0 5px;
+        }
+
+        p.search > span.key {
+          font-weight: 500;
+          color: transparent;
+          background: var(--second-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
         form.search {
           background: var(--background);
           padding: 0;
@@ -560,7 +601,6 @@ export default class AppSearch extends HTMLElement {
         }
 
         form.search > .contents {
-          /* border: 1px solid #6b7280; */
           padding: 0;
           display: flex;
           flex-flow: row;
@@ -572,14 +612,14 @@ export default class AppSearch extends HTMLElement {
         }
 
         form.search > .contents > input {
-          border: var(--input-border);
+          border: var(--border-mobile);
           display: flex;
           flex-flow: row;
           align-items: center;
           font-family: var(--font-text);
           color: var(--text-color);
           font-size: 1rem;
-          padding: 10px 10px 10px 35px;
+          padding: 8px 10px 8px 35px;
           gap: 0;
           width: 100%;
           border-radius: 18px;
@@ -591,11 +631,12 @@ export default class AppSearch extends HTMLElement {
 
         form.search > .contents > svg {
           position: absolute;
-          height: 20px;
+          height: 18px;
           color: var(--gray-color);
-          width: 20px;
+          width: 18px;
           left: 10px;
-          top: calc(50% - 12px);
+          top: 50%;
+          transform: translateY(-50%);
         }
 
         form.search > .contents > button {

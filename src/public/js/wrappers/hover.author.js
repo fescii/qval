@@ -724,19 +724,21 @@ export default class HoverAuthor extends HTMLElement {
     bio = bio.trim();
 
     if(mql.matches) {
+      let bioArray = bio.split('\n');
       // Check if bio is greater than 100 characters: replace the rest with ...
-      bio = bio.length > 150 ? `${bio.substring(0, 150)}...` : bio;
+      let html = bioArray.map(line => `<p>${line}</p>`).join('');
+      return /*html*/`
+        <div class="bio">${html}</div>
+      `
     }
     else {
       // Check if bio is greater than 100 characters: replace the rest with ...
-      bio = bio.length > 85 ? `${bio.substring(0, 85)}...` : bio;
-    }
+      let html = bio.length > 85 ? `<p>${bio.substring(0, 90)}...</p>` : `<p>${bio}</p>`;
 
-    return /*html*/`
-      <div class="bio">
-        <p>${bio}</p>
-      </div>
-    `
+      return /*html*/`
+        <div class="bio">${html}</div>
+      `
+    }
   }
 
   getActions = () => {

@@ -649,7 +649,7 @@ module.exports = (User, sequelize, Sequelize) => {
       return await Reply.findAll({
         attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
           [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
+            sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
           ]
         ],
         where: sequelize.where(
