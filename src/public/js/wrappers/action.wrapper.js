@@ -923,6 +923,7 @@ export default class ActionWrapper extends HTMLElement {
           min-height: 21px;
           padding: 3px 0;
           margin: 0;
+          font-weight: 500;
           font-family: var(--font-main), sans-serif;
           font-size: 0.95rem;
         }
@@ -995,7 +996,7 @@ export default class ActionWrapper extends HTMLElement {
           span.play:hover,
           span.stat:hover,
           span.action:hover {
-            background: none;
+            /*background: none;*/
           }
         }
       </style>
