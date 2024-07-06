@@ -1,6 +1,32 @@
 // Import models
 const { Sequelize, sequelize, Story, StorySection, User, Reply } = require('../../models').models;
 
+
+/**
+ * @function fetchFeeds
+ * @description Query to finding trending stories and replies
+ * @param {Object} reqData - The request data
+ * @returns {Object} - The stories object or null, and the error if any
+*/
+const fetchFeeds = async reqData => {
+  try {
+    const { user, limit, page } = reqData;
+
+    // calculate the offset and limit
+    const offset = (page - 1) * limit;
+
+    const data =  user ? await fetchFeedsWhenLoggedIn(user, offset, limit) : await fetchFeedsWhenLoggedOut(offset, limit);
+
+    return {
+      data,
+      error: null
+    }
+  }
+  catch (error) {
+    return { data: null, error }
+  }
+}
+
 // Map story fields(sections) to html
 const mapFields = (content, data) => {
   let html = /*html*/`
@@ -352,5 +378,5 @@ const fetchFeedsWhenLoggedOut = async (offset, limit) => {
 
 // Export all queries as a single object
 module.exports = {
-  fetchFeedsWhenLoggedIn, fetchFeedsWhenLoggedOut
-};
+  fetchFeeds
+}

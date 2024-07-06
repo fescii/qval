@@ -6,6 +6,7 @@ const stories = require('./stories');
 const users = require('./users');
 const stats = require('./stats');
 const search = require('./search');
+const feeds = require('./feeds');
 
 module.exports = (app) => {
   // apis routes
@@ -15,6 +16,7 @@ module.exports = (app) => {
   users(app);
   stats(app);
   search(app);
+  feeds(app);
   // error routes
   errors(app);
 }

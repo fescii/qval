@@ -6,6 +6,7 @@ const storyController = require('./stories');
 const userController = require('./users');
 const statsController = require('./stats');
 const searchController = require('./search');
+const feedController = require('./feeds');
 
 /**
  * Exporting all controllers as a single object
@@ -13,5 +14,5 @@ const searchController = require('./search');
 module.exports = {
   authController, topicController, statsController,
   errorController, storyController, userController,
-  searchController
+  searchController, feedController
 };
