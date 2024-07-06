@@ -97,11 +97,11 @@ export default class AppHome extends HTMLElement {
       return /* html */`
         ${this.getTop()}
         <add-container type="story"></add-container>
-        <stories-container stories="popular" url="/stories/popular"></stories-container>
+        <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
         <topics-container url="/api/v1/q/trending/topics"></topics-container>
         <stories-container stories="recent" url="/stories/recent"></stories-container>
         <discover-people url="/people/discover"></discover-people>
-        <stories-feed stories="all" url="/stories/feed"></stories-feed>
+        <!--<stories-feed stories="all" url="/stories/feed"></stories-feed>-->
       `;
     }
     else {
@@ -109,9 +109,9 @@ export default class AppHome extends HTMLElement {
         <div class="feeds">
           ${this.getTop()}
           <add-container type="story"></add-container>
-          <stories-container stories="popular" url="/stories/popular"></stories-container>
-          <discover-people url="/people/discover"></discover-people>
-          <stories-feed stories="all" url="/stories/feed"></stories-feed>
+          <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
+          <discover-people url="${this.getAttribute('trending-people')}"></discover-people>
+          <!--<stories-feed stories="all" url="/stories/feed"></stories-feed>-->
         </div>
         <div class="side">
           <topics-container url="/api/v1/q/trending/topics"></topics-container>

@@ -6,7 +6,7 @@
  * @description This route will render the search page for the app.
 */
 const home = async (req, res) => {
-  res.render('pages/search', {
+  res.render('pages/home', {
     data: {
       name: "Home",
     }

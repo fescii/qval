@@ -3,6 +3,8 @@ export default class DiscoverPeople extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+		this._url = this.getAttribute('url');
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -24,17 +26,92 @@ export default class DiscoverPeople extends HTMLElement {
 		}
   }
 
-  fetchPeople = (contentContainer, mql) => {
-		const outerThis = this;
-    const peopleLoader = this.shadowObj.querySelector('authors-loader');
-    const content = this.getPeople();
-    setTimeout(() => {
-      peopleLoader.remove();
-      contentContainer.insertAdjacentHTML('beforeend', content);
-			contentContainer.insertAdjacentHTML('beforeend', this.getControls(mql));
+  fetchPeople = contentContainer => {
+    const outerThis = this;
+		const peopleLoader = this.shadowObj.querySelector('authors-loader');
+		setTimeout(() => {
+      // fetch the user stats
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+  
+      this.fetchWithTimeout(this._url, options)
+        .then(response => {
+          return response.json();
+        })
+        .then(result => {
+					const data = result.data;
+          // check for success response
+          if (result.success) {
+            if(data.people.length === 0) {
+              // display empty message
+              const content = outerThis.getEmpty();
+							// remove loader
+							peopleLoader.remove();
+              contentContainer.insertAdjacentHTML('beforeend', content);
+              return;
+            }
+            // update the content
+            const content = outerThis.mapUsers(data.people);
+            // remove loader
+						peopleLoader.remove();
+            contentContainer.insertAdjacentHTML('beforeend', content);
+          }
+          else {
+            // display error message
+            const content = outerThis.getEmpty();
+            // remove loader
+						peopleLoader.remove();
+            contentContainer.insertAdjacentHTML('beforeend', content);;
+          }
+        })
+        .catch(error => {
+					// console.error(error);
+          // display error message
+          const content = outerThis.getEmpty();
+          // remove loader
+					peopleLoader.remove();
+          contentContainer.insertAdjacentHTML('beforeend', content);
+        });
+		}, 1500)
+	}
 
-			outerThis.activateControls(contentContainer);
-    }, 2000)
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+	mapUsers = data => {
+    return data.map(user => {
+      return /*html*/`
+				<person-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
+				</person-wrapper>
+      `
+    }).join('');
   }
 
 	// Activate controls
@@ -112,43 +189,13 @@ export default class DiscoverPeople extends HTMLElement {
 		}
 	}
 
-  getPeople = () => {
-    return /*html*/`
-			<person-wrapper username="U0BC98H63AB1" name="John Doe" picture="/img/img.jpg" verified="true" user-follow="true"
-				url="/u/U0BC98H63AB1" following="236" followers="9734" you="false"
-				bio="I'm John Doe, a passionate software developer with a love for coding and problem-solving.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BC98H63BCA" name="Janet Doe" picture="/img/img3.png" you="true"
-				verified="false" user-follow="false" url="/u/U0BC98H63AB1" following="736" followers="5134"
-				bio="Hi, I'm Janet Doe, a nature enthusiast and aspiring photographer.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BC9BAC53H4" name="Yosemite Sam" picture="/img/img2.png" you="false"
-				verified="true" user-follow="true" url="/u/U0BC98H63AB1" following="36" followers="234"
-				bio="Yosemite Sam here! I'm a cowboy with a passion for adventure and the great outdoors.">
-			</person-wrapper>
-
-			<person-wrapper username="U0PHAB693NBA" name="Farghon Legon" picture="/img/img3.png" you="false"
-				verified="false" user-follow="true" url="/u/U0BC98H63AB1" following="36" followers="9734"
-				bio="Hey there, I'm Farghon Legon. I'm an artist by heart and a dreamer by soul.">
-			</person-wrapper>
-
-			<person-wrapper username="U0DAB69B79NH" name="Porky Pig" picture="/img/img4.png" you="false"
-				verified="false" user-follow="false" url="/u/U0BC98H63AB1" following="6723" followers="79734"
-				bio="Oink! I'm Porky Pig, always up for some fun and mischief.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BCCA53HP1" name="Bugs Bunny" picture="/img/img5.png" you="false"
-				verified="true" user-follow="false" url="/u/U0BC98H63AB1" following="836" followers="1034"
-				bio="What's up, doc? I'm Bugs Bunny, the carrot-loving mischief-maker.">
-			</person-wrapper>
-
-			<person-wrapper username="U0PC98H63AB8" name="Marvin Martian" picture="/img/img.jpg" you="false"
-				verified="false" user-follow="true" url="/u/U0BC98H63AB1" following="6" followers="934"
-				bio="Greetings, earthlings! I'm Marvin Martian, on a mission to conquer the universe.">
-			</person-wrapper>
-		`
+	getEmpty = () => {
+    return /* html */`
+      <div class="empty">
+        <p>No authors recommendation found at the moment.</p>
+				<p> There might an issues, try refreshing the page or check back later.</p>
+      </div>
+    `
   }
 
   getStyles() {
@@ -214,6 +261,26 @@ export default class DiscoverPeople extends HTMLElement {
           width: 100%;
           max-width: 100%;
 				}
+
+				div.empty {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
+        }
+
+        div.empty > p {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          color: var(--text-color);
+          font-family: var(--font-text), sans-serif;
+          font-size: 1rem;
+          font-weight: 400;
+        }
+
 
         .title {
 				  padding: 0 0 10px 3px;

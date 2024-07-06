@@ -115,7 +115,9 @@ export default class PersonWrapper extends HTMLElement {
     else {
       return /*html*/`
         <div class="avatar">
-          <img src="${picture}" alt="Author picture">
+          <div class="img-avatar">
+            <img class="img" src="${picture}" alt="Author picture"/>
+          </div>
           ${this.checkVerified(this.getAttribute('verified'))}
         </div>
       `
@@ -257,6 +259,29 @@ export default class PersonWrapper extends HTMLElement {
           -moz-border-radius: 50px;
         }
 
+        .head > .avatar > .img-avatar {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+        }
+
+        .head > .avatar > .img-avatar > img.img {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          object-fit: cover;
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+        }
+
+
         .head > .avatar.svg {
           background: var(--gray-background);
         }
@@ -270,7 +295,6 @@ export default class PersonWrapper extends HTMLElement {
           border-radius: 50px;
           -webkit-border-radius: 50px;
           -moz-border-radius: 50px;
-          font-size: 1.5rem;
         }
 
         .head > .avatar > .svg-avatar svg {
@@ -279,16 +303,6 @@ export default class PersonWrapper extends HTMLElement {
           height: 40px;
           color: var(--gray-color);
           margin: 0 0 3px 0;
-        }
-
-        .head > .avater img {
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          object-fit: cover;
-          border-radius: 50px;
-          -webkit-border-radius: 50px;
-          -moz-border-radius: 50px;
         }
 
         .head > .avatar > .icon {
