@@ -374,8 +374,7 @@ export default class AppSearch extends HTMLElement {
         </section>
 
         <section class="side">
-          <topics-container url="/topics/popular"></topics-container>
-          ${this.getRelatedStories()}
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </section>
       `;
@@ -463,13 +462,6 @@ export default class AppSearch extends HTMLElement {
         user-url="${this.getAttribute('user-url')}">
       </header-wrapper>
     `
-  }
-
-  getRelatedStories = () => {
-    return /* html */`
-			<related-container type="top" limit="5" topics='top1, top2, top3'>
-      </related-container>
-		`
   }
 
   getInfo = () => {

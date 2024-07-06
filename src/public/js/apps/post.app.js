@@ -91,7 +91,7 @@ export default class AppPost extends HTMLElement {
         </div>
         <div class="side">
           ${this.getAuthor()}
-          <topics-container url="/topics/popular"></topics-container>
+          <people-container url="/api/v1/users/recommended" type="profile"></people-container>
           ${this.getInfo()}
         </div>
       `;

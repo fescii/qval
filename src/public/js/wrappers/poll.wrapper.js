@@ -348,7 +348,7 @@ export default class PollWrapper extends HTMLElement {
           align-items: center;
           font-family: var(--font-text), sans-serif;
           gap: 5px;
-          font-size: 1.15rem;
+          font-size: 1rem;
           font-weight: 600;
         }
 

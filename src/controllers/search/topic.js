@@ -14,14 +14,15 @@ const {
 const trendingTopics = async(req, res, next) => {
   // get page from the query
   let page = req.query.page || 1;
+  let limit = req.query.limit || 10;
 
   // create user hash from the request object
   const user = req.user ? req.user.hash : null;
 
   const reqData = {
     user,
-    page: page = parseInt(page, 10) || 1,
-    limit: 10
+    page: parseInt(page, 10),
+    limit: parseInt(limit, 10)
   }
 
   // Find the topics

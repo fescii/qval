@@ -39,6 +39,8 @@ export default class ActionWrapper extends HTMLElement {
     this.likePost();
     // Check if user has liked the post
     const liked = this.convertToBool(this.getAttribute('liked'))
+
+    const body = document.querySelector('body');
      
     // scroll likes
     this.scrollLikes(liked);
@@ -47,6 +49,9 @@ export default class ActionWrapper extends HTMLElement {
 
     // open the form
     this.openForm(full);
+
+    // open the highlights
+    this.openHighlights(body);
   }
 
   setAttributes = (name, value) => {
@@ -73,6 +78,22 @@ export default class ActionWrapper extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.stats > .stat.views');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -722,6 +743,14 @@ export default class ActionWrapper extends HTMLElement {
 
     return /* html */`
       <share-wrapper url="${shareUrl.toLowerCase()}" summary="${title}"></share-wrapper>
+    `
+  }
+
+  getHighlights = () => {
+    return /* html */`
+      <views-popup name="post"likes="${this.getAttribute('likes')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
+        replies="${this.getAttribute('replies')}">
+      </views-popup>
     `
   }
 

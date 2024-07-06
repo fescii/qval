@@ -20,7 +20,6 @@ export default class AppStory extends HTMLElement {
     document.title = `Story | ${title}`;
   }
 
-
   getTopics = () => {
     // get the topics
     let topics = this.getAttribute('topics');
@@ -110,7 +109,7 @@ export default class AppStory extends HTMLElement {
 
         <section class="side">
           ${this.getAuthor()}
-          ${this.getRelatedStories()}
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </section>
       `;
@@ -151,13 +150,6 @@ export default class AppStory extends HTMLElement {
         verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
         bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
-		`
-  }
-
-  getRelatedStories = () => {
-    return /* html */`
-			<related-container type="related" limit="5" topics='${this.getAttribute("topics")}'>
-      </related-container>
 		`
   }
 

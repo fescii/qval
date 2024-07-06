@@ -87,7 +87,7 @@ export default class UrlPopup extends HTMLElement {
     let max = url.length > 50 ? url.substring(0, 50) + '...' : url;
     return `
       <div class="welcome">
-        <h2>External link!</h2>
+        <h2>External link.</h2>
 				<p>
           You are about to leave the application and visit an external website. We are not responsible for the content of the external website.
           By clicking continue, you will be redirected to below address <br> <span class="url">${max}</span>
@@ -163,13 +163,13 @@ export default class UrlPopup extends HTMLElement {
           gap: 0px;
           justify-content: center;
           position: absolute;
-          right: 18px;
-          top: 18px;
+          right: 14px;
+          top: 14px;
         }
 
         #content span.control svg {
-          width: 25px;
-          height: 25px;
+          width: 20px;
+          height: 20px;
           color: var(--text-color);
         }
 
@@ -201,7 +201,7 @@ export default class UrlPopup extends HTMLElement {
         }
 
         .welcome  p {
-          margin: 0;
+          margin: 10px 0 0;
           text-align: center;
           font-family: var(--font-read), sans-serif;
           color: var(--text-color);
@@ -227,7 +227,7 @@ export default class UrlPopup extends HTMLElement {
 
         .welcome > .actions {
           grid-column: 1/3;
-          margin: 20px 0 5px;
+          margin: 0 0 5px;
           width: 80%;
           display: flex;
           flex-flow: row;
@@ -241,7 +241,7 @@ export default class UrlPopup extends HTMLElement {
           text-decoration: none;
           padding: 10px 20px;
           cursor: pointer;
-          margin: 20px 0;
+          margin: 0;
           width: 150px;
           justify-self: center;
           text-align: center;
