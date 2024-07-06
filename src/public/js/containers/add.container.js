@@ -157,8 +157,8 @@ export default class FormContainer extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
             font-size: 16px;
-						padding: 10px 0;
-            border-bottom: var(--border-mobile);
+						padding: 10px 0 0;
+            border-bottom: none;
             gap: 10px;
 					}
 
@@ -190,7 +190,7 @@ export default class FormContainer extends HTMLElement {
             font-family: var(--font-text), sans-serif;
             padding: 3px 10px;
             font-weight: 600;
-            width: 100px;
+            width: 80px;
           }
 				}
 	    </style>

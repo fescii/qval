@@ -398,7 +398,7 @@ export default class HeaderWrapper extends HTMLElement {
           }
 
           nav.nav {
-            border-bottom: var(--border-mobile);
+            border-bottom: var(--border);
             height: 50px;
             max-height: 50px;
             padding: 10px 0;

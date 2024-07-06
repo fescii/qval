@@ -39,6 +39,7 @@ export default class TopicsContainer extends HTMLElement {
 					}
 					else {
 						const content = outerThis.mapFields(data.topics);
+            topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
           	topicsContainer.innerHTML =  content
 					}
         }
@@ -47,7 +48,7 @@ export default class TopicsContainer extends HTMLElement {
         }
         })
         .catch((error) => {
-          // console.log(error)
+          console.log(error)
           topicsContainer.innerHTML = outerThis.getWrongMessage();
         });
     });
@@ -167,22 +168,11 @@ export default class TopicsContainer extends HTMLElement {
 
 	getBody = () => {
 		// get mql for media query: desktop
-		const mql = window.matchMedia('(min-width: 660px)');
-		if (mql.matches) {
-			return /* html */`
-				${this.getTitle()}
-				<div class="content">
-					${this.getLoader()}
-				</div>
-			`;
-		}
-		else {
-			return /* html */`
-				<div class="content">
-					${this.getLoader()}
-				</div>
-			`;
-		}
+		return /* html */`
+		  <div class="content">
+				${this.getLoader()}
+			</div>
+		`;
 	}
 
 	getTitle = () => {
@@ -380,6 +370,16 @@ export default class TopicsContainer extends HTMLElement {
 					a {
 						cursor: default !important;
 					}
+
+          .title {
+            display: flex;
+            width: 100%;
+            flex-flow: column;
+            padding: 5px 5px 5px;
+            gap: 0;
+            background: var(--light-linear);
+            border-radius: 10px;
+          }
 				}
 	    </style>
     `;
