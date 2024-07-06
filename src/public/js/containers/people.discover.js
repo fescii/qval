@@ -59,6 +59,8 @@ export default class DiscoverPeople extends HTMLElement {
             const content = outerThis.mapUsers(data.people);
             // remove loader
 						peopleLoader.remove();
+						// add title
+						contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
             contentContainer.insertAdjacentHTML('beforeend', content);
 						// activate controls
 						outerThis.activateControls(contentContainer);
@@ -121,7 +123,7 @@ export default class DiscoverPeople extends HTMLElement {
 		// select all controls
 		const letfControl = this.shadowObj.querySelector('.control.left');
 		const rightControl = this.shadowObj.querySelector('.control.right');
-		
+
 		// If left control and right control exists
 		if (letfControl && rightControl) {
 
@@ -186,6 +188,15 @@ export default class DiscoverPeople extends HTMLElement {
 						<path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path>
 					</svg>
 				</span>
+			</div>
+		`
+	}
+
+	getTitle = () => {
+		return /*html*/`
+			<div class="title">
+				<h2>Discover people</h2>
+				<p class="info">Trending authors on the platform</p>
 			</div>
 		`
 	}
@@ -258,7 +269,7 @@ export default class DiscoverPeople extends HTMLElement {
 					position: relative;
 				  display: flex;
 				  flex-flow: column;
-				  gap: 5px;
+				  gap: 15px;
           width: 100%;
           max-width: 100%;
 				}
@@ -363,6 +374,34 @@ export default class DiscoverPeople extends HTMLElement {
 					height: 30px;
 					transition: background-color 0.3s;
 				}
+
+				.title {
+          display: flex;
+					width: 100%;
+          flex-flow: column;
+					padding: 5px 5px 8px;
+          gap: 0;
+					background: var(--light-linear);
+					border-radius: 10px;
+        }
+
+        .title > h2 {
+          font-size: 1.5rem;
+          font-weight: 500;
+          font-family: var(--font-text), sans-serif;
+          margin: 0;
+          color: var(--text-color);
+        }
+
+        .title > p.info {
+          margin: 0;
+          font-size: 0.9rem;
+          font-style: italic;
+          font-weight: 400;
+          font-family: var(--font-text), sans-serif;
+          margin: 0;
+          color: var(--text-color);
+        }
 
 				@media screen and (max-width:660px) {
 					:host {

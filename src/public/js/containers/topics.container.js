@@ -179,7 +179,7 @@ export default class TopicsContainer extends HTMLElement {
 		return /*html*/`
 			<div class="title">
 				<h2>Most read topics</h2>
-				<p class="info">Many people read stories about these topics.</p>
+				<p class="info">The most engaging topics on the platform</p>
 			</div>
 		`
 	}
