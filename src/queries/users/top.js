@@ -69,6 +69,11 @@ const getRecommendedUsersWhenLoggedIn = async hash => {
         [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days'],
         [sequelize.literal(`CASE WHEN COUNT(user_followers.id) > 0 THEN TRUE ELSE FALSE END`), 'is_following']
       ],
+      where: {
+        hash: {
+          [Sequelize.Op.not]: hash
+        }
+      },
       group: [
         'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
         'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'

@@ -9,6 +9,12 @@ export default class ActionWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
+    this.outer = this.parent.getRootNode().host;
+
+    this._isWrapper = this.convertToBool(this.getAttribute('wrapper'));
+
     this.render();
   }
 
@@ -41,6 +47,16 @@ export default class ActionWrapper extends HTMLElement {
 
     // open the form
     this.openForm(full);
+  }
+
+  setAttributes = (name, value) => {
+    if (this._isWrapper) {
+      this.parent.setAttribute(name, value);
+      this.outer.setAttribute(name, value);
+    }
+    else {
+      this.parent.setAttribute(name, value);
+    }
   }
 
   isLoggedIn = name => {
@@ -367,9 +383,11 @@ export default class ActionWrapper extends HTMLElement {
         if (liked) {
           // Set the new value of likes
           this.setAttribute('likes', totalLikes - 1);
+          outerThis.setAttributes('likes', totalLikes - 1)
 
           // Set the new value of liked
           this.setAttribute('liked', 'false');
+          outerThis.setAttributes('liked', 'false');
 
           // replace the svg with the new svg
           setTimeout(() => {
@@ -386,9 +404,11 @@ export default class ActionWrapper extends HTMLElement {
         else {
           // Set the new value of likes
           this.setAttribute('likes', totalLikes + 1);
+          outerThis.setAttributes('likes', totalLikes + 1);
 
           // Set the new value of liked
           this.setAttribute('liked', 'true');
+          outerThis.setAttributes('liked', 'true');
 
           // replace the svg with the new svg
           setTimeout(() => {

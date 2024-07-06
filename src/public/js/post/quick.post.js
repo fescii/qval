@@ -281,7 +281,8 @@ export default class QuickPost extends HTMLElement {
 
   getFooter = () => {
     return /*html*/`
-      <action-wrapper full="false" kind="${this.getAttribute('story')}" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
+      <action-wrapper full="false" kind="${this.getAttribute('story')}" reload="false" likes="${this.getAttribute('likes')}" 
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="false"
         hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `

@@ -181,7 +181,8 @@ export default class PostWrapper extends HTMLElement {
 
   getStats = () =>  {
     return /*html*/`
-      <action-wrapper full="true" kind="${this.getAttribute('kind')}" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
+      <action-wrapper full="true" kind="${this.getAttribute('kind')}" reload="false" likes="${this.getAttribute('likes')}"
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="true"
         hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `

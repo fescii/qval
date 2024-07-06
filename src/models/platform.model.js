@@ -41,6 +41,8 @@ module.exports = (User, sequelize, Sequelize) => {
     {
       schema: 'platform',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -86,6 +88,8 @@ module.exports = (User, sequelize, Sequelize) => {
     {
       schema: 'platform',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -147,6 +151,8 @@ module.exports = (User, sequelize, Sequelize) => {
     {
       schema: 'platform',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -195,6 +201,8 @@ module.exports = (User, sequelize, Sequelize) => {
     {
       schema: 'platform',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -247,6 +255,8 @@ module.exports = (User, sequelize, Sequelize) => {
     {
       schema: 'platform',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,

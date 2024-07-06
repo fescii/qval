@@ -23,7 +23,23 @@ export default class VotesAuthor extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
+    this.outer = this.parent.getRootNode().host;
+
+    this._isWrapper = this.convertToBool(this.getAttribute('wrapper'));
+
     this.render();
+  }
+
+  setAttributes = (name, value) => {
+    if (this._isWrapper) {
+      this.parent.setAttribute(name, value);
+      this.outer.setAttribute(name, value);
+    }
+    else {
+      this.parent.setAttribute(name, value);
+    }
   }
 
   combinePollAndVotes = (poll, votes) => {
@@ -41,6 +57,16 @@ export default class VotesAuthor extends HTMLElement {
         votes: this.parseToNumber(votesArray[index])
       }
     });
+  }
+
+  separatePollAndVotes = options => {
+    // get the options
+    const poll = options.map(option => option.text).join(',');
+
+    // get the votes
+    const votes = options.map(option => option.votes).join(',');
+
+    return { poll, votes };
   }
 
   // observe the attributes
@@ -90,6 +116,17 @@ export default class VotesAuthor extends HTMLElement {
     else {
       // Listen for checked radio button
       this.listenForChecked();
+    }
+  }
+
+  convertToBool = str => {
+    switch (str) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return false;
     }
   }
 
@@ -197,6 +234,15 @@ export default class VotesAuthor extends HTMLElement {
           else {
             // Show toast message
             outerThis.showToast(data.message, true);
+
+            // update the voted attribute
+            const { poll, votes } = outerThis.separatePollAndVotes(outerThis._options);
+
+            // set attributes
+            outerThis.setAttributes('options', poll);
+            outerThis.setAttributes('votes', votes);
+            outerThis.setAttributes('voted', 'true');
+            outerThis.setAttributes('selected', data.vote.option);
           }
         });
       })
@@ -888,8 +934,7 @@ export default class VotesAuthor extends HTMLElement {
           z-index: 0;
           height: 100%;
           background: var(--poll-background);
-          border-top-left-radius: 9px;
-          border-bottom-left-radius: 9px;
+          border-radius: 9px;
           transition: width 0.5s ease-in-out;
           -webkit-transition: width 0.5s ease-in-out;
           -moz-transition: width 0.5s ease-in-out;
@@ -902,7 +947,7 @@ export default class VotesAuthor extends HTMLElement {
         }
 
         .poll-options > .poll-option.high label span.fill {
-          background: var(--poll-linear);
+          background: var(--light-linear);
         }
 
         .poll-options > .poll-option.high label span.text {

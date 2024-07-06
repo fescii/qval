@@ -79,6 +79,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
   {
     schema: 'topic',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
         unique: true,
@@ -144,6 +146,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -211,6 +215,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -249,6 +255,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // timestamps: false,
     schema: 'topic',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
         unique: true,
@@ -286,6 +294,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,
@@ -350,6 +360,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
           unique: true,

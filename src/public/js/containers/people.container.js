@@ -118,8 +118,8 @@ export default class PeopleContainer extends HTMLElement {
 		// language=HTML
 		return /* html */`
 			<div class="title">
-				<h2> Authors to follow </h2>
-				<p class="info">Here are some people you might be interested in following.</p>
+				<h2>Authors to follow</h2>
+				<p class="info">Here are this month's top authorsss.</p>
 			</div>
 			<div class="content">
 				${this.getLoader()}

@@ -225,7 +225,8 @@ export default class PollPost extends HTMLElement {
 
   getPoll = () =>  {
     return /*html*/`
-      <votes-wrapper reload="false" votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}"  hash="${this.getAttribute('hash')}"
+      <votes-wrapper reload="false" votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}"
+       hash="${this.getAttribute('hash')}" wrapper="false"
         end-time="${this.getAttribute('end-time')}" voted="${this.getAttribute('voted')}" options="${this.getAttribute('options')}">
       </votes-wrapper>
     `
@@ -241,7 +242,8 @@ export default class PollPost extends HTMLElement {
 
   getFooter = () => {
     return /*html*/`
-      <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
+      <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" 
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="false"
         hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `

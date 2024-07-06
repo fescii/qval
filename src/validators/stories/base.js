@@ -77,10 +77,10 @@ const validateStory = async data => {
     // Validate when story type is: poll
     if (data.kind === 'poll') {
       // Check if the data poll is present and is an array of strings
-      if (!data.poll || !Array.isArray(data.poll) || !data.poll.every(item => typeof item === 'string')) {
+      if (!data.poll || !Array.isArray(data.poll) || !data.poll.every(item => typeof item === 'string') || !data.end || typeof data.end !== 'number') {
         return {
           data: null,
-          error: new Error('Poll should be an array of strings - text')
+          error: new Error('Missing (poll, end) or poll is not an array of strings or end is not a number')
         };
       }
 
