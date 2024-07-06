@@ -212,12 +212,12 @@ export default class UrlPopup extends HTMLElement {
         .welcome p span.url {
           display: flex;
           padding: 0;
-          margin: 10px 0 0 0;
+          margin: 10px 0 16px;
           font-size: 0.95rem;
           font-weight: 400;
           border-radius: 5px;
           color: transparent;
-          background: var(--anchor-linear);
+          background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
           font-weight: 500;
@@ -237,7 +237,7 @@ export default class UrlPopup extends HTMLElement {
         }
 
         .welcome > .actions .action {
-          background: var(--accent-linear);
+          background: var(--anchor-color);
           text-decoration: none;
           padding: 10px 20px;
           cursor: pointer;
@@ -382,20 +382,31 @@ export default class UrlPopup extends HTMLElement {
             font-weight: 500;
           }
 
+          .welcome  p {
+            margin: 4px 0 0;
+            text-align: center;
+            font-family: var(--font-read), sans-serif;
+            color: var(--text-color);
+            line-height: 1.3;
+            font-size: 1rem;
+          }
+
           .welcome > .actions {
             margin: 0 0 10px;
-            width: 100%;
+            width: 90%;
           }
 
           .welcome > .actions .action {
-            background: var(--stage-no-linear);
             text-decoration: none;
-            padding: 6px 25px 7px;
-            cursor: default;
+            padding: 5px 20px 6px;
+            cursor: default !important;
             margin: 0 0 10px;
             width: 120px;
             cursor: default !important;
             border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         }
       </style>

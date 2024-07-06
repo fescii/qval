@@ -126,7 +126,7 @@ export default class FormContainer extends HTMLElement {
         }
 
         div.options > a.option {
-          border: var(--action-border);
+          border: none;
           color: var(--gray-color);
           background: var(--option-background);
           font-family: var(--font-text), sans-serif;
@@ -145,6 +145,18 @@ export default class FormContainer extends HTMLElement {
           border-radius: 12px;
           -webkit-border-radius: 12px;
           -moz-border-radius: 12px;
+        }
+
+        div.options > a.option.article {
+          background: var(--gray-background);
+        }
+
+        div.options > a.option.post {
+          background: var(--light-linear);
+        }
+
+        div.options > a.option.topic {
+          background: var(--gray-background);
         }
 
         div.options > a.option:hover {
@@ -184,7 +196,6 @@ export default class FormContainer extends HTMLElement {
           }
 
           div.options > a.option {
-            border: var(--border-mobile);
             cursor: default !important;
             color: var(--gray-color);
             font-family: var(--font-text), sans-serif;
