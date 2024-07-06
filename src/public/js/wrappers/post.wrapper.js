@@ -170,7 +170,7 @@ export default class PostWrapper extends HTMLElement {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
     return /* html */`
       <div class="meta">
-        <span class="sp">On</span>
+        <span class="sp">on</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
         <span class="sp">at</span>
@@ -292,10 +292,8 @@ export default class PostWrapper extends HTMLElement {
 
         .content a {
           cursor: pointer;
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
+          color: var(--anchor-color);
+          text-decoration: none;
         }
 
         .content a:hover {
@@ -312,22 +310,6 @@ export default class PostWrapper extends HTMLElement {
           font-family: var(--font-text), sans-serif;
         }
 
-        .content ul a,
-        .content ol a {
-          background: unset;
-          color: var(--font-text);
-          font-weight: 500;
-          text-decoration-color: var(--anchor) !important;
-          text-decoration: underline;
-          -moz-text-decoration-color: var(--anchor) !important;
-        }
-
-        .content ul a:hover,
-        .content ol a:hover {
-          text-decoration-color: #4b5563bd !important;
-          -moz-text-decoration-color: #4b5563bd !important;
-        }
-
         .meta {
           border-bottom: var(--border);
           border-top: var(--border);
@@ -339,8 +321,14 @@ export default class PostWrapper extends HTMLElement {
           align-items: center;
           font-family: var(--font-text), sans-serif;
           gap: 5px;
-          font-size: 1rem;
+          font-size: 1.15rem;
           font-weight: 600;
+        }
+
+        .meta > .sp {
+          font-size: 1rem;
+          color: var(--gray-color);
+          font-weight: 400;
         }
 
         @media screen and (max-width: 660px) {
@@ -381,6 +369,10 @@ export default class PostWrapper extends HTMLElement {
           a,
           span.stat,
           span.action {
+            cursor: default !important;
+          }
+
+          .content a {
             cursor: default !important;
           }
 

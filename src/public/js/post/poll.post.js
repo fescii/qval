@@ -38,6 +38,8 @@ export default class PollPost extends HTMLElement {
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
         // Get full post
         const post =  this.getFullPost();
@@ -179,6 +181,8 @@ export default class PollPost extends HTMLElement {
       // add event listener to the link
       link.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         // get the url
         const url = link.getAttribute('href');
 
@@ -358,7 +362,7 @@ export default class PollPost extends HTMLElement {
       }
 
       .meta > time.time {
-        font-family: var(--font-main), sans-serif;
+        font-family: var(--font-text), sans-serif;
         font-size: 0.83rem;
         font-weight: 500;
         margin: 1px 0 0 0;
@@ -404,10 +408,8 @@ export default class PollPost extends HTMLElement {
 
       .content a {
         cursor: pointer;
-        color: transparent;
-        background: var(--accent-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
+        color: var(--anchor-color);
+        text-decoration: none;
       }
 
       .content a:hover {
@@ -422,22 +424,6 @@ export default class PollPost extends HTMLElement {
         line-height: 1.4;
         color: var(--font-text);
         font-family: var(--font-text), sans-serif;
-      }
-
-      .content ul a,
-      .content ol a {
-        background: unset;
-        color:var(--font-text);
-        font-weight: 500;
-        text-decoration-color: var(--anchor) !important;
-        text-decoration: underline;
-        -moz-text-decoration-color: var(--anchor) !important;
-      }
-
-      .content ul a:hover,
-      .content ol a:hover {
-        text-decoration-color: #4b5563bd !important;
-        -moz-text-decoration-color: #4b5563bd !important;
       }
 
       @media screen and (max-width: 660px) {
@@ -460,9 +446,13 @@ export default class PollPost extends HTMLElement {
           cursor: default !important;
         }
 
+        .content a {
+          cursor: default !important;
+        }
+
         a,
         span.stat,
-        span.action ,
+        span.action,
         .content , #content,{
           cursor: default !important;
         }

@@ -203,7 +203,7 @@ export default class StorySection extends HTMLElement {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
     return /* html */`
       <div class="meta">
-        <span class="sp">On</span>
+        <span class="sp">on</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
         <span class="sp">at</span>
@@ -403,8 +403,14 @@ export default class StorySection extends HTMLElement {
           align-items: center;
           font-family: var(--font-text), sans-serif;
           gap: 5px;
-          font-size: 1rem;
+          font-size: 1.15rem;
           font-weight: 600;
+        }
+
+        .meta > .sp {
+          font-size: 1rem;
+          color: var(--gray-color);
+          font-weight: 400;
         }
 
         article.article {

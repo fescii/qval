@@ -706,7 +706,6 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-
   getShare = () => {
     // Get url to share
     const url = this.getAttribute('url');

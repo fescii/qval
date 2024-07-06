@@ -217,7 +217,7 @@ export default class UrlPopup extends HTMLElement {
           font-weight: 400;
           border-radius: 5px;
           color: transparent;
-          background: var(--accent-linear);
+          background: var(--anchor-linear);
           background-clip: text;
           -webkit-background-clip: text;
           font-weight: 500;
@@ -279,7 +279,7 @@ export default class UrlPopup extends HTMLElement {
           font-weight: 400;
         }
 
-        .welcome>.info a {
+        .welcome > .info a {
           color: var(--gray-color);
           font-size: 1em;
         }
@@ -383,15 +383,16 @@ export default class UrlPopup extends HTMLElement {
           }
 
           .welcome > .actions {
+            margin: 0 0 10px;
             width: 100%;
           }
 
           .welcome > .actions .action {
             background: var(--stage-no-linear);
             text-decoration: none;
-            padding: 7px 20px 8px;
+            padding: 6px 25px 7px;
             cursor: default;
-            margin: 10px 0;
+            margin: 0 0 10px;
             width: 120px;
             cursor: default !important;
             border-radius: 12px;

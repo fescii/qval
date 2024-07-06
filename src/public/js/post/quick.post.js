@@ -206,6 +206,8 @@ export default class QuickPost extends HTMLElement {
       // add event listener to the link
       link.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         // get the url
         const url = link.getAttribute('href');
 
@@ -395,7 +397,7 @@ export default class QuickPost extends HTMLElement {
         }
 
         .meta > time.time {
-          font-family: var(--font-main), sans-serif;
+          font-family: var(--font-text), sans-serif;
           font-size: 0.83rem;
           font-weight: 500;
           margin: 1px 0 0 0;
@@ -473,34 +475,14 @@ export default class QuickPost extends HTMLElement {
 
         .content a {
           cursor: pointer;
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
+          color: var(--anchor-color);
+          text-decoration: none;
         }
 
         .content a:hover {
           text-decoration-color: var(--anchor-active) !important;
           text-decoration: underline;
           -moz-text-decoration-color: var(--anchor-active) !important;
-        }
-
-        .content ul,
-        .content ol {
-          margin: 10px 0 0 20px;
-          line-height: 1.4;
-          color: var(--font-text);
-          font-family: var(--font-text), sans-serif;
-        }
-
-        .content ul a,
-        .content ol a {
-          background: unset;
-          color:var(--font-text);
-          font-weight: 500;
-          text-decoration-color: var(--anchor) !important;
-          text-decoration: underline;
-          -moz-text-decoration-color: var(--anchor) !important;
         }
 
         .content ul a:hover,
@@ -526,6 +508,9 @@ export default class QuickPost extends HTMLElement {
             cursor: default !important;
           }
 
+          .content a {
+            cursor: default !important;
+          }
 
           a,
           .content.extra .read-more,

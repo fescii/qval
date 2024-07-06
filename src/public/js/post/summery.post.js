@@ -294,7 +294,7 @@ export default class SummeryPost extends HTMLElement {
       }
 
       .meta > time.time {
-        font-family: var(--font-main), sans-serif;
+        font-family: var(--font-text), sans-serif;
         font-size: 0.83rem;
         font-weight: 500;
         margin: 1px 0 0 0;
