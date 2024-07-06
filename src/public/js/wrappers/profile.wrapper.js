@@ -12,6 +12,8 @@ export default class ProfileWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
     this.render();
   }
 
@@ -45,6 +47,10 @@ export default class ProfileWrapper extends HTMLElement {
       // check if the cookie is valid
       return true;
     }
+  }
+
+  setAttributes = (name, value) => {
+    this.parent.setAttribute(name, value);
   }
 
   disableScroll() {
@@ -318,8 +324,15 @@ export default class ProfileWrapper extends HTMLElement {
     // if followers is less than 0, set it to 0
     followers = followers < 0 ? 0 : followers;
 
+    // set user follow attribute
+    this.setAttribute('user-follow', followed.toString());
+
     // Set the followers attribute
     this.setAttribute('followers', followers.toString());
+
+    this.setAttributes('followers', followers)
+
+    this.setAttributes('user-follow', followed.toString());
 
     // select the followers element
     const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');

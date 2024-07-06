@@ -870,10 +870,6 @@ export default class ActionWrapper extends HTMLElement {
           background: var(--hover-background);
         }
 
-        span.stat.views:hover {
-          background: inherit;
-        }
-
         .action span.numbers {
           font-family: var(--font-main), sans-serif;
           font-size: 1rem;
