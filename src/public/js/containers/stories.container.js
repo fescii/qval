@@ -62,7 +62,7 @@ export default class StoriesContainer extends HTMLElement {
           const content = outerThis.getEmpty();
           contentContainer.innerHTML = content;
         });
-		}, 1000)
+		}, 100)
 	}
 
   fetchWithTimeout = (url, options, timeout = 9000) => {
