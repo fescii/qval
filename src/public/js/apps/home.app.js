@@ -98,7 +98,7 @@ export default class AppHome extends HTMLElement {
         ${this.getTop()}
         <add-container type="story"></add-container>
         <stories-container stories="popular" url="/stories/popular"></stories-container>
-        <topics-container url="/topics/popular"></topics-container>
+        <topics-container url="/api/v1/q/trending/topics"></topics-container>
         <stories-container stories="recent" url="/stories/recent"></stories-container>
         <discover-people url="/people/discover"></discover-people>
         <stories-feed stories="all" url="/stories/feed"></stories-feed>
@@ -114,7 +114,7 @@ export default class AppHome extends HTMLElement {
           <stories-feed stories="all" url="/stories/feed"></stories-feed>
         </div>
         <div class="side">
-          <topics-container url="/topics/popular"></topics-container>
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </div>
       `;
