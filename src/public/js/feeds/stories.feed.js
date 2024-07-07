@@ -64,9 +64,13 @@ export default class StoryFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.stories.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getEmptyMsg(outerThis._kind), storiesContainer);
           } 
           else if (data.last && data.stories.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.stories);
             outerThis.populateStories(content, storiesContainer);
             outerThis.populateStories(outerThis.getLastMessage(outerThis._kind), storiesContainer);
@@ -80,11 +84,15 @@ export default class StoryFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
           }
         })
         .catch((error) => {
-          console.log(error)
+          // console.log(error)
+          outerThis._empty = true;
+          outerThis._block = true;
           outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
         });
     });

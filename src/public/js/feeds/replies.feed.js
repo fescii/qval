@@ -64,9 +64,13 @@ export default class RepliesFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.replies.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateReplies(outerThis.getEmptyMsg(outerThis._kind), repliesContainer);
           } 
           else if (data.last && data.replies.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.replies);
             outerThis.populateReplies(content, repliesContainer);
             outerThis.populateReplies(
@@ -81,10 +85,14 @@ export default class RepliesFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateReplies(outerThis.getWrongMessage(), repliesContainer);
           }
         })
         .catch((error) => {
+          outerThis._empty = true;
+          outerThis._block = true;
           outerThis.populateReplies(outerThis.getWrongMessage(), repliesContainer);
         });
     });

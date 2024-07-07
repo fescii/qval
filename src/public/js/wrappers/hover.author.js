@@ -20,7 +20,6 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   connectedCallback() {
-
     // Get the media query list
     const mql = window.matchMedia('(max-width: 660px)');
 

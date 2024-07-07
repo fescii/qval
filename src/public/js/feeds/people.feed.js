@@ -64,9 +64,13 @@ export default class PeopleFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.people.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populatePeople(outerThis.getEmptyMsg(outerThis._kind), peopleContainer);
           } 
           else if (data.last && data.people.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.people);
             outerThis.populatePeople(content, peopleContainer);
             outerThis.populatePeople(
@@ -81,10 +85,14 @@ export default class PeopleFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
           }
         })
         .catch((error) => {
+          outerThis._empty = true;
+          outerThis._block = true;
 					// console.log(error)
           outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
         });

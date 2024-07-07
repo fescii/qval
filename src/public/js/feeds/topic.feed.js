@@ -64,9 +64,13 @@ export default class TopicFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.topics.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getEmptyMsg(outerThis._kind), topicsContainer);
           } 
           else if (data.last && data.topics.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.topics);
             outerThis.populateStories(content, topicsContainer);
             outerThis.populateStories(outerThis.getLastMessage(outerThis._kind), topicsContainer);
@@ -80,11 +84,15 @@ export default class TopicFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getWrongMessage(), topicsContainer);
           }
         })
         .catch((error) => {
-          console.log(error)
+          outerThis._empty = true;
+          outerThis._block = true;
+          // console.log(error)
           outerThis.populateStories(outerThis.getWrongMessage(), topicsContainer);
         });
     });
