@@ -412,7 +412,7 @@ export default class DiscoverPeople extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
         		font-size: 16px;
-						padding: 5px 0 10px;
+						padding: 15px 0 10px;
 						border-bottom: var(--border-mobile);
 					}
 

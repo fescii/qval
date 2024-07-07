@@ -232,6 +232,17 @@ const getStoryPreview = async (req, res) => {
     })
   }
 
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
+    kind: 'view',
+    hashes: {
+      target: story.hash,
+    },
+    user: story.author,
+    action: 'story',
+    value: 1,
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+
   // return the story object
   res.status(200).json({
     story: story,
@@ -271,6 +282,17 @@ const getReplyPreview = async (req, res) => {
       message: 'Reply not found'
     });
   }
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
+    kind: 'view',
+    hashes: {
+      target: reply.hash,
+    },
+    action: 'reply',
+    user: reply.author,
+    value: 1,
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   
   res.status(200).json({
     reply: reply,
