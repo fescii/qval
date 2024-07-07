@@ -29,6 +29,9 @@ export default class PersonWrapper extends HTMLElement {
     const body = document.querySelector('body');
 
     this.handleUserClick(url, body);
+
+    // Perform actions
+    this.performActions();
   }
 
   isLoggedIn = name => {
@@ -86,7 +89,6 @@ export default class PersonWrapper extends HTMLElement {
     );
   }
 
-
   // perfom actions
   performActions = () => {
     const outerThis = this;
@@ -102,7 +104,7 @@ export default class PersonWrapper extends HTMLElement {
     const url = '/api/v1/u/' + hash;
 
     // Get the follow action and subscribe action
-    const followBtn = this.shadowObj.querySelector('button.action');
+    const followBtn = this.shadowObj.querySelector('button.action#follow-action');
 
     // add event listener to the follow action
     if (followBtn) {
@@ -296,7 +298,6 @@ export default class PersonWrapper extends HTMLElement {
   }
 
   updateFollowers = (followed) => {
-    const outerThis = this;
     let value = followed ? 1 : -1;
     // Get followers attribute : concvert to number then add value
 
@@ -307,19 +308,18 @@ export default class PersonWrapper extends HTMLElement {
 
     // Set the followers attribute
     this.setAttribute('followers', followers.toString());
+    this.setAttribute('user-follow', followed.toString());
+  }
 
-    // select the followers element
-    const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');
-    if (followersStat) {
-      // select no element
-      const no = followersStat.querySelector('.number');
-      const text = followersStat.querySelector('.label');
+  parseToNumber = num_str => {
+    // Try parsing the string to an integer
+    const num = parseInt(num_str);
 
-      // Update the followers
-      no.textContent = this.formatNumber(followers);
-
-      // Update the text
-      text.textContent = followers === 1 ? 'follower' : 'followers';
+    // Check if parsing was successful
+    if (!isNaN(num)) {
+      return num;
+    } else {
+      return 0;
     }
   }
 
@@ -432,7 +432,7 @@ export default class PersonWrapper extends HTMLElement {
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
 
-    return /* html */`
+   return /* html */`
       <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
         followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"

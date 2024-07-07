@@ -16,7 +16,7 @@ export default class DiscoverPeople extends HTMLElement {
   }
 
   connectedCallback() {
-    	// get mql
+    // get mql
 		const mql = window.matchMedia('(min-width: 660px)');
 
     const contentContainer = this.shadowObj.querySelector('.people-list');
@@ -26,7 +26,7 @@ export default class DiscoverPeople extends HTMLElement {
 		}
   }
 
-  fetchPeople = contentContainer => {
+  fetchPeople = (contentContainer, mql) => {
     const outerThis = this;
 		const peopleLoader = this.shadowObj.querySelector('authors-loader');
 		setTimeout(() => {
@@ -63,7 +63,9 @@ export default class DiscoverPeople extends HTMLElement {
 						contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
             contentContainer.insertAdjacentHTML('beforeend', content);
 						// activate controls
-						outerThis.activateControls(contentContainer);
+						if(mql) {
+							outerThis.activateControls(contentContainer);
+						}
           }
           else {
             // display error message
@@ -163,33 +165,38 @@ export default class DiscoverPeople extends HTMLElement {
   }
 
   getBody = () => {
+		// get mql
+		const mql = window.matchMedia('(min-width: 660px)');
     // language=HTML
     return `
 			<div class="people-list">
 				${this.getLoader()}
-				${this.getControls()}
+				${this.getControls(mql.matches)}
 			</div>
     `;
   }
 
-	getControls = () => {
+	getControls = mql => {
 		// Check if mql is desktop
-		return /*html*/`
-			<div class="left control">
-				<span>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-						<path d="M9.78 12.78a.75.75 0 0 1-1.06 0L4.47 8.53a.75.75 0 0 1 0-1.06l4.25-4.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L6.06 8l3.72 3.72a.75.75 0 0 1 0 1.06Z"></path>
-					</svg>
-				</span>
-			</div>
-			<div class="right control">
-				<span>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-						<path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path>
-					</svg>
-				</span>
-			</div>
-		`
+		if(mql) {
+			return /*html*/`
+				<div class="left control">
+					<span>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+							<path d="M9.78 12.78a.75.75 0 0 1-1.06 0L4.47 8.53a.75.75 0 0 1 0-1.06l4.25-4.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L6.06 8l3.72 3.72a.75.75 0 0 1 0 1.06Z"></path>
+						</svg>
+					</span>
+				</div>
+				<div class="right control">
+					<span>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+							<path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path>
+						</svg>
+					</span>
+				</div>
+			`
+		}
+		else return '';
 	}
 
 	getTitle = () => {
