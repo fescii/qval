@@ -705,10 +705,11 @@ export default class TopicWrapper extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            border-bottom: var(--border);
+            border-bottom: none;
           }
 
           button.action,
+          div.actions > .action,
           a {
             cursor: default !important;
           }

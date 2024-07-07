@@ -429,6 +429,14 @@ export default class PollPost extends HTMLElement {
       @media screen and (max-width: 660px) {
         :host {
           font-size: 16px;
+          border-bottom: var(--border);
+          font-family: var(--font-main), sans-serif;
+          padding: 10px 0 0;
+          margin: 0;
+          width: 100%;
+          display: flex;
+          flex-flow: column;
+          gap: 0;
         }
 
         ::-webkit-scrollbar {

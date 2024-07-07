@@ -293,9 +293,8 @@ export default class DiscoverPeople extends HTMLElement {
           font-weight: 400;
         }
 
-
         .title {
-				  padding: 0 0 10px 3px;
+				  padding: 2px 0 10px 5px;
 				  display: flex;
 				  flex-flow: column;
 				  gap: 0;
@@ -406,8 +405,16 @@ export default class DiscoverPeople extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
         		font-size: 16px;
-						padding: 15px 0;
+						padding: 0 0 10px;
 						border-bottom: var(--border-mobile);
+					}
+
+					.title {
+						padding: 2px 0 10px 8px;
+						margin: 0 0 10px 0;
+						display: flex;
+						flex-flow: column;
+						gap: 0;
 					}
 
 					a {

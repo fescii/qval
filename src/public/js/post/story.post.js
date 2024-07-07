@@ -574,6 +574,7 @@ export default class StoryPost extends HTMLElement {
       @media screen and (max-width:660px) {
         :host {
           font-size: 16px;
+          border-bottom: var(--border);
         }
 
         ::-webkit-scrollbar {

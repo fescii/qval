@@ -97,6 +97,14 @@ const findTrendingUsers = async reqData => {
 
     const last = users.length < limit;
 
+    // map the users to the required format
+    users = users.map(user => {
+      const data = user.dataValues;
+      data.you = user.hash === user;
+
+      return data;
+    })
+
     // create a data object
     return { 
       data: {
@@ -136,6 +144,11 @@ const trendingUsersWhenLoggedIn = async (user, offset, limit) => {
         'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
         'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
       ],
+      where: {
+        hash: {
+          [Sequelize.Op.ne]: user
+        }
+      },
       order: [
         [sequelize.literal('views_last_30_days'), 'DESC'],
         ['followers', 'DESC'],
