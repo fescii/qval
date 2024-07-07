@@ -50,6 +50,8 @@ export default class StoriesContainer extends HTMLElement {
             // update the content
             const content = outerThis.mapFields(data.stories);
             contentContainer.innerHTML = content;
+            // set the last item border-bottom to none
+            outerThis.setLastItem(contentContainer);
           }
           else {
             // display error message
@@ -137,6 +139,16 @@ export default class StoriesContainer extends HTMLElement {
         `
       }
     }).join('');
+  }
+
+  setLastItem = contentContainer => {
+    // get last element child (can be a story or a reply)
+    const lastItem = contentContainer.lastElementChild;
+
+    // set border-bottom to none
+    if (lastItem) {
+      lastItem.style.setProperty('border-bottom', 'none');
+    }
   }
 
   getTemplate = () => {

@@ -22,6 +22,7 @@ import StatContainer from "./containers/stat.container.js";
 import StoriesContainer from "./containers/stories.container.js";
 import TopicsContainer from "./containers/topics.container.js";
 import TrendingContainer from "./containers/trending.container.js";
+import FeedContainer from "./containers/feed.container.js";
 
 // Import custom elements
 import CustomSpan from "./elements/span.element.js";
@@ -39,6 +40,7 @@ import StoriesFeed from "./feeds/stories.feed.js";
 import RepliesFeed from "./feeds/replies.feed.js";
 import StatFeed from "./feeds/stat.feed.js";
 import TopicFeed from "./feeds/topic.feed.js";
+import HomeFeed from "./feeds/home.feed.js";
 
 // Import forms
 import BioForm from "./forms/bio.form.js";
@@ -119,6 +121,7 @@ customElements.define("stat-container", StatContainer);
 customElements.define("stories-container", StoriesContainer);
 customElements.define("topics-container", TopicsContainer);
 customElements.define("trending-container", TrendingContainer);
+customElements.define("feed-container", FeedContainer);
 
 // Register custom elements
 customElements.define("custom-span", CustomSpan, { extends: "span" });
@@ -136,6 +139,7 @@ customElements.define("stories-feed", StoriesFeed);
 customElements.define("replies-feed", RepliesFeed);
 customElements.define("stat-feed", StatFeed);
 customElements.define("topics-feed", TopicFeed);
+customElements.define("home-feed", HomeFeed);
 
 // Register forms
 customElements.define("bio-form", BioForm);

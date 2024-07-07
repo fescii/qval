@@ -344,11 +344,11 @@ export default class DiscoverPeople extends HTMLElement {
 					position: absolute;
 					z-index: 3;
 					opacity: 0;
-					top: 50%;
+					top: 30%;
 					left: 0;
-					transform: translateY(-50%);
+					/* transform: translateY(-50%); */
 					width: 40px;
-					height: 100%;
+					height: 70%;
 					pointer-events: none;
 					display: flex;
 					align-items: center;
@@ -412,7 +412,7 @@ export default class DiscoverPeople extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
         		font-size: 16px;
-						padding: 0 0 10px;
+						padding: 5px 0 10px;
 						border-bottom: var(--border-mobile);
 					}
 

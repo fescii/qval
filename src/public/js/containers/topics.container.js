@@ -41,6 +41,7 @@ export default class TopicsContainer extends HTMLElement {
 						const content = outerThis.mapFields(data.topics);
             topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
           	topicsContainer.innerHTML =  content
+            outerThis.setLastItem(topicsContainer);
 					}
         }
         else {
@@ -150,6 +151,17 @@ export default class TopicsContainer extends HTMLElement {
           reject(error);
         });
     });
+  }
+
+  setLastItem = contentContainer => {
+    // get last element child (topic)
+    const lastItem = contentContainer.lastElementChild;
+
+    // set border-bottom to none
+    if (lastItem) {
+      lastItem.style.setProperty('border-bottom', 'none');
+      lastItem.style.setProperty('padding-bottom', '0');
+    }
   }
 
 	getTemplate = () => {
@@ -360,7 +372,7 @@ export default class TopicsContainer extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
         		font-size: 16px;
-						padding: 15px 0 10px 0;
+						padding: 5px 0 10px;
 					}
 
 					::-webkit-scrollbar {

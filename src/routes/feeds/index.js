@@ -1,6 +1,6 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getFeeds, getRecent, home
+  getFeeds, getRecent, home, getTrending
 } = require('../../controllers').feedController;
 
 const {
@@ -32,4 +32,7 @@ module.exports = app => {
 
   // Route for handling feeds(stories & replies)
   app.get('/api/v1/h/feeds', checkToken, getFeeds);
+
+  // Route for handling trending feeds(stories, & replies)
+  app.get('/api/v1/h/trending', checkToken, getTrending);
 }
