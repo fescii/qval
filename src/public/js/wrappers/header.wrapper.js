@@ -212,6 +212,30 @@ export default class HeaderWrapper extends HTMLElement {
     }
   }
 
+  getHome = () => {
+    return /* html */ `
+      <app-home url="/home" recent-url="/api/v1/h/recent" feeds-url="/api/v1/h/feeds"
+        trending-people="/api/v1/q/trending/people" trending-url="/api/v1/h/trending">
+      </app-home>
+    `
+  }
+
+  getLogon = () => {
+    return /* html */ `
+      <app-logon
+        name="join" next="/home"
+        api-login="/api/v1/a/login"
+        api-register="/api/v1/a/register"
+        api-check-email="/api/v1/a/check-email"
+        api-forgot-password="/api/v1/a/forgot-password"
+        api-verify-token="/api/v1/a/verify-token"
+        api-reset-password="/api/v1/a/reset-password"
+        join-url="/join" login="/join/login"
+        register="/join/register" forgot="/join/recover"
+      >
+    `
+  }
+
   getStyles() {
     const kind = this.getAttribute('type');
     return /* css */`
