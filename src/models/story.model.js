@@ -627,7 +627,7 @@ module.exports = (User, sequelize, Sequelize) => {
     // check if user is not null
     if (user !== null) {
       return await Reply.findAll({
-        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
+        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt', story, reply,
           [
             sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
           ],
@@ -659,7 +659,7 @@ module.exports = (User, sequelize, Sequelize) => {
       });
     } else {
       return await Reply.findAll({
-        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt',
+        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt', story, reply,
           [
             sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
           ]

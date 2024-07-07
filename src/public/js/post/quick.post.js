@@ -284,8 +284,11 @@ export default class QuickPost extends HTMLElement {
 
   getReply = story => {
     if (story === 'reply') {
+      const parent = this.getAttribute('parent');
+      let text = parent ? parent.toLowerCase() : 'A story';
+      let url = parent.startsWith('P') ? `/p/${parent.toLowerCase()}` : `/r/${parent.toLowerCase()}`;
       return /*html*/`
-        <div class="replying-to">
+        <a class="replying-to" href="${url}">
           <span class="meta-reply">
             <span class="text">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="16px" height="16px" fill="currentColor">
@@ -293,9 +296,9 @@ export default class QuickPost extends HTMLElement {
               </svg>
               <span class="reply">Replying to</span>
             </span>
-            <span class="parent">P0HABAG12AA5D46</span>
+            <span class="parent">${text.toUpperCase()}</span>
           </span>
-        </div>
+        </a>
       `
     } else return '';
   }
@@ -323,9 +326,11 @@ export default class QuickPost extends HTMLElement {
   }
 
   getFullPost = () => {
+    const parent = this.getAttribute('parent');
+    let text = parent ? `parent="${parent}"` : '';
     return /* html */`
       <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
-        likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
+        likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text}
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"

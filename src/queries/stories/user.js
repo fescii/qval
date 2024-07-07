@@ -82,7 +82,7 @@ const findUserReply = async (hash, user) => {
   try {
     // Find the reply
     const reply = await Reply.findOne({
-      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
+      attributes : ['kind', 'author', 'parent', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt', story, reply,
         // Check if the user has liked the reply
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
