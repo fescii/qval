@@ -409,7 +409,7 @@ export default class HeaderWrapper extends HTMLElement {
         nav.nav > .links > a.link.signin {
           border: var(--border-mobile);
           font-weight: 500;
-          padding: 3px 15px;
+          padding: 4px 15px 4px;
           font-family: var(--font-read);
           border-radius: 10px;
           -webkit-border-radius: 10px;

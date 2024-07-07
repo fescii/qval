@@ -84,7 +84,7 @@ export default class FeedContainer extends HTMLElement {
 
   populateFeeds = (content, feedContainer) => {
     // get the loader and remove it
-    const loader = feedContainer.querySelector('.loader-container');
+    const loader = feedContainer.querySelector('story-loader');
     if (loader) {
       loader.remove();
     }
@@ -243,14 +243,10 @@ export default class FeedContainer extends HTMLElement {
     `;
   }
 
-  getLoader() {
-    return /* html */`
-      <div class="loader-container">
-        <span id="btn-loader">
-          <span class="loader-alt"></span>
-        </span>
-      </div>
-    `
+  getLoader = () => {
+    return `
+			<story-loader speed="300"></story-loader>
+		`
   }
 
   getBody = () => {

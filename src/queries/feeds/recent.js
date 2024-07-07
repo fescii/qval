@@ -137,7 +137,7 @@ const findStoriesOfFollowing = async (user) => {
     const storiesData = stories.map(story => {
       const data = story.dataValues;
       data.story_author = story.story_author.dataValues;
-      data.story_author.is_following = true;
+      data.story_author.is_following = user === data.story_author.hash;
       data.you = user === false;
       // add story sections to the story
       if (story.kind === 'story') {
@@ -203,7 +203,7 @@ const findRecentStoriesWhenLoggedIn = async user => {
     const storiesData = stories.map(story => {
       const data = story.dataValues;
       data.story_author = story.story_author.dataValues;
-      data.story_author.is_following = true;
+      data.story_author.is_following = user === data.story_author.hash;
       data.you = user === false;
       // add story sections to the story
       if (story.kind === 'story') {
@@ -260,7 +260,7 @@ const findRecentStoriesWhenLoggedOut = async () => {
     const storiesData = stories.map(story => {
       const data = story.dataValues;
       data.story_author = story.story_author.dataValues;
-      data.story_author.is_following = true;
+      data.story_author.is_following = false;
       data.you = false;
       // add story sections to the story
       if (story.kind === 'story') {

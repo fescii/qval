@@ -69,7 +69,7 @@ export default class TopicsContainer extends HTMLElement {
 
   populateTopics = (content, topicsContainer) => {
     // get the loader and remove it
-    const loader = topicsContainer.querySelector('.loader-container');
+    const loader = topicsContainer.querySelector('topic-loader');
     if (loader){
       loader.remove();
     }
