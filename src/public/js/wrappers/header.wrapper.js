@@ -236,6 +236,16 @@ export default class HeaderWrapper extends HTMLElement {
     `
   }
 
+  getSearch = () => {
+    return /* html */ `
+      <app-search url="/search" query="" page="1" tab="stories" stories-url="/api/v1/q/stories"
+        replies-url="/api/v1/q/replies" people-url="/api/v1/q/people" topics-url="/api/v1/q/topics"
+        trending-stories="/api/v1/q/trending/stories" trending-people="/api/v1/q/trending/people"
+        trending-topics="/api/v1/q/trending/topics" trending-replies="/api/v1/q/trending/replies">
+      </app-search>
+    `
+  }
+
   getStyles() {
     const kind = this.getAttribute('type');
     return /* css */`
@@ -330,13 +340,13 @@ export default class HeaderWrapper extends HTMLElement {
         nav.nav > .left.home h3 {
           margin: 0 0 -2px 0;
           padding: 0 0 0 2px;
-          font-weight: 700;
+          font-weight: 600;
           color: transparent;
           font-size: 1.5rem;
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--read-text);
         }
 
         nav.nav > .left svg {
