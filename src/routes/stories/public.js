@@ -1,6 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getStory, getStoryLikes, getReply, getReplyLikes
+  getStory, getStoryLikes, getReply, getReplyLikes,
+  getReplyPreview, getStoryPreview
 } = require('../../controllers').storyController;
 
 const {
@@ -42,4 +43,10 @@ module.exports = app => {
 
   // Route to get a reply: handles reply page(replies)
   app.get('/r/:hash/replies', checkToken, getReply);
+
+  // Route to get story preview
+  app.get('/api/v1/p/:hash/preview', checkToken, getStoryPreview);
+
+  // Route to get reply preview
+  app.get('/api/v1/r/:hash/preview', checkToken, getReplyPreview);
 }

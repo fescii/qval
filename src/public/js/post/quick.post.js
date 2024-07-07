@@ -23,6 +23,9 @@ export default class QuickPost extends HTMLElement {
 
     // Open url
     this.openUrl();
+
+    // open preview
+    this.openPreview();
   }
 
   disableScroll() {
@@ -40,6 +43,29 @@ export default class QuickPost extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  openPreview = () => {
+    // get replying-to
+    const replyingTo = this.shadowObj.querySelector('.replying-to');
+    const body = document.querySelector('body');
+
+    if (replyingTo) {
+      replyingTo.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // get url attribute
+        let url = replyingTo.getAttribute('url');
+
+        //get the preview
+        let preview = this.getPreview(url);
+
+        // open the preview
+        body.insertAdjacentHTML('beforeend', preview);
+      });
+    }
   }
 
   // Open quick post
@@ -282,13 +308,19 @@ export default class QuickPost extends HTMLElement {
     }
   }
 
+  getPreview = url => {
+    return /*html*/`
+      <preview-popup url="${url}"></preview-popup> 
+    `
+  }
+
   getReply = story => {
     if (story === 'reply') {
       const parent = this.getAttribute('parent');
       let text = parent ? parent.toLowerCase() : 'A story';
-      let url = parent.startsWith('P') ? `/p/${parent.toLowerCase()}` : `/r/${parent.toLowerCase()}`;
+      let url = parent.startsWith('P') ? `/api/v1/p/${parent.toLowerCase()}/preview` : `/api/v1/r/${parent.toLowerCase()}/preview`;
       return /*html*/`
-        <a class="replying-to" href="${url}">
+        <a class="replying-to" href="/preview/${parent.toLowerCase()}" url=${url}>
           <span class="meta-reply">
             <span class="text">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="16px" height="16px" fill="currentColor">
@@ -400,6 +432,7 @@ export default class QuickPost extends HTMLElement {
 
         .replying-to {
           position: relative;
+          text-decoration: none;
           width: 100%;
           cursor: pointer;
           display: flex;
@@ -407,7 +440,7 @@ export default class QuickPost extends HTMLElement {
           justify-content: start;
           gap: 0;
           margin: 0 0 5px;
-          padding: 0 0 0 10px;
+          padding: 0 0 0 8px;
         }
 
         .replying-to::before {
@@ -417,7 +450,7 @@ export default class QuickPost extends HTMLElement {
           top: 50%;
           transform: translateY(-48%);
           left: 0;
-          width: 2px;
+          width: 1.5px;
           height: 82%;
           background: var(--action-linear);
           border-radius: 5px;

@@ -1,9 +1,10 @@
 <% var url = "/r/" + data.hash.toLowerCase() -%>
 <% var author = data.reply_author; -%>
+
 <app-post story="reply" style="display: none;" tab="<%= data.tab %>" url="<%= url %>" hash="<%= data.hash %>" likes="<%= data.likes %>" 
   replies="<%= data.replies %>" liked="<%= data.liked ? 'true' : 'false' %>" views="<%= data.views %>" time="<%= data.createdAt %>" replies-url="/api/v1<%= url %>/replies" likes-url="/api/v1<%= url %>/likes" 
   author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>"
-  author-stories="<%= author.stories %>" author-replies="<%= author.replies %>"  parent="<%= reply.story ? reply.story : reply.reply %>"
+  author-stories="<%= author.stories %>" author-replies="<%= author.replies %>"  parent="<%= data.story ? data.story : data.reply %>"
   author-img="<%= author.picture %>" author-verified="<%= author.verified ? 'true' : 'false' %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"
   author-following="<%= author.following %>" author-follow="<%= author.is_following ? 'true' : 'false' %>" author-bio="<%= author.bio === null ? 'This user has not added a bio yet.' : author.bio %>">
   <%= data.content %>

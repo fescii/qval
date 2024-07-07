@@ -16,7 +16,7 @@ const { getRelatedStories, getTopicStories, getTopicContributors } = require('./
 
 const { voteController } = require('./vote');
 
-const { getStory, getStoryLikes, getReply, getReplyLikes } = require('./public');
+const { getStory, getStoryLikes, getReply, getReplyLikes, getReplyPreview, getStoryPreview } = require('./public');
 
 const { getReplyReplies, getStoryReplies, fetchReplyLikes, fetchStoryLikes } = require('./feeds');
 
@@ -29,5 +29,6 @@ module.exports = {
   getStoryReplies, viewContentController, createReply, updateReply, deleteReply, 
   getStorySections, findAuthorReplies, findAuthorStories, getRelatedStories, getStory, 
   getReplyLikes, createStorySection, updateStorySection, deleteStorySection, getReply,
-  fetchReplyLikes, fetchStoryLikes, findUserFollowers, findUserFollowing, getTopicContributors
+  fetchReplyLikes, fetchStoryLikes, findUserFollowers, findUserFollowing, getTopicContributors,
+  getReplyPreview, getStoryPreview
 }
