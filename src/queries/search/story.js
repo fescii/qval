@@ -1,6 +1,6 @@
 // Import models
-const { Sequelize, sequelize, Story, StorySection, User } = require('../../models').models;
-
+const { Sequelize, sequelize, Story } = require('../../models').models;
+const { storiesLoggedIn, feedStories } = require('../raw').feed;
 
 /**
  * @function findStoriesByQuery
@@ -116,7 +116,7 @@ const mapFields = (content, data) => {
     </div>
   `;
   
-  if (data.length <= 0) {
+  if (!data || data.length <= 0) {
     return html;
   }
   else {
@@ -145,55 +145,14 @@ const mapFields = (content, data) => {
 const trendingStoriesWhenLoggedIn = async (user, offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const stories = await Story.findAll({
-      attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
-        // Check if the user has liked the story
-        [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
-          'liked'
-        ],
-        [
-          Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
-          'option'
-        ],
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = stories.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      group: [ "stories.id", "stories.kind", "stories.author", "stories.hash", "stories.title", 
-        "stories.content", "stories.slug", "stories.topics", "stories.poll", 
-        "stories.votes", "stories.views", "stories.replies", "stories.likes", "stories.end", 
-        "stories.createdAt", "stories.updatedAt", "story_author.id", "story_author.hash", 
-        "story_author.bio","story_author.name", "story_author.picture", "story_author.followers", 
-        "story_author.following", "story_author.stories", "story_author.verified", "story_author.replies", 
-        "story_author.email", "story_sections.kind", "story_sections.content", "story_sections.order", 
-        "story_sections.id", "story_sections.title" 
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC'],
-        ['replies', 'DESC'],
-      ],
-      include: [
-        {
-          model: User,
-          as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-            [
-              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
-              'is_following'
-            ]
-          ],
-        },
-        // Include the story sections
-        {
-          model: StorySection,
-          as: 'story_sections',
-          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
-          order: [['order', 'ASC']]
-        }
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const stories = await sequelize.query(storiesLoggedIn, {
+      replacements: {
+        user: user, 
+        daysAgo: thirtyDaysAgo.toISOString(),
+        offset: offset, 
+        limit: limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
     });
 
     // Check if the stories exist
@@ -202,16 +161,14 @@ const trendingStoriesWhenLoggedIn = async (user, offset, limit) => {
     }
 
     // return the stories: map the stories' dataValues
-    return  stories.map(story => {
-      const data = story.dataValues;
-      data.story_author = story.story_author.dataValues;
-      data.you = user === data.author;
+    return stories.map(story => {
+      story.you = user === story.author;
       // add story sections to the story
       if (story.kind === 'story') {
-        data.story_sections = mapFields(data.content, story.story_sections);
+        story.story_sections = mapFields(story.content, story.story_sections_summary);
       }
 
-      return data;
+      return story;
     });
   }
   catch (error) {
@@ -229,42 +186,13 @@ const trendingStoriesWhenLoggedIn = async (user, offset, limit) => {
 const trendingStoriesWhenLoggedOut = async (offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const stories = await Story.findAll({
-      attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = stories.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      group: [ "stories.id", "stories.kind", "stories.author", "stories.hash", "stories.title", 
-        "stories.content", "stories.slug", "stories.topics", "stories.poll", 
-        "stories.votes", "stories.views", "stories.replies", "stories.likes", "stories.end", 
-        "stories.createdAt", "stories.updatedAt", "story_author.id", "story_author.hash", 
-        "story_author.bio","story_author.name", "story_author.picture", "story_author.followers", 
-        "story_author.following", "story_author.stories", "story_author.verified", "story_author.replies", 
-        "story_author.email", "story_sections.kind", "story_sections.content", "story_sections.order", 
-        "story_sections.id", "story_sections.title" 
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['replies', 'DESC'],
-        ['likes', 'DESC'],
-        ['createdAt', 'DESC'],
-      ],
-      include: [
-        {
-          model: User,
-          as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
-        },
-        // Include the story sections
-        {
-          model: StorySection,
-          as: 'story_sections',
-          attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
-          order: [['order', 'ASC']]
-        }
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const stories = await sequelize.query(feedStories, {
+      replacements: {
+        daysAgo: thirtyDaysAgo.toISOString(),
+        offset: offset,
+        limit: limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
     });
 
     // Check if the stories exist
@@ -273,16 +201,14 @@ const trendingStoriesWhenLoggedOut = async (offset, limit) => {
     }
 
     // return the stories: map the stories' dataValues
-    return  stories.map(story => {
-      const data = story.dataValues;
-      data.you = false;
-      data.story_author = story.story_author.dataValues;
+    return stories.map(story => {
+      story.you = false;
       // add story sections to the story
       if (story.kind === 'story') {
-        data.story_sections = mapFields(data.content, story.story_sections);
+        story.story_sections = mapFields(story.content, story.story_sections_summary);
       }
 
-      return data;
+      return story;
     });
   }
   catch (error) {

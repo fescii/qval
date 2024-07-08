@@ -1,6 +1,6 @@
 // Import models
 const { Sequelize, sequelize, User, Topic, TopicSection } = require('../../models').models;
-
+const { topTopicsLoggedIn, topTopicsLoggedOut } = require('../raw').topic;
 /**
  * @function findTopicsByQuery
  * @description Query to finding topics by query: using vector search
@@ -124,53 +124,14 @@ const findTrendingTopics = async reqData => {
 const trendingTopicsWhenLoggedIn = async (user, offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const topics = await Topic.findAll({
-      attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
-        // Check if the user has followed the topic
-        [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."followers" AS t_followers WHERE t_followers.topic = topics.hash AND t_followers.author = '${user}')`)),
-          'is_following'
-        ],
-        [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."subscribers" AS t_subscribers WHERE t_subscribers.topic = topics.hash AND t_subscribers.author = '${user}')`)),
-          'is_subscribed'
-        ],
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = topics.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      include: [
-        {
-          model: User,
-          as: 'topic_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-            [
-              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = topic_author.hash AND connects.from = '${user}')`)),
-              'is_following'
-            ]
-          ],
-        },
-        // Include the topic sections
-        {
-          model: TopicSection,
-          as: 'topic_sections',
-          attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
-          order: [['order', 'ASC']]
-        }
-      ],
-      group: [ "topics.id", "topics.author", "topics.hash", "topics.name", "topics.slug", "topics.summary",
-        "topics.followers", "topics.subscribers", "topics.stories", "topics.views", "topic_author.id", "topic_author.hash", 
-        "topic_author.bio", "topic_author.name", "topic_author.picture", "topic_author.followers", "topic_author.following",
-        "topic_author.stories", "topic_author.verified", "topic_author.replies", "topic_author.email", "topic_sections.id", 
-        "topic_sections.content", "topic_sections.order", "topic_sections.id", "topic_sections.title"
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['followers', 'DESC'],
-        ['stories', 'DESC'],
-        ['createdAt', 'DESC'],
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const topics = await sequelize.query(topTopicsLoggedIn, {
+      replacements: { 
+        user, 
+        daysAgo: thirtyDaysAgo.toISOString(), 
+        offset, 
+        limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
     });
 
     // Check if the topics exist
@@ -180,9 +141,8 @@ const trendingTopicsWhenLoggedIn = async (user, offset, limit) => {
 
     // return the topics: map the topics' dataValues
     return  topics.map(topic => {
-      const data = topic.dataValues;
-      data.you = user === data.author;
-      return data;
+      topic.you = user === topic.author;
+      return topic;
     });
   }
   catch (error) {
@@ -200,39 +160,13 @@ const trendingTopicsWhenLoggedIn = async (user, offset, limit) => {
 const trendingTopicsWhenLoggedOut = async (offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const topics = await Topic.findAll({
-      attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = topics.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      include: [
-        {
-          model: User,
-          as: 'topic_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
-        },
-        // Include the topic sections
-        {
-          model: TopicSection,
-          as: 'topic_sections',
-          attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
-          order: [['order', 'ASC']]
-        }
-      ],
-      group: [ "topics.id", "topics.author", "topics.hash", "topics.name", "topics.slug", "topics.summary",
-        "topics.followers", "topics.subscribers", "topics.stories", "topics.views", "topic_author.id", "topic_author.hash", 
-        "topic_author.bio", "topic_author.name", "topic_author.picture", "topic_author.followers", "topic_author.following",
-        "topic_author.stories", "topic_author.verified", "topic_author.replies", "topic_author.email", "topic_sections.id", 
-        "topic_sections.content", "topic_sections.order", "topic_sections.id", "topic_sections.title"
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['followers', 'DESC'],
-        ['stories', 'DESC'],
-        ['createdAt', 'DESC'],
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const topics = await sequelize.query(topTopicsLoggedOut, {
+      replacements: { 
+        daysAgo: thirtyDaysAgo.toISOString(), 
+        offset, 
+        limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
     });
 
     // Check if the topics exist
@@ -241,10 +175,9 @@ const trendingTopicsWhenLoggedOut = async (offset, limit) => {
     }
 
     // return the topics: map the topics' dataValues
-    return  topics.map(topic => {
-      const data = topic.dataValues;
-      data.you = false;
-      return data;
+    return topics.map(topic => {
+      topic.you = false;
+      return topic;
     });
   }
   catch (error) {

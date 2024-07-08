@@ -1,6 +1,6 @@
 // Import models
-const { Sequelize, sequelize, User, Reply } = require('../../models').models;
-
+const { Sequelize, sequelize, Reply } = require('../../models').models;
+const { repliesLoggedIn, feedReplies } = require('../raw').feed;
 /**
  * @function findRepliesByQuery
  * @description Query to finding replies by query: using vector search
@@ -125,42 +125,9 @@ const findTrendingReplies = async reqData => {
 const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const replies = await Reply.findAll({
-      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
-        // Check if the user has liked the reply
-        [
-          Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
-          'liked'
-        ],
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = replies.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      group: [ "replies.id", "replies.kind", "replies.author", "replies.story", "replies.reply", "replies.hash",
-        "replies.content", "replies.views", "replies.likes", "replies.replies", "replies.createdAt", "replies.updatedAt",
-        "reply_author.id", "reply_author.hash", "reply_author.bio", "reply_author.name", "reply_author.picture",
-        "reply_author.followers", "reply_author.following", "reply_author.stories", "reply_author.verified", "reply_author.replies",
-        "reply_author.email"
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['replies', 'DESC'],
-        ['likes', 'DESC'],
-        ['createdAt', 'DESC'],
-      ],
-      include: [
-        {
-          model: User,
-          as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-            [
-              Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
-              'is_following'
-            ]
-          ],
-        },
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const replies = await sequelize.query(repliesLoggedIn, {
+      replacements: [user, thirtyDaysAgo, limit, offset],
+      type: Sequelize.QueryTypes.SELECT
     });
 
     // Check if the replies exist
@@ -169,11 +136,9 @@ const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
     }
 
     // return the replies: map the replies' dataValues
-    return  replies.map(reply => {
-      const data = reply.dataValues;
-      data.reply_author = reply.reply_author.dataValues;
-      data.you = user === data.author;
-      return data;
+    return replies.map(reply => {
+      reply.you = user === reply.author;
+      return reply;
     });
   }
   catch (error) {
@@ -191,44 +156,20 @@ const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
 const trendingRepliesWhenLoggedOut = async (offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const replies = await Reply.findAll({
-      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies', 'createdAt', 'updatedAt',
-        [sequelize.literal(`(SELECT COUNT(*) FROM story.views WHERE views.target = replies.hash AND views."createdAt" > '${thirtyDaysAgo.toISOString()}')`), 'views_last_30_days']
-      ],
-      group: [ "replies.id", "replies.kind", "replies.author", "replies.story", "replies.reply", "replies.hash",
-        "replies.content", "replies.views", "replies.likes", "replies.replies", "replies.createdAt", "replies.updatedAt",
-        "reply_author.id", "reply_author.hash", "reply_author.bio", "reply_author.name", "reply_author.picture",
-        "reply_author.followers", "reply_author.following", "reply_author.stories", "reply_author.verified", "reply_author.replies",
-        "reply_author.email"
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['createdAt', 'DESC'],
-        ['replies', 'DESC'],
-      ],
-      include: [
-        {
-          model: User,
-          as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
-        },
-      ],
-      limit: limit,
-      offset: offset,
-      subQuery: false
+    const replies = await sequelize.query(feedReplies, {
+      replacements: [thirtyDaysAgo, limit, offset],
+      type: Sequelize.QueryTypes.SELECT
     });
 
-    // Check if the replies exist
-    if (replies.length < 1) {
+   // Check if the replies exist
+   if (replies.length < 1) {
       return [];
     }
 
     // return the replies: map the replies' dataValues
-    return  replies.map(reply => {
-      const data = reply.dataValues;
-      data.you = false;
-      data.reply_author = reply.reply_author.dataValues;
-      return data;
+    return replies.map(reply => {
+      reply.you = false;
+      return reply;
     });
   }
   catch (error) {

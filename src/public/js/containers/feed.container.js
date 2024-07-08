@@ -48,6 +48,7 @@ export default class FeedContainer extends HTMLElement {
       response.json().then((result) => {
         if (result.success) {
           const data = result.data;
+          // console.log(data)
           if (data.last && outerThis._page === 1 && data.stories.length === 0 && data.replies.length === 0) {
             outerThis.populateFeeds(outerThis.getEmptyMsg(), feedContainer);
           }
@@ -62,7 +63,7 @@ export default class FeedContainer extends HTMLElement {
         }
       })
         .catch((error) => {
-          // console.log(error)
+          console.log(error)
           outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
         });
     });
@@ -70,7 +71,7 @@ export default class FeedContainer extends HTMLElement {
 
   fetchFeeds = feedContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    const url = this._url;
 
     if (!this._block && !this._empty) {
       outerThis._empty = true;
@@ -183,7 +184,7 @@ export default class FeedContainer extends HTMLElement {
       <quick-post story="reply" hash="${reply.hash}" url="/r/${reply.hash.toLowerCase()}" likes="${reply.likes}" replies="${reply.replies}" liked="${reply.liked}"
         views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" likes-url="/api/v1/r/${reply.hash}/likes"
         author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}"
-        author-stories="${author.stories}" author-replies="${author.replies}"
+        author-stories="${author.stories}" author-replies="${author.replies}" parent="${reply.story ? reply.story : reply.reply}"
         author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
         author-following="${author.following}" author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!' : author.bio}">
         ${reply.content}
