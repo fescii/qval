@@ -84,11 +84,19 @@ const validateStory = async data => {
         };
       }
 
-      // Check if end was provided and is a number
-      if (data.end && typeof data.end !== 'number') {
+      // Poll cannot be more than 4 options
+      if (data.poll.length > 4) {
         return {
           data: null,
-          error: new Error('End should be a number')
+          error: new Error('Poll cannot have more than 4 options')
+        };
+      }
+
+      // end cannot be more than 7 days
+      if (data.end > 7) {
+        return {
+          data: null,
+          error: new Error('Poll cannot run for more than 7 days')
         };
       }
 
