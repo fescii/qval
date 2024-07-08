@@ -413,7 +413,7 @@ export default class DiscoverPeople extends HTMLElement {
 					:host {
         		font-size: 16px;
 						padding: 15px 0 10px;
-						border-bottom: var(--border-mobile);
+						border-bottom: none;
 					}
 
 					.title {

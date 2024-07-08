@@ -394,16 +394,21 @@ export default class UrlPopup extends HTMLElement {
           .welcome > .actions {
             margin: 0 0 10px;
             width: 90%;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
           }
 
           .welcome > .actions .action {
             text-decoration: none;
-            padding: 5px 20px 6px;
+            padding: 5px 15px 6px;
             cursor: default !important;
             margin: 0 0 10px;
-            width: 120px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            width: 100px;
             cursor: default !important;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
