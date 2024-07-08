@@ -536,150 +536,73 @@ module.exports = (User, sequelize, Sequelize) => {
   // add search property to the story model
   Story.search = async queryOptions => {
     const { user, query, offset, limit } = queryOptions;
-
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
     // check if user is not null
     if (user !== null) {
-      return await Story.findAll({
-        attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
-          [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
-          ],
-          [
-            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.story = stories.hash AND likes.author = '${user}')`)),
-            'liked'
-          ],
-          [
-            Sequelize.literal(`(SELECT option FROM story.votes WHERE votes.author = '${user}' AND votes.story = stories.hash LIMIT 1)`),
-            'option'
-          ]
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
-          '@@',
-          tsQuery,
-        ),
-        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
-        offset: offset,
-        limit: limit,
-        include: [
-          {
-            model: User,
-            as: 'story_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-              [
-                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
-                'is_following'
-              ]
-            ],
-          },
-          // Include the story sections
-          {
-            model: StorySection,
-            as: 'story_sections',
-            attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
-            order: [['order', 'ASC']]
-          }
-        ],
-      });
+      return await sequelize.query(/*sql*/`
+        WITH story_sections AS ( SELECT story, JSON_AGG(JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
+        SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
+        COALESCE(l.liked, false) AS liked, vt.option, ts_rank_cd(s.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified, 'replies', sa.replies,'email', sa.email, 'is_following', COALESCE(c.is_following, false)) AS story_author, 
+        ss.sections AS story_sections_summary
+        FROM story.stories s
+        LEFT JOIN  account.users sa ON s.author = sa.hash 
+        LEFT JOIN (SELECT story, option FROM story.votes WHERE author = :user) AS vt ON s.hash = vt.story
+        LEFT JOIN  story_sections ss ON s.hash = ss.story
+        LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
+        LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, s."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `, { replacements: { user, query, offset, limit }, type: sequelize.QueryTypes.SELECT });
     } else {
-      return await Story.findAll({
-        attributes: ['kind', 'author', 'hash', 'title', 'content', 'slug', 'topics', 'poll', 'votes', 'views', 'replies', 'likes', 'end', 'createdAt', 'updatedAt',
-          [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
-          ],
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
-          '@@',
-          tsQuery,
-        ),
-        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
-        offset: offset,
-        limit: limit,
-        include: [
-          {
-            model: User,
-            as: 'story_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
-          },
-          // Include the story sections
-          {
-            model: StorySection,
-            as: 'story_sections',
-            attributes: ['kind', 'content', 'order', 'id', 'title', 'content'],
-            order: [['order', 'ASC']]
-          }
-        ],
-      });
+      return await sequelize.query(/*sql*/`
+        WITH story_sections AS ( SELECT story, JSON_AGG(JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
+        SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
+        false AS liked, false AS option, ts_rank_cd(s.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified, 'replies', sa.replies,'email', sa.email, 'is_following', false) AS story_author, 
+        ss.sections AS story_sections_summary
+        FROM story.stories s
+        LEFT JOIN  account.users sa ON s.author = sa.hash 
+        LEFT JOIN  story_sections ss ON s.hash = ss.story
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, s."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `, { replacements: {query, offset, limit }, type: sequelize.QueryTypes.SELECT });
     }
   }
 
   // add search property to the reply model
   Reply.search = async queryOptions => {
     const { user, query, offset, limit } = queryOptions;
-
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-    
     // check if user is not null
     if (user !== null) {
-      return await Reply.findAll({
-        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt', story, reply,
-          [
-            sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
-          ],
-          [
-            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM story.likes WHERE likes.reply = replies.hash AND likes.author = '${user}')`)),
-            'liked'
-          ]
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
-          '@@',
-          tsQuery,
-        ),
-        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
-        offset: offset,
-        limit: limit,
-        include: [
-          {
-            model: User,
-            as: 'reply_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-              [
-                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
-                'is_following'
-              ]
-            ],
-          }
-        ],
-      });
+      return await sequelize.query(/*sql*/`
+        WITH reply_likes AS ( SELECT reply, TRUE AS liked FROM story.likes WHERE author = :user),
+        user_connections AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user)
+        SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", COALESCE(rl.liked, FALSE) AS liked, ts_rank_cd(r.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified, 'replies', ra.replies,'email', ra.email, 'is_following', COALESCE(uc.is_following, FALSE)) AS reply_author
+        FROM story.replies r
+        LEFT JOIN account.users ra ON r.author = ra.hash
+        LEFT JOIN reply_likes rl ON r.hash = rl.reply
+        LEFT JOIN user_connections uc ON ra.hash = uc."to"
+        WHERE to_tsvector('english', r.content) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, r."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `,{ replacements: { user, query, offset, limit}, type: sequelize.QueryTypes.SELECT });
     } else {
-      return await Reply.findAll({
-        attributes: ['kind', 'author', 'hash', 'content', 'views', 'replies', 'likes', 'createdAt', 'updatedAt', story, reply,
-          [
-            sequelize.literal(`ts_rank_cd("replies"."search", to_tsquery('english', '${query}'))`), 'rank',
-          ]
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
-          '@@',
-          tsQuery,
-        ),
-        order: [sequelize.literal(`rank DESC`), ['createdAt', 'DESC']],
-        offset: offset,
-        limit: limit,
-        include: [
-          {
-            model: User,
-            as: 'reply_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
-          }
-        ],
-      });
+      return await sequelize.query(/*sql*/`
+        SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", false AS liked, ts_rank_cd(r.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified, 'replies', ra.replies,'email', ra.email, 'is_following', false) AS reply_author
+        FROM story.replies r
+        LEFT JOIN account.users ra ON r.author = ra.hash
+        WHERE to_tsvector('english', r.content) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, r."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `,{ replacements: { query, offset, limit}, type: sequelize.QueryTypes.SELECT });
     }
   }
 

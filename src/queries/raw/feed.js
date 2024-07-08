@@ -5,11 +5,11 @@
 */
 const storiesLoggedIn = /*sql*/ `
   WITH story_views AS (SELECT target, COUNT(*) AS views_count FROM story.views WHERE "createdAt" > :daysAgo GROUP BY target), 
-  story_sections AS ( SELECT story, JSON_AGG( JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order") AS sections FROM story.story_sections GROUP BY story)
+  story_sections AS ( SELECT story, JSON_AGG( JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
   SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
   COALESCE(l.liked, false) AS liked, vt.option, COALESCE(sv.views_count, 0) AS total_views, 
   JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified, 'replies', sa.replies,'email', sa.email, 'is_following', COALESCE(c.is_following, false)) AS story_author, 
-  COALESCE(c.is_following, false) AS story_author_is_following, ss.sections AS story_sections_summary
+  ss.sections AS story_sections_summary
   FROM story.stories s 
   LEFT JOIN  account.users sa ON s.author = sa.hash 
   LEFT JOIN (SELECT story, option FROM story.votes WHERE author = :user) AS vt ON s.hash = vt.story
@@ -49,9 +49,9 @@ const repliesLoggedIn = /*sql*/`
  * @returns {string} A SQL query
 */
 const feedStories = /*sql*/ `
-  WITH story_views AS (SELECT target, COUNT(*) AS views_count FROM story.views WHERE "createdAt" > :daysAgo GROUP BY target), story_sections AS ( SELECT story, JSON_AGG( JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order") AS sections FROM story.story_sections GROUP BY story)
+  WITH story_views AS (SELECT target, COUNT(*) AS views_count FROM story.views WHERE "createdAt" > :daysAgo GROUP BY target), story_sections AS ( SELECT story, JSON_AGG( JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
   SELECT s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", false AS liked, COALESCE(sv.views_count, 0) AS total_views, 
-  JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified, 'replies', sa.replies,'email', sa.email 'is_following', false) AS story_author, 
+  JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified, 'replies', sa.replies,'email', sa.email, 'is_following', false) AS story_author, 
   ss.sections AS story_sections_summary
   FROM story.stories s 
   LEFT JOIN  story_views sv ON s.hash = sv.target
@@ -68,7 +68,7 @@ const feedStories = /*sql*/ `
  * @returns {string} A SQL query
 */
 const feedReplies = /*sql*/`
-  WITH reply_views AS ( SELECT target, COUNT(*) AS views_count FROM story.views WHERE "createdAt" > :daysAgo GROUP BY target),
+  WITH reply_views AS ( SELECT target, COUNT(*) AS views_count FROM story.views WHERE "createdAt" > :daysAgo GROUP BY target)
   SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", false AS liked, COALESCE(rv.views_count, 0) AS total_views,
   JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified, 'replies', ra.replies,'email', ra.email, 'is_following', false) AS reply_author
   FROM story.replies r

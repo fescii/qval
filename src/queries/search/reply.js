@@ -126,7 +126,12 @@ const trendingRepliesWhenLoggedIn = async (user, offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const replies = await sequelize.query(repliesLoggedIn, {
-      replacements: [user, thirtyDaysAgo, limit, offset],
+      replacements: {
+        user: user,
+        daysAgo: thirtyDaysAgo.toISOString(),
+        limit, 
+        offset
+      },
       type: Sequelize.QueryTypes.SELECT
     });
 
@@ -157,7 +162,11 @@ const trendingRepliesWhenLoggedOut = async (offset, limit) => {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const replies = await sequelize.query(feedReplies, {
-      replacements: [thirtyDaysAgo, limit, offset],
+      replacements: {
+        daysAgo: thirtyDaysAgo.toISOString(), 
+        limit,
+        offset
+      },
       type: Sequelize.QueryTypes.SELECT
     });
 

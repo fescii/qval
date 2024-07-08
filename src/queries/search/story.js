@@ -34,17 +34,27 @@ const findStoriesByQuery = async (reqData) => {
     // build the query(vector search)
     let stories = await Story.search(queryOptions);
 
+    if (stories.length < 1) {
+      // create a data object
+      return { 
+        data: {
+          stories: stories,
+          limit: limit,
+          offset: offset,
+          last: true,
+        },
+      error: null 
+      }
+    }
+
     // return the stories: map the stories' dataValues
     stories =  stories.map(story => {
-      const data = story.dataValues;
-      data.story_author = story.story_author.dataValues;
-      data.you = user === data.author;
+      story.you = user === story.author;
       // add story sections to the story
       if (story.kind === 'story') {
-        data.story_sections = mapFields(data.content, story.story_sections);
+        story.story_sections = mapFields(story.content, story.story_sections_summary);
       }
-
-      return data;
+      return story;
     });
 
     const last = stories.length < limit;

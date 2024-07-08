@@ -429,7 +429,6 @@ const mapFields = (data, hash) => {
         <a href="/t/${hash}/contribute" class="button">Contribute</a>
       </div>
     `
-
     return html + last;
   }
 }

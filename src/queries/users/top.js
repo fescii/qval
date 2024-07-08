@@ -1,6 +1,6 @@
 // Import user and sequelize from models
-const { User, sequelize, Sequelize, Connect, View } = require('../../models').models;
-
+const { User, sequelize} = require('../../models').models;
+const { topUsersLoggedIn, topUsersLoggedOut} = require('../raw').user;
 
 /**
  * @function getRecommendedUsers
@@ -30,12 +30,9 @@ const getRecommendedUsers = async hash => {
 
       // map users to check if user is the current user
       const usersMap = users.map(user => {
-        const data = user.dataValues;
+        user.you = user.hash === hash;
 
-        // check if the user is the current user
-        data.you = data.hash === hash;
-
-        return data;
+        return user;
       });
 
       // Return the results
@@ -63,51 +60,12 @@ const getRecommendedUsersWhenLoggedIn = async hash => {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   try {
     // Define the query to get the top 5 recommended users
-    return await User.findAll({
-      attributes: [
-        'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified',
-        [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days'],
-        [sequelize.literal(`CASE WHEN COUNT(user_followers.id) > 0 THEN TRUE ELSE FALSE END`), 'is_following']
-      ],
-      where: {
-        hash: {
-          [Sequelize.Op.not]: hash
-        }
+    return await sequelize.query(topUsersLoggedIn, {
+      replacements: { 
+        user: hash,
+        daysAgo: thirtyDaysAgo.toISOString()
       },
-      group: [
-        'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
-        'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['followers', 'DESC'],
-        ['stories', 'DESC'],
-        ['replies', 'DESC'],
-      ],
-      include: [
-        {
-          model: View,
-          as: 'authored_views',
-          attributes: [],
-          where: {
-            createdAt: {
-              [Sequelize.Op.gt]: thirtyDaysAgo
-            }
-          },
-          required: false
-        },
-        {
-          model: Connect,
-          as: 'user_followers',
-          attributes: [],
-          where: {
-            from: hash
-          },
-          required: false
-        }
-      ],
-      limit: 5,
-      subQuery: false
+      type: sequelize.QueryTypes.SELECT
     });
   }
   catch (error) {
@@ -127,44 +85,17 @@ const getRecommendedUsersWhenNotLoggedIn = async () => {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   try {
     // Define the query to get the top 5 recommended users
-    return await User.findAll({
-      attributes: [
-        'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified',
-        [sequelize.fn('COALESCE', sequelize.fn('COUNT', sequelize.col('authored_views.id')), 0), 'views_last_30_days']
-      ],
-      group: [
-        'users.id', 'users.hash', 'users.name', 'users.email', 'users.bio', 'users.picture', 
-        'users.followers', 'users.following', 'users.stories', 'users.replies', 'users.verified'
-      ],
-      order: [
-        [sequelize.literal('views_last_30_days'), 'DESC'],
-        ['followers', 'DESC'],
-        ['stories', 'DESC'],
-        ['replies', 'DESC'],
-      ],
-      include: [
-        {
-          model: View,
-          as: 'authored_views',
-          attributes: [],
-          where: {
-            createdAt: {
-              [Sequelize.Op.gt]: thirtyDaysAgo
-            }
-          },
-          required: false
-        }
-      ],
-      limit: 5,
-      subQuery: false
+    return await sequelize.query(topUsersLoggedOut, {
+      replacements: { 
+        daysAgo: thirtyDaysAgo.toISOString()
+      },
+      type: sequelize.QueryTypes.SELECT
     });
   }
   catch (error) {
     throw error;
   }
 };
-
-
 
 // Export the function
 module.exports = {

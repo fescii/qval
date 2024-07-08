@@ -165,8 +165,8 @@ const fetchFeedsWhenLoggedOut = async (offset, limit) => {
     const stories = await sequelize.query(feedStories, {
       replacements: { 
         daysAgo: sevenDaysAgo.toISOString(),
-        offset: 0,
-        limit: 6
+        offset: offset,
+        limit: limit
       },
       type: Sequelize.QueryTypes.SELECT
     });
@@ -174,8 +174,8 @@ const fetchFeedsWhenLoggedOut = async (offset, limit) => {
     const replies = await sequelize.query(feedReplies, {
       replacements: { 
         daysAgo: sevenDaysAgo.toISOString(),
-        offset: 0,
-        limit: 6
+        offset: offset,
+        limit: limit
       },
       type: Sequelize.QueryTypes.SELECT
     });
