@@ -50,10 +50,9 @@ const findRepliesByQuery = async reqData => {
     const last = replies.length < limit;
 
     replies = replies.map(reply => {
-      const data = reply.dataValues;
-      data.you = user === data.author;
-      return data;
-    })
+      reply.you = user === reply.author;
+      return reply;
+    });
 
     // create a data object
     return { 

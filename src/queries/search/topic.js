@@ -49,9 +49,8 @@ const findTopicsByQuery = async reqData => {
     const last = topics.length < limit;
 
     topics = topics.map(topic => {
-      const data = topic.dataValues;
-      data.you = user === data.author;
-      return data;
+      topic.you = user === topic.author;
+      return topic;
     })
 
     // create a data object

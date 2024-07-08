@@ -48,10 +48,8 @@ const findUsersByQuery = async reqData => {
     const last = users.length < limit;
 
     users = users.map(user => {
-      const data = user.dataValues;
-      data.you = user.hash === user;
-
-      return data;
+      user.you = user.hash === user;
+      return user;
     })
 
     // create a data object

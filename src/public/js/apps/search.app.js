@@ -247,19 +247,16 @@ export default class AppSearch extends HTMLElement {
           // update tab attribute  and this._tab
           outerThis._tab = tab.dataset.element;
 
-          switch (tab.dataset.element) {
-            case "stories":
-              contentContainer.innerHTML = outerThis.getStories();
-            case "replies":
-              contentContainer.innerHTML = outerThis.getReplies();
-              break;
-            case "topics":
-              contentContainer.innerHTML = outerThis.getTopics();
-              break;
-            case "people":
-              contentContainer.innerHTML = outerThis.getPeople();
-            default:
-              break;
+          if (tab.dataset.element === "stories") {
+            contentContainer.innerHTML = outerThis.getStories();
+          } else if (tab.dataset.element === "replies") {
+            contentContainer.innerHTML = outerThis.getReplies();
+          } else if (tab.dataset.element === "topics") {
+            contentContainer.innerHTML = outerThis.getTopics();
+          } else if (tab.dataset.element === "people") {
+            contentContainer.innerHTML = outerThis.getPeople();
+          } else {
+            contentContainer.innerHTML = outerThis.getStories();
           }
         }
       })

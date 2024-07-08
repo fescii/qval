@@ -403,84 +403,41 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
   // add prototype to search: name_slug_search
   Topic.search = async queryOptions => {
     const { query, user, offset, limit } = queryOptions;
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
     if(user !== null) {
-      return await Topic.findAll({
-        attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
-          // Check if the user has followed the topic
-          [
-            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."followers" AS t_followers WHERE t_followers.topic = topics.hash AND t_followers.author = '${user}')`)),
-            'is_following'
-          ],
-          [
-            Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM "topic"."subscribers" AS t_subscribers WHERE t_subscribers.topic = topics.hash AND t_subscribers.author = '${user}')`)),
-            'is_subscribed'
-          ],
-          [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank',
-          ],
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
-          '@@',
-          tsQuery
-        ),
-        include: [
-          {
-            model: User,
-            as: 'topic_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
-              [
-                Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = topic_author.hash AND connects.from = '${user}')`)),
-                'is_following'
-              ]
-            ],
-          },
-          // Include the topic sections
-          {
-            model: TopicSection,
-            as: 'topic_sections',
-            attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
-            order: [['order', 'ASC']]
-          }
-        ],
-        order: [sequelize.literal(`rank DESC`), ['followers', 'DESC']],
-        limit: limit,
-        offset: offset
-      })
+      return await sequelize.query(/*sql*/`
+        WITH topic_followers AS (SELECT topic, TRUE AS is_following FROM topic.followers WHERE author = :user),
+        topic_subscribers AS (SELECT topic, TRUE AS is_subscribed FROM topic.subscribers WHERE author = :user),
+        user_connections AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user),
+        topic_sections_json AS (SELECT topic, JSON_AGG(JSON_BUILD_OBJECT('id', id, 'content', content, 'order', "order", 'title', title) ORDER BY "order" ASC) AS sections FROM topic.sections GROUP BY topic)
+        SELECT t.author, t.hash, t.name, t.slug, t.summary, t.followers, t.subscribers, t.stories, t.views, COALESCE(tf.is_following, FALSE) AS is_following, COALESCE(ts.is_subscribed, FALSE) AS is_subscribed, ts_rank_cd(t.search, to_tsquery('english', :query)) AS rank,
+        JSON_BUILD_OBJECT('hash', ta.hash, 'bio', ta.bio, 'name', ta.name, 'picture', ta.picture, 'followers', ta.followers, 'following', ta.following, 'stories', ta.stories, 'verified', ta.verified, 'replies', ta.replies, 'email', ta.email,'is_following', COALESCE(uc.is_following, FALSE)) AS topic_author,
+        COALESCE(tsj.sections, '[]'::json) AS topic_sections
+        FROM topic.topics t
+        LEFT JOIN account.users ta ON t.author = ta.hash
+        LEFT JOIN topic_followers tf ON t.hash = tf.topic
+        LEFT JOIN topic_subscribers ts ON t.hash = ts.topic
+        LEFT JOIN user_connections uc ON ta.hash = uc."to"
+        LEFT JOIN topic_sections_json tsj ON t.hash = tsj.topic
+        WHERE to_tsvector('english', CONCAT(t.name, ' ', t.slug, ' ', t.summary)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, t.followers DESC
+        LIMIT :limit OFFSET :offset;
+        `, { replacements: { user, limit, offset, query }, type: sequelize.QueryTypes.SELECT }
+      );
     }
     else {
-      return await Topic.findAll({
-        attributes: ['author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views',
-          [
-            sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`),
-            'rank',
-          ],
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
-          '@@',
-          tsQuery
-        ),
-        include: [
-          {
-            model: User,
-            as: 'topic_author',
-            attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
-          },
-          // Include the topic sections
-          {
-            model: TopicSection,
-            as: 'topic_sections',
-            attributes: ['id', 'content', 'order', 'id', 'title', 'content'],
-            order: [['order', 'ASC']]
-          }
-        ],
-        order: [sequelize.literal(`rank DESC`), ['followers', 'DESC']],
-        limit: limit,
-        offset: offset
-      })
+      return await sequelize.query(/*sql*/`
+        WITH topic_sections_json AS (SELECT topic, JSON_AGG(JSON_BUILD_OBJECT('id', id, 'content', content, 'order', "order", 'title', title) ORDER BY "order" ASC) AS sections FROM topic.sections GROUP BY topic)
+        SELECT t.author, t.hash, t.name, t.slug, t.summary, t.followers, t.subscribers, t.stories, t.views, false AS is_following, false AS is_subscribed, ts_rank_cd(t.search, to_tsquery('english', :query)) AS rank,
+        JSON_BUILD_OBJECT('hash', ta.hash, 'bio', ta.bio, 'name', ta.name, 'picture', ta.picture, 'followers', ta.followers, 'following', ta.following, 'stories', ta.stories, 'verified', ta.verified, 'replies', ta.replies, 'email', ta.email,'is_following', false) AS topic_author,
+        COALESCE(tsj.sections, '[]'::json) AS topic_sections
+        FROM topic.topics t
+        LEFT JOIN account.users ta ON t.author = ta.hash
+        LEFT JOIN topic_sections_json tsj ON t.hash = tsj.topic
+        WHERE to_tsvector('english', CONCAT(t.name, ' ', t.slug, ' ', t.summary)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, t.followers DESC
+        LIMIT :limit OFFSET :offset;
+        `, { replacements: { limit, offset, query }, type: sequelize.QueryTypes.SELECT }
+      );
     }
   }
 

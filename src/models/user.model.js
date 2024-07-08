@@ -238,40 +238,27 @@ module.exports = (sequelize, Sequelize) => {
 	// add prototype to search: name_slug_search
   User.search = async queryOptions => {
     const { query, user, offset, limit } = queryOptions;
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
     if(user !== null) {
-      return await User.findAll({
-        attributes: [
-					'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified', 'views',
-        	[Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)), 'is_following'],
-          [sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank'],
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.col('name')),
-          '@@',
-          tsQuery
-        ),
-        order: [sequelize.literal(`rank DESC`), ['views', 'DESC']],
-        limit: limit,
-        offset: offset
-      })
+			return await sequelize.query(/*sql*/`
+				WITH user_followers AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user)
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, COALESCE(uf.is_following, FALSE) AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				FROM account.users u
+				LEFT JOIN  user_followers uf ON u.hash = uf."to"
+				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
+				ORDER BY rank DESC
+				LIMIT :limit OFFSET :offset;
+				`, { replacements: { user, limit, offset, query }, type: sequelize.QueryTypes.SELECT}
+			);
     }
     else {
-			return await User.findAll({
-        attributes: [
-					'hash', 'name', 'email', 'bio', 'picture', 'followers', 'following', 'stories', 'replies', 'verified', 'views',
-          [sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}'))`), 'rank'],
-        ],
-        where: sequelize.where(
-          sequelize.fn('to_tsvector', 'english', sequelize.col('name')),
-          '@@',
-          tsQuery
-        ),
-        order: [sequelize.literal(`rank DESC`), ['views', 'DESC']],
-        limit: limit,
-        offset: offset
-      })
+			return await sequelize.query(/*sql*/`
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, false AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				FROM account.users u
+				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
+				ORDER BY rank DESC
+				LIMIT :limit OFFSET :offset;
+				`, { replacements: { limit, offset, query }, type: sequelize.QueryTypes.SELECT}
+			);
 		}
   }
 
