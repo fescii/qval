@@ -302,7 +302,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
           fields: ['id']
         },
         {
-          fields: ['author', 'topic']
+          fields: ['author', 'topic', 'createdAt']
         }
       ]
     });
@@ -368,7 +368,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
           fields: ['id']
         },
         {
-          fields: ['author', 'topic']
+          fields: ['author', 'topic', 'createdAt']
         }
       ]
     });

@@ -406,54 +406,37 @@ export default class AppUser extends HTMLElement {
 
         // Populate Content
         outerThis.populateContent(outerThis._current, contentContainer);
-      }, 3000)
+      }, 1000)
     }
   }
 
   populateContent = (name, contentContainer) => {
-    switch (name) {
-      case 'stats':
-        contentContainer.innerHTML = this.getStats()
-        break;
-      case 'form-name':
-        contentContainer.innerHTML = this.getFormName()
-        break;
-      case 'form-bio':
-        contentContainer.innerHTML = this.getFormBio()
-        break;
-      case 'form-profile':
-        contentContainer.innerHTML = this.getFormProfile()
-        break;
-      case 'form-socials':
-        contentContainer.innerHTML = this.getFormSocial()
-        break;
-      case 'form-email':
-        contentContainer.innerHTML = this.getFormEmail()
-        break;
-      case 'privacy':
-        contentContainer.innerHTML = this.getSoonPrivacy()
-        break;
-      case 'form-password':
-        contentContainer.innerHTML = this.getFormPassword()
-        break;
-      case 'topics':
-        contentContainer.innerHTML = this.getSoon()
-        break;
-      case 'activity':
-        contentContainer.innerHTML = this.getActivity()
-        break;
-      case 'notifications':
-        contentContainer.innerHTML = this.getSoonNotifications()
-        break;
-      case 'typography':
-        contentContainer.innerHTML = this.getSoon()
-        break;
-      case 'theme':
-        contentContainer.innerHTML = this.getSoon()
-        break;
-      default:
-        contentContainer.innerHTML = this.getStats()
-        break;
+    if (name === 'stats') {
+      contentContainer.innerHTML = this.getStats();
+    } else if (name === 'form-name') {
+      contentContainer.innerHTML = this.getFormName();
+    } else if (name === 'form-bio') {
+      contentContainer.innerHTML = this.getFormBio();
+    } else if (name === 'form-profile') {
+      contentContainer.innerHTML = this.getFormProfile();
+    } else if (name === 'form-socials') {
+      contentContainer.innerHTML = this.getFormSocial();
+    } else if (name === 'form-email') {
+      contentContainer.innerHTML = this.getFormEmail();
+    } else if (name === 'privacy') {
+      contentContainer.innerHTML = this.getSoonPrivacy();
+    } else if (name === 'form-password') {
+      contentContainer.innerHTML = this.getFormPassword();
+    } else if (name === 'topics') {
+      contentContainer.innerHTML = this.getSoon();
+    } else if (name === 'activity') {
+      contentContainer.innerHTML = this.getActivity();
+    } else if (name === 'notifications') {
+      contentContainer.innerHTML = this.getSoonNotifications();
+    } else if (name === 'typography' || name === 'theme') {
+      contentContainer.innerHTML = this.getSoon();
+    } else {
+      contentContainer.innerHTML = this.getStats();
     }
   }
 
@@ -913,12 +896,14 @@ export default class AppUser extends HTMLElement {
     url = url.trim().toLowerCase();
 
    return /* html */`
-     <app-profile tab="stories" you="${this.getAttribute('user-you')}" url="${url}" tab="stories"
-       stories-url="${url}/stories" replies-url="${url}/replies" followers-url="${url}/followers" following-url="${url}/following"
-       username="${this.getAttribute('user-username')}" picture="${this.getAttribute('user-picture')}" verified="${this.getAttribute('user-verified')}"
-       name="${this.getAttribute('user-name')}" followers="${this.getAttribute('user-followers')}"
-       following="${this.getAttribute('user-following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('user-bio')}">
-     </app-profile>
+    <app-profile tab="stories" you="true" url="${url}" tab="stories"
+      stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
+      stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
+      followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
+      hash="${this.getAttribute('hash')}" picture="${this.getAttribute('user-img')}" verified="${this.getAttribute('user-verified')}"
+      name="${this.getAttribute('user-name')}" followers="${this.getAttribute('user-followers')}"
+      following="${this.getAttribute('user-following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('user-bio')}">
+    </app-profile>
    `
  }
 
@@ -1461,7 +1446,7 @@ export default class AppUser extends HTMLElement {
 
           section.tab > div.header {
             padding: 10px 0;
-            border-bottom: var(--border-mobile);
+            border-bottom: var(--border);
             display: flex;
             position: relative;
           }
@@ -1477,7 +1462,7 @@ export default class AppUser extends HTMLElement {
           }
 
           section.tab > ul.tab {
-            border-top: var(--border-mobile);
+            border-top: var(--border);
             transition: all 0.5s ease;
             border: none;
             max-height: 0;

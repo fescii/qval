@@ -351,7 +351,7 @@ export default class MonthStat extends HTMLElement {
 					flex-flow: column;
 					padding:  0;
           min-height: 60vh;
-					gap: 20px;
+					gap: 0;
 					width: 100%;
           max-width: 100%;
 				}

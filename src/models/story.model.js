@@ -115,7 +115,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id', 'slug', 'hash']
       },
       {
-        fields: ['kind', 'author', 'title', 'published', 'views', 'likes', 'replies']
+        fields: ['kind', 'author', 'title', 'published', 'views', 'likes', 'replies', 'createdAt']
       }
     ]
   });
@@ -252,7 +252,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['story', 'author', 'option']
+        fields: ['story', 'author', 'option', 'createdAt']
       }
     ]
   });
@@ -345,7 +345,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id', 'hash']
       },
       {
-        fields: ['content', 'author', 'story', 'reply']
+        fields: ['content', 'author', 'story', 'reply', 'createdAt']
       }
     ]
   });
@@ -428,7 +428,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['author', 'story', 'reply']
+        fields: ['author', 'story', 'reply', 'createdAt']
       }
     ]
   });
@@ -501,7 +501,7 @@ module.exports = (User, sequelize, Sequelize) => {
         fields: ['id']
       },
       {
-        fields: ['author', 'target']
+        fields: ['author', 'target', 'createdAt']
       }
     ]
   });

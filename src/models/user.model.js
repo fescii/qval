@@ -102,7 +102,7 @@ module.exports = (sequelize, Sequelize) => {
 			indexes: [
 				{
 					unique: true,
-					fields: ['id', 'hash', 'email']
+					fields: ['id', 'hash', 'email', 'createdAt']
 				}
 			]
 	});
@@ -154,7 +154,7 @@ module.exports = (sequelize, Sequelize) => {
 		indexes: [
 			{
 				unique: true,
-				fields: ['id', 'code', 'email']
+				fields: ['id', 'code', 'email', 'createdAt']
 			}
 		]
 	});
@@ -201,7 +201,7 @@ module.exports = (sequelize, Sequelize) => {
 		indexes: [
 			{
 				unique: true,
-				fields: ['id', 'from', 'to']
+				fields: ['id', 'from', 'to', 'createdAt']
 			}
 		]
 	});
