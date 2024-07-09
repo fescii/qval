@@ -569,7 +569,7 @@ export default class AppUser extends HTMLElement {
   getFormProfile = () =>  {
     return /* html */`
       <profile-form method="PATCH" url="/settings/profile" api-url="/api/v1/u/edit/profile"
-        profile-image="${this.getAttribute('user-picture')}">
+        profile-image="${this.getAttribute('user-img')}">
       </profile-form>
     `;
   }

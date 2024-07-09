@@ -277,12 +277,11 @@ export default class StatContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .actions > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
+          font-family: var(--font-read), sans-serif;
         }
 
         .actions > ul.tab > li.active > .text {
@@ -290,7 +289,7 @@ export default class StatContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read), sans-serif;
         }
 
         .actions > ul.tab span.line {
