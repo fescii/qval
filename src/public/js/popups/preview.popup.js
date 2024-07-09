@@ -175,7 +175,6 @@ export default class PreviewPopup extends HTMLElement {
     // convert the custom element to a string
     const elementString = firstElement.outerHTML;
 
-
     // Replace the content with the current url and body content
     // get window location
     const pageUrl = window.location.href;

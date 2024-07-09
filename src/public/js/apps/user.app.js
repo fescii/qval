@@ -96,11 +96,16 @@ export default class AppUser extends HTMLElement {
   }
 
   replaceAndPushStates = (url, body, profile) => {
-    // Replace the content with the current url and body content
+     // get the first custom element in the body
+     const firstElement = body.firstElementChild;
+
+     // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+  
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
