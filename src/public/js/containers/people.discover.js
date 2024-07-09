@@ -346,7 +346,6 @@ export default class DiscoverPeople extends HTMLElement {
 					opacity: 0;
 					top: 30%;
 					left: 0;
-					/* transform: translateY(-50%); */
 					width: 40px;
 					height: 70%;
 					pointer-events: none;
