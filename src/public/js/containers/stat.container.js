@@ -3,6 +3,8 @@ export default class StatContainer extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this._url = this.getAttribute('api') || '/api/v1/u/stats';
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -49,31 +51,13 @@ export default class StatContainer extends HTMLElement {
             activeTab.classList.remove('active');
             tab.classList.add('active');
             activeTab = tab;
-            switch (tab.dataset.element) {
-              case "all":
-                contentContainer.innerHTML = `
-                  ${outerThis.getAll()}
-                  ${outerThis.getStories()}
-                  ${outerThis.getReplies()}
-                  ${outerThis.getAccount()}
-                `;
-                break;
-              case "stories":
-                contentContainer.innerHTML = outerThis.getStatFeedStories();
-                break;
-              case "replies":
-                contentContainer.innerHTML = outerThis.getStatFeedReplies();
-                break;
-              default:
-                contentContainer.innerHTML = `
-                  ${outerThis.getAll()}
-                  ${outerThis.getStories()}
-                  ${outerThis.getReplies()}
-                  ${outerThis.getAccount()}
-                `;
-                break;
+            if (tab.dataset.element === "all") {
+              contentContainer.innerHTML = ` ${outerThis.getStats()}`;
+            } else if (tab.dataset.element === "stories") {
+              contentContainer.innerHTML = outerThis.getStatFeedStories();
+            } else if (tab.dataset.element === "replies") {
+              contentContainer.innerHTML = outerThis.getStatFeedReplies();
             }
-
           }
         })
       })
@@ -94,44 +78,15 @@ export default class StatContainer extends HTMLElement {
       ${this.getHeader()}
       ${this.getTab()}
 			<div class="content">
-				${this.getAll()}
-        ${this.getStories()}
-        ${this.getReplies()}
-        ${this.getAccount()}
+				${this.getStats()}
       </div>
     `;
   }
 
-  getAll = () => {
+  getStats = () =>  {
     return /* html */`
-			<all-stat date="2021-09-01" date-last="2021-08-01" all="1654757" all-last="1554751" stories="965457" stories-last="995458"
-        replies="84754" replies-last="73859">
-      </all-stat>
-		`;
-  }
-
-  getStories = () => {
-    return /* html */`
-			<stories-stat date="2021-09-01" date-last="2021-08-01" views="96458" views-last="99457"
-        replies="84555" replies-last="73512" upvotes="4557" upvotes-last="3573">
-      </stories-stat>
-		`
-  }
-
-  getReplies = () => {
-    return /* html */`
-			<replies-stat date="2021-09-01" date-last="2021-08-01" views="6543" views-last="9145" replies="8754"
-        replies-last="7559" upvotes="456" upvotes-last="593">
-      </replies-stat>
-		`;
-  }
-
-  getAccount = () => {
-    return /* html */`
-			<users-stat date="2021-09-01" date-last="2021-08-01" followers="6545" followers-last="9145" subscribers="8755"
-        subscribers-last="7555" donations="9453" donations-last="7587" currency="Ksh">
-      </users-stat>
-		`;
+      <month-stat url="${this._url}"></month-stat>
+    `;
   }
 
   getStatFeedStories = () => {
@@ -152,11 +107,11 @@ export default class StatContainer extends HTMLElement {
 
   getHeader = () => {
     return /* html */`
-        <div class="top">
-          <p class="desc">
-            Your stats are a summary of your interactions on the platform. You can view your stories, replies and likes/upvotes.
-          </p>
-        </div>
+      <div class="top">
+        <p class="desc">
+          Your stats are a summary of your interactions on the platform. You can view your stories, replies and likes/upvotes.
+        </p>
+      </div>
     `;
   }
 

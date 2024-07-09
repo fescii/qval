@@ -446,6 +446,7 @@ export default class RepliesStat extends HTMLElement {
           }
 
           .cards > .card {
+            background-color: none;
             display: flex;
             flex-flow: column;
             width: 100%;

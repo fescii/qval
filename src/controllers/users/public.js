@@ -1,6 +1,6 @@
 // Import find topic by hash and by slug
 const {
-  getUserByHash
+  getUserByHash, getUserProfile
 } = require('../../queries').userQueries;
 
 
@@ -135,7 +135,7 @@ const getUserFollowing = async (req, res) => {
   const { user, error } = await getUserByHash(param, currentUser.hash);
 
   // if there is an error, render the error page
-  if (error) { 
+  if (error) {
     return res.status(500).render('500')
   }
 
@@ -152,7 +152,68 @@ const getUserFollowing = async (req, res) => {
   })
 }
 
+/**
+ * @controller {get} /settings
+ * @name getAccount
+ * @description This route will the user settings page for the app.
+ * @returns Page: Renders settings page || error page
+*/
+const getAccount = async (req, res) => {
+  // get user from the request object
+  if(!req.user || !req.user.hash) {
+    // redirect to the login page
+    return res.redirect('/join/login');
+  }
+  const hash = req.user.hash;
+
+  // get the params from the request
+  let current = req.params.current;
+
+  // query the database for the user
+  const { user, error } = await getUserProfile(hash);
+
+  // if there is an error, render the error page
+  if (error) {
+    console.log(error)
+    return res.status(500).render('500')
+  }
+
+  // if there is no user, render the 404 page
+  if (!user) {
+    return res.status(404).render('404')
+  }
+
+  // update the user object
+  if (!user.contact) {
+    user.contact = {
+      email: null,
+      x: null,
+      threads: null,
+      phone: null,
+      link: null,
+      linkedin: null
+    }
+  }
+  else {
+    user.contact = {
+      email: user.contact.email ? user.contact.email : null,
+      x: user.contact.x ? user.contact.x : null,
+      threads: user.contact.threads ? user.contact.threads : null,
+      phone: user.contact.phone ? user.contact.phone : null,
+      link: user.contact.link ? user.contact.link : null,
+      linkedin: user.contact.linkedin ? user.contact.linkedin : null,
+    }
+  }
+
+  // add tab to the user object
+  user.tab = current ? current : 'stats';
+
+  res.render('pages/settings', {
+    data: user
+  })
+}
+
 // Export all public content controllers
 module.exports = {
-  getPerson, getUserReplies, getUserFollowers, getUserFollowing
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount
 }

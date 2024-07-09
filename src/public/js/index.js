@@ -74,6 +74,7 @@ import StatOpinion from "./stats/stat.reply.js";
 import StatStory from "./stats/stat.story.js";
 import StoriesStat from "./stats/stories.stat.js";
 import UsersStat from "./stats/users.stat.js";
+import MonthStat from "./stats/month.stat.js";
 
 // Import wrappers
 import AuthorWrapper from "./wrappers/author.wrapper.js";
@@ -174,6 +175,7 @@ customElements.define("stat-reply", StatOpinion);
 customElements.define("stat-story", StatStory);
 customElements.define("stories-stat", StoriesStat);
 customElements.define("users-stat", UsersStat);
+customElements.define("month-stat", MonthStat);
 
 // Register wrappers
 customElements.define("author-wrapper", AuthorWrapper);

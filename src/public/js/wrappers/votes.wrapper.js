@@ -611,6 +611,10 @@ export default class VotesAuthor extends HTMLElement {
       else {
         // Update the poll time every second
         setInterval(() => {
+          if (timeDiff < 1) {
+            pollTime.textContent = "Poll ended";
+          }
+
           pollTime.textContent = this.getRemainingTime(timeDiff);
 
           // update the time difference

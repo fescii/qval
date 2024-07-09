@@ -1,6 +1,8 @@
 const {
-  getUserStats
+  getUserStats, getUserAllStats
 } = require('../../controllers').statsController;
+
+const { verifyToken } = require('../../middlewares').authMiddleware;
 
 /**
  * @function userStatsRoute
@@ -21,4 +23,7 @@ module.exports = (app, url) => {
   
   // Route for finding all stories by an author
   app.get(`${url}/u/:hash/stats`, getUserStats);
+
+  // Route for finding all stories by an author
+  app.get(`${url}/u/stats`, verifyToken, getUserAllStats);
 }

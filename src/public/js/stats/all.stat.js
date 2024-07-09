@@ -59,11 +59,22 @@ export default class AllStat extends HTMLElement {
     // Calculate the difference between the new and old values
     const difference = current - last;
 
-    // Calculate the percentage change
-    const percentageChange = (difference / Math.abs(last)) * 100;
+    let percentageChange  = 0;
+
+    // check if last is zero
+    if (last === 0 && current > 0) {
+      percentageChange = 100
+    }
+    else if(last === 0 && current === 0) {
+      percentageChange = 100
+    }
+    else {
+      // Calculate the percentage change
+      percentageChange = (difference / Math.abs(last)) * 100;
+    }
 
     // Round the result to two decimal places
-    const roundedPercentageChange = Math.round(percentageChange * 100) / 100;
+    let roundedPercentageChange = Math.round(percentageChange * 100) / 100;
 
     // Format the result as a signed float with two decimal places
     const formattedPercentageChange = roundedPercentageChange.toFixed(2);
@@ -507,7 +518,6 @@ export default class AllStat extends HTMLElement {
             flex-flow: column;
             gap: 0;
             padding: 15px 5px;
-            border-radius: 5px;
           }
         }
       </style>
