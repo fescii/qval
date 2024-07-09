@@ -63,7 +63,9 @@ const getRecommendedUsersWhenLoggedIn = async hash => {
     return await sequelize.query(topUsersLoggedIn, {
       replacements: { 
         user: hash,
-        daysAgo: thirtyDaysAgo.toISOString()
+        daysAgo: thirtyDaysAgo.toISOString(),
+        limit: 6,
+        offset: 0
       },
       type: sequelize.QueryTypes.SELECT
     });
@@ -87,7 +89,9 @@ const getRecommendedUsersWhenNotLoggedIn = async () => {
     // Define the query to get the top 5 recommended users
     return await sequelize.query(topUsersLoggedOut, {
       replacements: { 
-        daysAgo: thirtyDaysAgo.toISOString()
+        daysAgo: thirtyDaysAgo.toISOString(),
+        limit: 6,
+        offset: 0
       },
       type: sequelize.QueryTypes.SELECT
     });
