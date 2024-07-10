@@ -6,6 +6,8 @@ export default class FormEmail extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this._url = this.getAttribute('api');
+
     this.render();
   }
 
@@ -14,7 +16,11 @@ export default class FormEmail extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    // select the form
+    const form = this.shadowObj.querySelector('form');
+
+    // add event listener to the form
+    this.submitForm(form);
   }
 
   disableScroll() {
@@ -32,6 +38,142 @@ export default class FormEmail extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  submitForm = async form => {
+    const outerThis = this;
+    // add submit event listener
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const serverStatus = form.querySelector('.server-status');
+
+      // if server status is already showing, remove it
+      if (serverStatus) {
+        serverStatus.remove();
+      }
+
+      const actions = form.querySelector('.actions');
+
+      // get and validate form data
+      const formData = new FormData(form);
+
+      // get form data
+      const data = {
+        email: formData.get('email')
+      };
+
+      // check if form data is valid
+      if (!data.email) {
+        
+        const errorMsg = 'Email must be defined!';
+
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, errorMsg));
+
+        return;
+      }
+
+      // validate email using regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(data.email)) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'Invalid email address'));
+
+        return;
+      }
+
+      // show loader
+      const button = form.querySelector('.action.next');
+      button.innerHTML = outerThis.getButtonLoader();
+
+      // send data to server
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await outerThis.fetchWithTimeout(outerThis._url, options);
+        const result = await response.json();
+
+        // check if request was successful
+        if (result.success) {
+          // show success message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(true, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update email</span>';
+        } else {
+          // show error message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update email</span>';
+        }
+      }
+      catch (error) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
+
+        // reset button
+        button.innerHTML = '<span class="text">Update email</span>';
+      }
+
+      // remove success message
+      setTimeout(() => {
+        const serverStatus = form.querySelector('.server-status');
+        if (serverStatus) {
+          serverStatus.remove();
+        }
+      }, 5000);
+    });
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  getServerSuccessMsg = (success, text) => {
+    if (!success) {
+      return `
+        <p class="server-status">${text}</p>
+      `
+    }
+    return `
+      <p class="server-status success">${text}</p>
+    `
+  }
+
+  getButtonLoader() {
+    return `
+      <span id="btn-loader">
+				<span class="loader"></span>
+			</span>
+    `
   }
 
   getTemplate() {

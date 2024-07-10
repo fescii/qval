@@ -12,6 +12,10 @@ const app = express();
 
 app.use(cookieParser())
 
+// adjust the limit to the size of the file you want to upload
+app.use(bodyParser.json({ limit: '50mb' })); // Increase the limit as needed
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 app.use('/static', express.static('public'))
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')

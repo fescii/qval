@@ -1,5 +1,4 @@
 // Import necessary packages and modules
-const upload = require('../../middlewares').upload;
 const {
   editPicture, editBio, editContact,
   editPassword, editEmail, editName
@@ -30,50 +29,46 @@ const updateProfilePicture = async (req, res, next) => {
     });
   }
   try {
-    upload.single('file')(req, res, async (err) => {
-      if (err) {
-        return next(err);
-      }
-
-      // If file is not defined
-      if (!req.file) {
-        return res.status(400).json({
-          success: false,
-          error: true,
-          message: 'File not found in the payload'
-        });
-      }
-
-      const userHash = req.user.hash;
-      const { path } = req.file;
-
-      const {
-        user,
-        error
-      } = await editPicture(path, userHash);
-
-      // Check if there was an error updating the user's profile picture
-      if (error) {
-        return next(error);
-      }
-
-      // Check if user is null
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          error: true,
-          message: "The profile you are trying to update does not exist"
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        user,
-        message: 'Profile picture updated successfully',
+    // If file is not defined
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: 'File not found in the payload'
       });
+    }
+
+    const userHash = req.user.hash;
+    const { path } = req.file;
+
+    // remove public from path
+    const newPath = path.replace('public', '/static');
+
+    const {
+      user,
+      error
+    } = await editPicture(newPath, userHash);
+
+    // Check if there was an error updating the user's profile picture
+    if (error) {
+      return next(error);
+    }
+
+    // Check if user is null
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "The profile you are trying to update does not exist"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+      message: 'Profile picture updated successfully',
     });
-  }
-  catch (error) {
+  } catch (error) {
     return next(error);
   }
 };
@@ -293,11 +288,15 @@ const updateProfilePassword = async (req, res, next) => {
   const {
     user,
     error
-  } = await editPassword(validatedData.data.password, userHash);
+  } = await editPassword(validatedData.data, userHash);
 
   // Check if there was an error updating the user's profile password
   if (error) {
-    return next(error);
+    return res.status(400).json({
+      success: false,
+      error: true,
+      message: error.message
+    })
   }
 
   // Check if user is null

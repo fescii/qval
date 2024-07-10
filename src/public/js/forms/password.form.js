@@ -6,6 +6,9 @@ export default class FormPassword extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    // get the url
+    this._url = this.getAttribute('api');
+
     this.render();
   }
 
@@ -14,7 +17,11 @@ export default class FormPassword extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    // Get the form
+    const form = this.shadowObj.querySelector('form');
+
+    // Submit form
+    this.submitForm(form);
   }
 
   disableScroll() {
@@ -32,6 +39,143 @@ export default class FormPassword extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  submitForm = async form => {
+    const outerThis = this;
+    // add submit event listener
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const serverStatus = form.querySelector('.server-status');
+
+      // if server status is already showing, remove it
+      if (serverStatus) {
+        serverStatus.remove();
+      }
+
+      const actions = form.querySelector('.actions');
+
+      // get and validate form data
+      const formData = new FormData(form);
+
+      // get form data
+      const data = {
+        old_password: formData.get('current-password').trim(),
+        password: formData.get('new-password').trim(),
+        confirm_password: formData.get('confirm-password').trim()
+      };
+
+      // check if form data is valid
+      if (!data.old_password || !data.password || !data.confirm_password) {
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'All fields are required'));
+        return;
+      }
+
+      // check if password is i. at least 6 characters long, ii. contains a number, iii. contains a special character, iv. contains an uppercase letter using regex
+      const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+
+      if (!passwordRegex.test(data.password)) {
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'Password must be at least 6 characters long, contain a number, a special character, and an uppercase letter'));
+        return;
+      }
+
+      // check if new password and confirm password match
+      if (data.password !== data.confirm_password) {
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'New password and confirm password do not match'));
+        return;
+      }
+
+      // show loader
+      const button = form.querySelector('.action.next');
+      button.innerHTML = outerThis.getButtonLoader();
+
+      // send data to server
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await outerThis.fetchWithTimeout(outerThis._url, options);
+        const result = await response.json();
+
+        // check if request was successful
+        if (result.success) {
+          // show success message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(true, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update password</span>';
+        } else {
+          // show error message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update password</span>';
+        }
+      }
+      catch (error) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
+
+        // reset button
+        button.innerHTML = '<span class="text">Update password</span>';
+      }
+
+      // remove success message
+      setTimeout(() => {
+        const serverStatus = form.querySelector('.server-status');
+        if (serverStatus) {
+          serverStatus.remove();
+        }
+      }, 5000);
+    });
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  getServerSuccessMsg = (success, text) => {
+    if (!success) {
+      return `
+        <p class="server-status">${text}</p>
+      `
+    }
+    return `
+      <p class="server-status success">${text}</p>
+    `
+  }
+
+  getButtonLoader() {
+    return `
+      <span id="btn-loader">
+				<span class="loader"></span>
+			</span>
+    `
   }
 
   getTemplate() {

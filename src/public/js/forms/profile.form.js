@@ -6,6 +6,8 @@ export default class FormProfile extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this._url = this.getAttribute('api');
+
     this.render();
   }
 
@@ -15,6 +17,12 @@ export default class FormProfile extends HTMLElement {
 
   connectedCallback() {
     this.activateForm()
+
+    // get the form
+    const form = this.shadowObj.querySelector('form.fields');
+
+    // submit form
+    this.submitForm(form);
   }
 
   disableScroll() {
@@ -52,13 +60,174 @@ export default class FormProfile extends HTMLElement {
           // Get the image path.
           const imageSrc = URL.createObjectURL(imageFiles[0]);
 
-          // console.log(imageSrc);
-
           //  Add the image as background image.
           previewContainer.style.backgroundImage = `url(${imageSrc})`;
         }
       });
     }
+  }
+
+  submitForm = async form => {
+    const outerThis = this;
+    // add submit event listener
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const serverStatus = form.querySelector('.server-status');
+
+      // if server status is already showing, remove it
+      if (serverStatus) {
+        serverStatus.remove();
+      }
+
+      const actions = form.querySelector('.actions');
+
+      // show loader
+      const button = form.querySelector('.action.next');
+      button.innerHTML = outerThis.getButtonLoader();
+
+      // get and validate form data
+      const formData = new FormData();
+
+      const file = form.querySelector('#profile-image').files[0];
+
+      if (!file) {
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'Please select an image'));
+        return;
+      }
+
+      try {
+        // resize image
+        const { blob } = await outerThis.resizeImage(file);
+
+        // append image to form data
+        formData.append('file', blob, 'file.webp');
+
+        // send data to server
+        const options = {
+          method: 'PATCH',
+          // add a multipart form data
+          body: formData
+        };
+
+        const response = await outerThis.fetchWithTimeout(outerThis._url, options);
+        const result = await response.json();
+
+        // check if request was successful
+        if (result.success) {
+          // show success message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(true, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update profile</span>';
+        } else {
+          // show error message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update profile</span>';
+        }
+      }
+      catch (error) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
+
+        // reset button
+        button.innerHTML = '<span class="text">Update profile</span>';
+      }
+
+      // remove success message
+      setTimeout(() => {
+        const serverStatus = form.querySelector('.server-status');
+        if (serverStatus) {
+          serverStatus.remove();
+        }
+      }, 5000);
+    });
+  }
+
+  // Function to resize image
+  resizeImage = async file => {
+    return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const maxSize = 150;
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate dimensions while maintaining aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw image on canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas to blob with WebP format
+        canvas.toBlob((blob) => resolve({ blob, width, height }), 'image/webp', 1);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  getServerSuccessMsg = (success, text) => {
+    if (!success) {
+      return `
+        <p class="server-status">${text}</p>
+      `
+    }
+    return `
+      <p class="server-status success">${text}</p>
+    `
+  }
+
+  getButtonLoader() {
+    return `
+      <span id="btn-loader">
+				<span class="loader"></span>
+			</span>
+    `
   }
 
   getTemplate() {

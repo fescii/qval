@@ -586,7 +586,7 @@ export default class AppUser extends HTMLElement {
   getFormEmail = () =>  {
     return /* html */`
       <email-form method="PATCH" url="/settings/email" api="/api/v1/u/edit/email"
-        email="${this.getAttribute('user-email')}">
+        email="${this.getAttribute('email')}">
       </email-form>
     `;
   }

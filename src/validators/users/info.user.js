@@ -10,21 +10,23 @@ const { sanitizeUtil } = require('../../utils');
 */
 const validatePassword = async (data) => {
   //check if password is provided
-  if (!data.password) {
+  if (!data.password || !data.old_password) {
     return {
       data: null,
-      error: new Error("Password field is required!")
+      error: new Error("Password and Old password fields are required!")
     }
   }
-  if (typeof data.password !== 'string' || data.password.length < 6) {
+  if (typeof data.password !== 'string' || data.password.length < 6 || typeof data.old_password !== 'string' || data.old_password.length < 6) {
     return {
       data: null,
       error: new Error("Password should have 6 chars or more and must be a string!")
     }
   }
+
   return {
     data: {
-      password: data.password
+      password: data.password,
+      old_password: data.old_password
     },
     error: null
   }

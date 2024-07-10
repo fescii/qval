@@ -1,5 +1,5 @@
 <% var url = "/u/" + data.hash.toLowerCase() %>
-<app-user hash="<%= data.hash %>" home-url="/home" current="<%= data.tab %>" verified="true" user-url="<%= url %>"
+<app-user hash="<%= data.hash %>" home-url="/home" current="<%= data.tab %>" verified="true" email="<%= data.email %>"
   stories-url="/api/v1<%= url %>/stories" replies-url="/api/v1<%= url %>/replies" stories="<%= data.stories %>" replies="<%= data.replies %>" 
   user-link="<%= data.contact.link %>" user-email="<%= data.contact.email %>" user-x="<%= data.contact.x %>" user-threads="<%= data.contact.threads %>" 
   user-linkedin="<%= data.contact.linkedin %>" user-username="<%= data.hash %>" user-you="true" user-url="<%= url %>" user-img="<%= data.picture %>"
