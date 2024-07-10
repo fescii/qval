@@ -6,6 +6,8 @@ export default class FormBio extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this._url = this.getAttribute('api');
+
     this.render();
   }
 
@@ -14,7 +16,11 @@ export default class FormBio extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    // select form
+    const form = this.shadowObj.querySelector('#bio-form');
+
+    // submit form
+    this.submitForm(form);
   }
 
   disableScroll() {
@@ -34,6 +40,132 @@ export default class FormBio extends HTMLElement {
     window.onscroll = function () { };
   }
 
+  submitForm = async form => {
+    const outerThis = this;
+    // add submit event listener
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const serverStatus = form.querySelector('.server-status');
+
+      // if server status is already showing, remove it
+      if (serverStatus) {
+        serverStatus.remove();
+      }
+
+      const actions = form.querySelector('.actions');
+
+      // get and validate form data
+      const formData = new FormData(form);
+
+      // get form data
+      const data = {
+        bio: formData.get('bio')
+      };
+
+      // check if form data is valid
+      if (!data.bio || data.bio.length < 10) {
+        
+        const errorMsg = 'Bio must be at least 10 characters long';
+
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, errorMsg));
+
+        return;
+      }
+
+      // show loader
+      const button = form.querySelector('.action.next');
+      button.innerHTML = outerThis.getButtonLoader();
+
+      // send data to server
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await outerThis.fetchWithTimeout(outerThis._url, options);
+        const result = await response.json();
+
+        // check if request was successful
+        if (result.success) {
+          // show success message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(true, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update bio</span>';
+        } else {
+          // show error message
+          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
+
+          // reset button
+          button.innerHTML = '<span class="text">Update bio</span>';
+        }
+      }
+      catch (error) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
+
+        // reset button
+        button.innerHTML = '<span class="text">Update bio</span>';
+      }
+
+      // remove success message
+      setTimeout(() => {
+        const serverStatus = form.querySelector('.server-status');
+        if (serverStatus) {
+          serverStatus.remove();
+        }
+      }, 5000);
+    });
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  getServerSuccessMsg = (success, text) => {
+    if (!success) {
+      return `
+        <p class="server-status">${text}</p>
+      `
+    }
+    return `
+      <p class="server-status success">${text}</p>
+    `
+  }
+
+  getButtonLoader() {
+    return `
+      <span id="btn-loader">
+				<span class="loader"></span>
+			</span>
+    `
+  }
+
   getTemplate() {
     // Show HTML Here
     return `
@@ -49,9 +181,7 @@ export default class FormBio extends HTMLElement {
         <div class="field your-bio">
           <div class="input-group your-bio">
             <label for="bio" class="center">Your bio</label>
-            <!-- <input type="email" name="email" id="email" hidden> -->
-            <textarea name="bio" id="bio" cols="30"
-              rows="10" required>${this.getAttribute('bio')}</textarea>
+            <textarea name="bio" id="bio" cols="30" rows="10" required>${this.getAttribute('bio')}</textarea>
             <span class="status">Bio is required</span>
           </div>
         </div>
@@ -123,6 +253,69 @@ export default class FormBio extends HTMLElement {
           gap: 10px;
           padding: 0;
           width: 100%;
+        }
+
+        p.server-status {
+          margin: 0;
+          width: 100%;
+          text-align: start;
+          font-family: var(--font-read), sans-serif;
+          color: var(--error-color);
+          font-weight: 500;
+          line-height: 1.4;
+          font-size: 1.18rem;
+        }
+
+        p.server-status.success {
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        @keyframes l38 {
+          100% {
+            background-position: 100% 0, 100% 100%, 0 100%, 0 0
+          }
+        }
+
+        #btn-loader {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: inherit;
+        }
+
+        #btn-loader > .loader-alt {
+          width: 20px;
+          aspect-ratio: 1;
+          --_g: no-repeat radial-gradient(farthest-side, #18A565 94%, #0000);
+          --_g1: no-repeat radial-gradient(farthest-side, #21D029 94%, #0000);
+          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
+          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
+          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
+          background-size: 30% 30%;
+          animation: l38 .9s infinite ease-in-out;
+          -webkit-animation: l38 .9s infinite ease-in-out;
+        }
+
+        #btn-loader > .loader {
+          width: 20px;
+          aspect-ratio: 1;
+          --_g: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
+          --_g1: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
+          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
+          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
+          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
+          background-size: 30% 30%;
+          animation: l38 .9s infinite ease-in-out;
+          -webkit-animation: l38 .9s infinite ease-in-out;
         }
 
         .top {
@@ -368,6 +561,7 @@ export default class FormBio extends HTMLElement {
           font-weight: 500;
           color: var(--text-color);
           width: max-content;
+          min-width: 150px;
           padding: 8px 20px;
           height: 40px;
           cursor: pointer;

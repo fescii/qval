@@ -109,7 +109,7 @@ export default class StatContainer extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Your stats are a summary of your interactions on the platform. You can view your stories, replies and likes/upvotes.
+          Your stats are a summary of your interactions on the platform. You can view your stories, replies and likes and it updates on a daily basis.
         </p>
       </div>
     `;

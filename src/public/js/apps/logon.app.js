@@ -2105,13 +2105,13 @@ export default class AppLogon extends HTMLElement {
           -moz-border-radius: 5px;
         }
 
-        .logon-container>.stages span.done>span.left {
+        .logon-container>.stages span.done > span.left {
           top: 15px;
           left: 7px;
           rotate: 45deg;
         }
 
-        .logon-container>.stages span.done>span.right {
+        .logon-container>.stages span.done > span.right {
           rotate: -45deg;
           left: 11px;
           width: 14px;

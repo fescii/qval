@@ -104,7 +104,7 @@ export default class RepliesStat extends HTMLElement {
       ${this.getHeader()}
       <div class="cards">
         ${this.getViews()}
-        ${this.getUpvotes()}
+        ${this.getLikes()}
         ${this.getReplies()}
       </div>
     `;
@@ -114,7 +114,7 @@ export default class RepliesStat extends HTMLElement {
     return /* html */`
       <div class="title">
         <h4 class="text">Your replies</h4>
-        <span class="desc">Your past thirty days replies summery</span>
+        <span class="desc">Past thirty days replies engagements</span>
       </div>
     `
   }
@@ -162,12 +162,12 @@ export default class RepliesStat extends HTMLElement {
     `
   }
 
-  getUpvotes = () => {
+  getLikes = () => {
     let icon = ''
-    const lastUpvotes = this.parseToNumber(this.getAttribute('upvotes-last'));
-    const currentUpvotes = this.parseToNumber(this.getAttribute('upvotes'));
+    const lastLikes = this.parseToNumber(this.getAttribute('likes-last'));
+    const currentLikes = this.parseToNumber(this.getAttribute('likes'));
 
-    const change = this.calculateDifference(lastUpvotes, currentUpvotes);
+    const change = this.calculateDifference(lastLikes, currentLikes);
 
     // if change is negative, we need to make it positive
     const difference = Math.abs(change);
@@ -196,7 +196,7 @@ export default class RepliesStat extends HTMLElement {
         <h4 class="title">Likes</h4>
         <div class="stat">
           <h2 class="no">
-            ${this.formatNumber(currentUpvotes)}
+            ${this.formatNumber(currentLikes)}
           </h2>
           ${icon}
         </div>
@@ -378,7 +378,7 @@ export default class RepliesStat extends HTMLElement {
         .cards > .card > .stat > h2.no {
           color: var(--text-color);
           font-size: 1.25rem;
-          font-weight: 500;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
@@ -407,7 +407,7 @@ export default class RepliesStat extends HTMLElement {
 
         .cards > .card > .stat > .change .percentage {
           font-size: 1rem;
-          font-weight: 400;
+          font-weight: 500;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
@@ -416,6 +416,10 @@ export default class RepliesStat extends HTMLElement {
           width: 18px;
           height: 18px;
           margin-top: 2px;
+        }
+
+        .cards > .card > .stat > .change.up > svg {
+          margin: 0;
         }
 
         @media screen and (max-width:950px) {

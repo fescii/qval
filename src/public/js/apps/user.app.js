@@ -413,19 +413,19 @@ export default class AppUser extends HTMLElement {
   populateContent = (name, contentContainer) => {
     if (name === 'stats') {
       contentContainer.innerHTML = this.getStats();
-    } else if (name === 'form-name') {
+    } else if (name === 'name') {
       contentContainer.innerHTML = this.getFormName();
-    } else if (name === 'form-bio') {
+    } else if (name === 'bio') {
       contentContainer.innerHTML = this.getFormBio();
-    } else if (name === 'form-profile') {
+    } else if (name === 'profile') {
       contentContainer.innerHTML = this.getFormProfile();
-    } else if (name === 'form-socials') {
+    } else if (name === 'socials') {
       contentContainer.innerHTML = this.getFormSocial();
-    } else if (name === 'form-email') {
+    } else if (name === 'email') {
       contentContainer.innerHTML = this.getFormEmail();
     } else if (name === 'privacy') {
       contentContainer.innerHTML = this.getSoonPrivacy();
-    } else if (name === 'form-password') {
+    } else if (name === 'password') {
       contentContainer.innerHTML = this.getFormPassword();
     } else if (name === 'topics') {
       contentContainer.innerHTML = this.getSoon();
@@ -552,7 +552,7 @@ export default class AppUser extends HTMLElement {
     }
 
     return /* html */`
-      <name-form  method="PATCH" url="/settings/name" api-url="/api/v1/u/edit/name"
+      <name-form  method="PATCH" url="/settings/name" api="/api/v1/u/edit/name"
         first-name="${firstName}" last-name="${lastName}">
       </name-form>
     `;
@@ -560,7 +560,7 @@ export default class AppUser extends HTMLElement {
 
   getFormBio = () =>  {
     return /* html */`
-      <bio-form method="PATCH" url="/settings/bio" api-url="/api/v1/u/edit/bio"
+      <bio-form method="PATCH" url="/settings/bio" api="/api/v1/u/edit/bio"
         bio="${this.getAttribute('user-bio')}">
       </bio-form>
     `;
@@ -568,7 +568,7 @@ export default class AppUser extends HTMLElement {
 
   getFormProfile = () =>  {
     return /* html */`
-      <profile-form method="PATCH" url="/settings/profile" api-url="/api/v1/u/edit/profile"
+      <profile-form method="PATCH" url="/settings/profile" api="/api/v1/u/edit/profile"
         profile-image="${this.getAttribute('user-img')}">
       </profile-form>
     `;
@@ -576,7 +576,7 @@ export default class AppUser extends HTMLElement {
 
   getFormSocial = () =>  {
     return /* html */`
-      <social-form method="PATCH" url="/settings/socials" api-url="/api/v1/u/edit/socials"
+      <social-form method="PATCH" url="/settings/socials" api="/api/v1/u/edit/socials"
         email="${this.getAttribute('user-email')}" x="${this.getAttribute('user-x')}"
         threads="${this.getAttribute('user-threads')}" linkedin="${this.getAttribute('user-linkedin')}" link="${this.getAttribute('user-link')}">
       </social-form>
@@ -585,7 +585,7 @@ export default class AppUser extends HTMLElement {
 
   getFormEmail = () =>  {
     return /* html */`
-      <email-form method="PATCH" url="/settings/email" api-url="/api/v1/u/edit/email"
+      <email-form method="PATCH" url="/settings/email" api="/api/v1/u/edit/email"
         email="${this.getAttribute('user-email')}">
       </email-form>
     `;
@@ -593,7 +593,7 @@ export default class AppUser extends HTMLElement {
 
   getFormPassword = () =>  {
     return /* html */`
-      <password-form method="PATCH" url="/settings/password" api-url="/api/v1/u/edit/password">
+      <password-form method="PATCH" url="/settings/password" api="/api/v1/u/edit/password">
       </password-form>
     `;
   }
@@ -689,14 +689,12 @@ export default class AppUser extends HTMLElement {
             <span class="line"></span>
             <a href="/settings/stats" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
-                <path
-                  d="M9.533.753V.752c.217 2.385 1.463 3.626 2.653 4.81C13.37 6.74 14.498 7.863 14.498 10c0 3.5-3 6-6.5 6S1.5 13.512 1.5 10c0-1.298.536-2.56 1.425-3.286.376-.308.862 0 1.035.454C4.46 8.487 5.581 8.419 6 8c.282-.282.341-.811-.003-1.5C4.34 3.187 7.035.75 8.77.146c.39-.137.726.194.763.607ZM7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.79 2.79 0 0 1-1.436-.874A3.198 3.198 0 0 0 3 10c0 2.53 2.164 4.5 4.998 4.5Z">
-                </path>
+                <path d="M9.533.753V.752c.217 2.385 1.463 3.626 2.653 4.81C13.37 6.74 14.498 7.863 14.498 10c0 3.5-3 6-6.5 6S1.5 13.512 1.5 10c0-1.298.536-2.56 1.425-3.286.376-.308.862 0 1.035.454C4.46 8.487 5.581 8.419 6 8c.282-.282.341-.811-.003-1.5C4.34 3.187 7.035.75 8.77.146c.39-.137.726.194.763.607ZM7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.79 2.79 0 0 1-1.436-.874A3.198 3.198 0 0 0 3 10c0 2.53 2.164 4.5 4.998 4.5Z"></path>
               </svg>
               <span class="text">Your stats</span>
             </a>
           </li>
-          <li url="/settings/name" class="tab-item form-name" data-name="form-name">
+          <li url="/settings/name" class="tab-item name" data-name="name">
             <span class="line"></span>
             <a href="/settings/name" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" width="16px" height="16px">
@@ -705,7 +703,7 @@ export default class AppUser extends HTMLElement {
               <span class="text">Your name</span>
             </a>
           </li>
-          <li url="/settings/bio" class="tab-item form-bio" data-name="form-bio">
+          <li url="/settings/bio" class="tab-item bio" data-name="bio">
             <span class="line"></span>
             <a href="/settings/bio" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"  width="16px" height="16px" viewBox="0 0 512 512">
@@ -714,7 +712,7 @@ export default class AppUser extends HTMLElement {
               <span class="text">Your bio</span>
             </a>
           </li>
-          <li url="/settings/profile" class="tab-item form-profile"  data-name="form-profile">
+          <li url="/settings/profile" class="tab-item profile"  data-name="profile">
             <span class="line"></span>
             <a href="/settings/profile" class="tab-link">
               <svg aria-hidden="true" height="16" fill="currentColor" viewBox="0 0 16 16" width="16">
@@ -723,7 +721,7 @@ export default class AppUser extends HTMLElement {
               <span class="text">Your profile</span>
             </a>
           </li>
-          <li url="/settings/socials" class="tab-item form-socials" data-name="form-socials">
+          <li url="/settings/socials" class="tab-item socials" data-name="socials">
             <span class="line"></span>
             <a href="/settings/socials" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 640 512">
@@ -735,7 +733,7 @@ export default class AppUser extends HTMLElement {
         </ul>
         <ul class="tab security">
           <span class="title">Security</span>
-          <li url="/settings/email" class="tab-item form-email"  data-name="form-email">
+          <li url="/settings/email" class="tab-item email"  data-name="email">
             <span class="line"></span>
             <a href="/settings/email" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="16px" height="16px" viewBox="0 0 512 512">
@@ -754,7 +752,7 @@ export default class AppUser extends HTMLElement {
               <span class="text">Your privacy</span>
             </a>
           </li>
-          <li url="/settings/password" class="tab-item form-password" data-name="form-password">
+          <li url="/settings/password" class="tab-item password" data-name="password">
             <span class="line"></span>
             <a href="/settings/password" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="16px" height="16px" viewBox="0 0 512 512">

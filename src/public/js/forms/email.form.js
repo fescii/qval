@@ -122,6 +122,69 @@ export default class FormEmail extends HTMLElement {
           width: 100%;
         }
 
+        p.server-status {
+          margin: 0;
+          width: 100%;
+          text-align: start;
+          font-family: var(--font-read), sans-serif;
+          color: var(--error-color);
+          font-weight: 500;
+          line-height: 1.4;
+          font-size: 1.18rem;
+        }
+
+        p.server-status.success {
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        @keyframes l38 {
+          100% {
+            background-position: 100% 0, 100% 100%, 0 100%, 0 0
+          }
+        }
+
+        #btn-loader {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: inherit;
+        }
+
+        #btn-loader > .loader-alt {
+          width: 20px;
+          aspect-ratio: 1;
+          --_g: no-repeat radial-gradient(farthest-side, #18A565 94%, #0000);
+          --_g1: no-repeat radial-gradient(farthest-side, #21D029 94%, #0000);
+          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
+          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
+          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
+          background-size: 30% 30%;
+          animation: l38 .9s infinite ease-in-out;
+          -webkit-animation: l38 .9s infinite ease-in-out;
+        }
+
+        #btn-loader > .loader {
+          width: 20px;
+          aspect-ratio: 1;
+          --_g: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
+          --_g1: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
+          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
+          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
+          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
+          background-size: 30% 30%;
+          animation: l38 .9s infinite ease-in-out;
+          -webkit-animation: l38 .9s infinite ease-in-out;
+        }
+
         .top {
           display: flex;
           flex-flow: column;
@@ -342,6 +405,7 @@ export default class FormEmail extends HTMLElement {
           font-weight: 500;
           color: var(--text-color);
           width: max-content;
+          min-width: 150px;
           padding: 8px 20px;
           height: 40px;
           cursor: pointer;

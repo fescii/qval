@@ -26,24 +26,23 @@ export default class MonthStat extends HTMLElement {
 		}
   }
 
-  fetchStat = (contentContainer, mql) => {
+  fetchStat = contentContainer => {
     const outerThis = this;
 		setTimeout(() => {
       // fetch the user stats
       const options = {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          "Content-Type": "application/json",
+          // set the cache control to max-age to 1 day
+          "Cache-Control": "max-age=86400",
+          "Accept": "application/json"
         }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(result => {
-					const data = result.data;
+      }
+
+      this.getCacheData(this._url, options)
+        .then(result => { 
+          const data = result.data;
           // console.log(data);
           // check for success response
           if (result.success) {
@@ -66,7 +65,7 @@ export default class MonthStat extends HTMLElement {
           }
         })
         .catch(error => {
-					// console.error(error);
+          // console.error(error);
           const content = outerThis.getEmpty();
           contentContainer.innerHTML = content;
         });
@@ -94,6 +93,27 @@ export default class MonthStat extends HTMLElement {
           reject(error);
         });
     });
+  }
+
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        // console.log('Network cache is added');
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   calculateTotal = (story, reply) => {
@@ -158,7 +178,7 @@ export default class MonthStat extends HTMLElement {
     return /* html */`
 			<stories-stat views="${data.views.current}" views-last="${data.views.last}" 
         replies="${data.replies.current}" replies-last="${data.replies.last}" 
-        upvotes="${data.likes.current}" upvotes-last="${data.likes.last}">
+        likes="${data.likes.current}" likes-last="${data.likes.last}">
       </stories-stat>
 		`
   }
@@ -167,7 +187,7 @@ export default class MonthStat extends HTMLElement {
     return /* html */`
       <replies-stat views="${data.views.current}" views-last="${data.views.last}" 
         replies="${data.replies.current}" replies-last="${data.replies.last}" 
-        upvotes="${data.likes.current}" upvotes-last="${data.likes.last}">
+        likes="${data.likes.current}" likes-last="${data.likes.last}">
       </replies-stat>
 		`;
   }
@@ -326,6 +346,7 @@ export default class MonthStat extends HTMLElement {
 
         .title {
 				  padding: 2px 0 10px 5px;
+          margin: 20px 0;
 				  display: flex;
 				  flex-flow: column;
 				  gap: 0;
@@ -365,7 +386,7 @@ export default class MonthStat extends HTMLElement {
 
 					.title {
 						padding: 2px 0 10px 8px;
-						margin: 0 0 10px 0;
+						margin: 20px 0;
 						display: flex;
 						flex-flow: column;
 						gap: 0;
