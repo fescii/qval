@@ -93,6 +93,9 @@ export default class FormProfile extends HTMLElement {
 
       if (!file) {
         actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'Please select an image'));
+
+        // reset button
+        button.innerHTML = '<span class="text">Update profile</span>';
         return;
       }
 
@@ -263,8 +266,8 @@ export default class FormProfile extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Your profile picture is how people will recognize you on the platform. You can use a photo of yourself or an avatar.
-          The image should be square and at least 200x200 pixels in size.
+          Your profile picture is how people will recognize you on the platform. You can use a photo of yourself or an avatar. <br>
+          Note that the image will be cropped to a square and resized to 150x150 pixels, and may take time to reflect everywhere.
         </p>
       </div>
     `;

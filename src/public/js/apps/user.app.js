@@ -417,7 +417,7 @@ export default class AppUser extends HTMLElement {
       contentContainer.innerHTML = this.getFormName();
     } else if (name === 'bio') {
       contentContainer.innerHTML = this.getFormBio();
-    } else if (name === 'profile') {
+    } else if (name === 'picture') {
       contentContainer.innerHTML = this.getFormProfile();
     } else if (name === 'socials') {
       contentContainer.innerHTML = this.getFormSocial();
@@ -576,7 +576,7 @@ export default class AppUser extends HTMLElement {
 
   getFormSocial = () =>  {
     return /* html */`
-      <social-form method="PATCH" url="/settings/socials" api="/api/v1/u/edit/socials"
+      <social-form method="PATCH" url="/settings/socials" api="/api/v1/u/edit/contact"
         email="${this.getAttribute('user-email')}" x="${this.getAttribute('user-x')}"
         threads="${this.getAttribute('user-threads')}" linkedin="${this.getAttribute('user-linkedin')}" link="${this.getAttribute('user-link')}">
       </social-form>
@@ -712,13 +712,13 @@ export default class AppUser extends HTMLElement {
               <span class="text">Your bio</span>
             </a>
           </li>
-          <li url="/settings/profile" class="tab-item profile"  data-name="profile">
+          <li url="/settings/picture" class="tab-item picture"  data-name="picture">
             <span class="line"></span>
-            <a href="/settings/profile" class="tab-link">
+            <a href="/settings/picture" class="tab-link">
               <svg aria-hidden="true" height="16" fill="currentColor" viewBox="0 0 16 16" width="16">
                 <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
               </svg>
-              <span class="text">Your profile</span>
+              <span class="text">Your picture</span>
             </a>
           </li>
           <li url="/settings/socials" class="tab-item socials" data-name="socials">
@@ -764,9 +764,9 @@ export default class AppUser extends HTMLElement {
         </ul>
         <ul class="tab activity">
           <span class="title">Activity</span>
-          <li url="/settings/manage/topics" class="tab-item topics" data-name="topics">
+          <li url="/settings/topics" class="tab-item topics" data-name="topics">
             <span class="line"></span>
-            <a href="/settings/manage/topics" class="tab-link">
+            <a href="/settings/topics" class="tab-link">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                 <path
                   d="M0 2.75C0 1.783.784 1 1.75 1h8.5c.967 0 1.75.783 1.75 1.75v5.5A1.75 1.75 0 0 1 10.25 10H7.061l-2.574 2.573A1.457 1.457 0 0 1 2 11.543V10h-.25A1.75 1.75 0 0 1 0 8.25Zm1.75-.25a.25.25 0 0 0-.25.25v5.5c0 .138.112.25.25.25h1a.75.75 0 0 1 .75.75v2.189L6.22 8.72a.747.747 0 0 1 .53-.22h3.5a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25Zm12.5 2h-.5a.75.75 0 0 1 0-1.5h.5c.967 0 1.75.783 1.75 1.75v5.5A1.75 1.75 0 0 1 14.25 12H14v1.543a1.457 1.457 0 0 1-2.487 1.03L9.22 12.28a.749.749 0 1 1 1.06-1.06l2.22 2.219V11.25a.75.75 0 0 1 .75-.75h1a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25Zm-5.47.28-3 3a.747.747 0 0 1-1.06 0l-1.5-1.5a.749.749 0 1 1 1.06-1.06l.97.969L7.72 3.72a.749.749 0 1 1 1.06 1.06Z">
@@ -1346,7 +1346,8 @@ export default class AppUser extends HTMLElement {
           font-family: var(--title-text), sans-serif;
           font-size: 1.25rem;
           font-weight: 600;
-          margin: 0 0 25px 0;
+          margin: 0 0 10px 0;
+          line-height: 1.5;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -1370,13 +1371,13 @@ export default class AppUser extends HTMLElement {
 
         div.coming-soon > p.info {
           color: var(--gray-color);
-          font-family: var(--font-main), sans-serif;
+          font-family: var(--font-read), sans-serif;
           font-size: 1rem;
+          margin: 0 0 5px 0;
           font-weight: 400;
           line-height: 1.5;
           text-align: center;
         }
-
 
 				@media screen and (max-width:900px) {
           section.tab {
@@ -1474,6 +1475,17 @@ export default class AppUser extends HTMLElement {
             cursor: default !important;
           }
 
+          div.coming-soon {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0 0 0;
+            padding: 20px 0;
+            width: 100%;
+            min-height: max-content;
+            height: 100%;
+          }
 				}
 	    </style>
     `;

@@ -341,7 +341,7 @@ export default class AllStat extends HTMLElement {
 
         :host {
           font-size: 16px;
-          border-bottom: var(--border-mobile);
+          border-bottom: var(--border);
           margin: 10px 0 0;
           width: 100%;
           display: flex;
@@ -378,7 +378,7 @@ export default class AllStat extends HTMLElement {
         .title > h4 {
           color: var(--text-color);
           font-size: 1.2rem;
-          font-weight: 500;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
@@ -430,7 +430,7 @@ export default class AllStat extends HTMLElement {
         .content > .main .views .text > h2 {
           color: var(--text-color);
           font-size: 1.25rem;
-          font-weight: 500;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }

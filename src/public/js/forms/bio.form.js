@@ -458,7 +458,7 @@ export default class FormBio extends HTMLElement {
           margin: 0;
           width: 100%;
           resize: none;
-          height: 90px;
+          height: 120px;
           gap: 5px;
           font-weight: 400;
           color: var(--text-color);
