@@ -36,17 +36,20 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		name: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		hash: {
 			type: Sequelize.STRING,
 			unique: true,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
 			unique: true,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		password: {
 			type: Sequelize.STRING,
@@ -67,32 +70,38 @@ module.exports = (sequelize, Sequelize) => {
 		verified: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		},
 		followers: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		following: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		stories: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		replies : {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		views: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 	},{
 			schema: 'account',
@@ -101,8 +110,7 @@ module.exports = (sequelize, Sequelize) => {
       timezone: 'UTC',
 			indexes: [
 				{
-					unique: true,
-					fields: ['id', 'hash', 'email', 'createdAt']
+					fields: ['createdAt']
 				}
 			]
 	});
@@ -136,15 +144,18 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		code: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		expires: {
 			type: Sequelize.DATE,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		}
 	},{
 		schema: 'account',
@@ -152,11 +163,10 @@ module.exports = (sequelize, Sequelize) => {
 		timestamps: true,
     timezone: 'UTC',
 		indexes: [
-			{
-				unique: true,
-				fields: ['id', 'code', 'email', 'createdAt']
-			}
-		]
+      {
+        fields: ['createdAt']
+      }
+    ]
 	});
 
 
@@ -178,20 +188,24 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		from: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		to: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		active: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		deletedAt: {
 			type: Sequelize.DATE,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		}
 	},{
 		schema: 'account',
@@ -199,11 +213,10 @@ module.exports = (sequelize, Sequelize) => {
 		timestamps: true,
     timezone: 'UTC',
 		indexes: [
-			{
-				unique: true,
-				fields: ['id', 'from', 'to', 'createdAt']
-			}
-		]
+      {
+        fields: ['createdAt']
+      }
+    ]
 	});
 
 	// add hook to connect model: afterCreate

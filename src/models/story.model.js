@@ -41,25 +41,30 @@ module.exports = (User, sequelize, Sequelize) => {
     kind: {
       type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
       defaultValue: 'post',
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     published: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -76,7 +81,8 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     votes: {
       type: Sequelize.ARRAY(Sequelize.INTEGER),
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     topics: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -86,23 +92,27 @@ module.exports = (User, sequelize, Sequelize) => {
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     // add end date if the story type is poll
     end: {
       type: Sequelize.DATE,
       defaultValue: null,
       allowNull: true,
+      index: true,
     }
   },{
     schema: 'story',
@@ -111,11 +121,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'slug', 'hash']
-      },
-      {
-        fields: ['kind', 'author', 'title', 'published', 'views', 'likes', 'replies', 'createdAt']
+        fields: ['createdAt']
       }
     ]
   });
@@ -176,11 +182,13 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('section', 'chapter', 'part', 'episode'),
       defaultValue: 'section',
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
@@ -188,11 +196,13 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -205,11 +215,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['kind', 'story', 'title']
+        fields: ['createdAt']
       }
     ]
   });
@@ -228,18 +234,22 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     option: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },{
     schema: 'story',
@@ -248,11 +258,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['story', 'author', 'option', 'createdAt']
+        fields: ['createdAt']
       }
     ]
   });
@@ -292,27 +298,33 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     reply: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -321,17 +333,20 @@ module.exports = (User, sequelize, Sequelize) => {
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
   {
@@ -341,11 +356,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'hash']
-      },
-      {
-        fields: ['content', 'author', 'story', 'reply', 'createdAt']
+        fields: ['createdAt']
       }
     ]
   });
@@ -399,22 +410,27 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     reply: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     }
   },
   {
@@ -424,11 +440,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['author', 'story', 'reply', 'createdAt']
+        fields: ['createdAt']
       }
     ]
   });
@@ -476,18 +488,22 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply', 'topic'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
+      index: true,
     },
     target: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
   {
@@ -497,11 +513,7 @@ module.exports = (User, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['author', 'target', 'createdAt']
+        fields: ['createdAt']
       }
     ]
   });

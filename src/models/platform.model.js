@@ -24,10 +24,12 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     description: {
       type: Sequelize.TEXT,
@@ -43,12 +45,6 @@ module.exports = (User, sequelize, Sequelize) => {
       freezeTableName: true,
       timestamps: true,
       timezone: 'UTC',
-      indexes: [
-        {
-          unique: true,
-          fields: ['id']
-        }
-      ]
     });
 
   /**
@@ -70,15 +66,18 @@ module.exports = (User, sequelize, Sequelize) => {
     identity: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
+      index: true,
     },
     target: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     description: {
       type: Sequelize.TEXT,
@@ -92,8 +91,7 @@ module.exports = (User, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id', 'identity']
+          fields: ['createdAt']
         }
       ]
     });
@@ -119,33 +117,40 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     section: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     user: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     base: {
       type: Sequelize.ENUM('owner', 'admin', 'user'),
       defaultValue: 'user',
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     privileges: {
       type: Sequelize.JSON,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     expiry: {
       type: Sequelize.DATE,
       allowNull: true,
+      index: true,
     },
     expired: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+      index: true,
     }
   },
     {
@@ -155,11 +160,7 @@ module.exports = (User, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['section', 'user', 'base']
+          fields: ['createdAt']
         }
       ]
     });
@@ -182,16 +183,19 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     target: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     approved: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+      index: true,
     },
     description: {
       type: Sequelize.TEXT,
@@ -205,11 +209,7 @@ module.exports = (User, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['target', 'name', 'approved']
+          fields: ['createdAt']
         }
       ]
     });
@@ -233,19 +233,23 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     audit: {
       type: Sequelize.ENUM('request', 'security', 'error', 'action'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     user: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     target: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     action: {
       type: Sequelize.ENUM('create', 'read', 'update', 'delete'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     verb: {
       type: Sequelize.STRING,
@@ -259,11 +263,7 @@ module.exports = (User, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['audit', 'user', 'target', 'action']
+          fields: ['createdAt']
         }
       ]
     });

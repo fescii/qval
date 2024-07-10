@@ -35,21 +35,25 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     slug: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     summary: {
       type: Sequelize.TEXT,
@@ -58,22 +62,26 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     followers: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     subscribers: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     stories: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
   {
@@ -83,11 +91,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'slug', 'hash']
-      },
-      {
-        fields: ['name', 'author']
+        fields: ['createdAt']
       }
     ]
   });
@@ -124,15 +128,18 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -140,7 +147,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     authors: {
       type: Sequelize.ARRAY(Sequelize.STRING),
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
     {
@@ -150,11 +158,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id',]
-        },
-        {
-          fields: ['topic', 'order']
+          fields: ['createdAt']
         }
       ]
     });
@@ -180,23 +184,28 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('new', 'update'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     section: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -204,12 +213,14 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     approved: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
@@ -219,11 +230,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'kind', 'topic']
+          fields: ['createdAt']
         }
       ]
     });
@@ -245,11 +252,13 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },{
     // timestamps: false,
@@ -259,11 +268,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['topic', 'story']
+        fields: ['createdAt']
       }
     ]
   });
@@ -284,11 +289,13 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
@@ -298,11 +305,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'topic', 'createdAt']
+          fields: ['createdAt']
         }
       ]
     });
@@ -350,11 +353,13 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
@@ -364,11 +369,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'topic', 'createdAt']
+          fields: ['createdAt']
         }
       ]
     });
