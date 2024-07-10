@@ -54,39 +54,39 @@ export default class StatFeed extends HTMLElement {
 
   getStories = () => {
     return /* html */`
-			<stat-story id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+			<stat-story id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile."
         >
       </stat-story>
-      <stat-reply id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-reply id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile. Something here...">
       </stat-reply>
-      <stat-story id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-story id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile."
         >
       </stat-story>
-      <stat-reply id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-reply id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile. Something here...">
       </stat-reply>
-      <stat-story id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-story id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile."
         >
       </stat-story>
-      <stat-reply id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-reply id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile. Something here...">
       </stat-reply>
-      <stat-story id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-story id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile."
         >
       </stat-story>
-      <stat-reply id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-reply id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile. Something here...">
       </stat-reply>
-      <stat-story id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-story id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile."
         >
       </stat-story>
-      <stat-reply id="256" upvotes="609" views="531" date="2021-08-12T12:00:00Z"
+      <stat-reply id="256" likes="609" views="531" date="2021-08-12T12:00:00Z"
         content="This is a story about how you added an article to your profile. Something here...">
       </stat-reply>
 		`

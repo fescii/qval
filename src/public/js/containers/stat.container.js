@@ -78,7 +78,7 @@ export default class StatContainer extends HTMLElement {
       ${this.getHeader()}
       ${this.getTab()}
 			<div class="content">
-				${this.getStats()}
+				${this.getStatFeedStories()}
       </div>
     `;
   }

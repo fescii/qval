@@ -33,7 +33,7 @@ const editPassword = async (data, hash) => {
     if (!isMatch) {
       return {
         user: null,
-        error: new Error("Old password does not match"),
+        error: new Error("Incorrect current password"),
       };
     }
 

@@ -382,7 +382,7 @@ export default class AppUser extends HTMLElement {
         { tab: tab.dataset.name },
         tab.dataset.name, `${tab.getAttribute('url')}`
       );
-    }, 3000);
+    }, 300);
   }
 
   populateCurrent = (tabContainer, contentContainer) =>  {
@@ -406,7 +406,7 @@ export default class AppUser extends HTMLElement {
 
         // Populate Content
         outerThis.populateContent(outerThis._current, contentContainer);
-      }, 1000)
+      }, 100)
     }
   }
 

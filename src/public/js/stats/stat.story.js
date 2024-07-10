@@ -34,6 +34,44 @@ export default class StatStory extends HTMLElement {
     window.onscroll = function () { };
   }
 
+  formatNumber = n => {
+    if (n >= 0 && n <= 999) {
+      return n.toString();
+    } else if (n >= 1000 && n <= 9999) {
+      const value = (n / 1000).toFixed(2);
+      return `${value}k`;
+    } else if (n >= 10000 && n <= 99999) {
+      const value = (n / 1000).toFixed(1);
+      return `${value}k`;
+    } else if (n >= 100000 && n <= 999999) {
+      const value = (n / 1000).toFixed(0);
+      return `${value}k`;
+    } else if (n >= 1000000 && n <= 9999999) {
+      const value = (n / 1000000).toFixed(2);
+      return `${value}M`;
+    } else if (n >= 10000000 && n <= 99999999) {
+      const value = (n / 1000000).toFixed(1);
+      return `${value}M`;
+    } else if (n >= 100000000 && n <= 999999999) {
+      const value = (n / 1000000).toFixed(0);
+      return `${value}M`;
+    } else {
+      return "1B+";
+    }
+  }
+
+  parseToNumber = num_str => {
+    // Try parsing the string to an integer
+    const num = parseInt(num_str);
+
+    // Check if parsing was successful
+    if (!isNaN(num)) {
+      return num;
+    } else {
+      return 0;
+    }
+  }
+
   getTemplate() {
     // Show HTML Here
     return `
@@ -43,30 +81,31 @@ export default class StatStory extends HTMLElement {
   }
 
   getBody = () => {
+    const likes = this.parseToNumber(this.getAttribute('likes'));
+    const views = this.parseToNumber(this.getAttribute('views'));
     return /* html */`
       <span class="content">
         ${this.getAttribute('content')}
       </span>
-      <div class="foot">
-        <span class="by">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="M8 2c1.981 0 3.671.992 4.933 2.078 1.27 1.091 2.187 2.345 2.637 3.023a1.62 1.62 0 0 1 0 1.798c-.45.678-1.367 1.932-2.637 3.023C11.67 13.008 9.981 14 8 14c-1.981 0-3.671-.992-4.933-2.078C1.797 10.83.88 9.576.43 8.898a1.62 1.62 0 0 1 0-1.798c.45-.677 1.367-1.931 2.637-3.022C4.33 2.992 6.019 2 8 2ZM1.679 7.932a.12.12 0 0 0 0 .136c.411.622 1.241 1.75 2.366 2.717C5.176 11.758 6.527 12.5 8 12.5c1.473 0 2.825-.742 3.955-1.715 1.124-.967 1.954-2.096 2.366-2.717a.12.12 0 0 0 0-.136c-.412-.621-1.242-1.75-2.366-2.717C10.824 4.242 9.473 3.5 8 3.5c-1.473 0-2.825.742-3.955 1.715-1.124.967-1.954 2.096-2.366 2.717ZM8 10a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 10Z"></path>
-          </svg>
-          ${this.getAttribute('views')}
-        </span>
-        <span class="sp">•</span>
-        <time datetime="2021-08-12T12:00:00Z">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="M4.53 4.75A.75.75 0 0 1 5.28 4h6.01a.75.75 0 0 1 .75.75v6.01a.75.75 0 0 1-1.5 0v-4.2l-5.26 5.261a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L9.48 5.5h-4.2a.75.75 0 0 1-.75-.75Z"></path>
-          </svg>
-          ${this.getAttribute('upvotes')}
-        </time>
-        <span class="sp">•</span>
-        <a href="/story/${this.getAttribute('hash')} " class="link">view</a>
-        <span class="sp">•</span>
-        <a href="/story/${this.getAttribute('hash')}/manage" class="edit">manage</a>
-      </div>
+      ${this.getActions(likes, views)}
     `;
+  }
+
+  getActions = (likes, views) => {
+    const viewUrl = this.getAttribute('url');
+    const editUrl = this.getAttribute('edit-url');
+    return /*html*/`
+      <div class="actions">
+        <a href="${editUrl}" class="action edit" id="edit-action">edit</a>
+        <a href="${viewUrl}" class="action view" id="view-action">view</a>
+        <span class="action likes plain">
+          <span class="no">${this.formatNumber(likes)}</span> <span class="text">${likes === 1 ? 'like' : 'likes'}</span>
+        </span>
+        <span class="action views plain">
+          <span class="no">${this.formatNumber(views)}</span> <span class="text">${views === 1 ? 'view' : 'views'}</span>
+        </span>
+      </div>
+    `
   }
 
   getStyles() {
@@ -112,16 +151,14 @@ export default class StatStory extends HTMLElement {
 
       :host {
         font-size: 16px;
-        border-bottom: var(--border);
         display: flex;
         flex-flow: column;
-        gap: 5px;
-        padding: 15px 0;
+        gap: 10px;
+        padding: 10px 0;
         width: 100%;
       }
 
       .content {
-        /* border: 1px solid #6b7280; */
         color: var(--text-color);
         font-family: var(--font-read), sans-serif;
         display: flex;
@@ -132,55 +169,69 @@ export default class StatStory extends HTMLElement {
         width: 100%;
       }
 
-      .foot {
-        /* border: 1px solid #6b7280; */
-        color: var(--gray-color);
+      .actions {
         display: flex;
-        align-items: center;
-        font-size: 0.9rem;
-        gap: 5px;
-        padding: 0;
-        width: 100%;
-      }
-
-      .foot > .hash {
-        color: var(--gray-color);
-        font-size: 0.85rem;
-        /* font-family: var(--font-main), sans-serif; */
-      }
-
-      .foot a {
-        color: var(--gray-color);
-        font-size: 0.9rem;
         font-family: var(--font-main), sans-serif;
-        text-decoration: none;
-      }
-
-      .foot a:hover {
-        color: transparent;
-        background: var(--accent-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
-      }
-
-      .foot .sp {
-        color: var(--gray-color);
-        font-size: 0.8rem;
+        width: 100%;
+        flex-flow: row;
+        align-items: center;
+        gap: 8px;
         margin: 0;
       }
-
-      .foot span.by,
-      .foot time {
-        font-size: 0.85rem;
-        font-family: var(--font-main), sans-serif;
+      
+      .actions > .action {
+        border: var(--border);
+        text-decoration: none;
+        color: var(--gray-color);
+        font-size: 0.9rem;
         display: flex;
-        gap: 5px;
+        width: max-content;
+        flex-flow: row;
         align-items: center;
+        text-transform: lowercase;
+        justify-content: center;
+        padding: 1.5px 10px 2.5px;
+        border-radius: 10px;
+      }
+
+      /*.actions > .action.edit {
+        border: none;
+        background: var(--action-linear);
+        color: var(--white-color);
+        font-size: 0.9rem;
+      }*/
+
+      .actions > .action.plain {
+        padding: 0;
+        font-weight: 500;
+        pointer-events: none;
+        font-family: var(--font-text), sans-serif;
+        color: var(--gray-color);
+        border: none;
+        background: none;
+      }
+      
+      .actions > .action.plain > span.no {
+        font-family: var(--font-main), sans-serif;
+        font-size: 0.9rem;
+        color: var(--text-color);
+      }
+
+      .actions > .action.plain > span.text {
+        display: inline-block;
+        padding: 0 0 0 3px;
       }
 
       @media screen and (max-width:660px) {
         ::-webkit-scrollbar {
           -webkit-appearance: none;
+        }
+
+        .actions {
+          width: 100%;
+        }
+        a {
+          cursor: default !important;
         }
       }
     </style>
