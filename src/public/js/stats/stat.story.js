@@ -213,7 +213,7 @@ export default class StatStory extends HTMLElement {
       
       .actions > .action.plain > span.no {
         font-family: var(--font-main), sans-serif;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--text-color);
       }
 
