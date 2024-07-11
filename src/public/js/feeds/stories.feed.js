@@ -6,14 +6,23 @@ export default class StoryFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._pages = 1;
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
+    this._query = this.setQuery(this.getAttribute('query'));
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = query => {
+    // if the query is null || empty
+    if(!query || query === "" || query !== "true") {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -55,9 +64,13 @@ export default class StoryFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.stories.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getEmptyMsg(outerThis._kind), storiesContainer);
           } 
           else if (data.last && data.stories.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.stories);
             outerThis.populateStories(content, storiesContainer);
             outerThis.populateStories(outerThis.getLastMessage(outerThis._kind), storiesContainer);
@@ -71,11 +84,15 @@ export default class StoryFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
           }
         })
         .catch((error) => {
-          console.log(error)
+          // console.log(error)
+          outerThis._empty = true;
+          outerThis._block = true;
           outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
         });
     });
@@ -83,7 +100,8 @@ export default class StoryFeed extends HTMLElement {
 
   fetchReplies = storiesContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    // const url = `${this._url}?page=${this._page}`;
+    const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -91,7 +109,7 @@ export default class StoryFeed extends HTMLElement {
       setTimeout(() => {
         // fetch the stories
         outerThis.fetching(url, storiesContainer)
-      }, 3000);
+      }, 1000);
     }
   }
 
@@ -126,18 +144,15 @@ export default class StoryFeed extends HTMLElement {
     return data.map(story => {
       const author = story.story_author;
       const url = `/p/${story.hash.toLowerCase()}`;
-      let name = author.name.split(" ");
-      let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
-      
       if (story.kind === "post") {
         return /*html*/`
           <quick-post story="quick" url="${url}" hash="${story.hash}" likes="${story.likes}" 
             replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
             replies-url="/api/v1${url}/replies" likes-url="/api/v1${url}/likes" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${picture}" 
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
+            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.content}
           </quick-post>
@@ -150,9 +165,9 @@ export default class StoryFeed extends HTMLElement {
             voted="${story.option ? 'true' : 'false'}" selected="${story.option}" end-time="${story.end}" replies-url="/api/v1${url}/replies" 
             likes-url="/api/v1${url}/likes" options='${story.poll}' votes="${story.votes}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${picture}" 
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
+            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.content}
           </poll-post>
@@ -165,8 +180,8 @@ export default class StoryFeed extends HTMLElement {
             likes-url="/api/v1${url}/likes" replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" likes="${story.likes}" 
             views="${story.views}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" 
-            author-img="${picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
+            author-img="${author.picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
             author-followers="${author.followers}" author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.story_sections}
@@ -352,7 +367,7 @@ export default class StoryFeed extends HTMLElement {
       <div class="last">
         <h2 class="title">Something went wrong!</h2>
         <p class="next">
-          Something did not work as expected, I call it shinanigans!
+          Something did not work as expected, I call it shenanigans!
         </p>
       </div>
     `
@@ -510,7 +525,7 @@ export default class StoryFeed extends HTMLElement {
 
         .last p.next > .url,
         .empty  p.next > .url {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--gray-color);
           padding: 2px 5px;
           font-size: 0.95rem;
@@ -523,7 +538,7 @@ export default class StoryFeed extends HTMLElement {
           color: var(--error-color);
           font-weight: 500;
           font-size: 0.9rem;
-          background: var(--poll-background);
+          background: var(--gray-background);
           padding: 2px 5px;
           border-radius: 5px;
         }

@@ -104,7 +104,7 @@ export default class StoriesStat extends HTMLElement {
       ${this.getHeader()}
       <div class="cards">
         ${this.getViews()}
-        ${this.getUpvotes()}
+        ${this.getLikes()}
         ${this.getReplies()}
       </div>
     `;
@@ -113,8 +113,8 @@ export default class StoriesStat extends HTMLElement {
   getHeader = () => {
     return /* html */`
       <div class="title">
-        <h4 class="text">Stories</h4>
-        <span class="desc">Your stories summery</span>
+        <h4 class="text">Your stories</h4>
+        <span class="desc">Past thirty days stories engagements</span>
       </div>
     `
   }
@@ -162,12 +162,12 @@ export default class StoriesStat extends HTMLElement {
     `
   }
 
-  getUpvotes = () => {
+  getLikes = () => {
     let icon = ''
-    const lastUpvotes = this.parseToNumber(this.getAttribute('upvotes-last'));
-    const currentUpvotes = this.parseToNumber(this.getAttribute('upvotes'));
+    const lastLikes = this.parseToNumber(this.getAttribute('likes-last'));
+    const currentLikes = this.parseToNumber(this.getAttribute('likes'));
 
-    const change = this.calculateDifference(lastUpvotes, currentUpvotes);
+    const change = this.calculateDifference(lastLikes, currentLikes);
 
     // if change is negative, we need to make it positive
     const difference = Math.abs(change);
@@ -193,10 +193,10 @@ export default class StoriesStat extends HTMLElement {
 
     return /* html */`
       <div class="card">
-        <h4 class="title">Upvotes</h4>
+        <h4 class="title">Likes</h4>
         <div class="stat">
           <h2 class="no">
-            ${this.formatNumber(currentUpvotes)}
+            ${this.formatNumber(currentLikes)}
           </h2>
           ${icon}
         </div>
@@ -334,7 +334,7 @@ export default class StoriesStat extends HTMLElement {
         .title > span.desc {
           color: var(--gray-color);
           font-size: 0.9rem;
-          font-family: var(--font-text), sans-serif;
+          font-family: var(--font-read), sans-serif;
         }
 
         .cards {
@@ -347,11 +347,11 @@ export default class StoriesStat extends HTMLElement {
         }
 
         .cards > .card {
-          /* border: thin solid #4b5563bd; */
           display: flex;
           flex-flow: column;
-          gap: 10px;
-          padding: 10px 25px 10px 15px;
+          gap: 7px;
+          padding: 8px 15px;
+          min-width: 200px;
           background-color: var(--stat-background);
           justify-content: center;
           border-radius: 10px;
@@ -362,20 +362,18 @@ export default class StoriesStat extends HTMLElement {
         }
 
         .cards > .card > .title {
-          color: var(--gray-color);
+          color: var(--text-color);
           font-size: 1rem;
-          font-weight: 400;
+          font-weight: 500;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
 
         .cards > .card > .stat {
-          /* border: thin solid #4b5563bd; */
           color: var(--text-color);
           display: flex;
           flex-flow: row;
           gap: 15px;
-          /* height: 50px; */
           align-items: end;
           font-family: var(--font-main), sans-serif;
           margin: 0;
@@ -384,13 +382,12 @@ export default class StoriesStat extends HTMLElement {
         .cards > .card > .stat > h2.no {
           color: var(--text-color);
           font-size: 1.25rem;
-          font-weight: 500;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
 
         .cards > .card > .stat > .change {
-          /* border: thin solid #4b5563bd; */
           display: flex;
           flex-flow: row;
           gap: 2px;
@@ -413,9 +410,8 @@ export default class StoriesStat extends HTMLElement {
         }
 
         .cards > .card > .stat > .change .percentage {
-          /* color: var(--text-color); */
           font-size: 1rem;
-          font-weight: 400;
+          font-weight: 500;
           font-family: var(--font-main), sans-serif;
           margin: 0;
         }
@@ -426,13 +422,32 @@ export default class StoriesStat extends HTMLElement {
           margin-top: 2px;
         }
 
-        @media screen and (max-width:600px) {
+        .cards > .card > .stat > .change.up > svg {
+          margin: 0;
+        }
+
+        @media screen and (max-width:950px) {
+          .cards > .card {
+            min-width: 150px;
+          }
+        }
+
+
+        @media screen and (max-width:800px) {
+          .cards > .card {
+            min-width: 120px;
+          }
+        }
+
+        @media screen and (max-width:660px) {
           ::-webkit-scrollbar {
             -webkit-appearance: none;
           }
 
           :host {
-            padding-bottom: 25px;
+            padding-bottom: 10px;
+            border: none;
+            gap: 0;
           }
 
           .cards {
@@ -440,17 +455,28 @@ export default class StoriesStat extends HTMLElement {
             flex-flow: column;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            padding: 6px 0;
+            gap: 0;
+            padding: 0;
             width: 100%;
           }
 
           .cards > .card {
+            background-color: transparent;
+            border-bottom: var(--border);
             display: flex;
             flex-flow: column;
             width: 100%;
-            gap: 10px;
-            padding: 10px 25px 10px 15px;
+            gap: 5px;
+            padding: 10px 5px;
+            border-radius: 0;
+          }
+
+          .cards > .card > h4.title {
+            color: var(--gray-color);
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: var(--font-text), sans-serif;
+            margin: 0 0 0 -2px;
           }
         }
       </style>

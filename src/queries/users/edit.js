@@ -9,11 +9,11 @@ const { salt_rounds } = require("../../configs").envConfig;
  * @name editPassword
  * @function editPassword
  * @description - A function query to edit the user's password
- * @param {String} password - New password of the user
+ * @param {Object} data - New password of the user
  * @param {String} hash - The hash of the user
  * @returns {Object} - Returns the edited user object or null or error if the user is not found
 */
-const editPassword = async (password, hash) => {
+const editPassword = async (data, hash) => {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
@@ -26,8 +26,19 @@ const editPassword = async (password, hash) => {
       };
     }
 
+    // verify the old password
+    const isMatch = await bcrypt.compare(data.old_password, user.password);
+
+    // if the password does not match
+    if (!isMatch) {
+      return {
+        user: null,
+        error: new Error("Incorrect current password"),
+      };
+    }
+
     // hash the password using bcrypt
-    const hashPassword = await bcrypt.hash(password, salt_rounds);
+    const hashPassword = await bcrypt.hash(data.password, salt_rounds);
 
     // edit the user password
     user.password = hashPassword;
@@ -48,11 +59,10 @@ const editPassword = async (password, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
     await transaction.rollback();
     return {
       user: null,
-      error,
+      error: new Error("An error occurred while updating the password"),
     };
   }
 }

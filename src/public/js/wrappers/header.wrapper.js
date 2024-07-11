@@ -73,7 +73,7 @@ export default class HeaderWrapper extends HTMLElement {
         }
         else {
           // redirect to home
-          window.location.href = '/home.html';
+          window.location.href = '/home';
         }
       }
     });
@@ -126,14 +126,14 @@ export default class HeaderWrapper extends HTMLElement {
     if (authenticated) {
       return /* html */ `
         <div class="links">
+          <a href="/discover" class="link discover">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+              <path d="M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"></path>
+            </svg>
+          </a>
           <a href="/profile" class="link profile">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
-            </svg>
-          </a>
-          <a href="/discover" class="link discover">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-              <path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.249 1.249 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429Zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006a.036.036 0 0 0-.004-.009l-.006-.006-.008-.001c-.003 0-.006.002-.009.004Z"></path>
             </svg>
           </a>
           <a href="/user/stats" class="link discover">
@@ -210,6 +210,40 @@ export default class HeaderWrapper extends HTMLElement {
           </div>
         `
     }
+  }
+
+  getHome = () => {
+    return /* html */ `
+      <app-home url="/home" recent-url="/api/v1/h/recent" feeds-url="/api/v1/h/feeds"
+        trending-people="/api/v1/q/trending/people" trending-url="/api/v1/h/trending">
+      </app-home>
+    `
+  }
+
+  getLogon = () => {
+    return /* html */ `
+      <app-logon
+        name="join" next="/home"
+        api-login="/api/v1/a/login"
+        api-register="/api/v1/a/register"
+        api-check-email="/api/v1/a/check-email"
+        api-forgot-password="/api/v1/a/forgot-password"
+        api-verify-token="/api/v1/a/verify-token"
+        api-reset-password="/api/v1/a/reset-password"
+        join-url="/join" login="/join/login"
+        register="/join/register" forgot="/join/recover"
+      >
+    `
+  }
+
+  getSearch = () => {
+    return /* html */ `
+      <app-search url="/search" query="" page="1" tab="stories" stories-url="/api/v1/q/stories"
+        replies-url="/api/v1/q/replies" people-url="/api/v1/q/people" topics-url="/api/v1/q/topics"
+        trending-stories="/api/v1/q/trending/stories" trending-people="/api/v1/q/trending/people"
+        trending-topics="/api/v1/q/trending/topics" trending-replies="/api/v1/q/trending/replies">
+      </app-search>
+    `
   }
 
   getStyles() {
@@ -306,13 +340,13 @@ export default class HeaderWrapper extends HTMLElement {
         nav.nav > .left.home h3 {
           margin: 0 0 -2px 0;
           padding: 0 0 0 2px;
-          font-weight: 700;
+          font-weight: 600;
           color: transparent;
           font-size: 1.5rem;
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--read-text);
         }
 
         nav.nav > .left svg {
@@ -375,7 +409,7 @@ export default class HeaderWrapper extends HTMLElement {
         nav.nav > .links > a.link.signin {
           border: var(--border-mobile);
           font-weight: 500;
-          padding: 3px 15px;
+          padding: 4px 15px 4px;
           font-family: var(--font-read);
           border-radius: 10px;
           -webkit-border-radius: 10px;
@@ -398,7 +432,7 @@ export default class HeaderWrapper extends HTMLElement {
           }
 
           nav.nav {
-            border-bottom: var(--border-mobile);
+            border-bottom: var(--border);
             height: 50px;
             max-height: 50px;
             padding: 10px 0;

@@ -7,15 +7,62 @@ export default class AppSearch extends HTMLElement {
     this._tab = this.getAttribute('tab');
 
     // get query
-    this._query = this.getAttribute('query') || '';
+    this._query = this.getAttribute('query');
 
     //Get url in lowercase
     this._url = this.getAttribute('url').trim().toLowerCase();
 
+    this._active = null;
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.setTitle();
+
     this.render();
+  }
+
+  setQuery = () => {
+    // Check if query q is in the url and update the query
+    const url = new URL(window.location.href);
+    const q = url.searchParams.get('q');
+
+    if (q !== '' && q !== null && q !== 'null') {
+      // update query
+      this._query = q;
+      this.setAttribute('query', q);
+    }
+    else {
+      const query = this.getAttribute('query');
+
+      if (query !== '' && query !== null && query !== 'null') {
+        // update query
+        this._query = query;
+      }
+      else {
+        // update query
+        this._query = null;
+      }
+    }
+  }
+
+  updateInput = form => {
+    // update input value
+    if(this._query) {
+      form.querySelector('input').value = this._query;
+      this.setKey(form);
+    }
+  }
+
+  setTitle = () => {
+    // update title of the document
+    // document.title = 'Search | Discover and connect with people, topics and stories';
+    if (this._query) {
+      document.title = `Search | ${this._query}`;
+    }
+    else {
+      document.title = 'Search | Discover and connect with people, topics and stories';
+    }
   }
 
   render() {
@@ -26,17 +73,22 @@ export default class AppSearch extends HTMLElement {
     // Activate tab
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
+    const form = this.shadowObj.querySelector('form.search');
 
-    // update active tab
-    this.updateActiveTab(this._tab);
-
-
-    if (contentContainer && tabContainer) {
+    // activate popstate
+    this.activateOnPopState();
+  
+    if (contentContainer && tabContainer && form) {
+      this.updateActiveTab(this._tab, tabContainer);
       this.activateTab(contentContainer, tabContainer);
-    }
+      this.activateForm(form, tabContainer, contentContainer);
+      this.updateInput(form);
 
-    // Scroll to top of the page
-    window.scrollTo(0, 0);
+      const svgBtn = form.querySelector('svg');
+      if(svgBtn){
+        this.activateBackButton(svgBtn);
+      }
+    }
 
     // watch for mql changes
     const mql = window.matchMedia('(max-width: 660px)');
@@ -45,17 +97,20 @@ export default class AppSearch extends HTMLElement {
   }
 
   // watch for mql changes
-  watchMediaQuery = (mql, contentContainer) => {
+  watchMediaQuery = mql => {
     mql.addEventListener('change', () => {
       // Re-render the component
       this.render();
 
-      // update active tab
-      this.updateActiveTab(this.getAttribute('tab'));
-
-      //activate tab
-      if (contentContainer) {
-        this.activateTab(contentContainer);
+      const contentContainer = this.shadowObj.querySelector('div.content-container');
+      const tabContainer = this.shadowObj.querySelector('ul#tab');
+      const form = this.shadowObj.querySelector('form.search');
+    
+      if (contentContainer && tabContainer && form) {
+        this.updateActiveTab(this._tab, tabContainer);
+        this.activateTab(contentContainer, tabContainer);
+        this.activateForm(form, tabContainer, contentContainer);
+        this.updateInput(form);
       }
     });
   }
@@ -77,7 +132,7 @@ export default class AppSearch extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  updateActiveTab = active => {
+  updateActiveTab = (active, tabContainer) => {
     // Select tab with active class
     const tab = this.shadowObj.querySelector(`ul#tab > li.${active}`);
 
@@ -86,6 +141,9 @@ export default class AppSearch extends HTMLElement {
 
     if (tab && line) {
       tab.classList.add('active');
+
+      // update active tab
+      this._active = tab;
 
       // Calculate half tab width - 10px
       const tabWidth = (tab.offsetWidth/2) - 20;
@@ -100,12 +158,69 @@ export default class AppSearch extends HTMLElement {
     }
   }
 
+  activateForm = (form, tabContainer, contentContainer) => {
+    const outerThis = this;
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const query = form.querySelector('input').value;
+
+      if (query.trim() === '') {
+        return;
+      }
+
+      // update query
+      outerThis._query = query;
+
+      // update query attribute
+      outerThis.setAttribute('query', outerThis._query);
+
+      // update title of the document
+      document.title = `Search query -  ${query}`;
+
+      // update url
+      outerThis._url = `/search?q=${query}`;
+
+      // update setKey
+      outerThis.setKey(form);
+
+      // update url attribute
+      outerThis.setAttribute('url', outerThis._url);
+
+      // update search bar url by adding query
+      window.history.replaceState(null, null, outerThis._url);
+
+      // update tab attribute
+      outerThis.setAttribute('tab', 'stories');
+
+      // get tab container
+      const tab = outerThis.getContainer('stories');
+
+      // remove active tab
+      outerThis.removeActiveTab(tabContainer);
+
+      // Set active tab
+      outerThis.updateActiveTab('stories', tabContainer);
+
+      // update content
+      contentContainer.innerHTML = tab;
+    });
+  }
+
+  removeActiveTab = tabContainer => {
+    // remove active tab
+    const activeTab = tabContainer.querySelector('li.tab-item.active');
+    if (activeTab) {
+      activeTab.classList.remove('active');
+    }
+  }
+
   activateTab = (contentContainer, tabContainer) => {
     const outerThis = this;
 
     const line = tabContainer.querySelector('span.line');
     const tabItems = tabContainer.querySelectorAll('li.tab-item');
-    let activeTab = tabContainer.querySelector('li.tab-item.active');
 
     tabItems.forEach(tab => {
       tab.addEventListener('click', e => {
@@ -117,113 +232,35 @@ export default class AppSearch extends HTMLElement {
 
         line.style.left = `${tab.offsetLeft + tabWidth}px`;
 
-        if (tab.dataset.element === activeTab.dataset.element) {
+        if (tab.dataset.element === outerThis._active.dataset.element) {
           return;
         }
         else {
-          activeTab.classList.remove('active');
+          outerThis._active.classList.remove('active');
           tab.classList.add('active');
-          activeTab = tab;
+          outerThis._active = tab;
 
           // update tab attribute  and this._tab
-          this._tab = tab.dataset.element;
+          outerThis._tab = tab.dataset.element;
+          outerThis.setAttribute('tab', outerThis._tab);
 
-          // get tab url attribute
-          let url = tab.getAttribute('url');
+          // update tab attribute  and this._tab
+          outerThis._tab = tab.dataset.element;
 
-          // check if this._query is empty or null, if not update url
-          if (this._query !== '' && this._query !== null && this._query !== 'null') {
-            url = `${url}/$?q=${this._query}`;
-          }
-
-          console.log('URL: ', url);
-
-          // get current feed
-          const currentFeed = outerThis.selectCurrentFeed(tab.dataset.element);
-
-          // Updating History State
-          window.history.pushState(
-            { tab: tab.dataset.element, content: currentFeed },
-            tab.dataset.element, `${url}`
-          );
-
-          switch (tab.dataset.element) {
-            case "stories":
-              contentContainer.innerHTML = outerThis.getStories();
-              break;
-            case "topics":
-              contentContainer.innerHTML = outerThis.getTopics();
-              break;
-            case "people":
-              contentContainer.innerHTML = outerThis.getPeople();
-            default:
-              break;
+          if (tab.dataset.element === "stories") {
+            contentContainer.innerHTML = outerThis.getStories();
+          } else if (tab.dataset.element === "replies") {
+            contentContainer.innerHTML = outerThis.getReplies();
+          } else if (tab.dataset.element === "topics") {
+            contentContainer.innerHTML = outerThis.getTopics();
+          } else if (tab.dataset.element === "people") {
+            contentContainer.innerHTML = outerThis.getPeople();
+          } else {
+            contentContainer.innerHTML = outerThis.getStories();
           }
         }
       })
     });
-
-    // Update state on window.onpopstate
-    window.onpopstate = event => {
-      // This event will be triggered when the browser's back button is clicked
-
-      // console.log(event.state);
-      if (event.state) {
-        if (event.state.page) {
-          outerThis.updatePage(event.state.content)
-        }
-        else if (event.state.tab) {
-
-          // Select the state tab
-          const tab = outerThis.shadowObj.querySelector(`ul#tab > li.${event.state.tab}`);
-
-          if (tab) {
-            activeTab.classList.remove('active');
-
-            tab.classList.add('active');
-            activeTab = tab;
-
-            // update tab attribute  and this._tab
-            outerThis._tab = event.state.tab;
-
-            // Calculate half tab width - 10px
-            const tabWidth = (tab.offsetWidth / 2) - 20;
-
-            // Update the line
-            line.style.left = `${tab.offsetLeft + tabWidth}px`;
-
-            outerThis.updateState(event.state, contentContainer);
-
-            // Update tab
-            outerThis._tab = tab.dataset.element;
-          }
-        }
-      }
-      else {
-        // Select li with class name as current and content Container
-        const currentTab = outerThis.shadowObj.querySelector(`ul#tab > li.tab-item.${this.getAttribute('tab')}`);
-        if (currentTab) {
-          activeTab.classList.remove('active');
-          activeTab = currentTab;
-          currentTab.classList.add('active');
-
-          // update tab attribute  and this._tab
-          outerThis._tab = currentTab.dataset.element;
-
-          console.log('Current Tab: ', currentTab.dataset.element);
-
-          // Calculate half tab width - 10px
-          const tabWidth = (currentTab.offsetWidth / 2) - 20;
-
-          line.style.left = `${currentTab.offsetLeft + tabWidth}px`;
-
-          outerThis.updateDefault(contentContainer);
-
-          // Update active attribute
-          outerThis._tab = currentTab.dataset.element;
-        }
-      }
-    };
   }
 
   updatePage = content => {
@@ -248,6 +285,8 @@ export default class AppSearch extends HTMLElement {
     switch (tab) {
       case "stories":
         return this.getStories();
+      case "replies":
+        return this.getReplies();
       case "topics":
         return this.getTopics();
       case "people":
@@ -295,11 +334,69 @@ export default class AppSearch extends HTMLElement {
     return html;
   }
 
+  activateBackButton = btn => {
+    btn.addEventListener('click', () => {
+      // check window history is greater or equal to 1
+      if (window.history.length >= 1) {
+        // check if the history has state
+        if (window.history.state) {
+          // go back
+          window.history.back();
+          // console.log(window.history.state);
+        }
+        else {
+          // redirect to home
+          window.location.href = '/home';
+        }
+      }
+    });
+  }
+
+  activateOnPopState = () => {
+    // Update state on window.onpopstate
+    window.onpopstate = event => {
+      // console.log(event.state);
+      if (event.state) {
+        if (event.state.page) {
+          outerThis.updatePage(event.state.content)
+        }
+      }
+    };
+  }
+
+  updatePage = content => {
+    // select body
+    const body = document.querySelector('body');
+
+    // populate content
+    body.innerHTML = content;
+  }
+
+  setKey = form => {
+    const key = this.shadowObj.querySelector('p.search > span.key');
+
+    if (key) {
+      if (this._query) {
+        key.textContent = this._query;
+      }
+      else {
+        key.parentElement.remove();
+      }
+    }
+    else {
+      if (this._query) {
+        const html = /* html */`<p class="search">Showing results for <span class="key">${this._query}</span></p>`;
+    
+        form.insertAdjacentHTML('afterend', html);
+      }
+    }
+    
+  }
+
   getBody = () => {
     const mql = window.matchMedia('(max-width: 660px)');
     if (mql.matches) {
       return /* html */`
-        ${this.getTop()}
         ${this.getForm()}
         ${this.getTab()}
         <div class="content-container">
@@ -310,7 +407,6 @@ export default class AppSearch extends HTMLElement {
     else {
       return /* html */`
         <section class="main">
-          ${this.getTop()}
           ${this.getForm()}
           ${this.getTab()}
           <div class="content-container">
@@ -319,8 +415,7 @@ export default class AppSearch extends HTMLElement {
         </section>
 
         <section class="side">
-          <topics-container url="/topics/popular"></topics-container>
-          ${this.getRelatedStories()}
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </section>
       `;
@@ -330,6 +425,9 @@ export default class AppSearch extends HTMLElement {
   getForm = () => {
     return /*html*/`
       <form action="" method="get" class="search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M15.28 5.22a.75.75 0 0 1 0 1.06L9.56 12l5.72 5.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-6.25-6.25a.75.75 0 0 1 0-1.06l6.25-6.25a.75.75 0 0 1 1.06 0Z"></path>
+        </svg>
         <div class="contents">
           <input type="text" name="q" id="query" placeholder="What's your query?">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -347,46 +445,59 @@ export default class AppSearch extends HTMLElement {
     switch (active) {
       case "stories":
         return this.getStories();
+      case "replies":
+        return this.getReplies();
       case "people":
         return this.getPeople();
-      case "topic":
+      case "topics":
         return this.getTopics();
       default:
         return this.getStories();
     }
   }
 
-  getStories = () => {
-    return `
-      <stories-feed stories="all" url="${this._url}/stories"></stories-feed>
+  getTopics = () => {
+    const trending = this.getAttribute('trending-topics');
+    const topics = this.getAttribute('topics-url');
+    return /*html*/`
+      <topics-feed page="1"
+        url="${this._query ? topics + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
+      </topics-feed>
     `
   }
 
-  getTopics = () => {
-    return `
-      <topics-feed topics="all" url="${this._url}/topics"></topics-feed>
+  getStories = () => {
+    const trending = this.getAttribute('trending-stories');
+    const stories = this.getAttribute('stories-url');
+    return /*html*/`
+      <stories-feed page="1"
+        url="${this._query ? stories + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
+      </stories-feed>
+    `
+  }
+
+  getReplies = () => {
+    const replies = this.getAttribute('replies-url');
+    const trending = this.getAttribute('trending-replies');
+    return /* html */`
+      <replies-feed page="1"
+        url="${this._query ? replies + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
+      </replies-feed>
     `
   }
 
   getPeople = () => {
-    return `
-      <people-feed replies="all" url="${this._url}/people"></people-feed>
+    const people = this.getAttribute('people-url');
+    const trending = this.getAttribute('trending-people');
+    return /*html*/`
+      <people-feed page="1"
+        url="${this._query ? people + '?q=' + this._query : trending}" ${this._query ? 'query="true"' : ''}
+        kind="search">
+      </people-feed>
     `
-  }
-
-  getTop = () => {
-    return /* html */ `
-      <header-wrapper section="Search" type="search"
-        user-url="${this.getAttribute('user-url')}">
-      </header-wrapper>
-    `
-  }
-
-  getRelatedStories = () => {
-    return /* html */`
-			<related-container type="top" limit="5" topics='top1, top2, top3'>
-      </related-container>
-		`
   }
 
   getInfo = () => {
@@ -398,21 +509,19 @@ export default class AppSearch extends HTMLElement {
   }
 
   getTab = () => {
-    // Get url 
-    let url = this.getAttribute('url');
-
-    // convert url to lowercase
-    url = url.toLowerCase();
     return /* html */`
       <div class="tab-control">
         <ul id="tab" class="tab">
-          <li url="${url}/stories" data-element="stories" class="tab-item stories">
+          <li data-element="stories" class="tab-item stories">
             <span class="text">Stories</span>
           </li>
-          <li url="${url}/topics" data-element="topics" class="tab-item topics">
+          <li data-element="replies" class="tab-item replies">
+            <span class="text">Replies</span>
+          </li>
+          <li data-element="topics" class="tab-item topics">
             <span class="text">Topics</span>
           </li>
-          <li url="${url}/people" data-element="people" class="tab-item people">
+          <li data-element="people" class="tab-item people">
             <span class="text">People</span>
           </li>
           <span class="line"></span>
@@ -490,40 +599,86 @@ export default class AppSearch extends HTMLElement {
           min-height: 100vh;
         }
 
+        p.search {
+          font-size: 1.15rem;
+          font-weight: 500;
+          color: var(--text-color);
+          font-family: var(--font-text);
+          margin: 0 0 5px;
+        }
+
+        p.search > span.key {
+          font-weight: 500;
+          color: transparent;
+          background: var(--second-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
+        }
+
+        p.search > span.key:before {
+          content: open-quote;
+          color: var(--gray-color);
+          font-size: 1rem;
+          line-height: 1;
+        }
+
+        p.search > span.key:after {
+          content: close-quote;
+          color: var(--gray-color);
+          font-size: 1rem;
+          line-height: 1;
+        }
+
         form.search {
           background: var(--background);
           padding: 0;
-          margin: 15px 0;
+          padding: 22px 0 10px;
           display: flex;
           flex-flow: column;
           align-items: start;
           flex-wrap: nowrap;
-          gap: 15px;
-          z-index: 3;
+          gap: 5px;
+          z-index: 6;
           width: 100%;
+          position: sticky;
+          top: 0;
+        }
+
+        form.search > svg {
+          position: absolute;
+          left: -12px;
+          top: calc(50% - 15px);
+          color: var(--text-color);
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+        }
+
+        form.search > svg:hover {
+          color: var(--accent-color);
         }
 
         form.search > .contents {
-          /* border: 1px solid #6b7280; */
           padding: 0;
           display: flex;
           flex-flow: row;
           align-items: center;
           flex-wrap: nowrap;
           gap: 0;
-          width: 100%;
+          margin: 0 0 0 28px;
+          width: calc(100% - 28px);
           position: relative;
         }
 
         form.search > .contents > input {
-          border: var(--input-border);
+          border: var(--border-mobile);
           display: flex;
           flex-flow: row;
           align-items: center;
           font-family: var(--font-text);
           color: var(--text-color);
           font-size: 1rem;
-          padding: 10px 10px 10px 35px;
+          padding: 8px 10px 8px 35px;
           gap: 0;
           width: 100%;
           border-radius: 18px;
@@ -535,11 +690,12 @@ export default class AppSearch extends HTMLElement {
 
         form.search > .contents > svg {
           position: absolute;
-          height: 20px;
+          height: 18px;
           color: var(--gray-color);
-          width: 20px;
+          width: 18px;
           left: 10px;
-          top: calc(50% - 12px);
+          top: 50%;
+          transform: translateY(-50%);
         }
 
         form.search > .contents > button {
@@ -569,29 +725,18 @@ export default class AppSearch extends HTMLElement {
           background-color: var(--background);
           display: flex;
           flex-flow: column;
+          padding: 5px 0 0 0;
           gap: 0;
-          z-index: 3;
+          z-index: 5;
           width: 100%;
           position: sticky;
-          top: 58px;
-        }
-
-        .tab-control > .author {
-          border-bottom: var(--border);
-          padding: 10px 0;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          font-weight: 400;
-          color: var(--gray-color);
-          font-family: var(--font-mono), monospace;
-          font-size: 0.9rem;
+          top: 60px;
         }
 
         .tab-control > ul.tab {
           height: max-content;
           width: 100%;
-          padding: 5px 0 0 0;
+          padding: 0;
           margin: 0;
           list-style-type: none;
           display: flex;
@@ -631,7 +776,6 @@ export default class AppSearch extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .tab-control > ul.tab > li.active {
@@ -643,7 +787,7 @@ export default class AppSearch extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .tab-control > ul.tab span.line {
@@ -716,6 +860,31 @@ export default class AppSearch extends HTMLElement {
 						-webkit-appearance: none;
 					}
 
+          form.search {
+            background: var(--background);
+            padding: 0;
+            padding: 10px 0 10px;
+            display: flex;
+            flex-flow: column;
+            align-items: start;
+            flex-wrap: nowrap;
+            gap: 5px;
+            z-index: 6;
+            width: 100%;
+            position: sticky;
+            top: 0;
+          }
+
+          form.search > svg {
+            position: absolute;
+            left: -12px;
+            top: calc(50% - 22px);
+            color: var(--text-color);
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+          }
+
           .tab-control > ul.tab > li.tab-item,
 					a {
 						cursor: default !important;
@@ -740,9 +909,10 @@ export default class AppSearch extends HTMLElement {
 
           .tab-control {
             border: none;
-            border-bottom: var(--border-mobile);
+            padding: 0;
+            border-bottom: var(--border);
             position: sticky;
-            top: 49px;
+            top: 60px;
           }
 
           section.side {

@@ -3,10 +3,17 @@ export default class AppHome extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = () => {
+    // update title of the document
+    document.title = 'Home | Explore, create and contribute to ideas that can change the world';
   }
 
   render() {
@@ -90,11 +97,11 @@ export default class AppHome extends HTMLElement {
       return /* html */`
         ${this.getTop()}
         <add-container type="story"></add-container>
-        <stories-container stories="popular" url="/stories/popular"></stories-container>
-        <topics-container url="/topics/popular"></topics-container>
-        <stories-container stories="recent" url="/stories/recent"></stories-container>
-        <discover-people url="/people/discover"></discover-people>
-        <stories-feed stories="all" url="/stories/feed"></stories-feed>
+        <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
+        <topics-container url="/api/v1/q/trending/topics"></topics-container>
+        <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
+        <discover-people url="${this.getAttribute('trending-people')}"></discover-people>
+        <home-feed url="${this.getAttribute('feeds-url')}" page="1"></home-feed>
       `;
     }
     else {
@@ -102,12 +109,13 @@ export default class AppHome extends HTMLElement {
         <div class="feeds">
           ${this.getTop()}
           <add-container type="story"></add-container>
-          <stories-container stories="popular" url="/stories/popular"></stories-container>
-          <discover-people url="/people/discover"></discover-people>
-          <stories-feed stories="all" url="/stories/feed"></stories-feed>
+          <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
+          <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
+          <discover-people url="${this.getAttribute('trending-people')}"></discover-people>
+          <home-feed url="${this.getAttribute('feeds-url')}" page="1"></home-feed>
         </div>
         <div class="side">
-          <topics-container url="/topics/popular"></topics-container>
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </div>
       `;
@@ -116,7 +124,7 @@ export default class AppHome extends HTMLElement {
 
   getTop = () => {
     return /* html */ `
-      <header-wrapper section="Qval" type="home"
+      <header-wrapper section="Home" type="home"
         user-url="${this.getAttribute('url')}" auth-url="${this.getAttribute('auth-url')}"
         url="${this.getAttribute('url')}" search-url="${this.getAttribute('search-url')}">
       </header-wrapper>

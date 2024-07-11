@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
    * @returns {Promise} - Returns the promise which resolves the sync process
   */
   const syncDb = async (data) => {
-    const schemas = ['topic', 'account', 'platform', 'story'];
+    const schemas = ['topic', 'account', 'platform', 'story', 'activity'];
     for (const schema of schemas) {
       await sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${schema};`);
     }

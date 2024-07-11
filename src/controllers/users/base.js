@@ -1,5 +1,5 @@
 // Import base user queries
-const { addUser, checkIfUserExits, findAuthorContact } = require('../../queries').userQueries;
+const { addUser, checkIfUserExits, findAuthorContact, getRecommendedUsers } = require('../../queries').userQueries;
 
 // Import email validator
 const { validateEmail } = require('../../validators').userValidator;
@@ -125,7 +125,54 @@ const getAuthorContact = async (req, res, next) => {
   });
 }
 
+/**
+ * @function fetchRecommendedUsers
+ * @description Controller to fetch 5 recommended users
+ * @param {Request} req - Request object
+ * @param {Response} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object || pass the error to the next middleware
+*/
+const fetchRecommendedUsers = async (req, res, next) => {
+  // Get the hash from the request object
+  const user = req.user;
+
+  let hash = null;
+
+  // if user is defined, get the hash
+  if (user) {
+    hash = user.hash;
+  }
+
+  // Get the recommended users
+  const {
+    people,
+    error
+  } = await getRecommendedUsers(hash);
+
+  // If error is not equal to undefined throw an error
+  if (error) {
+    return next(error);
+  }
+
+  // if recommended users are not found
+  if(people.length === 0) {
+    return res.status(404).send({
+      success: false,
+      people,
+      message: "Recommended users not found!"
+    });
+  }
+
+  return res.status(200).send({
+    success: true,
+    people,
+    message: "Recommended users found!"
+  });
+}
+
+
 module.exports = {
   register, getAuthorContact,
-  checkIfEmailExits
+  checkIfEmailExits, fetchRecommendedUsers
 };

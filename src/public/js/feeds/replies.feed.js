@@ -6,15 +6,23 @@ export default class RepliesFeed extends HTMLElement {
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
-    this._total = this.parseToNumber(this.getAttribute('replies'));
-    this._pages = 1;
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
+    this._query = this.setQuery(this.getAttribute('query'));
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = query => {
+    // if the query is null || empty
+    if(!query || query === "" || query !== "true") {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -25,12 +33,9 @@ export default class RepliesFeed extends HTMLElement {
     // console.log('We are inside connectedCallback');
     const repliesContainer = this.shadowObj.querySelector('.replies');
 
-    // check if the total
-    if (this._total === 0) {
-      this.populateReplies(this.getEmptyMsg(this._kind), repliesContainer);
-    } else {
+    // check if the container exists
+    if (repliesContainer) {
       this.fetchReplies(repliesContainer);
-
       this.scrollEvent(repliesContainer);
     }
   }
@@ -54,6 +59,8 @@ export default class RepliesFeed extends HTMLElement {
 
   fetching = (url, repliesContainer) => {
     const outerThis = this;
+    outerThis._empty = true;
+    outerThis._block = true;
     this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
       response.json().then((result) => {
         if (result.success) {
@@ -87,7 +94,8 @@ export default class RepliesFeed extends HTMLElement {
 
   fetchReplies = repliesContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    // const url = `${this._url}?page=${this._page}`;
+    const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -95,7 +103,7 @@ export default class RepliesFeed extends HTMLElement {
       setTimeout(() => {
         // fetch the replies
         outerThis.fetching(url, repliesContainer)
-      }, 3000);
+      }, 1000);
     }
   }
 
@@ -129,14 +137,12 @@ export default class RepliesFeed extends HTMLElement {
   mapFields = data => {
     return data.map(reply => {
       const author = reply.reply_author;
-      let name = author.name.split(" ");
-      let picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture;
       return /*html*/`
         <quick-post story="reply" hash="${reply.hash}" url="/r/${reply.hash}" likes="${reply.likes}" replies="${reply.replies}" liked="${reply.liked}"
           views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" likes-url="/api/v1/r/${reply.hash}/likes"
-          author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}"
-          author-stories="${author.stories}" author-replies="${author.replies}"
-          author-img="${picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
+          author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
+          author-stories="${author.stories}" author-replies="${author.replies}" parent="${reply.story ? reply.story : reply.reply}"
+          author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
           author-following="${author.following}" author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!': author.bio }">
           ${reply.content}
         </quick-post>
@@ -216,13 +222,23 @@ export default class RepliesFeed extends HTMLElement {
         </p>
       </div>
     `
-   } 
+   }
    else if(text === "reply") {
     return `
       <div class="empty">
         <h2 class="title">No replies found!</h2>
         <p class="next">
           The reply has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
+        </p>
+      </div>
+    `
+   }
+   else if(text === "story") {
+    return `
+      <div class="empty">
+        <h2 class="title">No replies found!</h2>
+        <p class="next">
+          The story has no replies yet. You can be the first one to reply or come back later, once available they'll appear here.
         </p>
       </div>
     `
@@ -280,6 +296,16 @@ export default class RepliesFeed extends HTMLElement {
         </div>
       `
     }
+    else if(text === "story") {
+      return `
+        <div class="last">
+          <h2 class="title">No more replies!</h2>
+          <p class="next">
+            You have exhausted all of the story's replies. You can add a new reply or come back later to check for new replies.
+          </p>
+        </div>
+      `
+    }
     else if(text === "search") {
       return `
         <div class="last">
@@ -319,7 +345,7 @@ export default class RepliesFeed extends HTMLElement {
       <div class="last">
         <h2 class="title">Something went wrong!</h2>
         <p class="next">
-          Something did not work as expected, I call it shinanigans!
+          Something did not work as expected, I call it shenanigans!
         </p>
       </div>
     `
@@ -476,7 +502,7 @@ export default class RepliesFeed extends HTMLElement {
 
         .last p.next > .url,
         .empty  p.next > .url {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--gray-color);
           padding: 2px 5px;
           font-size: 0.95rem;
@@ -489,7 +515,7 @@ export default class RepliesFeed extends HTMLElement {
           color: var(--error-color);
           font-weight: 500;
           font-size: 0.9rem;
-          background: var(--poll-background);
+          background: var(--gray-background);
           padding: 2px 5px;
           border-radius: 5px;
         }

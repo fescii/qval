@@ -1,7 +1,5 @@
 // import models
-const { sequelize, Sequelize, View, Subscribe, Like } = require('../../models').models;
-
-// console.log(View)
+const { Sequelize, View, Subscribe } = require('../../models').models;
 
 /**
  * @function getTotatTopicsUserIsSubscribedTo
@@ -93,8 +91,7 @@ const getTotalUserRepliesViews = async user => {
     return await View.count({
       where: {
         author: user,
-        kind: 'reply',
-        createdAt: { [Sequelize.Op.gt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) }
+        kind: 'reply'
       }
     });
   }
@@ -103,29 +100,6 @@ const getTotalUserRepliesViews = async user => {
   }
 }
 
-/**
- * @function getTotalUserRepliesViewsLastMonth
- * @description Get user replies views(where view date between 30 and 60 days ago.)
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total replies views | rejects with error)
-*/
-const getTotalUserRepliesViewsLastMonth = async user => {
-  try {
-    return await View.count({
-      where: {
-        author: user,
-        kind: 'reply',
-        createdAt: {
-          [Sequelize.Op.gt]: new Date(new Date() - 60 * 24 * 60 * 60 * 1000),
-          [Sequelize.Op.lt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
-        }
-      }
-    });
-  }
-  catch (error) {
-    throw error;
-  }
-}
 
 /**
  * @function getTotalUserStoriesViews
@@ -138,216 +112,9 @@ const getTotalUserStoriesViews = async user => {
     return await View.count({
       where: {
         author: user,
-        kind: 'story',
-        createdAt: { [Sequelize.Op.gt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) }
+        kind: 'story'
       }
     });
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-
-/**
- * @function getTotalUserStoriesViewsLastMonth
- * @description Get user stories views(where view date between 30 and 60 days ago.)
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total stories views | rejects with error)
-*/
-const getTotalUserStoriesViewsLastMonth = async user => {
-  try {
-    return await View.count({
-      where: {
-        author: user,
-        kind: 'story',
-        createdAt: {
-          [Sequelize.Op.gt]: new Date(new Date() - 60 * 24 * 60 * 60 * 1000),
-          [Sequelize.Op.lt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
-        }
-      }
-    });
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @function getTotalUserStoryLikes
- * @description Get user likes: for all stories user has published(the story has likes field, add all likes from all stories user has published.)
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total story likes | rejects with error)
-*/
-const getTotalUserStoryLikes = async user => {
-  try {
-    return await Story.sum('likes', { where: { author: user } });
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @function getTotalUserReplyLikes
- * @description Get user likes: for all replies user has published(the reply has likes field, add all likes from all replies user has published.)
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total reply likes | rejects with error)
-*/
-const getTotalUserReplyLikes = async user => {
-  try {
-    return await Reply.sum('likes', { where: { author: user } });
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @function getTotalUserStoryLikesThisMonth
- * @description Get user likes: for all stories user has published(include count likes where like date is in the last 30 days.): then add all likes from all stories user has published.
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total story likes | rejects with error)
-*/
-const getTotalUserStoryLikesThisMonth = async user => {
-  try {
-    const stories =  await Story.findAll({
-      attributes: {
-        include: [
-          [sequelize.fn('count', sequelize.col('story_likes.id')), 'total_likes']
-        ],
-      },
-      where: {
-        author: user,
-      },
-      // include sequelize count all likes where like date is in the last 30 days
-      include: [
-        {
-          model: Like,
-          as: 'story_likes',
-          attributes: [],
-          where: {
-            createdAt: { [Sequelize.Op.gt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) }
-          }
-        }
-      ]
-    })
-
-    return stories.reduce((acc, story) => acc + story.dataValues.total_likes, 0);
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @function getTotalUserStoryLikesLastMonth
- * @description Get user likes: for all stories user has published(include count likes where like date is between 30 and 60 days ago.): then add all likes from all stories user has published.
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total story likes | rejects with error)
-*/
-const getTotalUserStoryLikesLastMonth = async user => {
-  try {
-    const stories =  await Story.findAll({
-      attributes: {
-        include: [
-          [sequelize.fn('count', sequelize.col('story_likes.id')), 'total_likes']
-        ],
-      },
-      where: {
-        author: user,
-      },
-      // include sequelize count all likes where like date is between 30 and 60 days ago
-      include: [
-        {
-          model: Like,
-          as: 'story_likes',
-          attributes: [],
-          where: {
-            createdAt: {
-              [Sequelize.Op.gt]: new Date(new Date() - 60 * 24 * 60 * 60 * 1000),
-              [Sequelize.Op.lt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
-            }
-          }
-        }
-      ]
-    })
-
-    return stories.reduce((acc, story) => acc + story.dataValues.total_likes, 0);
-  }
-  catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @function getTotalUserReplyLikesThisMonth
- * @description Get user likes: for all replies user has published(include count likes where like date is in the last 30 days.): then add all likes from all replies user has published.
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total reply likes | rejects with error)
-*/
-const getTotalUserReplyLikesThisMonth = async user => {
-  try {
-    const replies =  await Reply.findAll({
-      attributes: {
-        include: [
-          [sequelize.fn('count', sequelize.col('reply_likes.id')), 'total_likes']
-        ],
-      },
-      where: {
-        author: user,
-      },
-      // include sequelize count all likes where like date is in the last 30 days
-      include: [
-        {
-          model: Like,
-          as: 'reply_likes',
-          attributes: [],
-          where: {
-            createdAt: { [Sequelize.Op.gt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) }
-          }
-        }
-      ]
-    });
-
-    return replies.reduce((acc, reply) => acc + reply.dataValues.total_likes, 0);
-  }
-  catch (error) {
-    throw error;
-  }
-}
-/**
- * @function getTotalUserReplyLikesLastMonth
- * @description Get user likes: for all replies user has published(include count likes where like date is between 30 and 60 days ago.): then add all likes from all replies user has published.
- * @paramm {String} - user - User's hash
- * @returns {Promise} - Promise (resolves user total reply likes | rejects with error)
-*/
-const getTotalUserReplyLikesLastMonth = async user => {
-  try {
-    const replies =  await Reply.findAll({
-      attributes: {
-        include: [
-          [sequelize.fn('count', sequelize.col('reply_likes.id')), 'total_likes']
-        ],
-      },
-      where: { author: user },
-      // include sequelize count all likes where like date is between 30 and 60 days ago
-      include: [
-        {
-          model: Like,
-          as: 'reply_likes',
-          attributes: [],
-          where: {
-            createdAt: {
-              [Sequelize.Op.gt]: new Date(new Date() - 60 * 24 * 60 * 60 * 1000),
-              [Sequelize.Op.lt]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
-            }
-          }
-        }
-      ]
-    });
-
-    return replies.reduce((acc, reply) => acc + reply.dataValues.total_likes, 0);
   }
   catch (error) {
     throw error;
@@ -358,9 +125,7 @@ const getTotalUserReplyLikesLastMonth = async user => {
 
 // Export module
 module.exports = {
-  getTotalTopicsUserIsSubscribedTo, getTotalUserViewsThisMonth, getTotalPreviousMonthUserViews,
-  getTotalUserRepliesViews, getTotalUserRepliesViewsLastMonth, getTotalUserViews,
-  getTotalUserStoriesViews, getTotalUserStoriesViewsLastMonth, 
-  getTotalUserStoryLikes, getTotalUserReplyLikes, getTotalUserStoryLikesThisMonth, getTotalUserStoryLikesLastMonth,
-  getTotalUserReplyLikesThisMonth, getTotalUserReplyLikesLastMonth
+  getTotalTopicsUserIsSubscribedTo, getTotalUserViews,
+  getTotalUserViewsThisMonth, getTotalPreviousMonthUserViews,
+  getTotalUserRepliesViews, getTotalUserStoriesViews
 }

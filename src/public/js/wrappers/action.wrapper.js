@@ -9,6 +9,12 @@ export default class ActionWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
+    this.outer = this.parent.getRootNode().host;
+
+    this._isWrapper = this.convertToBool(this.getAttribute('wrapper'));
+
     this.render();
   }
 
@@ -33,6 +39,8 @@ export default class ActionWrapper extends HTMLElement {
     this.likePost();
     // Check if user has liked the post
     const liked = this.convertToBool(this.getAttribute('liked'))
+
+    const body = document.querySelector('body');
      
     // scroll likes
     this.scrollLikes(liked);
@@ -41,6 +49,19 @@ export default class ActionWrapper extends HTMLElement {
 
     // open the form
     this.openForm(full);
+
+    // open the highlights
+    this.openHighlights(body);
+  }
+
+  setAttributes = (name, value) => {
+    if (this._isWrapper) {
+      this.parent.setAttribute(name, value);
+      this.outer.setAttribute(name, value);
+    }
+    else {
+      this.parent.setAttribute(name, value);
+    }
   }
 
   isLoggedIn = name => {
@@ -57,6 +78,22 @@ export default class ActionWrapper extends HTMLElement {
     if (cookie) {
       // check if the cookie is valid
       return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.stats > .stat.views');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
     }
   }
 
@@ -367,9 +404,11 @@ export default class ActionWrapper extends HTMLElement {
         if (liked) {
           // Set the new value of likes
           this.setAttribute('likes', totalLikes - 1);
+          outerThis.setAttributes('likes', totalLikes - 1)
 
           // Set the new value of liked
           this.setAttribute('liked', 'false');
+          outerThis.setAttributes('liked', 'false');
 
           // replace the svg with the new svg
           setTimeout(() => {
@@ -386,9 +425,11 @@ export default class ActionWrapper extends HTMLElement {
         else {
           // Set the new value of likes
           this.setAttribute('likes', totalLikes + 1);
+          outerThis.setAttributes('likes', totalLikes + 1);
 
           // Set the new value of liked
           this.setAttribute('liked', 'true');
+          outerThis.setAttributes('liked', 'true');
 
           // replace the svg with the new svg
           setTimeout(() => {
@@ -686,7 +727,6 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-
   getShare = () => {
     // Get url to share
     const url = this.getAttribute('url');
@@ -698,11 +738,19 @@ export default class ActionWrapper extends HTMLElement {
     const shareUrl = `${host}${url}`;
 
     // Get the tilte of the story
-    const title = this.getAttribute('summery');
+    const title = this.getAttribute('summary');
 
 
     return /* html */`
-      <share-wrapper url="${shareUrl.toLowerCase()}" summery="${title}"></share-wrapper>
+      <share-wrapper url="${shareUrl.toLowerCase()}" summary="${title}"></share-wrapper>
+    `
+  }
+
+  getHighlights = () => {
+    return /* html */`
+      <views-popup name="post"likes="${this.getAttribute('likes')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
+        replies="${this.getAttribute('replies')}">
+      </views-popup>
     `
   }
 
@@ -851,10 +899,6 @@ export default class ActionWrapper extends HTMLElement {
           background: var(--hover-background);
         }
 
-        span.stat.views:hover {
-          background: inherit;
-        }
-
         .action span.numbers {
           font-family: var(--font-main), sans-serif;
           font-size: 1rem;
@@ -908,6 +952,7 @@ export default class ActionWrapper extends HTMLElement {
           min-height: 21px;
           padding: 3px 0;
           margin: 0;
+          font-weight: 500;
           font-family: var(--font-main), sans-serif;
           font-size: 0.95rem;
         }
@@ -980,7 +1025,7 @@ export default class ActionWrapper extends HTMLElement {
           span.play:hover,
           span.stat:hover,
           span.action:hover {
-            background: none;
+            /*background: none;*/
           }
         }
       </style>

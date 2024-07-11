@@ -117,10 +117,15 @@ export default class AuthorWrapper extends HTMLElement {
 
   replaceAndPushStates = (url, body, profile) => {
     // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+    const elementString = firstElement.outerHTML;
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
@@ -129,9 +134,6 @@ export default class AuthorWrapper extends HTMLElement {
       { page: 'page', content: profile},
       url, url
     );
-
-    // update title of the document
-    document.title = `User | ${this.getAttribute('name')}`;
   }
 
   disableScroll() {
@@ -151,7 +153,7 @@ export default class AuthorWrapper extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -496,18 +498,19 @@ export default class AuthorWrapper extends HTMLElement {
 
   getBody = () => {
     return /* html */`
-      <div data-expanded="false" class="content-container">
+      <div data-expanded="true" class="content-container">
         ${this.getContent()}
       </div>
     `
   }
 
   getContent = () => {
+    const mql = window.matchMedia('(max-width: 660px)');
     return /* html */`
       ${this.getSvg()}
 		  ${this.getHeader()}
       ${this.getStats()}
-      ${this.getBio()}
+      ${this.getBio(mql.matches)}
       ${this.getActions()}
 		`
   }
@@ -541,10 +544,7 @@ export default class AuthorWrapper extends HTMLElement {
 
     return /* html */ `
       <div class="top">
-        <div class="avatar">
-          <img src="${this.getAttribute('picture')}" alt="Author name">
-          ${this.checkVerified(this.getAttribute('verified'))}
-        </div>
+        ${this.getPicture(this.getAttribute('picture'))}
         <div class="name">
           <h4 class="name">
             <span class="name">${displayName}</span>
@@ -560,14 +560,40 @@ export default class AuthorWrapper extends HTMLElement {
     `
   }
 
+  getPicture = picture => {
+    // check if picture is empty || null || === "null"
+    if (picture === '' || picture === null || picture === 'null') {
+      return /*html*/`
+        <div class="avatar svg">
+          <div class="svg-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+            </svg>
+          </div>
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+    else {
+      return /*html*/`
+        <div class="avatar">
+          <img src="${picture}" alt="Author picture">
+          ${this.checkVerified(this.getAttribute('verified'))}
+        </div>
+      `
+    }
+  }
+
   checkVerified = verified => {
     if (verified === 'true') {
       return /*html*/`
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-check-fill" viewBox="0 0 16 16">
-            <path  d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708" />
-          </svg>
-        </div>
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16.3592 1.41412C15.9218 0.966482 15.3993 0.610789 14.8224 0.367944C14.2455 0.125098 13.6259 0 13 0C12.3741 0 11.7545 0.125098 11.1776 0.367944C10.6007 0.610789 10.0782 0.966482 9.64079 1.41412L8.62993 2.45091L7.18354 2.43304C6.55745 2.42563 5.93619 2.54347 5.35631 2.77964C4.77642 3.01581 4.24962 3.36554 3.80687 3.80826C3.36413 4.25098 3.01438 4.77775 2.77819 5.3576C2.542 5.93744 2.42415 6.55866 2.43156 7.18472L2.44781 8.63102L1.41421 9.64181C0.966543 10.0792 0.610827 10.6017 0.367967 11.1785C0.125106 11.7554 0 12.3749 0 13.0008C0 13.6267 0.125106 14.2462 0.367967 14.8231C0.610827 15.3999 0.966543 15.9224 1.41421 16.3598L2.44944 17.3706L2.43156 18.8169C2.42415 19.443 2.542 20.0642 2.77819 20.644C3.01438 21.2239 3.36413 21.7506 3.80687 22.1934C4.24962 22.6361 4.77642 22.9858 5.35631 23.222C5.93619 23.4582 6.55745 23.576 7.18354 23.5686L8.62993 23.5523L9.64079 24.5859C10.0782 25.0335 10.6007 25.3892 11.1776 25.6321C11.7545 25.8749 12.3741 26 13 26C13.6259 26 14.2455 25.8749 14.8224 25.6321C15.3993 25.3892 15.9218 25.0335 16.3592 24.5859L17.3701 23.5507L18.8165 23.5686C19.4426 23.576 20.0638 23.4582 20.6437 23.222C21.2236 22.9858 21.7504 22.6361 22.1931 22.1934C22.6359 21.7506 22.9856 21.2239 23.2218 20.644C23.458 20.0642 23.5758 19.443 23.5684 18.8169L23.5522 17.3706L24.5858 16.3598C25.0335 15.9224 25.3892 15.3999 25.632 14.8231C25.8749 14.2462 26 13.6267 26 13.0008C26 12.3749 25.8749 11.7554 25.632 11.1785C25.3892 10.6017 25.0335 10.0792 24.5858 9.64181L23.5506 8.63102L23.5684 7.18472C23.5758 6.55866 23.458 5.93744 23.2218 5.3576C22.9856 4.77775 22.6359 4.25098 22.1931 3.80826C21.7504 3.36554 21.2236 3.01581 20.6437 2.77964C20.0638 2.54347 19.4426 2.42563 18.8165 2.43304L17.3701 2.44929L16.3592 1.41412Z" 
+            fill="currentColor" id="top"/>
+          <path d="M15.3256 4.97901C15.0228 4.6691 14.661 4.42285 14.2616 4.25473C13.8623 4.08661 13.4333 4 13 4C12.5667 4 12.1377 4.08661 11.7384 4.25473C11.339 4.42285 10.9772 4.6691 10.6744 4.97901L9.97457 5.69678L8.97322 5.68441C8.53977 5.67928 8.10967 5.76086 7.70821 5.92437C7.30675 6.08787 6.94204 6.32999 6.63553 6.63649C6.32901 6.94298 6.08688 7.30767 5.92336 7.70911C5.75985 8.11054 5.67826 8.54061 5.68339 8.97403L5.69464 9.97532L4.97907 10.6751C4.66914 10.9779 4.42288 11.3396 4.25475 11.739C4.08661 12.1383 4 12.5673 4 13.0006C4 13.4339 4.08661 13.8628 4.25475 14.2621C4.42288 14.6615 4.66914 15.0232 4.97907 15.326L5.69577 16.0258L5.68339 17.0271C5.67826 17.4605 5.75985 17.8906 5.92336 18.292C6.08688 18.6935 6.32901 19.0581 6.63553 19.3646C6.94204 19.6711 7.30675 19.9133 7.70821 20.0768C8.10967 20.2403 8.53977 20.3218 8.97322 20.3167L9.97457 
+            20.3055L10.6744 21.021C10.9772 21.3309 11.339 21.5771 11.7384 21.7453C12.1377 21.9134 12.5667 22 13 22C13.4333 22 13.8623 21.9134 14.2616 21.7453C14.661 21.5771 15.0228 21.3309 15.3256 21.021L16.0254 20.3043L17.0268 20.3167C17.4602 20.3218 17.8903 20.2403 18.2918 20.0768C18.6932 19.9133 19.058 19.6711 19.3645 19.3646C19.671 19.0581 19.9131 18.6935 20.0766 18.292C20.2402 17.8906 20.3217 17.4605 20.3166 17.0271L20.3054 16.0258L21.0209 15.326C21.3309 15.0232 21.5771 14.6615 21.7453 14.2621C21.9134 13.8628 22 13.4339 22 13.0006C22 12.5673 21.9134 12.1383 21.7453 11.739C21.5771 11.3396 21.3309 10.9779 21.0209 10.6751L20.3042 9.97532L20.3166 8.97403C20.3217 8.54061 20.2402 8.11054 20.0766 7.70911C19.9131 7.30767 19.671 6.94298 19.3645 6.63649C19.058 6.32999 18.6932 6.08787 18.2918 5.92437C17.8903 5.76086 17.4602 5.67928 17.0268 5.68441L16.0254 5.69566L15.3256 4.97901ZM15.6485 11.7113L12.2732 15.0864C12.2209 15.1388 12.1588 15.1803 12.0905 15.2087C12.0222 15.2371 11.9489 15.2517 11.8749 15.2517C11.8009 15.2517 11.7276 15.2371 11.6593 15.2087C11.5909 15.1803 11.5289 15.1388 11.4766 15.0864L9.78893 13.3988C9.73662 13.3465 9.69513 13.2844 9.66683 13.2161C9.63852 13.1478 9.62395 13.0745 9.62395 13.0006C9.62395 12.9266 9.63852 12.8534 9.66683 12.785C9.69513 12.7167 9.73662 12.6546 9.78893 12.6023C9.84123 12.55 9.90333 12.5085 9.97166 12.4802C10.04 12.4519 10.1132 12.4373 10.1872 12.4373C10.2612 12.4373 10.3344 12.4519 10.4028 12.4802C10.4711 12.5085 10.5332 12.55 10.5855 12.6023L11.8749 13.8927L14.8519 10.9147C14.9576 10.8091 15.1008 10.7498 15.2502 10.7498C15.3996 10.7498 15.5429 10.8091 15.6485 10.9147C15.7542 11.0204 15.8135 11.1636 15.8135 11.313C15.8135 11.4624 15.7542 11.6056 15.6485 11.7113Z" 
+            fill="currentColor" id="bottom"/>
+        </svg>
 			`
     }
     else {
@@ -604,18 +630,22 @@ export default class AuthorWrapper extends HTMLElement {
 		`
   }
 
-  getBio = () => {
+  getBio = mql => {
     // Get bio content
     let bio = this.getAttribute('bio') || 'The user has not added their bio yet.'
 
     // trim white spaces
     bio = bio.trim();
 
-    // separate by new lines
-    const bioArray = bio.split('\n');
+    let bioLines = bio.length > 150 ? `<p>${bio.substring(0, 150)}..</p>` : `<p>${bio}</p>`;
 
-    // trim each line and ignore empty lines
-    const bioLines = bioArray.map(line => line.trim()).filter(line => line !== '').map(line => `<p>${line}</p>`).join('');
+    if (!mql) {
+      // separate by new lines
+      const bioArray = bio.split('\n');
+
+      // trim each line and ignore empty lines
+      bioLines = bioArray.map(line => line.trim()).filter(line => line !== '').map(line => `<p>${line}</p>`).join('');
+    }
 
     return /*html*/`
       <div class="bio">
@@ -680,7 +710,7 @@ export default class AuthorWrapper extends HTMLElement {
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
         followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
         hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"
-        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}"
+        name="${this.getAttribute('name')}" followers="${this.getAttribute('followers')}" contact='${this.getAttribute("contact")}'
         following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('bio')}">
       </app-profile>
     `
@@ -771,7 +801,7 @@ export default class AuthorWrapper extends HTMLElement {
           flex-flow: row;
           align-items: center;
           padding: 5px 5px 8px;
-          background: var(--poll-background);
+          background: var(--gray-background);
           border-radius: 10px;
           gap: 5px;
         }
@@ -785,6 +815,28 @@ export default class AuthorWrapper extends HTMLElement {
           -moz-border-radius: 50%;
         }
 
+        .top > .avatar.svg {
+          background: var(--gray-background);
+        }
+
+        .top > .avatar > .svg-avatar {
+          border: var(--border);
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+        }
+
+        .top > .avatar > .svg-avatar svg {
+          width: 25px;
+          height: 25px;
+          color: var(--gray-color);
+        }
+
         .top > .avatar > img {
           width: 100%;
           height: 100%;
@@ -795,23 +847,24 @@ export default class AuthorWrapper extends HTMLElement {
           -moz-border-radius: 50%;
         }
 
-        .top > .avatar > .icon {
-          background: var(--poll-background);
+        .top > .avatar > svg  {
           position: absolute;
           bottom: -1px;
-          right: -2px;
-          width: 20px;
-          height: 20px;
+          right: -4px;
+          width: 23px;
+          height: 23px;
           z-index: 1;
+          fill: var(--background);
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 50%;
+        }
+
+        .top > .avatar > svg path#top {
+          color: var(--gray-background);
         }
         
-        .top > .avatar > .icon svg {
-          width: 15px;
-          height: 15px;
+        .top > .avatar > svg path#bottom {
           color: var(--accent-color);
         }
 
@@ -946,6 +999,11 @@ export default class AuthorWrapper extends HTMLElement {
 
         .actions > .action.you {
           text-transform: capitalize;
+          padding: 3px 15px 4px;
+          cursor: default;
+          pointer-events: none;
+          border: none;
+          background: var(--gray-background);
         }
         
         .actions > .action.follow {
@@ -963,6 +1021,14 @@ export default class AuthorWrapper extends HTMLElement {
             border: none;
           }
 
+          .top > .avatar > .svg-avatar {
+            border: none;
+          }
+
+          .top > .avatar > svg path#top {
+            color: var(--background);
+          }
+
           .content-container {
             border: none;
             position: relative;
@@ -972,7 +1038,7 @@ export default class AuthorWrapper extends HTMLElement {
             display: flex;
             flex-flow: column;
             align-items: start;
-            gap: 0;
+            gap: 8px;
             transition: all 0.3s ease;
             -webkit-transition: all 0.3s ease;
             -moz-transition: all 0.3s ease;
@@ -985,21 +1051,21 @@ export default class AuthorWrapper extends HTMLElement {
           .content-container > .actions {
             transition: all 0.5s ease;
             border: none;
-            max-height: 0;
+            max-height: max-content;
             margin: 0;
             padding: 0;
             overflow: hidden;
           }
 
-          .actions {
-            border: none;
+          .content-container > .actions {
+            border-bottom: var(--border);
             display: flex;
             font-family: var(--font-main), sans-serif;
             width: 100%;
             flex-flow: row;
             align-items: center;
             gap: 12px;
-            padding: 5px 0 0 0;
+            padding: 5px 0 15px;
           }
 
           .top {
@@ -1011,10 +1077,6 @@ export default class AuthorWrapper extends HTMLElement {
             background: none;
             border-radius: 10px;
             gap: 5px;
-          }
-
-          .top > .avatar > .icon {
-            background: var(--background);
           }
 
           ::-webkit-scrollbar {
@@ -1036,6 +1098,7 @@ export default class AuthorWrapper extends HTMLElement {
             display: inline-block;
             position: absolute;
             top: 20px;
+            rotate: 180deg;
             right: 5px;
             color: var(--gray-color);
             cursor: default !important;

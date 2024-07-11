@@ -36,17 +36,20 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		name: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		hash: {
 			type: Sequelize.STRING,
 			unique: true,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
 			unique: true,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		password: {
 			type: Sequelize.STRING,
@@ -67,43 +70,62 @@ module.exports = (sequelize, Sequelize) => {
 		verified: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		},
 		followers: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		following: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		stories: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		replies : {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 		views: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
+      index: true,
 		},
 	},{
 			schema: 'account',
 			freezeTableName: true,
+			timestamps: true,
+      timezone: 'UTC',
 			indexes: [
 				{
-					unique: true,
-					fields: ['id', 'hash', 'email']
+					fields: ['createdAt']
 				}
 			]
 	});
+
+	// add afterSync hook to create the search column and create the GIN index
+  User.afterSync(() => {
+    // Run the raw SQL query to add the `ts` column
+    sequelize.query(`
+      ALTER TABLE account.users ADD COLUMN IF NOT EXISTS search tsvector
+      GENERATED ALWAYS AS(setweight(to_tsvector('english', coalesce(name, '')), 'A')) STORED;
+    `);
+
+    // create the GIN index for the full_search column
+    sequelize.query(`CREATE INDEX IF NOT EXISTS search_user_idx ON account.users USING GIN(search)`);
+  });
 
 	/**
 	 * @type {Model}
@@ -122,25 +144,29 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		code: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		expires: {
 			type: Sequelize.DATE,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		}
 	},{
 		schema: 'account',
 		freezeTableName: true,
+		timestamps: true,
+    timezone: 'UTC',
 		indexes: [
-			{
-				unique: true,
-				fields: ['id', 'code', 'email']
-			}
-		]
+      {
+        fields: ['createdAt']
+      }
+    ]
 	});
 
 
@@ -162,30 +188,35 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		from: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		to: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		active: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: false
+			allowNull: false,
+      index: true,
 		},
 		deletedAt: {
 			type: Sequelize.DATE,
-			allowNull: true
+			allowNull: true,
+      index: true,
 		}
 	},{
 		schema: 'account',
 		freezeTableName: true,
+		timestamps: true,
+    timezone: 'UTC',
 		indexes: [
-			{
-				unique: true,
-				fields: ['id', 'from', 'to']
-			}
-		]
+      {
+        fields: ['createdAt']
+      }
+    ]
 	});
 
 	// add hook to connect model: afterCreate
@@ -215,6 +246,34 @@ module.exports = (sequelize, Sequelize) => {
 			value: -1
 		}, { attempts: 3, backoff: 1000, removeOnComplete: true });
 	});
+
+
+	// add prototype to search: name_slug_search
+  User.search = async queryOptions => {
+    const { query, user, offset, limit } = queryOptions;
+    if(user !== null) {
+			return await sequelize.query(/*sql*/`
+				WITH user_followers AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user)
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, u.contact, COALESCE(uf.is_following, FALSE) AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				FROM account.users u
+				LEFT JOIN  user_followers uf ON u.hash = uf."to"
+				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
+				ORDER BY rank DESC
+				LIMIT :limit OFFSET :offset;
+				`, { replacements: { user, limit, offset, query }, type: sequelize.QueryTypes.SELECT}
+			);
+    }
+    else {
+			return await sequelize.query(/*sql*/`
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, u.contact, false AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				FROM account.users u
+				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
+				ORDER BY rank DESC
+				LIMIT :limit OFFSET :offset;
+				`, { replacements: { limit, offset, query }, type: sequelize.QueryTypes.SELECT}
+			);
+		}
+  }
 
 	// Define associations for the Code and User model
 	User.hasMany(Code, { foreignKey: 'email', sourceKey: 'email', onDelete: 'CASCADE' });

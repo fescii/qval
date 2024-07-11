@@ -1,7 +1,12 @@
+const { getUserStats, getUserAllStats } = require('./user');
+const { getTopicStats } = require('./topic');
 const {
-  getUserStats
-} = require('./user');
+  fetchStoriesStats, fetchRepliesStats,
+  getStories, getReplies
+} = require('./profile');
 
 module.exports = {
-  getUserStats
+  getUserStats, getTopicStats, getUserAllStats,
+  fetchStoriesStats, fetchRepliesStats,
+  getStories, getReplies
 }

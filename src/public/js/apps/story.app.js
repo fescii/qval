@@ -3,6 +3,8 @@ export default class AppStory extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle(this.getAttribute('story-title'));
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -13,6 +15,10 @@ export default class AppStory extends HTMLElement {
     this.render();
   }
 
+  setTitle = title => {
+    // update title of the document
+    document.title = `Story | ${title}`;
+  }
 
   getTopics = () => {
     // get the topics
@@ -103,7 +109,7 @@ export default class AppStory extends HTMLElement {
 
         <section class="side">
           ${this.getAuthor()}
-          ${this.getRelatedStories()}
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </section>
       `;
@@ -129,7 +135,7 @@ export default class AppStory extends HTMLElement {
         views="${this.getAttribute('views')}" time="${this.getAttribute('time')}" author-you="${this.getAttribute('author-you')}"
         author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
-        author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}"
+        author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
         author-bio="${this.getAttribute('author-bio')}">
         ${this.innerHTML}
       </story-section>
@@ -137,20 +143,15 @@ export default class AppStory extends HTMLElement {
   }
 
   getAuthor = () => {
+    const contact = this.getAttribute("author-contact");
+    // console.log(contact)
     return /* html */`
 			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
-        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${contact}'
+        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" you="${this.getAttribute('author-you')}"
         bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
-		`
-  }
-
-  getRelatedStories = () => {
-    return /* html */`
-			<related-container type="related" limit="5" topics='${this.getAttribute("topics")}'>
-      </related-container>
 		`
   }
 
@@ -158,7 +159,7 @@ export default class AppStory extends HTMLElement {
     return /* html */`
       <post-section url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Story" 
         author-hash="${this.getAttribute('author-hash')}" hash="${this.getAttribute('hash')}"
-        replies="${this.getAttribute('replies')}" likes="${this.getAttribute('likes')}"
+        replies="${this.getAttribute('replies')}" likes="${this.getAttribute('likes')}" kind="story"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}">
       </post-section>
     `

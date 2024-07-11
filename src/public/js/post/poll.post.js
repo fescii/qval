@@ -38,6 +38,8 @@ export default class PollPost extends HTMLElement {
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
         // Get full post
         const post =  this.getFullPost();
@@ -52,11 +54,16 @@ export default class PollPost extends HTMLElement {
 
   // Replace and push states
   replaceAndPushStates = (url, body, post) => {
-    // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
@@ -65,9 +72,6 @@ export default class PollPost extends HTMLElement {
       { page: 'page', content: post},
       url, url
     );
-
-    // update title of the document
-    document.title = `Post | ${this.getAttribute('hash')}`;
   }
 
   disableScroll() {
@@ -182,6 +186,8 @@ export default class PollPost extends HTMLElement {
       // add event listener to the link
       link.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         // get the url
         const url = link.getAttribute('href');
 
@@ -228,7 +234,8 @@ export default class PollPost extends HTMLElement {
 
   getPoll = () =>  {
     return /*html*/`
-      <votes-wrapper reload="false" votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}"  hash="${this.getAttribute('hash')}"
+      <votes-wrapper reload="false" votes="${this.getAttribute('votes')}" selected="${this.getAttribute('selected')}"
+       hash="${this.getAttribute('hash')}" wrapper="false"
         end-time="${this.getAttribute('end-time')}" voted="${this.getAttribute('voted')}" options="${this.getAttribute('options')}">
       </votes-wrapper>
     `
@@ -244,8 +251,9 @@ export default class PollPost extends HTMLElement {
 
   getFooter = () => {
     return /*html*/`
-      <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
+      <action-wrapper full="false" kind="story" reload="false" likes="${this.getAttribute('likes')}" 
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="false"
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
   }
@@ -255,7 +263,7 @@ export default class PollPost extends HTMLElement {
     url = url.trim().toLowerCase();
     return /* html */`
 			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
-        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}" contact='${this.getAttribute("author-contact")}'
         stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
@@ -272,7 +280,7 @@ export default class PollPost extends HTMLElement {
         end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-you="${this.getAttribute('author-you')}" author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
-        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
@@ -359,7 +367,7 @@ export default class PollPost extends HTMLElement {
       }
 
       .meta > time.time {
-        font-family: var(--font-main), sans-serif;
+        font-family: var(--font-text), sans-serif;
         font-size: 0.83rem;
         font-weight: 500;
         margin: 1px 0 0 0;
@@ -405,10 +413,8 @@ export default class PollPost extends HTMLElement {
 
       .content a {
         cursor: pointer;
-        color: transparent;
-        background: var(--accent-linear);
-        background-clip: text;
-        -webkit-background-clip: text;
+        color: var(--anchor-color);
+        text-decoration: none;
       }
 
       .content a:hover {
@@ -425,25 +431,17 @@ export default class PollPost extends HTMLElement {
         font-family: var(--font-text), sans-serif;
       }
 
-      .content ul a,
-      .content ol a {
-        background: unset;
-        color:var(--font-text);
-        font-weight: 500;
-        text-decoration-color: var(--anchor) !important;
-        text-decoration: underline;
-        -moz-text-decoration-color: var(--anchor) !important;
-      }
-
-      .content ul a:hover,
-      .content ol a:hover {
-        text-decoration-color: #4b5563bd !important;
-        -moz-text-decoration-color: #4b5563bd !important;
-      }
-
       @media screen and (max-width: 660px) {
         :host {
           font-size: 16px;
+          border-bottom: var(--border);
+          font-family: var(--font-main), sans-serif;
+          padding: 10px 0 0;
+          margin: 0;
+          width: 100%;
+          display: flex;
+          flex-flow: column;
+          gap: 0;
         }
 
         ::-webkit-scrollbar {
@@ -461,9 +459,13 @@ export default class PollPost extends HTMLElement {
           cursor: default !important;
         }
 
+        .content a {
+          cursor: default !important;
+        }
+
         a,
         span.stat,
-        span.action ,
+        span.action,
         .content , #content,{
           cursor: default !important;
         }

@@ -34,6 +34,6 @@ module.exports = (app) => {
   // Route for handling topic stories page
   app.get('/t/:topic/stories', checkToken, getTopicStories);
 
-  // Route for handling topic contributers page
+  // Route for handling topic contributors page
   app.get('/t/:topic/contributors', checkToken, getTopicContributors);
 }

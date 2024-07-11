@@ -51,7 +51,11 @@ export default class JoinPopup extends HTMLElement {
           const join = outerThis.getJoin(content.dataset.name);
 
           // get url
-          const url = content.dataset.name === 'login' ? outerThis.getAttribute('login') : outerThis.getAttribute('register');
+          let url = content.dataset.name === 'login' ? outerThis.getAttribute('login') : outerThis.getAttribute('register');
+
+          if (content.dataset.name === 'forgot') {
+            url = '/join/recover';   
+          }
           
           // replace and push states
           outerThis.replaceAndPushStates(url, body, join);
@@ -63,11 +67,16 @@ export default class JoinPopup extends HTMLElement {
   }
 
   replaceAndPushStates = (url, body, join) => {
-    //Replace the content with the current url and body content
+     // get the first custom element in the body
+     const firstElement = body.firstElementChild;
+
+     // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
@@ -76,9 +85,6 @@ export default class JoinPopup extends HTMLElement {
       { page: 'page', content: join},
       url, url
     );
-
-    // update title of the document
-    document.title = 'Join | Register or Login to Qval';
   }
 
   disconnectedCallback() {
@@ -134,14 +140,14 @@ export default class JoinPopup extends HTMLElement {
   getWelcome() {
     return `
       <div class="welcome">
-        <h2>You are not logged in.</h2>
+        <h2>Unauthorized.</h2>
 				<p>
           Please note that you need to be logged in order to perform certain actions on this platform.
           Although you can still view content, you will not be able to interact with it.
-          If you do not have an account, you can create one by clicking the register button below.
         </p>
         <div class="actions">
           <a data-name="login" href="${this.getAttribute('login')}?next=${this.getAttribute('next')}" class="login action">Login</a>
+          <a data-name="forgot" href="/join/recover?next=${this.getAttribute('next')}" class="recover action">Recover</a>
           <a data-name="register" href="${this.getAttribute('register')}?next=${this.getAttribute('next')}" class="register action">Register</a>
         </div>
 			</div>
@@ -222,13 +228,13 @@ export default class JoinPopup extends HTMLElement {
           gap: 0px;
           justify-content: center;
           position: absolute;
-          right: 18px;
-          top: 18px;
+          right: 15px;
+          top: 15px;
         }
 
         #content span.control svg {
-          width: 25px;
-          height: 25px;
+          width: 20px;
+          height: 20px;
           color: var(--text-color);
         }
 
@@ -246,10 +252,16 @@ export default class JoinPopup extends HTMLElement {
         }
 
         .welcome > h2 {
-          margin: 5px 0 20px;
-          font-family: var(--font-text), sans-serif;
+          width: 100%;
+          font-size: 1.35rem;
+          font-weight: 600;
+          margin: 0 0 10px;
+          padding: 10px 10px;
+          background-color: var(--gray-background);
+          text-align: center;
+          border-radius: 12px;
+          font-family: var(--font-read), sans-serif;
           color: var(--text-color);
-          font-size: 1.9rem;
           font-weight: 500;
         }
 
@@ -275,7 +287,7 @@ export default class JoinPopup extends HTMLElement {
         .welcome > .actions a {
           background: var(--stage-no-linear);
           text-decoration: none;
-          padding: 10px 20px;
+          padding: 5px 20px 6px;
           cursor: pointer;
           margin: 20px 0;
           width: 150px;
@@ -285,69 +297,16 @@ export default class JoinPopup extends HTMLElement {
           border: none;
           font-size: 1.15rem;
           font-weight: 500;
-          border-radius: 15px;
+          border-radius: 12px;
         }
 
-        .welcome > .actions a:last-of-type {
+        .welcome > .actions a.register {
           background: var(--stage-active-linear);
         }
 
-        .welcome > .info {
-          grid-column: 1/3;
-          text-align: center;
+        .welcome > .actions a.recover {
+          background: var(--gray-background);
           color: var(--text-color);
-          line-height: 1.4;
-        }
-        
-        .welcome > .info svg {
-          margin: 0 0 -3px 0;
-          color: var(--accent-color);
-          width: 18px;
-          height: 18px;
-        }
-
-        .welcome > .info .aduki {
-          color: transparent;
-          background: var(--stage-no-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-          font-weight: 400;
-        }
-
-        .welcome>.info a {
-          color: var(--gray-color);
-          /* font-style: italic; */
-          font-size: 1em;
-        }
-
-        .welcome>.info a:hover {
-          color: transparent;
-          text-decoration: underline;
-          background: var(--stage-active-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-
-        }
-
-        .welcome > p.forgot {
-          grid-column: 1/3;
-          text-align: center;
-          margin: 0 0 10px 0;
-          color: var(--text-color);
-          line-height: 1.4;
-        }
-
-        .welcome > p.forgot a {
-          color: var(--gray-color);
-          text-decoration: none;
-          font-size: 1em;
-        }
-
-        .welcome > p.forgot a:hover {
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
         }
 
         @media screen and ( max-width: 850px ){
@@ -406,15 +365,21 @@ export default class JoinPopup extends HTMLElement {
 
           .welcome > .actions {
             width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 10px 0 20px;
           }
 
           .welcome > .actions .action {
             background: var(--stage-no-linear);
             text-decoration: none;
-            padding: 7px 20px 8px;
+            padding: 6px 15px 7px;
+            font-size: 1rem;
             cursor: default;
-            margin: 10px 0;
-            width: 120px;
+            margin: 5px 0;
+            width: max-content;
             cursor: default !important;
             border-radius: 12px;
           }

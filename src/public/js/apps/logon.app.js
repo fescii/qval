@@ -6,6 +6,8 @@ export default class AppLogon extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // check if the user is authenticated
     this._authenticated = this.isLoggedIn('x-random-token');
 
@@ -34,6 +36,10 @@ export default class AppLogon extends HTMLElement {
     };
 
     this.render();
+  }
+
+  setTitle = () => {
+    document.title = 'Qval - Join, Login, Recover, and Explore';
   }
 
   render() {
@@ -2099,13 +2105,13 @@ export default class AppLogon extends HTMLElement {
           -moz-border-radius: 5px;
         }
 
-        .logon-container>.stages span.done>span.left {
+        .logon-container>.stages span.done > span.left {
           top: 15px;
           left: 7px;
           rotate: 45deg;
         }
 
-        .logon-container>.stages span.done>span.right {
+        .logon-container>.stages span.done > span.right {
           rotate: -45deg;
           left: 11px;
           width: 14px;
@@ -2212,7 +2218,7 @@ export default class AppLogon extends HTMLElement {
 
         .logon-container > .finish  p.next > .url,
         .logon-container>.welcome  p.next > .url {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--gray-color);
           padding: 2px 5px;
           font-size: 0.95rem;
@@ -2234,7 +2240,7 @@ export default class AppLogon extends HTMLElement {
           color: var(--error-color);
           font-weight: 500;
           font-size: 0.9rem;
-          background: var(--poll-background);
+          background: var(--gray-background);
           padding: 2px 5px;
           border-radius: 5px;
         }

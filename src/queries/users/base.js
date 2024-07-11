@@ -113,7 +113,7 @@ const getUser = async (hash, you=false,) => {
   try {
     // Find the user by hash
     const user = await User.findOne({ 
-      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
       where: { hash } 
     });
 
@@ -152,7 +152,7 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
     }
     // Find the user by hash
     const user = await User.findOne({ 
-      attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies',
+      attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'contact',
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${currentUser}')`)),
           'is_following'
@@ -179,7 +179,33 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
     return { user: data, error: null };
   }
   catch (error) {
-    console.log(error);
+    return { user: null, error };
+  }
+}
+
+/**
+ * @function getUserProfile
+ * @description Query to get a user by hash
+ * @param {String} hash - The hash of the user to get
+ * @param {String} currentUser - The hash of the current user
+*/
+const getUserProfile = async hash => {
+  try {
+    // Find the user by hash
+    const user = await User.findOne({ 
+      attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', "contact", 'contact'],
+      where: { hash }
+    });
+
+
+    // If user is not found return null
+    if (!user) {
+      return { user: null, error: null };
+    }
+
+    return { user: user.dataValues, error: null };
+  }
+  catch (error) {
     return { user: null, error };
   }
 }
@@ -210,6 +236,6 @@ const findAuthorContact = async hash => {
 
 // Export the queries
 module.exports = {
-  addUser, getUserByHash,
+  addUser, getUserByHash, getUserProfile,
   checkIfUserExits, findAuthorContact
 };

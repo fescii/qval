@@ -33,15 +33,22 @@ export default class StoryPost extends HTMLElement {
   }
 
   getSummaryAndWords = () => {
+    const mql = window.matchMedia('(max-width: 660px)');
     // get this content
     let content = this.innerHTML.toString();
 
     // remove all html tags and clases and extra spaces and tabs
     content = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
+    let summary = content.substring(0, 500);
+
+    if (mql.matches) {
+      summary = content.substring(0, 250);
+    }
+
     // return the summary: first 200 characters
     return {
-      summery: `${content.substring(0, 500)}...`,
+      summary: `${summary}...`,
       words: content.split(' ').length
     };
   }
@@ -90,11 +97,15 @@ export default class StoryPost extends HTMLElement {
 
   // Replace and push states
   replaceAndPushStates = (url, body, post) => {
-    // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+    const elementString = firstElement.outerHTML;
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
@@ -103,9 +114,6 @@ export default class StoryPost extends HTMLElement {
       { page: 'page', content: post},
       url, url
     );
-
-    // update title of the document
-    document.title = `Story | ${this.getAttribute('story-title')}`;
   }
 
   disableScroll() {
@@ -282,10 +290,10 @@ export default class StoryPost extends HTMLElement {
   }
 
   getSummery = () => {
-    const summary = this._data.summery;
+    const summary = this._data.summary;
 
     return /*html*/`
-      <div class="summery extra" id="summery">
+      <div class="summary extra" id="summary">
         <p>${summary}</p>
         <div class="read-more">
         </div>
@@ -337,7 +345,7 @@ export default class StoryPost extends HTMLElement {
     url = url.trim().toLowerCase();
     return /* html */`
 			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
-        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}" contact='${this.getAttribute("author-contact")}'
         stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
@@ -353,7 +361,7 @@ export default class StoryPost extends HTMLElement {
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
         author-you="${this.getAttribute('author-you')}"
         author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
-        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">
@@ -545,7 +553,7 @@ export default class StoryPost extends HTMLElement {
       }
 
       .meta > time.time {
-        font-family: var(--font-main), sans-serif;
+        font-family: var(--font-text), sans-serif;
         font-size: 0.83rem;
         font-weight: 500;
         margin: 1px 0 0 0;
@@ -570,6 +578,7 @@ export default class StoryPost extends HTMLElement {
       @media screen and (max-width:660px) {
         :host {
           font-size: 16px;
+          border-bottom: var(--border);
         }
 
         ::-webkit-scrollbar {

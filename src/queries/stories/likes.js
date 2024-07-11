@@ -22,7 +22,7 @@ const getLikesWhenLoggedIn = async (where, order, user, limit, offset) => {
         {
           model: User,
           as: 'like_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = like_author.hash AND connects.from = '${user}')`)),
               'is_following'

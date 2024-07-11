@@ -47,47 +47,46 @@ let sequelize = new Sequelize(
  * @property {Object} Content - The story schema models
  * @property {Object} TopicSchema - The topic schema models
 */
-const models = {};
-
-
-models.sequelize = sequelize;
-models.Sequelize = Sequelize;
 
 
 // Importing from account schema models
 const {
   User, Code, Connect
-} = require('./user.model')(sequelize, Sequelize);
+} = require('./user')(sequelize, Sequelize);
 
 
 // Importing from platform schema models
 const {
   System, Section, Approval, Role, Log
-} = require('./platform.model')(User, sequelize, Sequelize);
+} = require('./platform')(User, sequelize, Sequelize);
 
 
 // Importing story schema models
 const {
   Story, Reply, View, Like, StorySection, Vote
-} = require('./story.model')(User, sequelize, Sequelize);
+} = require('./story')(User, sequelize, Sequelize);
 
 // Importing topic schema models
 const {
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
-} = require('./topic.model')(User, Story, View, sequelize, Sequelize);
+} = require('./topic')(User, Story, View, sequelize, Sequelize);
 
-
-// assign the models to the models object
-Object.assign(models, {
-  User, Code, Connect, 
-  System, Section, Approval, Role, Log,
-  Story, Reply, View, Like, StorySection, Vote,
-  Topic, Tagged, Subscribe, Follow, TopicSection, Draft
-});
+const {
+  Activity
+} = require('./activity')(sequelize, Sequelize, User);
 
 
 // Import database sync function
-const { syncDb } = require('./sync.models')(sequelize);
+const { syncDb } = require('./sync')(sequelize);
+
+const models = {
+  sequelize, Sequelize,
+  User, Code, Connect, 
+  System, Section, Approval, Role, Log,
+  Story, Reply, View, Like, StorySection, Vote,
+  Topic, Tagged, Subscribe, Follow, TopicSection, Draft,
+  Activity
+}
 
 // Export the models object
 module.exports =  {

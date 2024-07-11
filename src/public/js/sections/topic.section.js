@@ -305,7 +305,7 @@ export default class TopicSection extends HTMLElement {
   getPeople = () => {
     return /*html*/`
       <people-feed hash="${this.getAttribute('hash')}" page="1"
-        url="${this.getAttribute('contributers-url')}" kind="topic">
+        url="${this.getAttribute('contributors-url')}" kind="topic">
       </people-feed>
     `
   }
@@ -590,7 +590,7 @@ export default class TopicSection extends HTMLElement {
           gap: 10px;
           margin: 15px 0;
           padding: 15px 10px;
-          background: var(--poll-background);
+          background: var(--gray-background);
           border-radius: 15px;
         }
 

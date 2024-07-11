@@ -8,13 +8,22 @@ export default class PeopleFeed extends HTMLElement {
     this._page = this.parseToNumber(this.getAttribute('page'));
     this._total = this.parseToNumber(this.getAttribute('total'));
 		this._kind = this.getAttribute('kind');
-    this._pages = 1;
     this._url = this.getAttribute('url');
+    this._query = this.setQuery(this.getAttribute('query'));
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setQuery = query => {
+    // if the query is null || empty
+    if(!query || query === "" || query !== "true") {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -55,9 +64,13 @@ export default class PeopleFeed extends HTMLElement {
         if (result.success) {
           const data = result.data;
           if (data.last && outerThis._page === 1 && data.people.length === 0) {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populatePeople(outerThis.getEmptyMsg(outerThis._kind), peopleContainer);
           } 
           else if (data.last && data.people.length < 10) {
+            outerThis._empty = true;
+            outerThis._block = true;
             const content = outerThis.mapFields(data.people);
             outerThis.populatePeople(content, peopleContainer);
             outerThis.populatePeople(
@@ -72,10 +85,14 @@ export default class PeopleFeed extends HTMLElement {
             }
           }
           else {
+            outerThis._empty = true;
+            outerThis._block = true;
             outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
           }
         })
         .catch((error) => {
+          outerThis._empty = true;
+          outerThis._block = true;
 					// console.log(error)
           outerThis.populatePeople(outerThis.getWrongMessage(outerThis._kind), peopleContainer);
         });
@@ -84,7 +101,8 @@ export default class PeopleFeed extends HTMLElement {
 
   fetchPeople = peopleContainer => {
     const outerThis = this;
-    const url = `${this._url}?page=${this._page}`;
+    // const url = `${this._url}?page=${this._page}`;
+    const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
       outerThis._empty = true;
@@ -92,7 +110,7 @@ export default class PeopleFeed extends HTMLElement {
       setTimeout(() => {
         // fetch the likes
         outerThis.fetching(url, peopleContainer)
-      }, 3000);
+      }, 1000);
     }
   }
 
@@ -125,11 +143,9 @@ export default class PeopleFeed extends HTMLElement {
 
   mapFields = data => {
     return data.map(user => {
-      let name = user.name.split(" ");
-      let picture = user.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : user.picture;
       return /*html*/`
 				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
-          picture="${picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
           following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
 				</user-wrapper>
       `
@@ -304,7 +320,7 @@ export default class PeopleFeed extends HTMLElement {
       <div class="last">
         <h2 class="title">Something went wrong!</h2>
         <p class="next">
-          Something did not work as expected, I call it shinanigans!
+          Something did not work as expected, I call it shenanigans!
         </p>
       </div>
     `
@@ -462,7 +478,7 @@ export default class PeopleFeed extends HTMLElement {
 
         .last p.next > .url,
         .empty  p.next > .url {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--gray-color);
           padding: 2px 5px;
           font-size: 0.95rem;
@@ -475,7 +491,7 @@ export default class PeopleFeed extends HTMLElement {
           color: var(--error-color);
           font-weight: 500;
           font-size: 0.9rem;
-          background: var(--poll-background);
+          background: var(--gray-background);
           padding: 2px 5px;
           border-radius: 5px;
         }

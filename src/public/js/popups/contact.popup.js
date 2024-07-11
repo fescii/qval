@@ -35,77 +35,34 @@ export default class ContactPopup extends HTMLElement {
   fetchTopics = (contentContainer) => {
     const outerThis = this;
 		const topicsLoader = this.shadowObj.querySelector('.loader-container');
+    const str = this.getAttribute('contact');
+    console.log(str)
+    let contact= null;
+    if (str !== null || str !== '' || str !== 'null') {
+      try {
+        contact = JSON.parse(str);
+      }
+      catch (error) {
+        console.log(error)
+        contact = null;
+      }
+    }
 		setTimeout(() => {
-      // fetch the user stats
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          // check for success response
-          if (data.success) {
-
-            if (data.contact === undefined || data.content === null) {
-              // display error message
-              const content = outerThis.getEmpty();
-              topicsLoader.remove();
-              contentContainer.insertAdjacentHTML('beforeend', content);
-              return;
-            }
-            // update the content
-            const content = outerThis.getContactOptions(data.contact);
-            // remove the loader
-            topicsLoader.remove();
-            // insert the content
-            contentContainer.insertAdjacentHTML('beforeend', content);
-          }
-          else {
-            // display error message
-            const content = outerThis.getEmpty();
-            topicsLoader.remove();
-            contentContainer.insertAdjacentHTML('beforeend', content);
-          }
-        })
-        .catch(error => {
-          // display error message
-          const content = outerThis.getEmpty();
-          topicsLoader.remove();
-          contentContainer.insertAdjacentHTML('beforeend', content);
-        });
+      if (contact === undefined || contact === null) {
+        // display error message
+        const content = outerThis.getEmpty();
+        topicsLoader.remove();
+        contentContainer.insertAdjacentHTML('beforeend', content);
+        return;
+      }
+      // update the content
+      const content = outerThis.getContactOptions(contact);
+      // remove the loader
+      topicsLoader.remove();
+      // insert the content
+      contentContainer.insertAdjacentHTML('beforeend', content);
 		}, 2000)
 	}
-
-  fetchWithTimeout = (url, options, timeout = 9000) => {
-    return new Promise((resolve, reject) => {
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      setTimeout(() => {
-        controller.abort();
-        // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // Throw a custom error
-        // throw new Error('Request timed out');
-      }, timeout);
-
-      fetch(url, { ...options, signal })
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
-  }
-
 
   disconnectedCallback() {
     // console.log('We are inside disconnectedCallback');\
@@ -416,7 +373,7 @@ export default class ContactPopup extends HTMLElement {
           font-weight: 600;
           margin: 0 0 10px;
           padding: 10px 10px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           text-align: center;
           border-radius: 12px;
           font-family: var(--font-read), sans-serif;
@@ -468,7 +425,7 @@ export default class ContactPopup extends HTMLElement {
           gap: 5px;
           margin: 5px 8px 0;
           padding: 5px 15px 5px 12px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           border-radius: 12px;
           text-decoration: none;
           color: var(--text-color);
@@ -586,7 +543,7 @@ export default class ContactPopup extends HTMLElement {
             font-size: 1.2rem;
             margin: 0 0 10px;
             padding: 10px 10px;
-            background-color: var(--poll-background);
+            background-color: var(--gray-background);
             text-align: center;
             border-radius: 12px;
           }

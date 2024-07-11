@@ -3,6 +3,8 @@ export default class DiscoverPeople extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+		this._url = this.getAttribute('url');
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -14,7 +16,7 @@ export default class DiscoverPeople extends HTMLElement {
   }
 
   connectedCallback() {
-    	// get mql
+    // get mql
 		const mql = window.matchMedia('(min-width: 660px)');
 
     const contentContainer = this.shadowObj.querySelector('.people-list');
@@ -25,16 +27,97 @@ export default class DiscoverPeople extends HTMLElement {
   }
 
   fetchPeople = (contentContainer, mql) => {
-		const outerThis = this;
-    const peopleLoader = this.shadowObj.querySelector('authors-loader');
-    const content = this.getPeople();
-    setTimeout(() => {
-      peopleLoader.remove();
-      contentContainer.insertAdjacentHTML('beforeend', content);
-			contentContainer.insertAdjacentHTML('beforeend', this.getControls(mql));
+    const outerThis = this;
+		const peopleLoader = this.shadowObj.querySelector('authors-loader');
+		setTimeout(() => {
+      // fetch the user stats
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+  
+      this.fetchWithTimeout(this._url, options)
+        .then(response => {
+          return response.json();
+        })
+        .then(result => {
+					const data = result.data;
+          // check for success response
+          if (result.success) {
+            if(data.people.length === 0) {
+              // display empty message
+              const content = outerThis.getEmpty();
+							// remove loader
+							peopleLoader.remove();
+              contentContainer.insertAdjacentHTML('beforeend', content);
+              return;
+            }
+            // update the content
+            const content = outerThis.mapUsers(data.people);
+            // remove loader
+						peopleLoader.remove();
+						// add title
+						contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
+            contentContainer.insertAdjacentHTML('beforeend', content);
+						// activate controls
+						if(mql) {
+							outerThis.activateControls(contentContainer);
+						}
+          }
+          else {
+            // display error message
+            const content = outerThis.getEmpty();
+            // remove loader
+						peopleLoader.remove();
+            contentContainer.insertAdjacentHTML('beforeend', content);;
+          }
+        })
+        .catch(error => {
+					// console.error(error);
+          // display error message
+          const content = outerThis.getEmpty();
+          // remove loader
+					peopleLoader.remove();
+          contentContainer.insertAdjacentHTML('beforeend', content);
+        });
+		}, 1000)
+	}
 
-			outerThis.activateControls(contentContainer);
-    }, 2000)
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // Throw a custom error
+        // throw new Error('Request timed out');
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+	mapUsers = data => {
+    return data.map(user => {
+      return /*html*/`
+				<person-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
+          following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
+				</person-wrapper>
+      `
+    }).join('');
   }
 
 	// Activate controls
@@ -82,17 +165,20 @@ export default class DiscoverPeople extends HTMLElement {
   }
 
   getBody = () => {
+		// get mql
+		const mql = window.matchMedia('(min-width: 660px)');
     // language=HTML
     return `
 			<div class="people-list">
 				${this.getLoader()}
+				${this.getControls(mql.matches)}
 			</div>
     `;
   }
 
 	getControls = mql => {
 		// Check if mql is desktop
-		if (mql) {
+		if(mql) {
 			return /*html*/`
 				<div class="left control">
 					<span>
@@ -110,45 +196,25 @@ export default class DiscoverPeople extends HTMLElement {
 				</div>
 			`
 		}
+		else return '';
 	}
 
-  getPeople = () => {
-    return /*html*/`
-			<person-wrapper username="U0BC98H63AB1" name="John Doe" picture="/img/img.jpg" verified="true" user-follow="true"
-				url="/u/U0BC98H63AB1" following="236" followers="9734" you="false"
-				bio="I'm John Doe, a passionate software developer with a love for coding and problem-solving.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BC98H63BCA" name="Janet Doe" picture="/img/img3.png" you="true"
-				verified="false" user-follow="false" url="/u/U0BC98H63AB1" following="736" followers="5134"
-				bio="Hi, I'm Janet Doe, a nature enthusiast and aspiring photographer.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BC9BAC53H4" name="Yosemite Sam" picture="/img/img2.png" you="false"
-				verified="true" user-follow="true" url="/u/U0BC98H63AB1" following="36" followers="234"
-				bio="Yosemite Sam here! I'm a cowboy with a passion for adventure and the great outdoors.">
-			</person-wrapper>
-
-			<person-wrapper username="U0PHAB693NBA" name="Farghon Legon" picture="/img/img3.png" you="false"
-				verified="false" user-follow="true" url="/u/U0BC98H63AB1" following="36" followers="9734"
-				bio="Hey there, I'm Farghon Legon. I'm an artist by heart and a dreamer by soul.">
-			</person-wrapper>
-
-			<person-wrapper username="U0DAB69B79NH" name="Porky Pig" picture="/img/img4.png" you="false"
-				verified="false" user-follow="false" url="/u/U0BC98H63AB1" following="6723" followers="79734"
-				bio="Oink! I'm Porky Pig, always up for some fun and mischief.">
-			</person-wrapper>
-
-			<person-wrapper username="U0BCCA53HP1" name="Bugs Bunny" picture="/img/img5.png" you="false"
-				verified="true" user-follow="false" url="/u/U0BC98H63AB1" following="836" followers="1034"
-				bio="What's up, doc? I'm Bugs Bunny, the carrot-loving mischief-maker.">
-			</person-wrapper>
-
-			<person-wrapper username="U0PC98H63AB8" name="Marvin Martian" picture="/img/img.jpg" you="false"
-				verified="false" user-follow="true" url="/u/U0BC98H63AB1" following="6" followers="934"
-				bio="Greetings, earthlings! I'm Marvin Martian, on a mission to conquer the universe.">
-			</person-wrapper>
+	getTitle = () => {
+		return /*html*/`
+			<div class="title">
+				<h2>Discover people</h2>
+				<p class="info">Trending authors on the platform</p>
+			</div>
 		`
+	}
+
+	getEmpty = () => {
+    return /* html */`
+      <div class="empty">
+        <p>No authors recommendation found at the moment.</p>
+				<p> There might an issues, try refreshing the page or check back later.</p>
+      </div>
+    `
   }
 
   getStyles() {
@@ -210,13 +276,32 @@ export default class DiscoverPeople extends HTMLElement {
 					position: relative;
 				  display: flex;
 				  flex-flow: column;
-				  gap: 5px;
+				  gap: 15px;
           width: 100%;
           max-width: 100%;
 				}
 
+				div.empty {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
+        }
+
+        div.empty > p {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          color: var(--text-color);
+          font-family: var(--font-text), sans-serif;
+          font-size: 1rem;
+          font-weight: 400;
+        }
+
         .title {
-				  padding: 0 0 10px 3px;
+				  padding: 2px 0 10px 5px;
 				  display: flex;
 				  flex-flow: column;
 				  gap: 0;
@@ -259,11 +344,10 @@ export default class DiscoverPeople extends HTMLElement {
 					position: absolute;
 					z-index: 3;
 					opacity: 0;
-					top: 50%;
+					top: 30%;
 					left: 0;
-					transform: translateY(-50%);
 					width: 40px;
-					height: 100%;
+					height: 70%;
 					pointer-events: none;
 					display: flex;
 					align-items: center;
@@ -296,11 +380,47 @@ export default class DiscoverPeople extends HTMLElement {
 					transition: background-color 0.3s;
 				}
 
+				.title {
+          display: flex;
+					width: 100%;
+          flex-flow: column;
+					padding: 5px 5px 8px;
+          gap: 0;
+					background: var(--light-linear);
+					border-radius: 10px;
+        }
+
+        .title > h2 {
+          font-size: 1.5rem;
+          font-weight: 500;
+          font-family: var(--font-text), sans-serif;
+          margin: 0;
+          color: var(--text-color);
+        }
+
+        .title > p.info {
+          margin: 0;
+          font-size: 0.9rem;
+          font-style: italic;
+          font-weight: 400;
+          font-family: var(--font-text), sans-serif;
+          margin: 0;
+          color: var(--text-color);
+        }
+
 				@media screen and (max-width:660px) {
 					:host {
         		font-size: 16px;
-						padding: 15px 0;
-						border-bottom: var(--border-mobile);
+						padding: 15px 0 10px;
+						border-bottom: none;
+					}
+
+					.title {
+						padding: 2px 0 10px 8px;
+						margin: 0 0 10px 0;
+						display: flex;
+						flex-flow: column;
+						gap: 0;
 					}
 
 					a {

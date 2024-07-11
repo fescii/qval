@@ -3,6 +3,8 @@ export default class AppTopic extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle(this.getAttribute('name'));
+
     // check if the user is authenticated
     this._authenticated = this.isLoggedIn('x-random-token');
 
@@ -10,6 +12,10 @@ export default class AppTopic extends HTMLElement {
     this.shadowObj = this.attachShadow({ mode: "open" });
 
     this.render();
+  }
+
+  setTitle = title => {
+    document.title = `Topic | ${title}`;
   }
 
   render() {
@@ -518,7 +524,7 @@ export default class AppTopic extends HTMLElement {
 
         <section class="side">
           ${this.getAuthor()}
-          <topics-container url="/topics/popular"></topics-container>
+          <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </section>
       `;
@@ -549,7 +555,7 @@ export default class AppTopic extends HTMLElement {
             ${this.getStats()}
           </div>
           <div class="sub-text">
-            ${this.parseContent(this.getAttribute('summery'))}
+            ${this.parseContent(this.getAttribute('summary'))}
           </div>
           ${this.getActions()}
         </div>
@@ -558,13 +564,14 @@ export default class AppTopic extends HTMLElement {
   }
 
   parseContent = content => {
-    // split the content by the next line
-    const lines = content.split('\n');
-
-    // create a paragraph for each line
-    return lines.map(line => {
-      return `<p>${line}</p>`;
-    }).join('');
+    // Remove all HTML tags
+    const noHtmlContent = content.replace(/<\/?[^>]+(>|$)/g, "");
+  
+    // Split the content by the next line
+    const lines = noHtmlContent.split('\n');
+  
+    // Create a paragraph for each line
+    return lines.map(line => `<p>${line}</p>`).join('');
   }
 
   // Function to detect and parse the text
@@ -617,7 +624,7 @@ export default class AppTopic extends HTMLElement {
     return /* html */`
       <topic-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}"
         slug="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
-        stories-url="${this.getAttribute('stories-url')}" contributers-url="${this.getAttribute('contributers-url')}">
+        stories-url="${this.getAttribute('stories-url')}" contributors-url="${this.getAttribute('contributors-url')}">
         ${this.getArticle()}
       </topic-section>
     `
@@ -656,7 +663,7 @@ export default class AppTopic extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${this.getAttribute("author-contact")}'
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
         bio="${this.getAttribute('author-bio')}">
@@ -672,9 +679,9 @@ export default class AppTopic extends HTMLElement {
     url = url.trim().toLowerCase();
     return /* html */`
       <div class="actions">
-        ${this.checkSubscribed(this.getAttribute('subscribed'))}
-        <a href="${url}/edit" class="action edit" id="edit-action">contribute</a>
+        <a href="${url}/edit" class="action edit" id="edit-action">edit</a>
         ${this.checkFollow(this.getAttribute('topic-follow'))}
+        ${this.checkSubscribed(this.getAttribute('subscribed'))}
       </div>
     `
   }

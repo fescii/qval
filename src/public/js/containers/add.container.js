@@ -89,7 +89,6 @@ export default class FormContainer extends HTMLElement {
 
 	      :host {
           font-size: 16px;
-          border-bottom: var(--border);
           background-color: var(--background);
           padding: 0;
           display: flex;
@@ -126,7 +125,7 @@ export default class FormContainer extends HTMLElement {
         }
 
         div.options > a.option {
-          border: var(--action-border);
+          border: none;
           color: var(--gray-color);
           background: var(--option-background);
           font-family: var(--font-text), sans-serif;
@@ -147,6 +146,18 @@ export default class FormContainer extends HTMLElement {
           -moz-border-radius: 12px;
         }
 
+        div.options > a.option.article {
+          background: var(--gray-background);
+        }
+
+        div.options > a.option.post {
+          background: var(--light-linear);
+        }
+
+        div.options > a.option.topic {
+          background: var(--gray-background);
+        }
+
         div.options > a.option:hover {
           color: transparent;
           background: var(--accent-linear);
@@ -157,8 +168,8 @@ export default class FormContainer extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
             font-size: 16px;
-						padding: 10px 0;
-            border-bottom: var(--border-mobile);
+						padding: 10px 0 0;
+            border-bottom: none;
             gap: 10px;
 					}
 
@@ -184,13 +195,12 @@ export default class FormContainer extends HTMLElement {
           }
 
           div.options > a.option {
-            border: var(--border-mobile);
             cursor: default !important;
             color: var(--gray-color);
             font-family: var(--font-text), sans-serif;
             padding: 3px 10px;
             font-weight: 600;
-            width: 100px;
+            width: 80px;
           }
 				}
 	    </style>

@@ -2,7 +2,7 @@
 
 Copyright: 2024 - Aduki Incorporation
 Name: Blog & Article Platform
-URL: https://github.com/fescii/femar.git
+URL: https://github.com/fescii/qval.git
 Author: Fredrick Femar Ochieng
 Author URL: https://femar.co.ke
 
@@ -67,6 +67,7 @@ Author URL: https://femar.co.ke
   --hover-background: #f7f7f7;
   --que-background: #e7e7e76c;
   --poll-background: #e7e7e7d7;
+  --gray-background: #e7e7e7d7;
   
   --accent-color: #08b86f;
   --accent-alt: #21D029;

@@ -170,7 +170,7 @@ export default class PostWrapper extends HTMLElement {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
     return /* html */`
       <div class="meta">
-        <span class="sp">On</span>
+        <span class="sp">on</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
         <span class="sp">at</span>
@@ -181,8 +181,9 @@ export default class PostWrapper extends HTMLElement {
 
   getStats = () =>  {
     return /*html*/`
-      <action-wrapper full="true" kind="${this.getAttribute('kind')}" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summery="Post by - ${this.getAttribute('author-name')}">
+      <action-wrapper full="true" kind="${this.getAttribute('kind')}" reload="false" likes="${this.getAttribute('likes')}"
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="true"
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}" url="${this.getAttribute('url')}" summary="Post by - ${this.getAttribute('author-name')}">
       </action-wrapper>
     `
   }
@@ -190,7 +191,7 @@ export default class PostWrapper extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${this.getAttribute("author-contact")}'
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
         bio="${this.getAttribute('author-bio')}">
@@ -291,10 +292,8 @@ export default class PostWrapper extends HTMLElement {
 
         .content a {
           cursor: pointer;
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
+          color: var(--anchor-color);
+          text-decoration: none;
         }
 
         .content a:hover {
@@ -311,22 +310,6 @@ export default class PostWrapper extends HTMLElement {
           font-family: var(--font-text), sans-serif;
         }
 
-        .content ul a,
-        .content ol a {
-          background: unset;
-          color: var(--font-text);
-          font-weight: 500;
-          text-decoration-color: var(--anchor) !important;
-          text-decoration: underline;
-          -moz-text-decoration-color: var(--anchor) !important;
-        }
-
-        .content ul a:hover,
-        .content ol a:hover {
-          text-decoration-color: #4b5563bd !important;
-          -moz-text-decoration-color: #4b5563bd !important;
-        }
-
         .meta {
           border-bottom: var(--border);
           border-top: var(--border);
@@ -340,6 +323,12 @@ export default class PostWrapper extends HTMLElement {
           gap: 5px;
           font-size: 1rem;
           font-weight: 600;
+        }
+
+        .meta > .sp {
+          font-size: 1rem;
+          color: var(--gray-color);
+          font-weight: 400;
         }
 
         @media screen and (max-width: 660px) {
@@ -380,6 +369,10 @@ export default class PostWrapper extends HTMLElement {
           a,
           span.stat,
           span.action {
+            cursor: default !important;
+          }
+
+          .content a {
             cursor: default !important;
           }
 

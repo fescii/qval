@@ -35,21 +35,25 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     slug: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     summary: {
       type: Sequelize.TEXT,
@@ -58,34 +62,36 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     followers: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     subscribers: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     stories: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
   {
     schema: 'topic',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'slug', 'hash']
-      },
-      {
-        fields: ['name', 'author']
+        fields: ['createdAt']
       }
     ]
   });
@@ -102,22 +108,6 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // create the GIN index for the full_search column
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_topic_idx ON topic.topics USING GIN(search)`);
   });
-
-  // add prototype to search: name_slug_search
-  Topic.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
-    return await Topic.findAll({
-      attributes: ['id', 'author', 'hash', 'name', 'slug', 'summary', 'followers', 'subscribers', 'stories', 'views', 'createdAt', 'updatedAt'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat', sequelize.col('name'), ' ', sequelize.col('slug'), ' ', sequelize.col('summary'))),
-        '@@',
-        tsQuery
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
 
   /**
    * @type {Model}
@@ -138,15 +128,18 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -154,19 +147,18 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     authors: {
       type: Sequelize.ARRAY(Sequelize.STRING),
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id',]
-        },
-        {
-          fields: ['topic', 'order']
+          fields: ['createdAt']
         }
       ]
     });
@@ -192,23 +184,28 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('new', 'update'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     section: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -216,24 +213,24 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     approved: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'kind', 'topic']
+          fields: ['createdAt']
         }
       ]
     });
@@ -255,23 +252,23 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },{
     // timestamps: false,
     schema: 'topic',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['topic', 'story']
+        fields: ['createdAt']
       }
     ]
   });
@@ -292,23 +289,23 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'topic']
+          fields: ['createdAt']
         }
       ]
     });
@@ -356,23 +353,23 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     },
     topic: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
     {
       schema: 'topic',
       freezeTableName: true,
+      timestamps: true,
+      timezone: 'UTC',
       indexes: [
         {
-          unique: true,
-          fields: ['id']
-        },
-        {
-          fields: ['author', 'topic']
+          fields: ['createdAt']
         }
       ]
     });
@@ -402,6 +399,48 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       value: -1
     }, { attempts: 3, backoff: 1000, removeOnComplete: true });
   });
+
+
+  // add prototype to search: name_slug_search
+  Topic.search = async queryOptions => {
+    const { query, user, offset, limit } = queryOptions;
+    if(user !== null) {
+      return await sequelize.query(/*sql*/`
+        WITH topic_followers AS (SELECT topic, TRUE AS is_following FROM topic.followers WHERE author = :user),
+        topic_subscribers AS (SELECT topic, TRUE AS is_subscribed FROM topic.subscribers WHERE author = :user),
+        user_connections AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user),
+        topic_sections_json AS (SELECT topic, JSON_AGG(JSON_BUILD_OBJECT('id', id, 'content', content, 'order', "order", 'title', title) ORDER BY "order" ASC) AS sections FROM topic.sections GROUP BY topic)
+        SELECT t.author, t.hash, t.name, t.slug, t.summary, t.followers, t.subscribers, t.stories, t.views, COALESCE(tf.is_following, FALSE) AS is_following, COALESCE(ts.is_subscribed, FALSE) AS is_subscribed, ts_rank_cd(t.search, to_tsquery('english', :query)) AS rank,
+        JSON_BUILD_OBJECT('hash', ta.hash, 'bio', ta.bio, 'name', ta.name, 'picture', ta.picture, 'followers', ta.followers, 'following', ta.following, 'stories', ta.stories, 'verified', ta.verified, 'contact', ta.contact, 'replies', ta.replies, 'email', ta.email,'is_following', COALESCE(uc.is_following, FALSE)) AS topic_author,
+        COALESCE(tsj.sections, '[]'::json) AS topic_sections
+        FROM topic.topics t
+        LEFT JOIN account.users ta ON t.author = ta.hash
+        LEFT JOIN topic_followers tf ON t.hash = tf.topic
+        LEFT JOIN topic_subscribers ts ON t.hash = ts.topic
+        LEFT JOIN user_connections uc ON ta.hash = uc."to"
+        LEFT JOIN topic_sections_json tsj ON t.hash = tsj.topic
+        WHERE to_tsvector('english', CONCAT(t.name, ' ', t.slug, ' ', t.summary)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, t.followers DESC
+        LIMIT :limit OFFSET :offset;
+        `, { replacements: { user, limit, offset, query }, type: sequelize.QueryTypes.SELECT }
+      );
+    }
+    else {
+      return await sequelize.query(/*sql*/`
+        WITH topic_sections_json AS (SELECT topic, JSON_AGG(JSON_BUILD_OBJECT('id', id, 'content', content, 'order', "order", 'title', title) ORDER BY "order" ASC) AS sections FROM topic.sections GROUP BY topic)
+        SELECT t.author, t.hash, t.name, t.slug, t.summary, t.followers, t.subscribers, t.stories, t.views, false AS is_following, false AS is_subscribed, ts_rank_cd(t.search, to_tsquery('english', :query)) AS rank,
+        JSON_BUILD_OBJECT('hash', ta.hash, 'bio', ta.bio, 'name', ta.name, 'picture', ta.picture, 'followers', ta.followers, 'following', ta.following, 'stories', ta.stories, 'verified', ta.verified, 'contact', ta.contact, 'replies', ta.replies, 'email', ta.email,'is_following', false) AS topic_author,
+        COALESCE(tsj.sections, '[]'::json) AS topic_sections
+        FROM topic.topics t
+        LEFT JOIN account.users ta ON t.author = ta.hash
+        LEFT JOIN topic_sections_json tsj ON t.hash = tsj.topic
+        WHERE to_tsvector('english', CONCAT(t.name, ' ', t.slug, ' ', t.summary)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, t.followers DESC
+        LIMIT :limit OFFSET :offset;
+        `, { replacements: { limit, offset, query }, type: sequelize.QueryTypes.SELECT }
+      );
+    }
+  }
 
   // Defining the associations on the User and Topic models
   User.hasMany(Topic, { foreignKey: 'author', sourceKey: 'hash', as: 'user_topics', onDelete: 'CASCADE' });

@@ -195,8 +195,114 @@ const getReplyLikes = async (req, res) => {
 }
 
 
+/**
+ * @controller {get} /p/:slug(:hash) Story
+ * @name getStoryPreview
+ * @description This route will render the story page for the app.
+ * @returns JSON: Story object: STORY FOUND
+*/
+const getStoryPreview = async (req, res) => {
+  //get the params from the request
+  let param = req.params.hash;
+
+  // get user from the request object
+  const user = req.user;
+
+  // convert the story to lowercase
+  param = param.toLowerCase();
+
+  // query the database for the story
+  const { story, error } = await findStoryBySlugOrHash(param, user.hash);
+
+  // console.log(story)
+
+  // if there is an error, render the error page
+  if (error) { 
+    return res.status(500).json({
+      success: false,
+      message: 'An error occured'
+    })
+  }
+
+  // if there is no story, render the 404 page
+  if (!story) {
+    return res.status(404).json({
+      success: false,
+      message: 'Story not found'
+    })
+  }
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
+    kind: 'view',
+    hashes: {
+      target: story.hash,
+    },
+    user: story.author,
+    action: 'story',
+    value: 1,
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+
+  // return the story object
+  res.status(200).json({
+    story: story,
+    success: true,
+    message: 'Story found'
+  })
+}
+
+/**
+ * @controller {get} /r/:hash) Reply Likes
+ * @name getReplyPreview
+ * @description - A controller to render the reply page
+ * @returns Page: Response with reply object
+*/
+const getReplyPreview = async (req, res) => {
+  //get the params from the request
+  let {hash} = req.params;
+
+  // get user from the request object
+  const user = req.user;
+
+  // query the database for the reply
+  const { reply, error } = await findReplyByHash(hash.toUpperCase(), user.hash);
+ 
+  // if there is an error, render the error page
+  if (error) { 
+    return res.status(500).json({
+      success: false,
+      message: 'An error occured'
+    });
+  }
+
+  // if there is no reply, render the 404 page
+  if (!reply) {
+    return res.status(404).json({
+      success: false,
+      message: 'Reply not found'
+    });
+  }
+
+  // add the job to the queue
+  await actionQueue.add('actionJob', {
+    kind: 'view',
+    hashes: {
+      target: reply.hash,
+    },
+    action: 'reply',
+    user: reply.author,
+    value: 1,
+  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  
+  res.status(200).json({
+    reply: reply,
+    success: true,
+    message: 'Reply found'
+  })
+}
+
 
 // Export all public content controllers
 module.exports = {
-  getStory, getStoryLikes, getReply, getReplyLikes
+  getStory, getStoryLikes, getReply, getReplyLikes, getStoryPreview, getReplyPreview
 }

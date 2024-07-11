@@ -87,7 +87,7 @@ export default class UrlPopup extends HTMLElement {
     let max = url.length > 50 ? url.substring(0, 50) + '...' : url;
     return `
       <div class="welcome">
-        <h2>External link!</h2>
+        <h2>External link.</h2>
 				<p>
           You are about to leave the application and visit an external website. We are not responsible for the content of the external website.
           By clicking continue, you will be redirected to below address <br> <span class="url">${max}</span>
@@ -163,13 +163,13 @@ export default class UrlPopup extends HTMLElement {
           gap: 0px;
           justify-content: center;
           position: absolute;
-          right: 18px;
-          top: 18px;
+          right: 14px;
+          top: 14px;
         }
 
         #content span.control svg {
-          width: 25px;
-          height: 25px;
+          width: 20px;
+          height: 20px;
           color: var(--text-color);
         }
 
@@ -181,7 +181,7 @@ export default class UrlPopup extends HTMLElement {
           width: 90%;
           display: flex;
           flex-flow: column;
-          align-items: center;
+          align-items: start;
           justify-content: center;
           row-gap: 0;
         }
@@ -192,7 +192,7 @@ export default class UrlPopup extends HTMLElement {
           font-weight: 600;
           margin: 0 0 10px;
           padding: 10px 10px;
-          background-color: var(--poll-background);
+          background-color: var(--gray-background);
           text-align: center;
           border-radius: 12px;
           font-family: var(--font-read), sans-serif;
@@ -201,8 +201,8 @@ export default class UrlPopup extends HTMLElement {
         }
 
         .welcome  p {
-          margin: 0;
-          text-align: center;
+          margin: 10px 0 0;
+          text-align: start;
           font-family: var(--font-read), sans-serif;
           color: var(--text-color);
           line-height: 1.3;
@@ -212,106 +212,45 @@ export default class UrlPopup extends HTMLElement {
         .welcome p span.url {
           display: flex;
           padding: 0;
-          margin: 10px 0 0 0;
+          margin: 10px 0 5px;
           font-size: 0.95rem;
           font-weight: 400;
           border-radius: 5px;
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
+          color: var(--anchor-color);
           font-weight: 500;
-          align-items: center;
-          justify-content: center;
         }
 
         .welcome > .actions {
-          grid-column: 1/3;
-          margin: 20px 0 5px;
-          width: 80%;
           display: flex;
+          font-family: var(--font-main), sans-serif;
+          width: 100%;
           flex-flow: row;
           align-items: center;
-          justify-content: space-between;
-          gap: 30px;
+          gap: 20px;
+          margin: 10px 0 0;
         }
-
-        .welcome > .actions .action {
+        
+        .welcome > .actions > .action {
           background: var(--accent-linear);
           text-decoration: none;
-          padding: 10px 20px;
-          cursor: pointer;
-          margin: 20px 0;
-          width: 150px;
-          justify-self: center;
-          text-align: center;
           color: var(--white-color);
-          border: none;
-          font-size: 1.15rem;
+          font-size: 0.95rem;
           font-weight: 500;
-          border-radius: 15px;
+          display: flex;
+          width: max-content;
+          flex-flow: row;
+          align-items: center;
+          text-transform: lowercase;
+          justify-content: center;
+          padding: 4px 15px 5px;
+          border-radius: 10px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
         }
 
         .welcome > .actions .action.cancel-btn {
-          background: var(--poll-background);
+          background: var(--gray-background);
           color: var(--text-color);
-        }
-
-        .welcome > .info {
-          grid-column: 1/3;
-          text-align: center;
-          color: var(--text-color);
-          line-height: 1.4;
-        }
-        
-        .welcome > .info svg {
-          margin: 0 0 -3px 0;
-          color: var(--accent-color);
-          width: 18px;
-          height: 18px;
-        }
-
-        .welcome > .info .aduki {
-          color: transparent;
-          background: var(--stage-no-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-          font-weight: 400;
-        }
-
-        .welcome>.info a {
-          color: var(--gray-color);
-          font-size: 1em;
-        }
-
-        .welcome>.info a:hover {
-          color: transparent;
-          text-decoration: underline;
-          background: var(--stage-active-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
-
-        }
-
-        .welcome > p.forgot {
-          grid-column: 1/3;
-          text-align: center;
-          margin: 0 0 10px 0;
-          color: var(--text-color);
-          line-height: 1.4;
-        }
-
-        .welcome > p.forgot a {
-          color: var(--gray-color);
-          text-decoration: none;
-          font-size: 1em;
-        }
-
-        .welcome > p.forgot a:hover {
-          color: transparent;
-          background: var(--accent-linear);
-          background-clip: text;
-          -webkit-background-clip: text;
         }
 
         @media screen and ( max-width: 850px ){
@@ -362,10 +301,6 @@ export default class UrlPopup extends HTMLElement {
           .welcome {
             width: 100%;
             padding: 0 15px;
-            display: flex;
-            flex-flow: column;
-            align-items: center;
-            justify-content: center;
           }
 
           .welcome > h2 {
@@ -374,27 +309,25 @@ export default class UrlPopup extends HTMLElement {
             font-weight: 600;
             margin: 0 0 10px;
             padding: 10px 10px;
-            background-color: var(--poll-background);
-            text-align: center;
+            background-color: var(--gray-background);
             border-radius: 12px;
             font-family: var(--font-read), sans-serif;
             color: var(--text-color);
             font-weight: 500;
           }
 
-          .welcome > .actions {
-            width: 100%;
+          .welcome  p {
+            margin: 4px 0 0;
+            font-family: var(--font-read), sans-serif;
+            color: var(--text-color);
+            line-height: 1.3;
+            font-size: 1rem;
           }
 
-          .welcome > .actions .action {
-            background: var(--stage-no-linear);
-            text-decoration: none;
-            padding: 7px 20px 8px;
-            cursor: default;
-            margin: 10px 0;
-            width: 120px;
-            cursor: default !important;
-            border-radius: 12px;
+          .welcome > .actions {
+            margin: 15px 0;
+            width: 100%;
+            gap: 35px;
           }
         }
       </style>

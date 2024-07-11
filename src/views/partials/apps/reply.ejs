@@ -1,17 +1,12 @@
 <% var url = "/r/" + data.hash.toLowerCase() -%>
 <% var author = data.reply_author; -%>
-
-<%# Separate the name into first and last name %>
-<% var name = author.name.split(" "); -%>
-
-<%# Check if the profile picture is null and overwrite it with the default picture %>
-<% var picture = author.picture === null ? "https://ui-avatars.com/api/?background=ff932f&bold=true&size=100&color=fff&name=" + name[0] + "+" + name[1] : author.picture; -%>
+<% var contact = author.contact ? JSON.stringify(author.contact) : null; -%>
 
 <app-post story="reply" style="display: none;" tab="<%= data.tab %>" url="<%= url %>" hash="<%= data.hash %>" likes="<%= data.likes %>" 
   replies="<%= data.replies %>" liked="<%= data.liked ? 'true' : 'false' %>" views="<%= data.views %>" time="<%= data.createdAt %>" replies-url="/api/v1<%= url %>/replies" likes-url="/api/v1<%= url %>/likes" 
-  author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>"
-  author-stories="<%= author.stories %>" author-replies="<%= author.replies %>"
-  author-img="<%= picture %>" author-verified="<%= author.verified ? 'true' : 'false' %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"
+  author-url="/u/<%= author.hash %>" author-hash="<%= author.hash %>" author-you="<%= data.you ? 'true' : 'false' %>" author-contact='<%= contact %>'
+  author-stories="<%= author.stories %>" author-replies="<%= author.replies %>"  parent="<%= data.story ? data.story : data.reply %>"
+  author-img="<%= author.picture %>" author-verified="<%= author.verified ? 'true' : 'false' %>" author-name="<%= author.name %>" author-followers="<%= author.followers %>"
   author-following="<%= author.following %>" author-follow="<%= author.is_following ? 'true' : 'false' %>" author-bio="<%= author.bio === null ? 'This user has not added a bio yet.' : author.bio %>">
   <%= data.content %>
 </app-post>

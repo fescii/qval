@@ -3,6 +3,9 @@ export default class TopicWrapper extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    // check if the user is authenticated
+    this._authenticated = this.isLoggedIn('x-random-token');
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -22,21 +25,299 @@ export default class TopicWrapper extends HTMLElement {
      // Get the body
      const body = document.querySelector('body');
  
-     this.handleActionClick(url, body);
+     this.openTopicPage(url, body);
+
+    // perform actions
+    this.performActions();
+
+    // open highlights
+    this.openHighlights(body);
   }
 
-  // Open user profile
-  handleActionClick = (url, body) => {
+  isLoggedIn = name => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+
+    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+    
+    if (!cookie) {
+      return false; // Cookie does not exist
+    }
+    
+    // if cookie exists, check if it is valid
+    if (cookie) {
+      // check if the cookie is valid
+      return true;
+    }
+  }
+
+  openHighlights = body => {
+    // Get the stats action and subscribe action
+    const statsBtn = this.shadowObj.querySelector('.actions>.action#stats-action');
+
+    // add event listener to the stats action
+    if (statsBtn) {
+      statsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open the highlights popup
+        body.insertAdjacentHTML('beforeend', this.getHighlights());
+      });
+    }
+  }
+
+  // perfom actions
+  performActions = () => {
+    const outerThis = this;
+    // get body 
+    const body = document.querySelector('body');
+
+    // get url to 
+    let hash = this.getAttribute('hash');
+    // trim and convert to lowercase
+    hash = hash.trim().toLowerCase();
+
+    // base api
+    const url = '/api/v1/t/' + hash;
+
+    // Get the follow action and subscribe action
+    const followBtn = this.shadowObj.querySelector('.actions>.action#follow-action');
+
+    // add event listener to the follow action
+    if (followBtn) {
+      // construct options
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        }
+      }
+
+      followBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let action = false;
+
+        // Check if the user is authenticated
+        if (!this._authenticated) {
+          // Open the join popup
+          this.openJoin(body);
+        } 
+        else {
+          // Update the follow button
+          if (followBtn.classList.contains('following')) {
+            action = true;
+            outerThis.updateFollowBtn(false, followBtn);
+          }
+          else {
+            outerThis.updateFollowBtn(true, followBtn);
+          }
+
+          // Follow the topic
+          this.followTopic(`${url}/follow`, options, followBtn, action);
+        }
+      });
+    }
+  }
+
+  followTopic = (url, options, followBtn, followed) => {
+    const outerThis = this;
+    this.fetchWithTimeout(url, options)
+      .then(response => {
+        response.json()
+        .then(data => {
+          // If data has unverified, open the join popup
+          if (data.unverified) {
+            // Get body
+            const body = document.querySelector('body');
+
+            // Open the join popup
+            outerThis.openJoin(body);
+
+            // revert the follow button
+            outerThis.updateFollowBtn(followed, followBtn);
+          }
+
+          // if success is false, show toast message
+          if (!data.success) {
+            outerThis.showToast(data.message, false);
+
+            // revert the follow button
+            outerThis.updateFollowBtn(followed, followBtn);
+          }
+          else {
+            // Show toast message
+            outerThis.showToast(data.message, true);
+
+            // Check for followed boolean
+            outerThis.updateFollowBtn(data.followed, followBtn);
+
+            // Update the followers
+            outerThis.updateFollowers(data.followed);
+          }
+        });
+      })
+      .catch(_error => {
+        // console.log(_error);
+        // show toast message
+        outerThis.showToast('An error occurred while following the topic', false);
+
+        // revert the follow button
+        outerThis.updateFollowBtn(followed, followBtn);
+      });
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject({ name: 'AbortError', message: 'Request timed out' });
+        // reject(new Error('Request timed out'));
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  updateFollowBtn = (following, btn) => {
+    if (following) {
+      // Change the text to following
+      btn.textContent = 'following';
+
+      // remove the follow class
+      btn.classList.remove('follow');
+
+      // add the following class
+      btn.classList.add('following');
+    }
+    else {
+      // Change the text to follow
+      btn.textContent = 'follow';
+
+      // remove the following class
+      btn.classList.remove('following');
+
+      // add the follow class
+      btn.classList.add('follow');
+    }
+  }
+
+  showToast = (text, success) => {
+    // Get the toast element
+    const toast = this.getToast(text, success);
+
+    // Get body element
+    const body = document.querySelector('body');
+
+    // Insert the toast into the DOM
+    body.insertAdjacentHTML('beforeend', toast);
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+      // Select the toast element
+      const toast = body.querySelector('.toast');
+
+      // Remove the toast
+      if(toast) {
+        toast.remove();
+      }
+    }, 3000);
+  }
+
+  getToast = (text, success) => {
+    if (success) {
+      return /* html */`
+        <div class="toast true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    else {
+      return /* html */`
+      <div class="toast false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"></path>
+        </svg>
+          <p class="toast-message">${text}</p>
+        </div>
+      `;
+    }
+    
+  }
+
+  openJoin = body => {
+    // Insert getJoin beforeend
+    body.insertAdjacentHTML('beforeend', this.getJoin());
+  }
+
+  getJoin = () => {
+    // get url from the : only the path
+    const url = window.location.pathname;
+
+    return /* html */`
+      <join-popup register="/join/register" login="/join/login" next="${url}"></join-popup>
+    `
+  }
+
+  updateFollowers = (followed) => {
+    const outerThis = this;
+    let value = followed ? 1 : -1;
+    // Get followers attribute : concvert to number then add value
+
+    let followers = this.parseToNumber(this.getAttribute('followers')) + value;
+
+    // if followers is less than 0, set it to 0
+    followers = followers < 0 ? 0 : followers;
+
+    // Set the followers attribute
+    this.setAttribute('followers', followers.toString());
+
+    // Set topic-follow attribute to true or false based on followed bool
+    this.setAttribute('topic-follow', `${followed}`);
+
+    // select the followers element
+    const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');
+    if (followersStat) {
+      // select no element
+      const no = followersStat.querySelector('.number');
+      const text = followersStat.querySelector('.label');
+
+      // Update the followers
+      no.textContent = this.formatNumber(followers);
+
+      // Update the text
+      text.textContent = followers === 1 ? 'follower' : 'followers';
+    }
+  }
+
+  // Open topic page
+  openTopicPage = (url, body) => {
     const outerThis = this;
     // get a.meta.link
     const content = this.shadowObj.querySelector('a.action.view');
 
-    // Get full post
-    const topic =  this.getTopic();
-
     if(body && content) { 
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        // Get full post
+        const topic =  this.getTopic();
         
         // replace and push states
         outerThis.replaceAndPushStates(url, body, topic);
@@ -46,14 +327,18 @@ export default class TopicWrapper extends HTMLElement {
     }
   }
 
-
   // Replace and push states
   replaceAndPushStates = (url, body, topic) => {
     // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
-      { page: 'page', content: body.innerHTML },
+      { page: 'page', content: elementString },
       url, pageUrl
     );
 
@@ -62,9 +347,6 @@ export default class TopicWrapper extends HTMLElement {
       { page: 'page', content: topic},
       url, url
     );
-
-    // update title of the document
-    document.title = `Topic | ${this.getAttribute('name')}`;
   }
 
   formatNumber = n => {
@@ -142,7 +424,7 @@ export default class TopicWrapper extends HTMLElement {
     let description = this.getAttribute('description');
 
     // Check if the description is greater than 100 characters: replace the rest with ...
-    let displayDescription = description.length > 87 ? `${description.substring(0, 87)}...` : description;
+    let displayDescription = description.length > 120 ? `${description.substring(0, 120)}...` : description;
 
     return /* html */ `
       <p class="description">${displayDescription}</p>
@@ -155,16 +437,16 @@ export default class TopicWrapper extends HTMLElement {
 
     if (following === 'true') {
       return /*html*/` 
-        <a href="${url.toLowerCase()}/contribute"class="action contribute">contribute</a>
-        <a href="${url.toLowerCase()}" class="action view">view</a>
-        <span class="action following">following</span>
+        <a href="${url.toLowerCase()}" class="action view" id="view-action">view</a>
+        <span class="action following" id="follow-action">following</span>
+        <span class="action contribute" id="stats-action">stats</span>
 			`
     }
     else {
       return /*html*/`
-        <a href="${url.toLowerCase()}/contribute"class="action contribute">contribute</a>
-        <a href="${url.toLowerCase()}" class="action view">view</a>
-        <button class="action follow">follow</button>
+        <a href="${url.toLowerCase()}" class="action view" id="view-action">view</a>
+        <span class="action follow" id="follow-action">follow</span>
+        <span class="action contribute" id="stats-action">stats</span>
 			`
     }
   }
@@ -185,14 +467,14 @@ export default class TopicWrapper extends HTMLElement {
 
     return /* html */`
       <div class="stats">
-        <span class="stat">
+        <span class="stat followers">
           <span class="number">${followersFormatted}</span>
-          <span class="label">followers</span>
+          <span class="label">follower${ totalFollowers === 1 ? '' : 's'}</span>
         </span>
         <span class="sp">•</span>
-        <span class="stat">
+        <span class="stat subscribers">
           <span class="number">${subscribersFormatted}</span>
-          <span class="label">subscribers</span>
+          <span class="label">subscriber${ totalSubscribers === 1 ? '' : 's'}</span>
         </span>
       </div>
 		`
@@ -205,18 +487,34 @@ export default class TopicWrapper extends HTMLElement {
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
 
+    let apiUrl = `/api/v1/t/${this.getAttribute('hash')}`;
+
    return /* html */`
-     <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}" followers="${this.getAttribute('followers')}" 
-      stories="${this.getAttribute('stories')}"
-      name="${this.getAttribute('name')}" url="${url}" stories-url="${url}/stories" subscribed="${this.getAttribute('subscribed')}" 
-      topic-follow="${this.getAttribute('topic-follow')}" contributers-url="${url}/contributers" followers-url="${url}/followers"
-      description="${this.getAttribute('description')}"
-      author-hash="${this.getAttribute('author-hash')}" author-picture="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}"
-      author-name="${this.getAttribute('author-name')}" author-followers="${this.getAttribute('author-followers')}"
-      author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-user-follow')}" author-bio="${this.getAttribute('author-bio')}">
+    <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}"
+      followers="${this.getAttribute('followers')}" views="${this.getAttribute('views')}"
+      stories="${this.getAttribute('stories')}" subscribed="${this.getAttribute('subscribed')}" topic-follow="${this.getAttribute('topic-follow')}"
+      name="${this.getAttribute('name')}" url="${url}" summary="${this.getAttribute('description')}" slug="${this.getAttribute('slug')}"
+      stories-url="${apiUrl}/stories" contributors-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 
+      author-hash="${this.getAttribute('author-hash')}" author-you="${this.getAttribute('author-you')}" author-contact='${this.getAttribute("author-contact")}'
+      author-stories="${this.getAttribute('author-stories')}" author-img="${this.getAttribute('author-img')}" 
+      author-follow="${this.getAttribute('author-follow')}" author-replies="${this.getAttribute('author-replies')}" 
+      author-name="${this.getAttribute('author-name')}" author-followers="${this.getAttribute('author-followers')}" 
+      author-following="${this.getAttribute('author-following')}" author-verified="${this.getAttribute('author-verified')}" 
+      author-bio="${this.getAttribute('author-bio')}">
+      ${this.innerHTML}
     </app-topic>
    `
  }
+
+ getHighlights = () => {
+
+  return /* html */`
+    <topic-popup url="/api/v1/t/${this.getAttribute('hash').toLowerCase()}/stats" name="${this.getAttribute('name')}" views="${this.getAttribute('views')}"
+      followers="${this.getAttribute('followers')}" subscribers="${this.getAttribute('subscribers')}" 
+      stories="${this.getAttribute('stories')}">
+    </copic-popup>
+  `
+}
 
 
   getStyles() {
@@ -412,10 +710,11 @@ export default class TopicWrapper extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            border-bottom: var(--border-mobile);
+            border-bottom: none;
           }
 
           button.action,
+          div.actions > .action,
           a {
             cursor: default !important;
           }

@@ -33,7 +33,7 @@ const findStoryWhenLoggedIn = async (query, user) => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email','contact',
             [
               sequelize.fn('EXISTS', sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -97,7 +97,7 @@ const findStoryWhenLoggedOut = async query => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact']
         },
         {
           model: StorySection,
@@ -158,7 +158,7 @@ const findReplyWhenLoggedIn = async (hash, user) => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`( SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -208,7 +208,7 @@ const findReplyWhenLoggedOut = async hash => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         }
       ],
     });
@@ -269,7 +269,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = story_author.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -309,7 +309,7 @@ const getStoriesWhenLoggedIn = async (where, order, user, limit, offset) => {
   }
   catch (error) {
     // return the error
-    console.log(error)
+    // console.log(error)
     return { stories: null, error };
   }
 }
@@ -336,7 +336,7 @@ const getStoriesWhenLoggedOut = async (where, order, limit, offset) => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact']
         },
         // Include the story sections
         {
@@ -413,7 +413,7 @@ const getTopicAuthorsWhenLoggedIn = async (where, order, user, limit, offset) =>
   try {
     // Find the topic authors
     const authors = await User.findAll({
-      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
         [
           Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = users.hash AND connects.from = '${user}')`)),
           'is_following'
@@ -459,7 +459,7 @@ const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
   try {
     // Find the topic authors
     const authors = await User.findAll({
-      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+      attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
       where: where,
       order: [order],
       limit: limit,
@@ -473,7 +473,7 @@ const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
 
     // return the topic authors
     return { 
-      authors: authors.map(author => {
+      people: authors.map(author => {
         const data = author.dataValues;
         data.you = false;
         return data;
@@ -483,7 +483,7 @@ const getTopicAuthorsWhenLoggedOut = async (where, order, limit, offset) => {
   }
   catch (error) {
     // return the error
-    return { authors: null, error };
+    return { people: null, error };
   }
 }
 
@@ -516,7 +516,7 @@ const getRepliesWhenLoggedIn = async (where, order, user, limit, offset) => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = reply_author.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -572,7 +572,7 @@ const getRepliesWhenLoggedOut = async (where, order, limit, offset) => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         }
       ],
     });

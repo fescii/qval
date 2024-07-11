@@ -3,6 +3,8 @@ export default class AppProfile extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this.setTitle();
+
     // Check if you is true and convert to boolean
     this._you = this.getAttribute('you') === 'true';
 
@@ -12,12 +14,17 @@ export default class AppProfile extends HTMLElement {
     this.render();
   }
 
+  setTitle = () => {
+    // update title of the document
+    document.title = `User | ${this.getAttribute('name')}`;
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
   }
 
   static get observedAttributes() {
-    return ['url', 'name', 'username', 'you', 'picture', 'verified', 'followers', 'following', 'user-follow', 'bio', 'tab', 'stories-url', 'replies-url', 'followers-url', 'following-url', 'search-url', 'auth-url'];
+    return ['url', 'name', 'username', 'you', 'picture', 'verified', 'contact', 'followers', 'following', 'user-follow', 'bio', 'tab', 'stories-url', 'replies-url', 'followers-url', 'following-url', 'search-url', 'auth-url'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -148,7 +155,7 @@ export default class AppProfile extends HTMLElement {
 
         <section class="side">
           ${this.getHighlights()}
-          <people-container url="/topics/popular"></people-container>
+          <people-container url="/api/v1/users/recommended" type="profile"></people-container>
           ${this.getInfo()}
         </section>
       `;
@@ -174,7 +181,7 @@ export default class AppProfile extends HTMLElement {
       <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}" replies="${this.getAttribute('replies')}"
         url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}" stories="${this.getAttribute('stories')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}"
-        bio="${this.getAttribute('bio')}">
+        bio="${this.getAttribute('bio')}" contact='${this.getAttribute("contact")}'>
       </profile-wrapper>
     `
   }
@@ -182,7 +189,7 @@ export default class AppProfile extends HTMLElement {
   getSection = () => {
     return /* html */`
       <profile-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" 
-        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}"
+        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}" contact='${this.getAttribute("contact")}'
         replies-url="${this.getAttribute('replies-url')}" replies="${this.getAttribute('replies')}"
         followers-url="${this.getAttribute('followers-url')}" followers="${this.getAttribute('followers')}"
         following-url="${this.getAttribute('following-url')}" following="${this.getAttribute('following')}">

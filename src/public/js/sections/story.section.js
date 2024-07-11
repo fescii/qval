@@ -203,7 +203,7 @@ export default class StorySection extends HTMLElement {
     let dateObject = this.formatDateWithRelativeTime(this.getAttribute('time'))
     return /* html */`
       <div class="meta">
-        <span class="sp">On</span>
+        <span class="sp">on</span>
         <time class="published" datetime="${this.getAttribute('time')}">${dateObject.dateStr}</time>
         <span class="sp">•</span>
         <span class="sp">at</span>
@@ -214,8 +214,9 @@ export default class StorySection extends HTMLElement {
 
   getStats = () => {
     return /*html*/`
-      <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}"
-        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summery="${this.getAttribute('story-title')}">
+      <action-wrapper full="true" kind="story" reload="false" likes="${this.getAttribute('likes')}" 
+        replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" wrapper="true"
+        hash="${this.getAttribute('hash')}" views="${this.getAttribute('views')}"  url="${this.getAttribute('url')}" summary="${this.getAttribute('story-title')}">
       </action-wrapper>
     `
   }
@@ -229,7 +230,7 @@ export default class StorySection extends HTMLElement {
 			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
-       bio="${this.getAttribute('author-bio')}">
+       bio="${this.getAttribute('author-bio')}" contact='${this.getAttribute("author-contact")}'>
       </author-wrapper>
 		`
   }
@@ -248,13 +249,13 @@ export default class StorySection extends HTMLElement {
     const indicator = this.shadowObj.querySelector('.indicator');
 
     // if percentage is greater than 100, set the indicator to 100%
-    if (scrollPercentage + 8 >= 100) {
+    if (scrollPercentage >= 100) {
       indicator.style.width = `100%`;
       return;
     }
 
     // set the width of the indicator
-    indicator.style.width = `${scrollPercentage + 8}%`;
+    indicator.style.width = `${scrollPercentage}%`;
 
 
     // add scroll event listener to body but check if the content is still in view
@@ -264,7 +265,7 @@ export default class StorySection extends HTMLElement {
       // console.log("totalHeight: ", totalHeight);
 
       // get the scroll position of the content in the y-axis
-      const scrollPosition = document.documentElement.scrollTop + 143;
+      const scrollPosition = document.documentElement.scrollTop;
       // console.log("scrollPosition: ", scrollPosition);
 
       // calculate the percentage of the scroll position
@@ -277,13 +278,13 @@ export default class StorySection extends HTMLElement {
       }
 
       // if percentage + 8  is greater than 100, set the indicator to 100%
-      if (scrollPercentage + 8 >= 100) {
+      if (scrollPercentage >= 100) {
         indicator.style.width = `100%`;
         return;
       }
 
       // set the width of the indicator
-      indicator.style.width = `${scrollPercentage + 8}%`;
+      indicator.style.width = `${scrollPercentage}%`;
     })
   }
 
@@ -353,7 +354,7 @@ export default class StorySection extends HTMLElement {
           z-index: 4;
           width: 0%;
           height: 3px;
-          background: var(--accent-linear);
+          background: var(--alt-linear);
           border-radius: 5px;
           transition: width 0.3s;
           position: sticky;
@@ -404,6 +405,12 @@ export default class StorySection extends HTMLElement {
           gap: 5px;
           font-size: 1rem;
           font-weight: 600;
+        }
+
+        .meta > .sp {
+          font-size: 1rem;
+          color: var(--gray-color);
+          font-weight: 400;
         }
 
         article.article {
@@ -551,7 +558,6 @@ export default class StorySection extends HTMLElement {
             display: flex;
             width: 10%;
             height: 3px;
-            background: var(--accent-linear);
             border-radius: 5px;
             transition: width 0.3s;
             position: sticky;

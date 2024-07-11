@@ -41,25 +41,30 @@ module.exports = (User, sequelize, Sequelize) => {
     kind: {
       type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
       defaultValue: 'post',
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     published: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -76,7 +81,8 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     votes: {
       type: Sequelize.ARRAY(Sequelize.INTEGER),
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     topics: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -86,34 +92,36 @@ module.exports = (User, sequelize, Sequelize) => {
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     // add end date if the story type is poll
     end: {
       type: Sequelize.DATE,
       defaultValue: null,
       allowNull: true,
+      index: true,
     }
   },{
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'slug', 'hash']
-      },
-      {
-        fields: ['kind', 'author', 'title', 'published', 'views', 'likes', 'replies']
+        fields: ['createdAt']
       }
     ]
   });
@@ -128,23 +136,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // create the GIN index for the full_search column
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_story_idx ON story.stories USING GIN(search)`);
   });
-
-
-  // add search property to the story model
-  Story.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-
-    return await Story.findAll({
-      attributes: ['kind', 'author', 'hash', 'title', 'slug', 'content', 'topics', 'views', 'likes', 'replies', 'end', 'createdAt', 'updatedAt'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('title'), ' ', sequelize.col('content'), ' ', sequelize.col('slug'))),
-        '@@',
-        tsQuery,
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
 
   // add afterDestroy hook to decrement the total stories of the user / topic
   Story.afterDestroy(async story => {
@@ -191,11 +182,13 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('section', 'chapter', 'part', 'episode'),
       defaultValue: 'section',
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
@@ -203,11 +196,13 @@ module.exports = (User, sequelize, Sequelize) => {
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -216,13 +211,11 @@ module.exports = (User, sequelize, Sequelize) => {
   },{
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['kind', 'story', 'title']
+        fields: ['createdAt']
       }
     ]
   });
@@ -241,35 +234,37 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     option: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },{
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['story', 'author', 'option']
+        fields: ['createdAt']
       }
     ]
   });
 
 
-  // addd afterCreate hook to increment the votes count of the story
+  // add afterCreate hook to increment the votes count of the story
   Vote.afterCreate(async vote => {
     // construct the job payload: for queueing || add the job to the queue
     await actionQueue.add('actionJob', {
@@ -303,27 +298,33 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     reply: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -332,29 +333,30 @@ module.exports = (User, sequelize, Sequelize) => {
     views: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
   },
   {
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id', 'hash']
-      },
-      {
-        fields: ['content', 'author', 'story', 'reply']
+        fields: ['createdAt']
       }
     ]
   });
@@ -369,22 +371,6 @@ module.exports = (User, sequelize, Sequelize) => {
     // create the GIN index for the full_search column
     sequelize.query(`CREATE INDEX IF NOT EXISTS search_reply_idx ON story.replies USING GIN(search)`);
   });
-
-  // add search property to the reply model
-  Reply.search = async query => {
-    // Combine the tsquery strings without using colon-based match types
-    const tsQuery = sequelize.fn('to_tsquery', 'english', `${query}`);
-    
-    return await Reply.findAll({
-      attributes: ['kind', 'author', 'story', 'reply', 'hash', 'content', 'views', 'likes', 'replies'],
-      where: sequelize.where(
-        sequelize.fn('to_tsvector', 'english', sequelize.fn('concat' , sequelize.col('content'))),
-        '@@',
-        tsQuery,
-      ),
-      order: sequelize.literal(`ts_rank_cd(search, to_tsquery('english', '${query}')) DESC`)
-    })
-  }
 
   // add afterDestroy hook to decrement the replies count of the story/reply
   Reply.afterDestroy(async reply => {
@@ -424,34 +410,37 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     story: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     },
     reply: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      index: true,
     }
   },
   {
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['author', 'story', 'reply']
+        fields: ['createdAt']
       }
     ]
   });
@@ -499,30 +488,32 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply', 'topic'),
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
+      index: true,
     },
     target: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      index: true,
     },
   },
   {
     schema: 'story',
     freezeTableName: true,
+    timestamps: true,
+    timezone: 'UTC',
     indexes: [
       {
-        unique: true,
-        fields: ['id']
-      },
-      {
-        fields: ['author', 'target']
+        fields: ['createdAt']
       }
     ]
   });
@@ -552,6 +543,81 @@ module.exports = (User, sequelize, Sequelize) => {
       }, { attempts: 3, backoff: 1000, removeOnComplete: true });
     }
   });
+
+
+  // add search property to the story model
+  Story.search = async queryOptions => {
+    const { user, query, offset, limit } = queryOptions;
+    // check if user is not null
+    if (user !== null) {
+      return await sequelize.query(/*sql*/`
+        WITH story_sections AS ( SELECT story, JSON_AGG(JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
+        SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
+        COALESCE(l.liked, false) AS liked, vt.option, ts_rank_cd(s.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified,'contact', sa.contact, 'replies', sa.replies,'email', sa.email, 'is_following', COALESCE(c.is_following, false)) AS story_author, 
+        ss.sections AS story_sections_summary
+        FROM story.stories s
+        LEFT JOIN  account.users sa ON s.author = sa.hash 
+        LEFT JOIN (SELECT story, option FROM story.votes WHERE author = :user) AS vt ON s.hash = vt.story
+        LEFT JOIN  story_sections ss ON s.hash = ss.story
+        LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
+        LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, s."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `, { replacements: { user, query, offset, limit }, type: sequelize.QueryTypes.SELECT });
+    } else {
+      return await sequelize.query(/*sql*/`
+        WITH story_sections AS ( SELECT story, JSON_AGG(JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
+        SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
+        false AS liked, false AS option, ts_rank_cd(s.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified,'contact', sa.contact, 'replies', sa.replies,'email', sa.email, 'is_following', false) AS story_author, 
+        ss.sections AS story_sections_summary
+        FROM story.stories s
+        LEFT JOIN  account.users sa ON s.author = sa.hash 
+        LEFT JOIN  story_sections ss ON s.hash = ss.story
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, s."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `, { replacements: {query, offset, limit }, type: sequelize.QueryTypes.SELECT });
+    }
+  }
+
+  // add search property to the reply model
+  Reply.search = async queryOptions => {
+    const { user, query, offset, limit } = queryOptions;
+    // check if user is not null
+    if (user !== null) {
+      return await sequelize.query(/*sql*/`
+        WITH reply_likes AS ( SELECT reply, TRUE AS liked FROM story.likes WHERE author = :user),
+        user_connections AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user)
+        SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", COALESCE(rl.liked, FALSE) AS liked, ts_rank_cd(r.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified,'contact', ra.contact, 'replies', ra.replies,'email', ra.email, 'is_following', COALESCE(uc.is_following, FALSE)) AS reply_author
+        FROM story.replies r
+        LEFT JOIN account.users ra ON r.author = ra.hash
+        LEFT JOIN reply_likes rl ON r.hash = rl.reply
+        LEFT JOIN user_connections uc ON ra.hash = uc."to"
+        WHERE to_tsvector('english', r.content) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, r."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `,{ replacements: { user, query, offset, limit}, type: sequelize.QueryTypes.SELECT });
+    } else {
+      return await sequelize.query(/*sql*/`
+        SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", false AS liked, ts_rank_cd(r.search, to_tsquery('english', '${query}')) AS rank,
+        JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified,'contact', ra.contact, 'replies', ra.replies,'email', ra.email, 'is_following', false) AS reply_author
+        FROM story.replies r
+        LEFT JOIN account.users ra ON r.author = ra.hash
+        WHERE to_tsvector('english', r.content) @@ to_tsquery('english', :query)
+        ORDER BY rank DESC, r."createdAt" DESC
+        LIMIT :limit 
+        OFFSET :offset;
+      `,{ replacements: { query, offset, limit}, type: sequelize.QueryTypes.SELECT });
+    }
+  }
+
 
   //--- Defining the associations ---//
   // User <--> Story

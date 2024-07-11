@@ -77,18 +77,26 @@ const validateStory = async data => {
     // Validate when story type is: poll
     if (data.kind === 'poll') {
       // Check if the data poll is present and is an array of strings
-      if (!data.poll || !Array.isArray(data.poll) || !data.poll.every(item => typeof item === 'string')) {
+      if (!data.poll || !Array.isArray(data.poll) || !data.poll.every(item => typeof item === 'string') || !data.end || typeof data.end !== 'number') {
         return {
           data: null,
-          error: new Error('Poll should be an array of strings - text')
+          error: new Error('Missing (poll, end) or poll is not an array of strings or end is not a number')
         };
       }
 
-      // Check if end was provided and is a number
-      if (data.end && typeof data.end !== 'number') {
+      // Poll cannot be more than 4 options
+      if (data.poll.length > 4) {
         return {
           data: null,
-          error: new Error('End should be a number')
+          error: new Error('Poll cannot have more than 4 options')
+        };
+      }
+
+      // end cannot be more than 7 days
+      if (data.end > 7) {
+        return {
+          data: null,
+          error: new Error('Poll cannot run for more than 7 days')
         };
       }
 
