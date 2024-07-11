@@ -58,22 +58,22 @@ const {
 // Importing from platform schema models
 const {
   System, Section, Approval, Role, Log
-} = require('./platform.model')(User, sequelize, Sequelize);
+} = require('./platform')(User, sequelize, Sequelize);
 
 
 // Importing story schema models
 const {
   Story, Reply, View, Like, StorySection, Vote
-} = require('./story.model')(User, sequelize, Sequelize);
+} = require('./story')(User, sequelize, Sequelize);
 
 // Importing topic schema models
 const {
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
-} = require('./topic.model')(User, Story, View, sequelize, Sequelize);
+} = require('./topic')(User, Story, View, sequelize, Sequelize);
 
 
 // Import database sync function
-const { syncDb } = require('./sync.models')(sequelize);
+const { syncDb } = require('./sync')(sequelize);
 
 const models = {
   sequelize, Sequelize,

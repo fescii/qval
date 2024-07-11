@@ -264,7 +264,7 @@ module.exports = (User, sequelize, Sequelize) => {
   });
 
 
-  // addd afterCreate hook to increment the votes count of the story
+  // add afterCreate hook to increment the votes count of the story
   Vote.afterCreate(async vote => {
     // construct the job payload: for queueing || add the job to the queue
     await actionQueue.add('actionJob', {
