@@ -23,13 +23,15 @@ export default class ProfileWrapper extends HTMLElement {
 
   connectedCallback() {
     // console.log('We are inside connectedCallback');
+    const body = document.querySelector('body');
 
     // perform actions
     this.performActions();
 
     // open highlights
     this.openHighlights();
-    this.openContact()
+    this.openContact();
+    this.openSettings(body);
   }
 
   isLoggedIn = name => {
@@ -70,6 +72,51 @@ export default class ProfileWrapper extends HTMLElement {
     window.onscroll = function () { };
   }
 
+  // Open user profile
+  openSettings = (body) => {
+    const outerThis = this;
+    // get a.meta.link
+    const content = this.shadowObj.querySelector('.actions>a.action.edit');
+
+    if(body && content) { 
+      content.addEventListener('click', event => {
+        event.preventDefault();
+
+        const url = content.getAttribute('href');
+
+        // Get full post
+        const profile =  outerThis.getEdit();
+        
+        // replace and push states
+        outerThis.replaceAndPushStates(url, body, profile);
+
+        body.innerHTML = profile;
+      })
+    }
+  }
+
+  replaceAndPushStates = (url, body, profile) => {
+    // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+    const elementString = firstElement.outerHTML;
+    // get window location
+    const pageUrl = window.location.href;
+    window.history.replaceState(
+      { page: 'page', content: elementString },
+      url, pageUrl
+    );
+
+    // Updating History State
+    window.history.pushState(
+      { page: 'page', content: profile},
+      url, url
+    );
+  }
+
+
   openHighlights = () => {
     // Get body
     const body = document.querySelector('body');
@@ -106,7 +153,7 @@ export default class ProfileWrapper extends HTMLElement {
     }
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -525,7 +572,7 @@ export default class ProfileWrapper extends HTMLElement {
       return /*html*/`
         <div class="actions">
           <span class="action highlights" id="highlights-action">stats</span>
-          <a href="/profile" class="action edit" id="edit-action">Edit</a>
+          <a href="/settings/name" class="action edit" id="edit-action">Edit</a>
           <span class="action socials" id="socials-action">socials</span>
         </div>
       `
@@ -595,13 +642,13 @@ export default class ProfileWrapper extends HTMLElement {
     }
     return /*html*/`
       <app-user hash="${this.getAttribute('hash')}" home-url="/home" current="name" verified="${this.getAttribute('verified')}"
-        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies"  stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 
-        user-link="${contact.link}" user-email="${contact.email}" user-x="${contact.x}" user-threads="${contact.threads}" 
-        user-linkedin="${contact.linkedin}" email="${contact.email}" 
-        user-username="${this.getAttribute('hash')}" 
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 
+        user-link="${contact.link ? contact.link : ''}" user-email="${contact.email ? contact.email : ''}" user-x="${contact.x ? contact.x : ''}" 
+        user-threads="${contact.threads ? contact.threads : ''}" user-linkedin="${contact.linkedin ? contact.linkedin : ''}" email="${contact.email ? contact.email : ''}" 
+        user-username="${this.getAttribute('hash')}" user-contact='${str}'
         user-you="true" user-url="${url}" user-img="${this.getAttribute('picture')}" user-verified="${this.getAttribute('verified')}"
         user-name="${this.getAttribute('name')}" user-followers="${this.getAttribute('followers')}" user-following="${this.getAttribute('following')}"
-        user-follow="${this.getAttribute('user-follow')}" user-bio=${this.getAttribute('bio')}>
+        user-follow="${this.getAttribute('user-follow')}" user-bio="${this.getAttribute('bio')}">
       </app-user>
     `
   }

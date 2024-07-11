@@ -153,7 +153,7 @@ export default class AuthorWrapper extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 

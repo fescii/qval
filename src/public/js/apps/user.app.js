@@ -892,12 +892,13 @@ export default class AppUser extends HTMLElement {
  
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
+    console.log(this.getAttribute('user-contact'))
 
    return /* html */`
     <app-profile tab="stories" you="true" url="${url}" tab="stories"
       stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
       stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
-      followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following" contact='${this.getAttribute('user-contact')}'
+      followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following" contact='${this.getAttribute("user-contact")}'
       hash="${this.getAttribute('hash')}" picture="${this.getAttribute('user-img')}" verified="${this.getAttribute('user-verified')}"
       name="${this.getAttribute('user-name')}" followers="${this.getAttribute('user-followers')}"
       following="${this.getAttribute('user-following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('user-bio')}">

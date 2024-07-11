@@ -47,7 +47,7 @@ const updateProfilePicture = async (req, res, next) => {
     const {
       user,
       error
-    } = await editPicture(newPath, userHash);
+    } = await editPicture(newPath.toLowerCase(), userHash);
 
     // Check if there was an error updating the user's profile picture
     if (error) {
