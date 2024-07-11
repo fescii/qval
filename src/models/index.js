@@ -71,6 +71,10 @@ const {
   Topic, Tagged, Subscribe, Follow, TopicSection, Draft
 } = require('./topic')(User, Story, View, sequelize, Sequelize);
 
+const {
+  Activity
+} = require('./activity')(sequelize, Sequelize, User);
+
 
 // Import database sync function
 const { syncDb } = require('./sync')(sequelize);
@@ -80,7 +84,8 @@ const models = {
   User, Code, Connect, 
   System, Section, Approval, Role, Log,
   Story, Reply, View, Like, StorySection, Vote,
-  Topic, Tagged, Subscribe, Follow, TopicSection, Draft
+  Topic, Tagged, Subscribe, Follow, TopicSection, Draft,
+  Activity
 }
 
 // Export the models object
