@@ -113,7 +113,7 @@ export default class DiscoverPeople extends HTMLElement {
     return data.map(user => {
       return /*html*/`
 				<person-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
-          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact="${user.contact}"
           following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
 				</person-wrapper>
       `

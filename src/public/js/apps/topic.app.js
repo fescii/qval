@@ -624,7 +624,7 @@ export default class AppTopic extends HTMLElement {
     return /* html */`
       <topic-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}"
         slug="${this.getAttribute('slug')}" stories="${this.getAttribute('stories')}" page="1"
-        stories-url="${this.getAttribute('stories-url')}" contributers-url="${this.getAttribute('contributers-url')}">
+        stories-url="${this.getAttribute('stories-url')}" contributors-url="${this.getAttribute('contributors-url')}">
         ${this.getArticle()}
       </topic-section>
     `
@@ -663,7 +663,7 @@ export default class AppTopic extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact="${this.getAttribute('author-contact')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
         bio="${this.getAttribute('author-bio')}">

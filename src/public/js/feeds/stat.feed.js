@@ -144,7 +144,7 @@ export default class StatFeed extends HTMLElement {
         <stat-story kind="${story.kind}" url="${url}" hash="${story.hash}" likes="${story.likes}" 
           replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
           replies-url="/api/v1${url}/replies" likes-url="/api/v1${url}/likes" story-title="${story.title}"
-          topics="${story.topics.length === 0 ? 'story' : story.topics}" ${vote}
+          topics="${story.topics.length === 0 ? 'story' : story.topics}" ${vote} author-contact="${author.contact}"
           author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
           author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
           author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
@@ -162,7 +162,7 @@ export default class StatFeed extends HTMLElement {
       return /*html*/`
         <stat-reply kind="reply" hash="${reply.hash}" url="/r/${reply.hash.toLowerCase()}" likes="${reply.likes}" replies="${reply.replies}" liked="${reply.liked}"
           views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" likes-url="/api/v1/r/${reply.hash}/likes"
-          author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}"
+          author-hash="${author.hash}" author-you="${reply.you}" author-url="/u/${author.hash}" author-contact="${author.contact}"
           author-stories="${author.stories}" author-replies="${author.replies}" parent="${reply.story ? reply.story : reply.reply}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
           author-following="${author.following}" author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!' : author.bio}">

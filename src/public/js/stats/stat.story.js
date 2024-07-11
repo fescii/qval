@@ -198,7 +198,7 @@ export default class StatStory extends HTMLElement {
           likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
           replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
           options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
-          end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
+          end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}" author-contact="${this.getAttribute('author-contact')}"
           liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
           author-you="${this.getAttribute('author-you')}" author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
           author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
@@ -214,7 +214,7 @@ export default class StatStory extends HTMLElement {
           likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text}
           replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
           liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
-          author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+          author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}" author-contact="${this.getAttribute('author-contact')}"
           author-you="${this.getAttribute('author-you')}" author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
           author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
           author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
@@ -230,7 +230,7 @@ export default class StatStory extends HTMLElement {
           likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
           author-you="${this.getAttribute('author-you')}"
           author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
-          author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+          author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}" author-contact="${this.getAttribute('author-contact')}"
           author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
           author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
           author-bio="${this.getAttribute('author-bio')}">

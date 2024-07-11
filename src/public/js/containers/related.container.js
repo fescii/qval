@@ -81,47 +81,7 @@ export default class RelatedContainer extends HTMLElement {
 
   getStories = () => {
     return /* html */`
-      <summery-post story="story" url="/s/P0A43PBA64AB" hash="P0AJ59AB43PBA" views="609" time="2024-03-13T13:00:00+03:00"
-        story-title="The US Senate called on the law markers" topics="engineering, programming, technology" read-time="5 min"
-        author-hash="U0A43PBAH6A" author-you="true" author-url="/u/U0A43PBAH6A" 
-        author-img="/img/img.jpg" author-verified="true" author-name="Fredrick Ochieng" author-followers="7623"
-        author-following="263" author-follow="false" author-bio="I am a student at the East African University, I am a software developer and a tech enthusiast.
-          I love to write about technology and software development.">
-      </summery-post>
-      <summery-post story="story" url="/s/P0B78NCA96DC" hash="P0BC57N78CA96" views="1024" time="2024-05-22T09:15:00+03:00"
-        story-title="Breakthroughs in Quantum Computing" topics="quantum computing, science, technology" read-time="3 min"
-        author-hash="U0B78NCA96DC" author-you="false" author-url="/u/U0B78NCA96DC"
-        author-img="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=S+W" author-verified="true" author-name="Sophia Williams" author-followers="12456"
-        author-following="512" author-follow="true" author-bio="Quantum physicist and tech writer. Passionate about the future of computing and scientific advancements.">
-      </summery-post>
-
-      <summery-post story="story" url="/s/P0C65OBA47EA" hash="P0CB56C65BA47" views="784" time="2024-02-19T17:30:00+03:00"
-        story-title="Advances in AI and Machine Learning" topics="AI, machine learning, technology" read-time="7 min"
-        author-hash="U0C65OBA47EA" author-you="false" author-url="/u/U0C65OBA47EA"
-        author-img="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=J+R" author-verified="false" author-name="James Rodriguez" author-followers="8523"
-        author-following="193" author-follow="false" author-bio="AI researcher and data scientist. Writing about the latest trends in artificial intelligence and its applications.">
-      </summery-post>
-
-      <summery-post story="story" url="/s/P0D54PDA98FB" hash="P0DB54D54DA98" views="1342" time="2024-04-10T12:45:00+03:00"
-        story-title="The Future of Renewable Energy" topics="renewable energy, environment, technology" read-time="2 min"
-        author-hash="U0D54PDA98FB" author-you="true" author-url="/u/U0D54PDA98FB"
-        author-img="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=E+K" author-verified="true" author-name="Elena Kim" author-followers="20456"
-        author-following="356" author-follow="true" author-bio="Environmental scientist focused on sustainable technologies. Dedicated to promoting green energy solutions.">
-      </summery-post>
-
-      <summery-post story="story" url="/s/P0E43QEA21GC" hash="P0EC54E43QA21" views="1573" time="2024-01-29T15:20:00+03:00"
-        story-title="Innovations in Biotechnology" topics="biotechnology, health, technology" read-time="5 min"
-        author-hash="U0E43QEA21GC" author-you="false" author-url="/u/U0E43QEA21GC"
-        author-img="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=M+C" author-verified="false" author-name="Michael Chen" author-followers="17645"
-        author-following="488" author-follow="true" author-bio="Biotech engineer and medical writer. Exploring the intersections of technology and health.">
-      </summery-post>
-
-      <summery-post story="story" url="/s/P0F32REA10HD" hash="P0FC32F32RA10" views="923" time="2024-03-05T10:10:00+03:00"
-        story-title="Cybersecurity Trends in 2024" topics="cybersecurity, IT, technology" read-time="13 min"
-        author-hash="U0F32REA10HD" author-you="true" author-url="/u/U0F32REA10HD"
-        author-img="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=A+P" author-verified="true" author-name="Anika Patel" author-followers="9523"
-        author-following="342" author-follow="false" author-bio="Cybersecurity analyst and tech blogger. Writing about the latest in cybersecurity and IT infrastructure.">
-      </summery-post>
+      
     `
   }
 

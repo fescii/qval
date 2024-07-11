@@ -584,6 +584,7 @@ export default class ProfileWrapper extends HTMLElement {
 
   getEdit = () => {
     const url = this.getAttribute('url');
+    const contact = this.getAttribute('contact');
     return /*html*/`
       <app-user hash="${this.getAttribute('hash')}" home-url="/home" current="name" verified="${this.getAttribute('verified')}"
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies"  stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 

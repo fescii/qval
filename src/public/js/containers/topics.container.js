@@ -92,7 +92,7 @@ export default class TopicsContainer extends HTMLElement {
           subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
           author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
-          author-following="${author.following}" author-follow="${author.is_following}"
+          author-following="${author.following}" author-follow="${author.is_following}" author-contact="${author.contact}"
           author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
           ${this.mapTopicSections(sections, topic.hash)}
         </topic-wrapper>
@@ -104,7 +104,7 @@ export default class TopicsContainer extends HTMLElement {
     if (data.length <= 0) {
       return /*html*/`
         <div class="empty">
-          <p>The topic has no information yet. You can contribute to this topic by adding relevent information about the topic.</p>
+          <p>The topic has no information yet. You can contribute to this topic by adding relevant information about the topic.</p>
           <a href="/t/${hash}/contribute" class="button">Contribute</a>
         </div>
       `;

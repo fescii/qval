@@ -230,7 +230,7 @@ export default class StorySection extends HTMLElement {
 			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
-       bio="${this.getAttribute('author-bio')}">
+       bio="${this.getAttribute('author-bio')}" contact="${this.getAttribute('author-contact')}">
       </author-wrapper>
 		`
   }

@@ -181,7 +181,7 @@ export default class AppProfile extends HTMLElement {
       <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}" replies="${this.getAttribute('replies')}"
         url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}" stories="${this.getAttribute('stories')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}"
-        bio="${this.getAttribute('bio')}">
+        bio="${this.getAttribute('bio')}" contact="${this.getAttribute('contact')}">
       </profile-wrapper>
     `
   }

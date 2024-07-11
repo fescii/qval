@@ -201,7 +201,7 @@ export default class PreviewPopup extends HTMLElement {
           author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
           author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
           author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-          author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
+          author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact="${author.contact}"
           author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
           ${story.content}
         </app-post>
@@ -216,7 +216,7 @@ export default class PreviewPopup extends HTMLElement {
           author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
           author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
           author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-          author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
+          author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact="${author.contact}" 
           author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
           ${story.content}
         </app-post>
@@ -228,7 +228,7 @@ export default class PreviewPopup extends HTMLElement {
           story-title="${story.title}" time="${story.createdAt}" replies-url="/api/v1${url}/replies" 
           likes-url="/api/v1${url}/likes" likes="${story.likes}" replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" 
           author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-          author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" 
+          author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-contact="${author.contact}" 
           author-img="${author.picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
           author-followers="${author.followers}" author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
           author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
@@ -245,7 +245,7 @@ export default class PreviewPopup extends HTMLElement {
         replies="${reply.replies}" views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" 
         parent="${reply.story ? reply.story : reply.reply}" likes-url="/api/v1/r/${reply.hash}/likes" 
         author-url="/u/${author.hash}" author-hash="${author.hash}" author-you="${reply.you}" author-stories="${author.stories}" 
-        author-replies="${author.replies}" author-img="${author.picture}" author-verified="${author.verified}"
+        author-replies="${author.replies}" author-img="${author.picture}" author-verified="${author.verified}" author-contact="${author.contact}"
         author-name="${author.name}" author-followers="${author.followers}" author-following="${author.following}" 
         author-follow="${author.is_following}" author-bio="${author.bio === null ? 'The author has no bio yet!' : author.bio}">
         ${reply.content}
