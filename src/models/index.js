@@ -52,7 +52,7 @@ let sequelize = new Sequelize(
 // Importing from account schema models
 const {
   User, Code, Connect
-} = require('./user.model')(sequelize, Sequelize);
+} = require('./user')(sequelize, Sequelize);
 
 
 // Importing from platform schema models
