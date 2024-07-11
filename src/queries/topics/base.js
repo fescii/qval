@@ -292,7 +292,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
       {
         model: User,
         as: 'topic_author',
-        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+        attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
           [
             Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = topic_author.hash AND connects.from = '${user}')`)),
             'is_following'
@@ -348,7 +348,7 @@ const findTopicWhenLoggedOut = async (query) => {
       {
         model: User,
         as: 'topic_author',
-        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt', 'verified', 'replies', 'email'],
+        attributes: ['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'createdAt', 'verified', 'replies', 'email', 'contact'],
       },
       // include the sections of the topic
       {

@@ -582,6 +582,20 @@ export default class ProfileWrapper extends HTMLElement {
     `
   }
 
+  getEdit = () => {
+    const url = this.getAttribute('url');
+    return /*html*/`
+      <app-user hash="${this.getAttribute('hash')}" home-url="/home" current="name" verified="${this.getAttribute('verified')}"
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies"  stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 
+        user-link="" user-email="" user-x="fescii" user-threads="" user-linkedin="" email="femar.fredrick@gmail.com" 
+        user-username="${this.getAttribute('hash')}" 
+        user-you="true" user-url="${url}" user-img="${this.getAttribute('picture')}" user-verified="${this.getAttribute('verified')}"
+        user-name="${this.getAttribute('name')}" user-followers="${this.getAttribute('followers')}" user-following="${this.getAttribute('following')}"
+        user-follow="${this.getAttribute('user-follow')}" user-bio=${this.getAttribute('bio')}>
+      </app-user>
+    `
+  }
+
   getStyles() {
     return /* css */`
       <style>

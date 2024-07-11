@@ -24,7 +24,7 @@ export default class AppProfile extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['url', 'name', 'username', 'you', 'picture', 'verified', 'followers', 'following', 'user-follow', 'bio', 'tab', 'stories-url', 'replies-url', 'followers-url', 'following-url', 'search-url', 'auth-url'];
+    return ['url', 'name', 'username', 'you', 'picture', 'verified', 'contact', 'followers', 'following', 'user-follow', 'bio', 'tab', 'stories-url', 'replies-url', 'followers-url', 'following-url', 'search-url', 'auth-url'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

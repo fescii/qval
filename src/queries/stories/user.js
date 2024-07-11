@@ -33,7 +33,7 @@ const findUserStory = async (query, user) => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         },
         {
           model: StorySection,
@@ -94,7 +94,7 @@ const findUserReply = async (hash, user) => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         }
       ],
     });
@@ -159,7 +159,7 @@ const getUserStories = async (where, order, user, limit, offset) => {
         {
           model: User,
           as: 'story_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         },
         {
           model: StorySection,
@@ -251,7 +251,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
         {
           model: User,
           as: 'reply_author',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email'],
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact'],
         }
       ],
     });
@@ -305,7 +305,7 @@ const fetchFollowersWhenLoggedIn = async (where, order, user, limit, offset) => 
         {
           model: User,
           as: 'from_user',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = from_user.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -357,7 +357,7 @@ const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => 
         {
           model: User,
           as: 'to_user',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email',
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact',
             [
               Sequelize.fn('EXISTS', Sequelize.literal(`(SELECT 1 FROM account.connects WHERE connects.to = to_user.hash AND connects.from = '${user}')`)),
               'is_following'
@@ -408,7 +408,7 @@ const fetchFollowersWhenLoggeOut = async (where, order, limit, offset) => {
         {
           model: User,
           as: 'from_user',
-          attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies']
+          attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'contact']
         },
       ]
     });
@@ -454,7 +454,7 @@ const fetchFollowingWhenLoggedOut = async (where, order, limit, offset) => {
         {
           model: User,
           as: 'to_user',
-          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email']
+          attributes:['hash', 'bio', 'name', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', 'email', 'contact']
         },
       ]
     });

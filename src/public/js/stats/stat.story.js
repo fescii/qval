@@ -45,7 +45,7 @@ export default class StatStory extends HTMLElement {
     const body = document.querySelector('body');
 
     // get current content
-    const content = this.shadowObj.querySelector('.actions>action#view-action')
+    const content = this.shadowObj.querySelector('.actions>.action#view-action')
 
     if(body && content) {
       content.addEventListener('click', event => {
@@ -166,15 +166,15 @@ export default class StatStory extends HTMLElement {
 
     if (mql.matches) {
       // trim the text and return first 150 characters
-      return str.trim().substring(0, 115) + '...';
-    } else {
       return str.trim().substring(0, 150) + '...';
+    } else {
+      return str.trim().substring(0, 170) + '...';
     }
   }
 
   getActions = (likes, views) => {
     const viewUrl = this.getAttribute('url');
-    const editUrl = this.getAttribute('edit-url');
+    const editUrl = viewUrl + '/edit';
     return /*html*/`
       <div class="actions">
         <a href="${editUrl}" class="action edit" id="edit-action">edit</a>
@@ -239,6 +239,7 @@ export default class StatStory extends HTMLElement {
       `
     }
   }
+
   getStyles() {
     return /* css */`
     <style>
@@ -334,12 +335,12 @@ export default class StatStory extends HTMLElement {
         border-radius: 10px;
       }
 
-      /*.actions > .action.edit {
+      .actions > .action.edit {
         border: none;
         background: var(--action-linear);
         color: var(--white-color);
         font-size: 0.9rem;
-      }*/
+      }
 
       .actions > .action.plain {
         padding: 0;
@@ -370,6 +371,13 @@ export default class StatStory extends HTMLElement {
         .actions {
           width: 100%;
         }
+
+        .actions > .action.plain > span.no {
+          font-family: var(--font-main), sans-serif;
+          font-size: 0.8rem;
+          color: var(--text-color);
+        }
+
         a {
           cursor: default !important;
         }

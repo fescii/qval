@@ -147,7 +147,7 @@ export default class AppStory extends HTMLElement {
 			<author-wrapper hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
-        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}"
+        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" you="${this.getAttribute('author-you')}"
         bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
