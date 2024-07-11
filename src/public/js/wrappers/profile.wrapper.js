@@ -807,7 +807,7 @@ export default class ProfileWrapper extends HTMLElement {
           display: flex;
           flex-flow: column;
           margin: 5px 0;
-          gap: 5px;
+          gap: 0;
           color: var(--text-color);
           font-family: var(--font-text), sans-serif;
           font-size: 1rem;
@@ -817,7 +817,7 @@ export default class ProfileWrapper extends HTMLElement {
 
         .bio > p {
           all: inherit;
-          margin: 0 0 5px;
+          margin: 0 0 2px;
         }
 
         .actions {

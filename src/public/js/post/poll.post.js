@@ -54,10 +54,10 @@ export default class PollPost extends HTMLElement {
 
   // Replace and push states
   replaceAndPushStates = (url, body, post) => {
-     // get the first custom element in the body
-     const firstElement = body.firstElementChild;
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
 
-     // convert the custom element to a string
+    // convert the custom element to a string
      const elementString = firstElement.outerHTML;
 
     // get window location

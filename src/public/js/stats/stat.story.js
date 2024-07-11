@@ -14,7 +14,8 @@ export default class StatStory extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    // open post 
+    this.openPost();
   }
 
   disableScroll() {
@@ -32,6 +33,57 @@ export default class StatStory extends HTMLElement {
   enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
+  }
+
+  openPost = () => {
+    // get url
+    let url = this.getAttribute('url');
+
+    url = url.trim().toLowerCase();
+
+    // Get the body
+    const body = document.querySelector('body');
+
+    // get current content
+    const content = this.shadowObj.querySelector('.actions>action#view-action')
+
+    if(body && content) {
+      content.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // Get full post
+        const post =  this.getFullPost(this.getAttribute('kind'));
+
+        // replace and push states
+        this.replaceAndPushStates(url, body, post);
+
+        body.innerHTML = post;
+      })
+    }
+  }
+
+  // Replace and push states
+  replaceAndPushStates = (url, body, post) => {
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+
+    // get window location
+    const pageUrl = window.location.href;
+    window.history.replaceState(
+      { page: 'page', content: elementString },
+      url, pageUrl
+    );
+
+    // Updating History State
+    window.history.pushState(
+      { page: 'page', content: post},
+      url, url
+    );
   }
 
   formatNumber = n => {
@@ -137,6 +189,56 @@ export default class StatStory extends HTMLElement {
     `
   }
 
+  getFullPost = kind => {
+    const parent = this.getAttribute('parent');
+    let text = parent ? `parent="${parent}"` : '';
+    if (kind === "poll") {
+      return /* html */`
+        <app-post story="poll" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+          likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}"
+          replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
+          options='${this.getAttribute("options")}' voted="${this.getAttribute('voted')}" selected="${this.getAttribute('selected')}"
+          end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
+          liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
+          author-you="${this.getAttribute('author-you')}" author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+          author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+          author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
+          author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
+          author-bio="${this.getAttribute('author-bio')}">
+          ${this.innerHTML}
+        </app-post>
+      `
+    } else if(kind === "post"){
+      return /* html */`
+        <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+          likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text}
+          replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
+          liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
+          author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+          author-you="${this.getAttribute('author-you')}" author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+          author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
+          author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
+          author-bio="${this.getAttribute('author-bio')}">
+          ${this.innerHTML}
+        </app-post>
+      `
+    } else if(kind === "story"){
+      return /* html */`
+        <app-story  story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
+          story-title="${this.getAttribute('story-title')}" time="${this.getAttribute('time')}"
+          replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
+          likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
+          author-you="${this.getAttribute('author-you')}"
+          author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
+          author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}"
+          author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
+          author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
+          author-bio="${this.getAttribute('author-bio')}">
+          ${this.innerHTML}
+        </app-story>
+      `
+    }
+  }
   getStyles() {
     return /* css */`
     <style>
