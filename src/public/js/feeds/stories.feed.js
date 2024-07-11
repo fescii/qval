@@ -152,7 +152,7 @@ export default class StoryFeed extends HTMLElement {
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
             author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact="${author.contact}"
+            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.content}
           </quick-post>
@@ -167,7 +167,7 @@ export default class StoryFeed extends HTMLElement {
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
             author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
             author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
-            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact="${author.contact}"
+            author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">
             ${story.content}
           </poll-post>
@@ -180,7 +180,7 @@ export default class StoryFeed extends HTMLElement {
             likes-url="/api/v1${url}/likes" replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" likes="${story.likes}" 
             views="${story.views}" 
             author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
-            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-contact="${author.contact}"
+            author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
             author-img="${author.picture}" author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" 
             author-followers="${author.followers}" author-following="${author.following}" author-follow="${author.is_following ? 'true' : 'false'}" 
             author-bio="${author.bio === null ? 'This user has not added a bio yet.' : author.bio}">

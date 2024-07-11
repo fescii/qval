@@ -92,7 +92,7 @@ export default class TopicsContainer extends HTMLElement {
           subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
           author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
-          author-following="${author.following}" author-follow="${author.is_following}" author-contact="${author.contact}"
+          author-following="${author.following}" author-follow="${author.is_following}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
           author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
           ${this.mapTopicSections(sections, topic.hash)}
         </topic-wrapper>

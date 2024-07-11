@@ -254,7 +254,7 @@ module.exports = (sequelize, Sequelize) => {
     if(user !== null) {
 			return await sequelize.query(/*sql*/`
 				WITH user_followers AS (SELECT "to", TRUE AS is_following FROM account.connects WHERE "from" = :user)
-				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, COALESCE(uf.is_following, FALSE) AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, u.contact, COALESCE(uf.is_following, FALSE) AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
 				FROM account.users u
 				LEFT JOIN  user_followers uf ON u.hash = uf."to"
 				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
@@ -265,7 +265,7 @@ module.exports = (sequelize, Sequelize) => {
     }
     else {
 			return await sequelize.query(/*sql*/`
-				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, false AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
+				SELECT u.hash, u.name, u.email, u.bio, u.picture, u.followers, u.following, u.stories, u.replies, u.verified, u.contact, false AS is_following, ts_rank_cd(to_tsvector('english', u.name), to_tsquery('english', :query)) AS rank
 				FROM account.users u
 				WHERE to_tsvector('english', u.name) @@ to_tsquery('english', :query)
 				ORDER BY rank DESC

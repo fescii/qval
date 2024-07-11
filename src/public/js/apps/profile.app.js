@@ -181,7 +181,7 @@ export default class AppProfile extends HTMLElement {
       <profile-wrapper name="${this.getAttribute('name')}" hash="${this.getAttribute('hash')}" you="${this._you}" replies="${this.getAttribute('replies')}"
         url="${formattedUrl}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}" stories="${this.getAttribute('stories')}"
         followers="${this.getAttribute('followers')}" following="${this.getAttribute('following')}" user-follow="${this.getAttribute('user-follow')}"
-        bio="${this.getAttribute('bio')}" contact="${this.getAttribute('contact')}">
+        bio="${this.getAttribute('bio')}" contact='${this.getAttribute("contact")}'>
       </profile-wrapper>
     `
   }
@@ -189,7 +189,7 @@ export default class AppProfile extends HTMLElement {
   getSection = () => {
     return /* html */`
       <profile-section hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}" active="${this.getAttribute('tab')}" section-title="Profile" 
-        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}"
+        stories-url="${this.getAttribute('stories-url')}" stories="${this.getAttribute('stories')}" contact='${this.getAttribute("contact")}'
         replies-url="${this.getAttribute('replies-url')}" replies="${this.getAttribute('replies')}"
         followers-url="${this.getAttribute('followers-url')}" followers="${this.getAttribute('followers')}"
         following-url="${this.getAttribute('following-url')}" following="${this.getAttribute('following')}">

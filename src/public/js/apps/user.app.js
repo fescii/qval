@@ -897,9 +897,9 @@ export default class AppUser extends HTMLElement {
     <app-profile tab="stories" you="true" url="${url}" tab="stories"
       stories-url="${this.getAttribute('stories-url')}" replies-url="${this.getAttribute('replies-url')}"
       stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
-      followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
+      followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following" contact='${this.getAttribute('user-contact')}'
       hash="${this.getAttribute('hash')}" picture="${this.getAttribute('user-img')}" verified="${this.getAttribute('user-verified')}"
-      name="${this.getAttribute('user-name')}" followers="${this.getAttribute('user-followers')}" contact="${this.getAttribute('user-contact')}"
+      name="${this.getAttribute('user-name')}" followers="${this.getAttribute('user-followers')}"
       following="${this.getAttribute('user-following')}" user-follow="${this.getAttribute('user-follow')}" bio="${this.getAttribute('user-bio')}">
     </app-profile>
    `

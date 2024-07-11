@@ -263,7 +263,7 @@ export default class PollPost extends HTMLElement {
     url = url.trim().toLowerCase();
     return /* html */`
 			<hover-author url="${url}" you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}"
-        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}" contact="${this.getAttribute('author-contact')}"
+        picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}" contact='${this.getAttribute("author-contact")}'
         stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" bio='${this.getAttribute("author-bio")}'>
@@ -280,7 +280,7 @@ export default class PollPost extends HTMLElement {
         end-time="${this.getAttribute('end-time')}" votes="${this.getAttribute('votes')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-you="${this.getAttribute('author-you')}" author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
-        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}" author-contact="${this.getAttribute('author-contact')}"
+        author-hash="${this.getAttribute('author-hash')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
         author-img="${this.getAttribute('author-img')}" author-verified="${this.getAttribute('author-verified')}" author-name="${this.getAttribute('author-name')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
         author-bio="${this.getAttribute('author-bio')}">

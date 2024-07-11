@@ -663,7 +663,7 @@ export default class AppTopic extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact="${this.getAttribute('author-contact')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${this.getAttribute("author-contact")}'
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
         bio="${this.getAttribute('author-bio')}">

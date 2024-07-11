@@ -113,7 +113,7 @@ export default class AppPost extends HTMLElement {
             author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
             author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
-            author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact="${this.getAttribute('author-contact')}"
+            author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
             author-bio="${this.getAttribute('author-bio')}">
             ${this.innerHTML}
           </poll-wrapper>
@@ -126,7 +126,7 @@ export default class AppPost extends HTMLElement {
             author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
             author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
             author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
-            author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact="${this.getAttribute('author-contact')}"
+            author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
             author-bio="${this.getAttribute('author-bio')}">
             ${this.innerHTML}
           </post-wrapper>
@@ -157,7 +157,7 @@ export default class AppPost extends HTMLElement {
     return /* html */`
 			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
         stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
-        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}" contact="${this.getAttribute('author-contact')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}" contact='${this.getAttribute("author-contact")}'
         verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
         bio="${this.getAttribute('author-bio')}">
       </author-wrapper>

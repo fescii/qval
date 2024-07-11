@@ -145,7 +145,7 @@ export default class PeopleFeed extends HTMLElement {
     return data.map(user => {
       return /*html*/`
 				<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
-          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact="${user.contact}"
+          picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
           following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
 				</user-wrapper>
       `

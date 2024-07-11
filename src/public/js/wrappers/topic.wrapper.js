@@ -495,7 +495,7 @@ export default class TopicWrapper extends HTMLElement {
       stories="${this.getAttribute('stories')}" subscribed="${this.getAttribute('subscribed')}" topic-follow="${this.getAttribute('topic-follow')}"
       name="${this.getAttribute('name')}" url="${url}" summary="${this.getAttribute('description')}" slug="${this.getAttribute('slug')}"
       stories-url="${apiUrl}/stories" contributors-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 
-      author-hash="${this.getAttribute('author-hash')}" author-you="${this.getAttribute('author-you')}" author-contact="${this.getAttribute('author-contact')}"
+      author-hash="${this.getAttribute('author-hash')}" author-you="${this.getAttribute('author-you')}" author-contact='${this.getAttribute("author-contact")}'
       author-stories="${this.getAttribute('author-stories')}" author-img="${this.getAttribute('author-img')}" 
       author-follow="${this.getAttribute('author-follow')}" author-replies="${this.getAttribute('author-replies')}" 
       author-name="${this.getAttribute('author-name')}" author-followers="${this.getAttribute('author-followers')}" 

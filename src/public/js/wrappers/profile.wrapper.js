@@ -577,18 +577,27 @@ export default class ProfileWrapper extends HTMLElement {
     let formattedUrl = url.toLowerCase();
 
     return /* html */`
-      <contact-popup url="/api/v1${formattedUrl}/contact" name="${this.getAttribute('name')}">
-      </contact-popup>
+      <contact-popup url="/api/v1${formattedUrl}/contact" name="${this.getAttribute('name')}" contact='${this.getAttribute("contact")}'></contact-popup>
     `
   }
 
   getEdit = () => {
     const url = this.getAttribute('url');
-    const contact = this.getAttribute('contact');
+    const str = this.getAttribute('contact');
+    let contact= {};
+    if (str !== null || str !== '' || str !== 'null') {
+      try {
+        contact = JSON.parse(str);
+      }
+      catch (error) {
+        contact = {};
+      }
+    }
     return /*html*/`
       <app-user hash="${this.getAttribute('hash')}" home-url="/home" current="name" verified="${this.getAttribute('verified')}"
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies"  stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 
-        user-link="" user-email="" user-x="fescii" user-threads="" user-linkedin="" email="femar.fredrick@gmail.com" 
+        user-link="${contact.link}" user-email="${contact.email}" user-x="${contact.x}" user-threads="${contact.threads}" 
+        user-linkedin="${contact.linkedin}" email="${contact.email}" 
         user-username="${this.getAttribute('hash')}" 
         user-you="true" user-url="${url}" user-img="${this.getAttribute('picture')}" user-verified="${this.getAttribute('verified')}"
         user-name="${this.getAttribute('name')}" user-followers="${this.getAttribute('followers')}" user-following="${this.getAttribute('following')}"

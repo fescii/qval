@@ -203,7 +203,7 @@ export default class PollWrapper extends HTMLElement {
   getAuthor = () => {
     return /* html */`
 			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact="${this.getAttribute('author-contact')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${this.getAttribute("author-contact")}'
         followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
         verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
         bio="${this.getAttribute('author-bio')}">
