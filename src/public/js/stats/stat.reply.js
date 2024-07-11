@@ -92,6 +92,37 @@ export default class StatOpinion extends HTMLElement {
     `;
   }
 
+  getBody = () => {
+    const likes = this.parseToNumber(this.getAttribute('likes'));
+    const views = this.parseToNumber(this.getAttribute('views'));
+    return /* html */`
+      <span class="content">
+        ${this.removeHtml(this.innerHTML)}
+      </span>
+      ${this.getActions(likes, views)}
+    `;
+  }
+
+  removeHtml = text => {
+    const mql = window.matchMedia('(max-width: 660px)');
+    let str = text;
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // remove them from the text
+      str = text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    } else {
+      // Directly remove all HTML tags
+      str = text.replace(/<[^>]*>/g, '');
+    }
+
+    if (mql.matches) {
+      // trim the text and return first 150 characters
+      return str.trim().substring(0, 115) + '...';
+    } else {
+      return str.trim().substring(0, 150) + '...';
+    }
+  }
+
   getActions = (likes, views) => {
     const viewUrl = this.getAttribute('url');
     const editUrl = this.getAttribute('edit-url');
@@ -161,10 +192,10 @@ export default class StatOpinion extends HTMLElement {
 
       .content {
         color: var(--text-color);
-        font-family: var(--font-read), sans-serif;
+        font-family: var(--font-text), sans-serif;
         display: flex;
         flex-flow: column;
-        font-size: 0.95rem;
+        font-size: 1rem;
         gap: 5px;
         padding: 0;
         width: 100%;

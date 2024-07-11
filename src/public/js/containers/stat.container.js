@@ -78,7 +78,7 @@ export default class StatContainer extends HTMLElement {
       ${this.getHeader()}
       ${this.getTab()}
 			<div class="content">
-				${this.getStatFeedStories()}
+				${this.getStats()}
       </div>
     `;
   }
@@ -91,17 +91,13 @@ export default class StatContainer extends HTMLElement {
 
   getStatFeedStories = () => {
     return /* html */`
-      <stat-feed current="stories" api-stories="/api/v1/u/stats/stories"
-        api-replies="/api/v1/u/stats/replies">
-      </stat-feed>
+      <stat-feed kind="stories" api="${this.getAttribute('stories-stats')}" page="1" limit="10"></stat-feed>
     `;
   }
 
   getStatFeedReplies = () => {
     return /* html */`
-      <stat-feed current="replies" api-stories="/api/v1/u/stats/stories"
-        api-replies="/api/v1/u/stats/replies">
-      </stat-feed>
+      <stat-feed kind="replies" api="${this.getAttribute('replies-stats')}" page="1" limit="10"></stat-feed>
     `;
   }
 

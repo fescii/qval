@@ -85,10 +85,39 @@ export default class StatStory extends HTMLElement {
     const views = this.parseToNumber(this.getAttribute('views'));
     return /* html */`
       <span class="content">
-        ${this.getAttribute('content')}
+        ${this.getTitle(this.getAttribute('kind'))}
+        ${this.removeHtml(this.innerHTML)}
       </span>
       ${this.getActions(likes, views)}
     `;
+  }
+
+  getTitle = kind => {
+    if (kind === "story") {
+      return `<h4 class="story-title">${this.getAttribute('story-title')}</h4>`
+    } else {
+      return ''
+    }
+  }
+
+  removeHtml = text => {
+    const mql = window.matchMedia('(max-width: 660px)');
+    let str = text;
+    // Check if the text is encoded (contains &lt; or &gt;)
+    if (text.includes('&lt;') || text.includes('&gt;')) {
+      // remove them from the text
+      str = text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    } else {
+      // Directly remove all HTML tags
+      str = text.replace(/<[^>]*>/g, '');
+    }
+
+    if (mql.matches) {
+      // trim the text and return first 150 characters
+      return str.trim().substring(0, 115) + '...';
+    } else {
+      return str.trim().substring(0, 150) + '...';
+    }
   }
 
   getActions = (likes, views) => {
@@ -153,20 +182,29 @@ export default class StatStory extends HTMLElement {
         font-size: 16px;
         display: flex;
         flex-flow: column;
-        gap: 10px;
+        gap: 5px;
         padding: 10px 0;
         width: 100%;
       }
 
       .content {
         color: var(--text-color);
-        font-family: var(--font-read), sans-serif;
+        font-family: var(--font-text), sans-serif;
         display: flex;
         flex-flow: column;
-        font-size: 0.95rem;
+        font-size: 1rem;
         gap: 5px;
         padding: 0;
         width: 100%;
+      }
+
+      .content > h4.title {
+        margin: 0;
+        color: var(--text-color);
+        font-family: var(--font-main), sans-serif;
+        line-height: 1.5;
+        font-size: 1.05rem;
+        font-weight: 500;
       }
 
       .actions {
@@ -176,7 +214,7 @@ export default class StatStory extends HTMLElement {
         flex-flow: row;
         align-items: center;
         gap: 8px;
-        margin: 0;
+        margin: 5px 0 0 0;
       }
       
       .actions > .action {

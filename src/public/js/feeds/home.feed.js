@@ -184,8 +184,8 @@ export default class HomeFeed extends HTMLElement {
       return /*html*/`
         <poll-post story="poll" url="${url}" hash="${story.hash}" likes="${story.likes}" 
           replies="${story.replies}" liked="${story.liked ? 'true' : 'false'}" views="${story.views}" time="${story.createdAt}" 
-          voted="${story.option ? 'true' : 'false'}" selected="${story.option}" end-time="${story.end}" replies-url="/api/v1${url}/replies" 
-          likes-url="/api/v1${url}/likes" options='${story.poll}' votes="${story.votes}" 
+          voted="${story.option ? 'true' : 'false'}" selected="${story.option}" end-time="${story.end}" 
+          options='${story.poll}' votes="${story.votes}" likes-url="/api/v1${url}/likes" replies-url="/api/v1${url}/replies" 
           author-url="/u/${author.hash}" author-stories="${author.stories}" author-replies="${author.replies}"
           author-hash="${author.hash}" author-you="${story.you ? 'true' : 'false'}" author-img="${author.picture}" 
           author-verified="${author.verified ? 'true' : 'false'}" author-name="${author.name}" author-followers="${author.followers}" 
@@ -317,7 +317,7 @@ export default class HomeFeed extends HTMLElement {
       <div class="last">
         <h2 class="title">Something went wrong!</h2>
         <p class="next">
-          Something did not work as expected, I call it shinanigans!
+          Something did not work as expected, I call it shenanigans!
         </p>
       </div>
     `

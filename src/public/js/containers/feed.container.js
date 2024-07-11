@@ -277,7 +277,7 @@ export default class FeedContainer extends HTMLElement {
       <div class="last">
         <h2 class="title">Something went wrong!</h2>
         <p class="next">
-          Something did not work as expected, I call it shinanigans!
+          Something did not work as expected, I call it shenanigans!
         </p>
       </div>
     `

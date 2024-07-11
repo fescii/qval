@@ -608,7 +608,7 @@ export default class AppUser extends HTMLElement {
 
   getStats = () =>  {
     return /* html */`
-      <stat-container url="/settings/stats" api="/api/v1/u/stats"></stat-container>
+      <stat-container url="/settings/stats" api="/api/v1/u/stats" stories-stats="/api/v1/user/stats/stories" replies-stats="/api/v1/user/stats/replies"></stat-container>
     `;
   }
 

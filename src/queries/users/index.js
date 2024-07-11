@@ -1,4 +1,4 @@
-// Impoert all the queries from the users and export them
+// Import all the queries from the users and export them
 const {
   editBio, editContact, editPassword,
   editEmail, editName, editPicture
@@ -6,10 +6,11 @@ const {
 const { connectToUser } = require('./action');
 const { addUser, checkIfUserExits, getUserByHash , findAuthorContact, getUserProfile } = require('./base');
 const { getRecommendedUsers } = require('./top');
+const profileQueries = require('./profile');
 
 module.exports = {
   editBio, editContact, editPassword, getRecommendedUsers,
   editEmail, editName, editPicture, getUserByHash,
   connectToUser, addUser, checkIfUserExits, findAuthorContact,
-  getUserProfile
+  getUserProfile, ...profileQueries
 };
