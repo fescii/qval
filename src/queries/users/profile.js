@@ -1,6 +1,11 @@
 // Import user and sequelize from models
 const { sequelize, Sequelize } = require('../../models').models;
-const { userReplies, userRepliesStats, userStories, userStoriesStats } = require('../raw').profile;
+const { 
+  userReplies, userRepliesStats, userStories, 
+  userStoriesStats, userActivities, userNotifications
+} = require('../raw').profile;
+
+const { Activity } = require('../../models').models;
 
 
 // Map story fields(sections) to html
@@ -192,9 +197,87 @@ const fetchUserReplies = async reqData => {
   }
 };
 
+/**
+ * @function fetchUserActivities
+ * @description A query function to get the activities of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 activities
+*/
+const fetchUserActivities = async reqData => {
+  const  { user, limit, page } = reqData;
+
+  // calculate the offset
+  const offset = (page - 1) * limit;
+
+  try {
+    const activities = await sequelize.query(userActivities, {
+      replacements: {
+        user,
+        offset, 
+        limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
+    });
+
+    return {
+      activities: activities,
+      error: null
+    }
+  }
+  catch (error) {
+    return {
+      activities: [],
+      error: error.message
+    }
+  }
+};
+
+/**
+ * @function fetchUserNotifications
+ * @description A query function to get the notifications of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 notifications
+*/
+const fetchUserNotifications = async reqData => {
+  const  { user, limit, page } = reqData;
+
+  // calculate the offset
+  const offset = (page - 1) * limit;
+
+  try {
+    const notifications = await sequelize.query(userNotifications, {
+      replacements: {
+        user,
+        offset, 
+        limit 
+      },
+      type: Sequelize.QueryTypes.SELECT
+    });
+
+    return {
+      notifications: notifications,
+      error: null
+    }
+  }
+  catch (error) {
+    return {
+      notifications: [],
+      error: error.message
+    }
+  }
+};
+
+/**
+ * @function  totalUnreadNotifications
+ * @description A query that fetches total unread notifications by a logged in user
+ * @returns {Number} A number of unread notifications
+*/
+const totalUnreadNotifications = async user => {
+  return await Activity.count({ where: { to: user, read: false } });
+}
+
 module.exports = {
-  getUserStoriesStats,
-  getUserRepliesStats,
-  fetchUserStories,
-  fetchUserReplies
+  getUserStoriesStats, getUserRepliesStats, fetchUserStories,
+  fetchUserReplies, fetchUserActivities, fetchUserNotifications,
+  totalUnreadNotifications
 }

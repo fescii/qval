@@ -1,7 +1,8 @@
 // import all queries from the storyQueues
 const {
   getUserStoriesStats, getUserRepliesStats,
-  fetchUserStories, fetchUserReplies
+  fetchUserStories, fetchUserReplies, fetchUserActivities,
+  fetchUserNotifications, totalUnreadNotifications
 } = require('../../queries').userQueries;
 
 /**
@@ -197,9 +198,145 @@ const getReplies = async(req, res, next) => {
   });
 }
 
+/**
+ * @function getActivities
+ * @description Controller for finding all activities by a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object || or pass the error to the next middleware
+*/
+const getActivities = async(req, res, next) => {
+  // get page from the query
+  let page = req.query.page || 1;
+
+  // create user hash from the request object
+  const user = req.user;
+
+  // check user is not found
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  const reqData = {
+    user: user.hash,
+    page: parseInt(page),
+    limit: 10
+  }
+
+  // Find the stories
+  const {
+    activities,
+    error
+  } = await fetchUserActivities(reqData);
+
+  // check if there is an error
+  if (error) {
+    return next(error);
+  }
+
+  // return the response
+  return res.status(200).json({
+    success: true,
+    message: 'Activities fetched successfully',
+    activities
+  });
+}
+
+/**
+ * @function getNotifications
+ * @description Controller for finding all notifications by a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object || or pass the error to the next middleware
+*/
+const getNotifications = async(req, res, next) => {
+  // get page from the query
+  let page = req.query.page || 1;
+
+  // create user hash from the request object
+  const user = req.user;
+
+  // check user is not found
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  const reqData = {
+    user: user.hash,
+    page: parseInt(page),
+    limit: 10
+  }
+
+  // Find the stories
+  const {
+    notifications,
+    error
+  } = await fetchUserNotifications(reqData);
+
+  // check if there is an error
+  if (error) {
+    return next(error);
+  }
+
+  // return the response
+  return res.status(200).json({
+    success: true,
+    message: 'Notifications fetched successfully',
+    notifications
+  });
+}
+
+/**
+ * @function getUnreadNotifications
+ * @description Controller for finding all unread notifications by a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object} - Returns response object || or pass the error to the next middleware
+*/
+const getUnreadNotifications = async(req, res, next) => {
+  // create user hash from the request object
+  const user = req.user;
+
+  // check user is not found
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  // Find the stories
+  const {
+    unreadNotifications,
+    error
+  } = await totalUnreadNotifications(user.hash);
+
+  // check if there is an error
+  if (error) {
+    return next(error);
+  }
+
+  // return the response
+  return res.status(200).json({
+    success: true,
+    message: 'Unread notifications fetched successfully',
+    unreadNotifications
+  });
+}
+
 
 // export the module
 module.exports = {
   fetchStoriesStats, fetchRepliesStats,
-  getStories, getReplies
+  getStories, getReplies, getActivities,
+  getNotifications, getUnreadNotifications
 }

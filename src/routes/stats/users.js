@@ -1,7 +1,7 @@
 const {
   getUserStats, getUserAllStats,
   fetchStoriesStats, fetchRepliesStats,
-  getStories, getReplies
+  getStories, getReplies, getActivities, getNotifications, getUnreadNotifications
 } = require('../../controllers').statsController;
 
 const { verifyToken } = require('../../middlewares').authMiddleware;
@@ -40,4 +40,13 @@ module.exports = (app, url) => {
 
   // Route for finding all replies by an author
   app.get(`${url}/user/replies`, verifyToken, getReplies);
+
+  // Route for finding all activities by an author
+  app.get(`${url}/user/activities`, verifyToken, getActivities);
+
+  // Route for finding all notifications by an author
+  app.get(`${url}/user/notifications`, verifyToken, getNotifications);
+
+  // Route for finding all unread notifications by an author
+  app.get(`${url}/user/notifications/unread`, verifyToken, getUnreadNotifications);
 }

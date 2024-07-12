@@ -87,8 +87,7 @@ export default class ActivityContainer extends HTMLElement {
 
   getAll = () => {
     return /* html */`
-			<activity-feed api="${this.getAttribute('api-all')}" page="5">
-      </activity-feed>
+			<activity-feed url="${this.getAttribute('api-all')}" page="1" limit="10"></activity-feed>
 		`
   }
 
@@ -96,7 +95,7 @@ export default class ActivityContainer extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Your activity is a summary of your interactions on the platform. You can view your stories, replies and likes/upvotes.
+          Your activity is a summary of your interactions on the platform. You can view your stories, replies and likes.
         </p>
       </div>
     `;
@@ -115,8 +114,11 @@ export default class ActivityContainer extends HTMLElement {
           <li data-element="replies" class="tab-item replies">
             <span class="text">Replies</span>
           </li>
-          <li data-element="saved" class="tab-item saved">
-            <span class="text">Saved</span>
+          <li data-element="people" class="tab-item people">
+            <span class="text">People</span>
+          </li>
+          <li data-element="topics" class="tab-item topics">
+            <span class="text">Topics</span>
           </li>
           <span class="line"></span>
         </ul>
@@ -185,7 +187,6 @@ export default class ActivityContainer extends HTMLElement {
         }
 
         .top {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           gap: 5px;
@@ -273,7 +274,6 @@ export default class ActivityContainer extends HTMLElement {
 
         .actions > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .actions > ul.tab > li.active > .text {
@@ -281,7 +281,7 @@ export default class ActivityContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .actions > ul.tab span.line {
@@ -318,10 +318,8 @@ export default class ActivityContainer extends HTMLElement {
           .top > .desc {
             margin: 0;
             padding: 6px 0 10px;
-            color: var(--gray-color);
             font-size: 1rem;
             line-height: 1.5;
-            font-family: var(--font-read), sans-serif;
           }
 
           .actions {

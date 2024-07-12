@@ -597,8 +597,8 @@ export default class AppUser extends HTMLElement {
 
   getActivity = () =>  {
     return /* html */`
-      <activity-container url="/settings/activity" api-all="/api/v1/u/activity/all" api-stories="/api/v1/u/activity/stories" api-replies="/api/v1/u/activity/replies"
-        api-users="/api/v1/u/activity/users" api-saved="/api/v1/u/activity/saved">
+      <activity-container url="/settings/activity" api-all="/api/v1/user/activities" api-users="/api/v1/user/activities/users"
+        api-stories="/api/v1/user/activities/stories" api-replies="/api/v1/user/activities/replies">
       </activity-container>
     `;
   }
@@ -889,7 +889,6 @@ export default class AppUser extends HTMLElement {
  
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
-    console.log(this.getAttribute('user-contact'))
 
    return /* html */`
     <app-profile tab="stories" you="true" url="${url}" tab="stories"

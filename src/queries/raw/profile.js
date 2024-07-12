@@ -78,7 +78,36 @@ const userReplies = /*sql*/`
   OFFSET :offset;
 `
 
+/**
+ * @var {string} userActivities
+ * @description A query that fetches activities by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userActivities = /*sql*/`
+  SELECT a.id, a.kind, a.action, a.read, a.author, a.name, a.target, a.to, a.content, a.verb, a.deleted, a."createdAt", a."updatedAt"
+  FROM activity.activities a
+  WHERE a.author = :user
+  ORDER BY a."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userNotifications
+ * @description A query that fetches notifications by a logged in user ordered by date(createdAt) and read status
+ * @returns {string} A SQL query
+*/
+const userNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false
+  ORDER BY n."createdAt" DESC, n.read ASC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+
 module.exports = {
-  userStoriesStats, userRepliesStats,
-  userStories, userReplies
+  userStoriesStats, userRepliesStats, userNotifications,
+  userStories, userReplies, userActivities
 }
