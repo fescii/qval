@@ -5,7 +5,7 @@ const htmlToText = require('nodemailer-html-to-text').htmlToText;
 
 
 /**
- * @name resetEmailHook
+ * @name mailHook
  * @function resetEmailHook
  * @description A hook function that sends a password reset token to a user's email address
  * @param {String} from - The sender's email address
@@ -13,7 +13,7 @@ const htmlToText = require('nodemailer-html-to-text').htmlToText;
  * @param {String} token - The password reset token
  * @returns {Promise<void>} - Returns a promise of void
 */
-const resetEmailHook = async (data) => {
+const mailHook = async (data) => {
   if (!data?.user || !data?.token || !data?.from) {
     // Log the error
     console.error('Data(s) is undefined. Cannot initialize reset email hook process');
@@ -46,6 +46,4 @@ const resetEmailHook = async (data) => {
 }
 
 
-module.exports = {
-  resetEmailHook
-}
+module.exports = mailHook;

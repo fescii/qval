@@ -150,7 +150,5 @@ const findReplyAuthor = async hash => {
   return reply.author;
 }
 
-
-
-
-
+// Export the activity hook
+module.exports = activityHook;

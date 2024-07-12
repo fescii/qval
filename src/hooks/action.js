@@ -195,6 +195,4 @@ const replyUpdater = async (action, replyHash, value) => {
 
 
 // Export all hooks
-module.exports = {
-  actionHook
-}
+module.exports = actionHook;
