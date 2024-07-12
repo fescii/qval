@@ -7,9 +7,10 @@ const storyQueries = require('./stories');
 const statsQueries = require('./stats');
 const searchQueries = require('./search');
 const feedQueries = require('./feeds');
+const activityQueries = require('./activities');
 
 module.exports = {
   authQueries, topicQueries, roleQueries,
   storyQueries, userQueries, statsQueries,
-  searchQueries, feedQueries
+  searchQueries, feedQueries, activityQueries
 }

@@ -52,6 +52,11 @@ module.exports = (sequelize, Sequelize, User) => {
 			type: Sequelize.STRING,
 			allowNull: false,
 		},
+		deleted: {
+			type: Sequelize.BOOLEAN,
+			allowNull: true,
+			defaultValue: false,
+		},
 		to: {
 			type: Sequelize.STRING,
 			allowNull: true,
@@ -77,6 +82,8 @@ module.exports = (sequelize, Sequelize, User) => {
 			{ fields: ['author'] },
 			{ fields: ['target'] },
 			{	fields: ['to'] },
+			{	fields: ['read'] },
+			{	fields: ['deleted'] },
 			{	fields: ['createdAt']}
 		]
 	});

@@ -2,7 +2,6 @@
 const { follow, subscribe } = require('../../queries/topics');
 const { addActivity } = require('../../bull');
 
-
 /**
  * @function followTopic
  * @description Controller to follow or unfollow a topic
