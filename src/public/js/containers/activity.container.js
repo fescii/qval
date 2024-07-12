@@ -301,7 +301,6 @@ export default class ActivityContainer extends HTMLElement {
         }
 
         .content {
-          /* border: var(--border); */
           display: flex;
           flex-flow: column;
           gap: 0;

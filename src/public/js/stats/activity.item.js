@@ -267,7 +267,7 @@ export default class ActivityItem extends HTMLElement {
       .head > span.text {
         color: var(--gray-color);
         font-size: 0.9rem;
-        font-family: var(--font-text), sans-serif;
+        font-family: var(--font-read), sans-serif;
         font-style: italic;
       }
 
