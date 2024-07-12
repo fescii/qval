@@ -37,19 +37,16 @@ module.exports = (sequelize, Sequelize) => {
 		name: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
 		hash: {
 			type: Sequelize.STRING,
 			unique: true,
 			allowNull: true,
-      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
 			unique: true,
 			allowNull: false,
-      index: true,
 		},
 		password: {
 			type: Sequelize.STRING,
@@ -71,48 +68,54 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
 			allowNull: true,
-      index: true,
 		},
 		followers: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
-      index: true,
 		},
 		following: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
-      index: true,
 		},
 		stories: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
-      index: true,
 		},
 		replies : {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
-      index: true,
 		},
 		views: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 			allowNull: true,
-      index: true,
 		},
-	},{
-			schema: 'account',
-			freezeTableName: true,
-			timestamps: true,
-      timezone: 'UTC',
-			indexes: [
-				{
-					fields: ['createdAt']
-				}
-			]
+	},
+	{
+		schema: 'account',
+		freezeTableName: true,
+		timestamps: true,
+    timezone: 'UTC',
+		indexes: [
+			{ unique: true, fields: ['id'] },
+			{ unique: true, fields: ['hash'] },
+			{ unique: true, fields: ['email'] },
+			{	fields: ['name'] },
+			{	fields: ['email'] },
+			{	fields: ['hash'] },
+			{	fields: ['bio'] },
+			{	fields: ['followers'] },
+			{	fields: ['following'] },
+			{	fields: ['stories'] },
+			{	fields: ['replies'] },
+			{	fields: ['views'] },
+			{	fields: ['verified'] },
+			{	fields: ['createdAt'] }
+		]
 	});
 
 	// add afterSync hook to create the search column and create the GIN index
@@ -145,27 +148,27 @@ module.exports = (sequelize, Sequelize) => {
 		code: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
 		email: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
 		expires: {
 			type: Sequelize.DATE,
 			allowNull: false,
-      index: true,
 		}
-	},{
+	},
+	{
 		schema: 'account',
 		freezeTableName: true,
 		timestamps: true,
     timezone: 'UTC',
 		indexes: [
-      {
-        fields: ['createdAt']
-      }
+			{ unique: true, fields: ['id'] },
+			{ fields: ['code'] },
+			{ fields: ['email'] },
+			{ fields: ['expires'] },
+      { fields: ['createdAt'] }
     ]
 	});
 
@@ -189,33 +192,31 @@ module.exports = (sequelize, Sequelize) => {
 		from: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
 		to: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
 		active: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
 			allowNull: false,
-      index: true,
 		},
 		deletedAt: {
 			type: Sequelize.DATE,
 			allowNull: true,
-      index: true,
 		}
-	},{
+	},
+	{
 		schema: 'account',
 		freezeTableName: true,
 		timestamps: true,
     timezone: 'UTC',
 		indexes: [
-      {
-        fields: ['createdAt']
-      }
+			{ unique: true, fields: ['id'] },
+			{ fields: ['from'] },
+			{ fields: ['to'] },
+      { fields: ['createdAt'] }
     ]
 	});
 
