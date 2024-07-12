@@ -1,5 +1,6 @@
 // Import all the vote queries from storyQueries
 const { addVote } = require('../../queries').storyQueries;
+const { addActivity } = require('../../bull');
 
 
 /**
@@ -31,6 +32,15 @@ const voteController = async (req, res, next) => {
   // check if there is an error
   if (error) {
     return next(error);
+  }
+
+  // Add activity to the queue
+  if (vote) {
+    addActivity({
+      kind: 'story', action: 'vote', author: req.user.hash, name: req.user.name,
+      to: null, target: hash.toUpperCase(), verb: 'voted',
+      nullable: false,
+    });
   }
 
   // return response

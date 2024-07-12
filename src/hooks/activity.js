@@ -1,4 +1,4 @@
-const { Activity } = require('../models').models;
+const { Activity, Story, Reply, Topic } = require('../models').models;
 
 /**
  * @object kindData
@@ -53,30 +53,101 @@ const activityHook = async data => {
     console.error('Data is undefined. Adding activity hook process failed');
     return;
   }
-  // Log the process initialization
-  console.log('Action hook process initialized');
-
   // Try to update the user, topic or story data
   try {
+    // check for kind
+    if (kind === kindData.User) {
+      // create activity directly
+      await Activity.create(data);
+    } else if (kind === kindData.Story) {
+      // switch if the nullable is false
+      if (data.nullable === false) {
+        // add to to the data object
+        data.to = await findStoryAuthor(data.target);
 
-    // check if to field is available
-    if (!data?.to) {
-      // fetch the target item author hash
-    
+        // create activity directly
+        await Activity.create(data);
+      } else {
+        // create activity directly
+        await Activity.create(data);
+      }
+    } else if (kind === kindData.Reply) {
+      // switch if the nullable is false
+      if (data.nullable === false) {
+        // add to to the data object
+        data.to = data.type === 'reply' ? await findReplyAuthor(data.target) : await findStoryAuthor(data.target);
+
+        // create activity directly
+        await Activity.create(data);
+      } else {
+        // create activity directly
+        await Activity.create(data);
+      }
     }
-    
-    // Create the activity
-    const activity = await Activity.create(data);
-
-
-    // Log the process completion
-    console.log('Action hook process completed');
+    else {
+      console.log('Kind not found in the options');
+      // !TODO: Create a handler for handling this error
+    }
   }
   catch (error) {
     console.error('Error initializing activity hook process:', error);
-
     // !TODO: Create a handler for handling this error
   }
+}
+
+
+
+
+
+/**
+ * @function findTopicAuthor
+ * @name findTopicAuthor
+ * @description A function that finds the author of a topic
+ * @param {String} hash - The topic hash
+ * @returns {Promise<String>} - Returns a promise of the author hash
+*/
+const findTopicAuthor = async hash => {
+  // Find the topic
+  const topic = await Topic.findOne({ attributes: ['author'], where: { hash } });
+
+  // Return the author hash on if topic is found otherwise throw an error
+  if (!topic) throw new Error('Topic not found');
+
+  return topic.author;
+}
+
+/**
+ * @function findStoryAuthor
+ * @name findStoryAuthor
+ * @description A function that finds the author of a story
+ * @param {String} hash - The story hash
+ * @returns {Promise<String>} - Returns a promise of the author hash
+*/
+const findStoryAuthor = async hash => {
+  // Find the story
+  const story = await Story.findOne({ attributes: ['author'], where: { hash } });
+
+  // Return the author hash on if story is found otherwise throw an error
+  if (!story) throw new Error('Story not found');
+
+  return story.author;
+}
+
+/**
+ * @function findReplyAuthor
+ * @name findReplyAuthor
+ * @description A function that finds the author of a reply
+ * @param {String} hash - The reply hash
+ * @returns {Promise<String>} - Returns a promise of the author hash
+*/
+const findReplyAuthor = async hash => {
+  // Find the reply
+  const reply = await Reply.findOne({ attributes: ['author'], where: { hash } });
+
+  // Return the author hash on if reply is found otherwise throw an error
+  if (!reply) throw new Error('Reply not found');
+
+  return reply.author;
 }
 
 

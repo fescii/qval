@@ -50,7 +50,7 @@ module.exports = (sequelize, Sequelize, User) => {
     },
 		target: {
 			type: Sequelize.STRING,
-			allowNull: true,
+			allowNull: false,
 		},
 		to: {
 			type: Sequelize.STRING,
