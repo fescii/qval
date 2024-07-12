@@ -120,24 +120,21 @@ export default class AppUser extends HTMLElement {
     // select all tabs
     const tabs = tabContainer.querySelectorAll('ul.tab');
 
-    // if button is available
-    if (btn && tabs) {
-      // add event listener to button
-      btn.addEventListener('click', () => {
+    if(!btn || !tabs) return;
+
+    // add event listener to button
+    btn.addEventListener('click', () => {
         
-        // check for mobile view
-        if (mql) {
-          // open tabs
-          this.openCloseTabs(tabs, btn, contentContainer, tabContainer);
-        }
-        else {
-          // go back in history if history is available or go to home
-          if (window.history.length > 1) {
-            window.history.back();
-          }
-        }
-      });
-    }
+      // check for mobile view
+      if (mql) {
+        // open tabs
+        this.openCloseTabs(tabs, btn, contentContainer, tabContainer);
+      }
+      else {
+        // go back in history if history is available or go to home
+        window.history.back();
+      }
+    });
   }
 
   openCloseTabs = (tabs, btn, contentContainer, tabContainer) => {
@@ -243,7 +240,7 @@ export default class AppUser extends HTMLElement {
     window.onpopstate = event => {
       // This event will be triggered when the browser's back button is clicked
 
-      // console.log(event.state);
+      // Check if event state is available
       if (event.state) {
         if (event.state.page) {
           outerThis.updatePage(event.state.content)

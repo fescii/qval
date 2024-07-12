@@ -13,11 +13,10 @@ export default class JoinPopup extends HTMLElement {
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
-    // this.innerHTML = this.getTemplate();
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
     this.disableScroll();
 
     // Const body element
@@ -88,7 +87,6 @@ export default class JoinPopup extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // console.log('We are inside disconnectedCallback');\
     this.enableScroll()
   }
 

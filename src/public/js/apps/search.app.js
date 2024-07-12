@@ -56,7 +56,6 @@ export default class AppSearch extends HTMLElement {
 
   setTitle = () => {
     // update title of the document
-    // document.title = 'Search | Discover and connect with people, topics and stories';
     if (this._query) {
       document.title = `Search | ${this._query}`;
     }
@@ -263,14 +262,6 @@ export default class AppSearch extends HTMLElement {
     });
   }
 
-  updatePage = content => {
-    // select body
-    const body = document.querySelector('body');
-
-    // populate content
-    body.innerHTML = content;
-  }
-
   updateState = (state, contentContainer) => {
     // populate content
     contentContainer.innerHTML = state.content;
@@ -304,36 +295,6 @@ export default class AppSearch extends HTMLElement {
     `;
   }
 
-  getTopics = () => {
-    const topics = this.getAttribute('topics');
-
-    const arrayOfObjects = JSON.parse(topics);
-
-    let html = '';
-
-    arrayOfObjects.forEach((topic, index) => {
-      if (index === 1) {
-        html += /* html */`
-          <discover-people url="/people/discover"></discover-people>
-        `
-      }
-      else if (index === 2) {
-        html += /* html */`
-          <topics-container url="/topics/popular"></topics-container>
-        `
-      }
-
-      html += /* html */`
-        <trending-container topic-id="${topic.id}"
-          topic-name="${topic.url}" topic="${topic.name}"
-          stories="${topic.stories}" url="/trending/${topic.id}" >
-        </trending-container>
-      `
-    });
-
-    return html;
-  }
-
   activateBackButton = btn => {
     btn.addEventListener('click', () => {
       // check window history is greater or equal to 1
@@ -342,7 +303,6 @@ export default class AppSearch extends HTMLElement {
         if (window.history.state) {
           // go back
           window.history.back();
-          // console.log(window.history.state);
         }
         else {
           // redirect to home
@@ -355,7 +315,6 @@ export default class AppSearch extends HTMLElement {
   activateOnPopState = () => {
     // Update state on window.onpopstate
     window.onpopstate = event => {
-      // console.log(event.state);
       if (event.state) {
         if (event.state.page) {
           outerThis.updatePage(event.state.content)
@@ -383,12 +342,10 @@ export default class AppSearch extends HTMLElement {
         key.parentElement.remove();
       }
     }
-    else {
-      if (this._query) {
-        const html = /* html */`<p class="search">Showing results for <span class="key">${this._query}</span></p>`;
+    else if (this._query) {
+      const html = /* html */`<p class="search">Showing results for <span class="key">${this._query}</span></p>`;
     
-        form.insertAdjacentHTML('afterend', html);
-      }
+      form.insertAdjacentHTML('afterend', html);
     }
     
   }
@@ -916,7 +873,6 @@ export default class AppSearch extends HTMLElement {
           }
 
           section.side {
-            /* border: 1px solid #ff0000; */
             padding: 0;
             display: none;
             width: 100%;

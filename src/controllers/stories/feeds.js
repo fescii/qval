@@ -28,7 +28,7 @@ const getStoryReplies = async(req, res, next) => {
   const reqData = {
     hash: hash.toUpperCase(),
     user,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page, 10),
     limit: 10
   }
 
@@ -76,7 +76,7 @@ const getReplyReplies = async(req, res, next) => {
 
   // check if the reply hash is available in the request object
   if (!hash || !page) {
-    const error = new Error('Reply hash or pageis undefined!');
+    const error = new Error('Reply hash or pages undefined!');
     return next(error);
   }
 
@@ -137,7 +137,7 @@ const fetchStoryLikes = async(req, res, next) => {
 
   // check if the story hash is available in the request object
   if (!hash || !page) {
-    const error = new Error('Story hash or pageis undefined!');
+    const error = new Error('Story hash or pages undefined!');
     return next(error);
   }
 

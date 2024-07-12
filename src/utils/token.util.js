@@ -9,7 +9,6 @@ const { envConfig } = require('../configs')
  * @returns {String} - The jwt token
 */
 const generateToken = async (userClaims) => {
-  // console.log(envConfig.jwt_expiry);
   return jwt.sign({ user: userClaims }, envConfig.secret, {
     expiresIn: envConfig.jwt_expiry
   });

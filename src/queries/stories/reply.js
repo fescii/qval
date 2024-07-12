@@ -63,7 +63,6 @@ const addReply = async data => {
   } catch (error) {
     // rollback transaction
     await t.rollback();
-    // console.log(error);
     return {reply: null, error: error}
   }
 }

@@ -16,21 +16,13 @@ export default class StoryFeed extends HTMLElement {
     this.render();
   }
 
-  setQuery = query => {
-    // if the query is null || empty
-    if(!query || query === "" || query !== "true") {
-      return false;
-    }
-
-    return true;
-  }
+  setQuery = query => !(!query || query === "" || query !== "true");
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const storiesContainer = this.shadowObj.querySelector('.stories');
 
     // check if the total
@@ -90,7 +82,6 @@ export default class StoryFeed extends HTMLElement {
           }
         })
         .catch((error) => {
-          // console.log(error)
           outerThis._empty = true;
           outerThis._block = true;
           outerThis.populateStories(outerThis.getWrongMessage(), storiesContainer);
@@ -100,7 +91,6 @@ export default class StoryFeed extends HTMLElement {
 
   fetchReplies = storiesContainer => {
     const outerThis = this;
-    // const url = `${this._url}?page=${this._page}`;
     const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
@@ -199,8 +189,8 @@ export default class StoryFeed extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

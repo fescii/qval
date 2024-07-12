@@ -14,7 +14,6 @@ export default class ActivityFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const contentContainer = this.shadowObj.querySelector('.activities');
 
     this.fetchStories(contentContainer);

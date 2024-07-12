@@ -70,7 +70,6 @@ export default class StorySection extends HTMLElement {
   getDate = isoDateStr => {
     const dateIso = new Date(isoDateStr); // ISO strings with timezone are automatically handled
     let userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // userTimezone.replace('%2F', '/')
 
     // Convert posted time to the current timezone
     const date = new Date(dateIso.toLocaleString('en-US', { timeZone: userTimezone }));
@@ -262,11 +261,9 @@ export default class StorySection extends HTMLElement {
     document.addEventListener('scroll', () => {
       // get total height of the content(minus padding)
       const totalHeight = content.scrollHeight;
-      // console.log("totalHeight: ", totalHeight);
 
       // get the scroll position of the content in the y-axis
       const scrollPosition = document.documentElement.scrollTop;
-      // console.log("scrollPosition: ", scrollPosition);
 
       // calculate the percentage of the scroll position
       const scrollPercentage = (scrollPosition / totalHeight) * 100;

@@ -43,7 +43,6 @@ export default class AppLogon extends HTMLElement {
   }
 
   render() {
-    // this.shadowObj.innerHTML = this.getTemplate();
     this.shadowObj.innerHTML = this.getTemplate();
   }
 
@@ -64,26 +63,20 @@ export default class AppLogon extends HTMLElement {
         contentTitle.textContent = 'Welcome';
       }
       else {
-        switch (initialName) {
-          case 'join':
-            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-            this.activateForgot(contentContainer, stagesContainer, contentTitle);
-            break;
-          case 'login':
-            outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
-            break;
-          case 'forgot':
-            outerThis.forgotLoaded(contentContainer, stagesContainer, contentTitle);
-            break;
-          case 'register':
-            outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
-            break;
-          default:
-            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-            this.activateForgot(contentContainer, stagesContainer, contentTitle);
-            break;
+        if (initialName === 'join') {
+          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+          this.activateForgot(contentContainer, stagesContainer, contentTitle);
+        } else if (initialName === 'login') {
+          outerThis.loginLoaded(contentContainer, stagesContainer, contentTitle);
+        } else if (initialName === 'forgot') {
+          outerThis.forgotLoaded(contentContainer, stagesContainer, contentTitle);
+        } else if (initialName === 'register') {
+          outerThis.registerLoaded(contentContainer, stagesContainer, contentTitle);
+        } else {
+          outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+          outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+          this.activateForgot(contentContainer, stagesContainer, contentTitle);
         }
       }
     }
@@ -107,7 +100,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // console.log('We are inside disconnectedCallback');
+    // Remove all event listeners
   }
 
   loginLoaded = (contentContainer, stagesContainer, contentTitle) => {
@@ -341,7 +334,6 @@ export default class AppLogon extends HTMLElement {
         }
         break;
       case "forgot":
-        // console.log(this._step);
         stages[this._step + 1].classList.add('active');
         this._step += 1;
         break;
@@ -382,90 +374,86 @@ export default class AppLogon extends HTMLElement {
       prevButton.innerHTML = outerThis.getBtnAltLoader();
       prevButton.style.setProperty("pointer-events", 'none');
 
-      switch (stageType) {
-        case "register":
-          if (outerThis._step <= 1) {
-            contentTitle.textContent = "Join";
-            setTimeout(() => {
-              stages[1].classList.remove('active');
-              form.remove();
-              stagesContainer.insertAdjacentHTML('afterend', welcome)
-              outerThis._step = 0;
+      if (stageType === "register") {
+        if (outerThis._step <= 1) {
+          contentTitle.textContent = "Join";
+          setTimeout(() => {
+            stages[1].classList.remove('active');
+            form.remove();
+            stagesContainer.insertAdjacentHTML('afterend', welcome)
+            outerThis._step = 0;
 
-              outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
-            }, 1500);
-          }
-          else if (outerThis._step === 2) {
-            setTimeout(() => {
-              stages[outerThis._step].classList.remove('active');
-              outerThis._step -= 1;
-              const currentFields = form.querySelector('.field.password');
-              if (currentFields) {
-                currentFields.remove();
-              }
+            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
+          }, 1500);
+        }
+        else if (outerThis._step === 2) {
+          setTimeout(() => {
+            stages[outerThis._step].classList.remove('active');
+            outerThis._step -= 1;
+            const currentFields = form.querySelector('.field.password');
+            if (currentFields) {
+              currentFields.remove();
+            }
 
-              form.insertAdjacentHTML('afterbegin', outerThis.getBioFields())
-            }, 1500);
-          }
-          break;
-        case "forgot":
-          if (outerThis._step <= 1) {
-            contentTitle.textContent = "Join";
-            setTimeout(() => {
-              stages[1].classList.remove('active');
-              form.remove();
-              stagesContainer.insertAdjacentHTML('afterend', welcome)
-              outerThis._step = 0;
+            form.insertAdjacentHTML('afterbegin', outerThis.getBioFields())
+          }, 1500);
+        }
+      }
+      else if (stageType === "forgot") {
+        if (outerThis._step <= 1) {
+          contentTitle.textContent = "Join";
+          setTimeout(() => {
+            stages[1].classList.remove('active');
+            form.remove();
+            stagesContainer.insertAdjacentHTML('afterend', welcome)
+            outerThis._step = 0;
 
-              outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
-            }, 1500);
-          }
-          else if (outerThis._step === 2) {
-            setTimeout(() => {
-              stages[outerThis._step].classList.remove('active');
-              outerThis._step -= 1;
-              const currentFields = form.querySelector('.forgot.code');
-              if (currentFields) {
-                currentFields.remove();
-              }
+            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
+          }, 1500);
+        }
+        else if (outerThis._step === 2) {
+          setTimeout(() => {
+            stages[outerThis._step].classList.remove('active');
+            outerThis._step -= 1;
+            const currentFields = form.querySelector('.forgot.code');
+            if (currentFields) {
+              currentFields.remove();
+            }
 
-              form.insertAdjacentHTML('afterbegin', outerThis.getForgotFields())
-            }, 1500);
-          }
-          else if (outerThis._step === 3) {
-            setTimeout(() => {
-              stages[outerThis._step].classList.remove('active');
-              outerThis._step -= 1;
-              const currentFields = form.querySelector('.forgot.password');
-              if (currentFields) {
-                currentFields.remove();
-              }
+            form.insertAdjacentHTML('afterbegin', outerThis.getForgotFields())
+          }, 1500);
+        }
+        else if (outerThis._step === 3) {
+          setTimeout(() => {
+            stages[outerThis._step].classList.remove('active');
+            outerThis._step -= 1;
+            const currentFields = form.querySelector('.forgot.password');
+            if (currentFields) {
+              currentFields.remove();
+            }
 
-              form.insertAdjacentHTML('afterbegin', outerThis.getCodeField())
-            }, 1500);
-          }
-          break;
-        case "login":
-          if (this._step <= 1) {
-            contentTitle.textContent = "Join";
-            setTimeout(() => {
-              stages[1].classList.remove('active');
-              form.remove();
-              stagesContainer.insertAdjacentHTML('afterend', welcome)
-              outerThis._step = 0;
+            form.insertAdjacentHTML('afterbegin', outerThis.getCodeField())
+          }, 1500);
+        }
+      }
+      else if (stageType === "login") {
+        if (this._step <= 1) {
+          contentTitle.textContent = "Join";
+          setTimeout(() => {
+            stages[1].classList.remove('active');
+            form.remove();
+            stagesContainer.insertAdjacentHTML('afterend', welcome)
+            outerThis._step = 0;
 
-              outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
-              outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
-            }, 1500);
-          }
-          break;
-        default:
-          break;
+            outerThis.activateRegister(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateLogin(contentContainer, stagesContainer, contentTitle);
+            outerThis.activateForgot(contentContainer, stagesContainer, contentTitle);
+          }, 1500);
+        }
       }
 
       setTimeout(() => {
@@ -670,7 +658,6 @@ export default class AppLogon extends HTMLElement {
     const submitButton = form.querySelector('.actions > .action.next ');
     const inputField = form.querySelector('.field.bio');
 
-    // const inputGroups = inputField.querySelectorAll('.input-group');
     const firstName = inputField.querySelector('.input-group.firstname');
     const lastname = inputField.querySelector('.input-group.lastname');
     const email = inputField.querySelector('.input-group.email');
@@ -702,7 +689,7 @@ export default class AppLogon extends HTMLElement {
       }
       else {
         // no Inspection
-        let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        let validRegex = /^[\w.-]+@[\w-]+\.[\w.-]+$/
 
         if (input.match(validRegex)) {
 
@@ -817,8 +804,6 @@ export default class AppLogon extends HTMLElement {
     form.firstElementChild.remove()
     this.nextStep('register', stagesContainer);
 
-    // console.log(this.getPasswordFields());
-
     form.insertAdjacentHTML('afterbegin', this.getPasswordFields())
   }
 
@@ -827,7 +812,6 @@ export default class AppLogon extends HTMLElement {
     const submitButton = form.querySelector('.actions > .action.next');
     const inputField = form.querySelector('.field.password');
 
-    // const inputGroups = inputField.querySelectorAll('.input-group');
     const password = inputField.querySelector('.input-group.password');
     const repeatPassword = inputField.querySelector('.input-group.repeat-password');
 
@@ -1096,7 +1080,7 @@ export default class AppLogon extends HTMLElement {
     }
     else {
       // no Inspection
-      let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      let validRegex = /^[\w.-]+@[\w-]+\.[\w.-]+$/
 
       if (input.match(validRegex)) {
 
@@ -1165,7 +1149,6 @@ export default class AppLogon extends HTMLElement {
       serverMsg.remove();
     }
 
-    // const inputGroups = inputField.querySelectorAll('.input-group');
     const password = inputField.querySelector('.input-group.password');
     const repeatPassword = inputField.querySelector('.input-group.repeat-password');
 
@@ -1197,39 +1180,36 @@ export default class AppLogon extends HTMLElement {
         submitButton.innerHTML = `<span class="text">Continue</span>`
         submitButton.style.setProperty("pointer-events", 'auto');
       }, 1000);
+
+      return;
     }
-    else {
-      if (this.isPassword(input, password, passwordStatus)) {
-        if (input === inputRepeat) {
-          repeatStatus.textContent = '';
-          repeatPassword.insertAdjacentHTML('beforeend', this._success);
+    
+    if (this.isPassword(input, password, passwordStatus)) {
+      if (input === inputRepeat) {
+        repeatStatus.textContent = "";
+        repeatPassword.insertAdjacentHTML("beforeend", this._success);
 
-          this._data.recovery['password'] = input;
+        this._data.recovery["password"] = input;
 
-          // console.log(this._data);
+        repeatPassword.classList.add("success");
 
-          repeatPassword.classList.add('success');
+        // API Call
+        this.activateForgotFinish(form.parentElement);
+      } else {
+        repeatStatus.textContent = "Passwords must match be equal!";
+        repeatPassword.insertAdjacentHTML("beforeend", outerThis._failed);
+        repeatPassword.classList.add("failed");
 
-          // API Call
-          this.activateForgotFinish(form.parentElement);
-        }
-        else {
-          repeatStatus.textContent = 'Passwords must match be equal!';
-          repeatPassword.insertAdjacentHTML('beforeend', outerThis._failed);
-          repeatPassword.classList.add('failed');
-
-          setTimeout(() => {
-            submitButton.innerHTML = `<span class="text">Continue</span>`
-            submitButton.style.setProperty("pointer-events", 'auto');
-          }, 1000);
-        }
-      }
-      else {
         setTimeout(() => {
-          submitButton.innerHTML = `<span class="text">Continue</span>`
-          submitButton.style.setProperty("pointer-events", 'auto');
+          submitButton.innerHTML = `<span class="text">Continue</span>`;
+          submitButton.style.setProperty("pointer-events", "auto");
         }, 1000);
       }
+    } else {
+      setTimeout(() => {
+        submitButton.innerHTML = `<span class="text">Continue</span>`;
+        submitButton.style.setProperty("pointer-events", "auto");
+      }, 1000);
     }
   }
 
@@ -1373,7 +1353,6 @@ export default class AppLogon extends HTMLElement {
     const outerThis = this;
     const submitButton = form.querySelector('.actions > .action.next');
 
-    // console.log(outerThis._data.recovery);
 
     // After API call
     const {
@@ -1440,7 +1419,6 @@ export default class AppLogon extends HTMLElement {
     const next = this.getAttribute('next') || '/home';
 
     const stagesContainer = contentContainer.querySelector('.stages');
-    // const contentTitle = contentContainer.querySelector('.head > .logo h2 span.action');
     const finish = this.getLoginSuccess(name);
     const form = contentContainer.querySelector('form');
 

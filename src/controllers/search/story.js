@@ -4,7 +4,7 @@ const {
 } = require('../../queries').searchQueries;
 
 /**
- * @function treandingStories
+ * @function trendingStories
  * @description Controller for finding all trending stories
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
@@ -20,7 +20,7 @@ const trendingStories = async(req, res, next) => {
 
   const reqData = {
     user,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page),
     limit: 10
   }
 
@@ -64,7 +64,7 @@ const searchStories = async(req, res, next) => {
   const reqData = {
     query,
     user,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page),
     limit: 10
   }
 

@@ -20,7 +20,7 @@ const trendingReplies = async(req, res, next) => {
 
   const reqData = {
     user,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page),
     limit: 10
   }
 
@@ -62,7 +62,7 @@ const searchReplies = async(req, res, next) => {
   const reqData = {
     query,
     user,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page),
     limit: 10
   }
 

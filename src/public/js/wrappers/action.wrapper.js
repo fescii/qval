@@ -26,7 +26,6 @@ export default class ActionWrapper extends HTMLElement {
   // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
     // Check if the attribute is reload
-    
   }
 
   render() {
@@ -154,7 +153,7 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-  // perfom actions
+  // perform actions
   performActions = (likeBtn, liked) => {
     // get url to 
     let baseUrl = this.getAttribute('url');
@@ -203,7 +202,7 @@ export default class ActionWrapper extends HTMLElement {
             // Show toast message
             outerThis.showToast(data.message, true);
 
-            // check the data.lked
+            // check the data.liked
             if (data.liked !== liked) {
               // revert the like button
               outerThis.updateLikeBtn(likeBtn, data.liked ? false : true); 
@@ -229,8 +228,8 @@ export default class ActionWrapper extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

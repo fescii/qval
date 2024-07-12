@@ -22,22 +22,10 @@ export default class CustomSpan extends HTMLSpanElement {
 
   // connected callback
   connectedCallback() {
-    // console.log('Connected');
-  }
-
-  // disconnected callback
-  disconnectedCallback() {
-    // console.log('Disconnected');
-  }
-
-  // watch for attribute changes and re-render the element
-  static get observedAttributes() {
-    return ['width'];
   }
 
   // attribute change callback
   attributeChangedCallback(name, oldValue, newValue) {
-    // console.log('Attribute Changed', name, oldValue, newValue);
     this.setStyles();
   }
 

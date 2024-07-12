@@ -27,6 +27,11 @@ module.exports = (sequelize, Sequelize, User) => {
 			primaryKey: true,
 			autoIncrement: true,
 		},
+		read: {
+			type: Sequelize.BOOLEAN,
+			allowNull: true,
+			defaultValue: false,
+		},
     kind: {
       type: Sequelize.ENUM('story', 'reply', 'topic', 'user'),
       allowNull: false,

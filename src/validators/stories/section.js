@@ -1,4 +1,3 @@
-// Import sanitizeUtil from src/utils/sanitize.util.js
 const { sanitizeInput } = require('../../utils').sanitizeUtil;
 
 /**

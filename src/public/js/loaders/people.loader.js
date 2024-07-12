@@ -14,7 +14,7 @@ export default class PeopleLoader extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('We are inside connectedCallback');
+		
 	}
 
 	getTemplate() {

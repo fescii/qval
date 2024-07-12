@@ -25,7 +25,7 @@ export default class AppTopic extends HTMLElement {
   connectedCallback() {
     this.style.display = 'flex';
     // onpopstate event
-    this.onpopEvent();
+    this.onPopEvent();
 
     // perform actions
     this.performActions();
@@ -42,7 +42,7 @@ export default class AppTopic extends HTMLElement {
       this.render();
 
       // call onpopstate event
-      this.onpopEvent();
+      this.onPopEvent();
 
       // perform actions
       this.performActions();
@@ -66,7 +66,7 @@ export default class AppTopic extends HTMLElement {
     }
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -106,16 +106,14 @@ export default class AppTopic extends HTMLElement {
           // Open the join popup
           this.openJoin(body);
         } 
+        else if (followBtn.classList.contains('following')) {
+          action = true;
+          outerThis.updateFollowBtn(false, followBtn);
+          // Follow the topic
+          this.followTopic(`${url}/follow`, options, followBtn, action);
+        }
         else {
-          // Update the follow button
-          if (followBtn.classList.contains('following')) {
-            action = true;
-            outerThis.updateFollowBtn(false, followBtn);
-          }
-          else {
-            outerThis.updateFollowBtn(true, followBtn);
-          }
-
+          outerThis.updateFollowBtn(true, followBtn);
           // Follow the topic
           this.followTopic(`${url}/follow`, options, followBtn, action);
         }
@@ -132,15 +130,15 @@ export default class AppTopic extends HTMLElement {
           // Open the join popup
           this.openJoin(body);
         } 
+        else if (subscribeBtn.classList.contains('subscribed')) {
+          action = true;
+          outerThis.updateSubscribeBtn(false, subscribeBtn);
+
+          // Subscribe to the topic
+          this.subscribeToTopic(`${url}/subscribe`, options, subscribeBtn, action);
+        }
         else {
-          // Update the subscribe button
-          if (subscribeBtn.classList.contains('subscribed')) {
-            action = true;
-            outerThis.updateSubscribeBtn(false, subscribeBtn);
-          }
-          else {
-            outerThis.updateSubscribeBtn(true, subscribeBtn);
-          }
+          outerThis.updateSubscribeBtn(true, subscribeBtn);
 
           // Subscribe to the topic
           this.subscribeToTopic(`${url}/subscribe`, options, subscribeBtn, action);
@@ -258,8 +256,8 @@ export default class AppTopic extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -381,7 +379,7 @@ export default class AppTopic extends HTMLElement {
   updateFollowers = (followed) => {
     const outerThis = this;
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -406,13 +404,12 @@ export default class AppTopic extends HTMLElement {
     }
   }
 
-  onpopEvent = () => {
+  onPopEvent = () => {
     const outerThis = this;
     // Update state on window.onpopstate
     window.onpopstate = event => {
       // This event will be triggered when the browser's back button is clicked
 
-      // console.log(event.state);
       if (event.state) {
         if (event.state.page) {
           outerThis.updatePage(event.state.content)

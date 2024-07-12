@@ -17,7 +17,7 @@ const { timestamp } = require('./time.util')
  * @property {string} transaction_desc - The transaction description
  * @description The mpesa data object
  */
-mpesaData = {
+const mpesaData = {
   url: mpesaConfig.url,
   auth_url: mpesaConfig.auth_url,
   bs_short_code: mpesaConfig.shortcode,

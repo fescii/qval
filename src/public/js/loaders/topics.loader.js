@@ -14,7 +14,7 @@ export default class TopicsLoader extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('We are inside connectedCallback');
+		
 	}
 
 	getTemplate() {

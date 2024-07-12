@@ -43,7 +43,6 @@ export default class MonthStat extends HTMLElement {
       this.getCacheData(this._url, options)
         .then(result => { 
           const data = result.data;
-          // console.log(data);
           // check for success response
           if (result.success) {
             if(!data) {
@@ -65,7 +64,6 @@ export default class MonthStat extends HTMLElement {
           }
         })
         .catch(error => {
-          // console.error(error);
           const content = outerThis.getEmpty();
           contentContainer.innerHTML = content;
         });
@@ -80,9 +78,7 @@ export default class MonthStat extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // Throw a custom error
-        // throw new Error('Request timed out');
+        reject(new Error('Request timed out'));
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -107,7 +103,6 @@ export default class MonthStat extends HTMLElement {
       } else {
         const networkResponse = await outerThis.fetchWithTimeout(url, options);
         await cache.put(url, networkResponse.clone());
-        // console.log('Network cache is added');
         const data = await networkResponse.json();
         return data;
       }

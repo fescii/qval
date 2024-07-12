@@ -14,7 +14,6 @@ export default class InfoContainer extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('We are inside connectedCallback');
 		const contentContainer = this.shadowObj.querySelector('div.content');
 
 		this.fetchTopics(contentContainer);

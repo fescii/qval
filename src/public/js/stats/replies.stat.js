@@ -26,7 +26,7 @@ export default class RepliesStat extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
   }
 
   formatNumber = n => {
@@ -124,13 +124,11 @@ export default class RepliesStat extends HTMLElement {
     const lastViews = this.parseToNumber(this.getAttribute('views-last'));
     const currentViews = this.parseToNumber(this.getAttribute('views'));
 
-
     const change = this.calculateDifference(lastViews, currentViews);
 
     // if change is negative, we need to make it positive
     const difference = Math.abs(change);
 
-    // console.log(`All Percentage Change: ${change}`);
     if (change > 0) {
       icon = `
         <span class="change up">
@@ -172,7 +170,6 @@ export default class RepliesStat extends HTMLElement {
     // if change is negative, we need to make it positive
     const difference = Math.abs(change);
 
-    // console.log(`All Percentage Change: ${change}`);
     if (change > 0) {
       icon = `
         <span class="change up">
@@ -214,7 +211,6 @@ export default class RepliesStat extends HTMLElement {
     // if change is negative, we need to make it positive
     const difference = Math.abs(change);
 
-    // console.log(`All Percentage Change: ${change}`);
     if (change > 0) {
       icon = `
         <span class="change up">

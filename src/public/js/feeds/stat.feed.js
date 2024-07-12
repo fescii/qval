@@ -21,7 +21,6 @@ export default class StatFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const contentContainer = this.shadowObj.querySelector('.activities');
 
     this.fetchFeeds(contentContainer);
@@ -180,8 +179,8 @@ export default class StatFeed extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

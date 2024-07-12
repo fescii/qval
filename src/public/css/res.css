@@ -1,7 +1,6 @@
 /* For screens over 1600 pixels */
 @media (min-width: 1400px) {
   html {
-    /* border: 10px solid red; */
     width: 100%;
     max-width: 100%;
     min-width: 100%;
@@ -10,7 +9,6 @@
   }
 
   body {
-    /* border: 1px solid blue; */
     min-height: 100vh;
     padding: 0;
   }
@@ -83,7 +81,6 @@
     font-size: 16px;
   }
   body {
-    /* border: 1px solid blue; */
     padding: 0 10px;
   }
 

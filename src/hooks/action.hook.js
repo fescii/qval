@@ -1,4 +1,4 @@
-// hook fns: functions to udate hooks data in the database
+// hook fns: functions to update hooks data in the database
 const {
   updateUserFollowers, updateUserFollowing, updateUserReplies, updateUserStories,
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
@@ -13,13 +13,13 @@ const { tagStory } = require('../queries').topicQueries;
  * @function actionHook
  * @name actionHook
  * @description A Hook function that updates user: (followers, following) data
- * topic: (followers, views, subscribers) data, story (views, upvotes) data.
+ * topic: (followers, views, subscribers) data, story (views, likes) data.
  * @param {Object} data - Data object (user, topic, story)
  * @returns {Promise<void>} - Returns a promise of void data
 */
 const actionHook = async data => {
   // check if data is available and contains kind field
-  if (!data || !data.kind || !data.action) {
+  if (!data?.kind || !data?.action) {
     // Log the error
     console.error('Data is undefined. Cannot initialize action hook process');
 
@@ -35,56 +35,47 @@ const actionHook = async data => {
     // switch the kind of data
     switch (data.kind) {
       case 'user':
-        const hashes = data.hashes;
-        // call the user updator
-        await userUpdator(data.action, hashes, data.value);
-        break;
+        // call the user updater
+        await userUpdater(data.action, data.hashes, data.value);
+      break;
       case 'topic':
-        // call the topic updator
-        await topicUpdator(data.action, data.hashes.target, data.value);
-        break;
+        // call the topic updater
+        await topicUpdater(data.action, data.hashes.target, data.value);
+      break;
       case 'story':
-        // call the story updator
-        await storyUpdator(data.action, data.hashes.target, data.value);
-        break;
+        // call the story updater
+        await storyUpdater(data.action, data.hashes.target, data.value);
+      break;
       case 'reply':
-        // call the reply updator
-        await replyUpdator(data.action, data.hashes.target, data.value);
-        break;
+        // call the reply updater
+        await replyUpdater(data.action, data.hashes.target, data.value);
+      break;
       case 'tag':
-        // call add tag to story
-        console.log('The data:', data.hashes.target, data.value);
-        const reqData =  {
-          hash: data.hashes.target,
-          topics: data.value
-        }
-        const {tagged, error } = await tagStory(reqData);
-
-        if (error) {
-          console.log('Error processing the job')
-          console.log(error)
-        }
-
-        if (!tagged) {
-          console.log('Tgging job failed')
-        }
-        break;
+        tagStory({hash: data.hashes.target, topics: data.value})
+        .then((tagged, error) => {
+          if (error) {
+            console.log('Error processing the job')
+            console.log(error)
+          } else if (!tagged) {
+          console.log('Tagging job failed')
+          }
+        });
+      break;
       case 'view':
-        const viewObj = await viewContent(data.user, data.hashes.target, data.action);
-        if (viewObj.error) {
-          console.log('Error processing the view job')
-          console.log(viewObj.error)
-        }
-
-        if (!viewObj.viewed) {
-          console.log('View job failed')
-        }
-
-        break;
+        viewContent(data.user, data.hashes.target, data.action)
+        .then((viewed, error) => {
+          if (error) {
+            console.log('Error processing the job')
+            console.log(error)
+          } else if (!viewed) {
+          console.log('Viewing job failed')
+          }
+        });
+      break;
       default:
         // Log the error
         console.error('Data kind is not defined. Cannot initialize action hook process');
-        break;
+      break;
     }
 
     // Log the process completion
@@ -98,14 +89,14 @@ const actionHook = async data => {
 }
 
 /**
- * @function userUpdator
- * @name userUpdator
+ * @function userUpdater
+ * @name userUpdater
  * @description A function that updates the user followers data
  * @param {String} action - The action to perform
  * @param {Object} hashes - The user hashes
  * @param {Number} value - The value to update
 */
-const userUpdator = async (action, hashes, value) => {
+const userUpdater = async (action, hashes, value) => {
   if (action === 'connect') {
     // Update the user followers and following
     await updateUserFollowers(hashes.to, value);
@@ -126,14 +117,14 @@ const userUpdator = async (action, hashes, value) => {
 }
 
 /**
- * @function topicUpdator
- * @name topicUpdator
+ * @function topicUpdater
+ * @name topicUpdater
  * @description A function that updates the topic followers data
  * @param {String} action - The action to perform
  * @param {String} topicHash - The topic hash
  * @param {Number} value - The value to update
 */
-const topicUpdator = async (action, topicHash, value) => {
+const topicUpdater = async (action, topicHash, value) => {
   if (action === 'subscribe') {
     // Update the topic subscribers
     await updateTopicSubscribers(topicHash, value);
@@ -153,14 +144,14 @@ const topicUpdator = async (action, topicHash, value) => {
 }
 
 /**
- * @function storyUpdator
- * @name storyUpdator
+ * @function storyUpdater
+ * @name storyUpdater
  * @description A function that updates the story views data
  * @param {String} action - The action to perform
  * @param {String} storyHash - The story hash
  * @param {Number} value - The value to update
 */
-const storyUpdator = async (action, storyHash, value) => {
+const storyUpdater = async (action, storyHash, value) => {
   if (action === 'view') {
     // Update the story views
     await updateStoryViews(storyHash, value);
@@ -180,14 +171,14 @@ const storyUpdator = async (action, storyHash, value) => {
 }
 
 /**
- * @function replyUpdator
- * @name replyUpdator
+ * @function replyUpdater
+ * @name replyUpdater
  * @description A function that updates the reply views data
  * @param {String} action - The action to perform
  * @param {String} replyHash - The reply hash
  * @param {Number} value - The value to update
 */
-const replyUpdator = async (action, replyHash, value) => {
+const replyUpdater = async (action, replyHash, value) => {
   if (action === 'view') {
     // Update the reply views
     await updateReplyViews(replyHash, value);

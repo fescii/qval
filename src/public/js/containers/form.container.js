@@ -14,7 +14,6 @@ export default class FormContainer extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('Yey! We are inside connectedCallback');
 
     this.expandTextArea();
 	}

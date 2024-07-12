@@ -16,7 +16,6 @@ export default class HeaderContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     this.expandLists();
     this.activateSlide();
   }
@@ -27,13 +26,9 @@ export default class HeaderContainer extends HTMLElement {
     const mobileCheckbox = this.shadowObj.querySelector('.nav input.nav-input');
     const mobileOptions = this.shadowObj.querySelector('ul.left');
 
-    // console.log(mobileCheckbox);
-    // console.log(mobileOptions);
-
     if (mobileCheckbox && mobileOptions) {
       mobileCheckbox.addEventListener('change', (event) => {
         if (event.currentTarget.checked) {
-          // console.log(mobileOptions);
           mobileOptions.style.setProperty('left', 0);
           self.disableScroll();
         }
@@ -52,7 +47,6 @@ export default class HeaderContainer extends HTMLElement {
       let activeLink = this.shadowObj.querySelector('ul.left > li.link.options-link.active');
       if (expandableHeaderLinks) {
         expandableHeaderLinks.forEach(link => {
-          // const options = link.querySelector('div.drop-down');
           link.addEventListener('click', event => {
             event.preventDefault();
 
@@ -61,10 +55,7 @@ export default class HeaderContainer extends HTMLElement {
                 activeLink.classList.remove('active');
               }
             }
-
-            // let isActive = event.target.classList.contains('active');
-
-            // console.log(isActive);
+            
             link.classList.toggle('active');
             activeLink = link;
           })

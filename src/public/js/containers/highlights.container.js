@@ -16,7 +16,7 @@ export default class HighlightsContainer extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('We are inside connectedCallback');
+		
 		const contentContainer = this.shadowObj.querySelector('div.content');
 
 		this.fetchTopics(contentContainer);
@@ -73,7 +73,7 @@ export default class HighlightsContainer extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
+        reject(new Error('Request timed out'));
         // Throw a custom error
         // throw new Error('Request timed out');
       }, timeout);

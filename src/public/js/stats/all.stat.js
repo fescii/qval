@@ -26,7 +26,7 @@ export default class AllStat extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
   }
 
   formatNumber = n => {
@@ -147,14 +147,11 @@ export default class AllStat extends HTMLElement {
     const lastAll = this.parseToNumber(this.getAttribute('all-last'));
     const currentAll = this.parseToNumber(this.getAttribute('all'));
 
-    // console.log(`Last All: ${lastAll}, Current All: ${currentAll}`);
-
     const percentageChange = this.calculatePercentageChange(lastAll, currentAll);
 
     // if percentageChange is negative, we need to make it positive
     const percentage = Math.abs(percentageChange);
 
-    // console.log(`All Percentage Change: ${percentageChange}`);
     if (percentageChange > 0) {
       icon = `
         <span class="change up">
@@ -199,10 +196,7 @@ export default class AllStat extends HTMLElement {
     const lastStory = this.parseToNumber(this.getAttribute('stories-last'));
     const currentStory = this.parseToNumber(this.getAttribute('stories'));
 
-    // console.log(`Last Story: ${lastStory}, Current Story: ${currentStory}`);
-
     const percentageChange = this.calculatePercentageChange(lastStory, currentStory);
-    // console.log(`Story Percentage Change: ${percentageChange}`);
 
     // if percentageChange is negative, we need to make it positive
     const percentage = Math.abs(percentageChange);
@@ -251,10 +245,7 @@ export default class AllStat extends HTMLElement {
     const lastOpinion = this.parseToNumber(this.getAttribute('replies-last'));
     const currentOpinion = this.parseToNumber(this.getAttribute('replies'));
 
-    // console.log(`Last Reply: ${lastOpinion}, Current Reply: ${currentOpinion}`);
-
     const percentageChange = this.calculatePercentageChange(lastOpinion, currentOpinion);
-    // console.log(`Reply Percentage Change: ${percentageChange}`);
 
     // if percentageChange is negative, we need to make it positive
     const percentage = Math.abs(percentageChange);

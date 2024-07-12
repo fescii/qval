@@ -16,10 +16,6 @@ export default class TopicsContainer extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// mql for media query: mobile
-		const mql = window.matchMedia('(max-width: 660px)');
-	
-		// console.log('We are inside connectedCallback');
 		const contentContainer = this.shadowObj.querySelector('div.content');
 
 		// if contentContainer exists
@@ -139,8 +135,8 @@ export default class TopicsContainer extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

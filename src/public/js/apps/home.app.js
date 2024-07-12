@@ -25,7 +25,7 @@ export default class AppHome extends HTMLElement {
     window.scrollTo(0, 0);
 
     // onpopstate event
-    this.onpopEvent();
+    this.onPopEvent();
 
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
@@ -39,17 +39,16 @@ export default class AppHome extends HTMLElement {
       this.render();
 
       // call onpopstate event
-      this.onpopEvent();
+      this.onPopEvent();
     });
   }
 
-  onpopEvent = () => {
+  onPopEvent = () => {
     const outerThis = this;
     // Update state on window.onpopstate
     window.onpopstate = event => {
       // This event will be triggered when the browser's back button is clicked
 
-      // console.log(event.state);
       if (event.state) {
         if (event.state.page) {
           outerThis.updatePage(event.state.content)

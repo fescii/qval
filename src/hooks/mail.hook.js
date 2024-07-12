@@ -14,7 +14,7 @@ const htmlToText = require('nodemailer-html-to-text').htmlToText;
  * @returns {Promise<void>} - Returns a promise of void
 */
 const resetEmailHook = async (data) => {
-  if (!data || !data.user || !data.token || !data.from) {
+  if (!data?.user || !data?.token || !data?.from) {
     // Log the error
     console.error('Data(s) is undefined. Cannot initialize reset email hook process');
 
