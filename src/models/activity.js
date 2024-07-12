@@ -56,6 +56,10 @@ module.exports = (sequelize, Sequelize, User) => {
 			type: Sequelize.STRING,
 			allowNull: true,
 		},
+		content: {
+			type: Sequelize.STRING,
+			allowNull: true,
+		},
 		verb:{
 			type: Sequelize.STRING,
 			allowNull: true,
