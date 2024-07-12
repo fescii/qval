@@ -4,7 +4,7 @@ const {
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
   updateStoryVotes, updateStoryViews, updateStoryLikes, updateStoryReplies, 
   updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent, updateUserViews
-} = require('./fns.hook');
+} = require('./fns');
 
 // import update tags query 
 const { tagStory } = require('../queries').topicQueries;

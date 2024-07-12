@@ -56,20 +56,25 @@ module.exports = (sequelize, Sequelize, User) => {
 			type: Sequelize.STRING,
 			allowNull: true,
 		},
-	},{
-			schema: 'activity',
-			freezeTableName: true,
-			timestamps: true,
-      timezone: 'UTC',
-			indexes: [
-				{ unique: true, fields: ['id'] },
-				{ fields: ['kind'] },
-				{ fields: ['action'] },
-				{ fields: ['author'] },
-				{ fields: ['target'] },
-				{	fields: ['to'] },
-				{	fields: ['createdAt']}
-			]
+		verb:{
+			type: Sequelize.STRING,
+			allowNull: true,
+		}
+	},
+	{
+		schema: 'activity',
+		freezeTableName: true,
+		timestamps: true,
+    timezone: 'UTC',
+		indexes: [
+			{ unique: true, fields: ['id'] },
+			{ fields: ['kind'] },
+			{ fields: ['action'] },
+			{ fields: ['author'] },
+			{ fields: ['target'] },
+			{	fields: ['to'] },
+			{	fields: ['createdAt']}
+		]
 	});
 
 	// Define associations: User --> Activity

@@ -1,6 +1,6 @@
 // Import and export all hooks in the index.js file
-const mailHook = require("./mail.hook");
-const actionHook = require("./action.hook");
+const mailHook = require("./mail");
+const actionHook = require("./action");
 
 // Export all hooks
 module.exports = {

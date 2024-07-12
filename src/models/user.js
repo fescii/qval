@@ -105,8 +105,6 @@ module.exports = (sequelize, Sequelize) => {
 			{ unique: true, fields: ['hash'] },
 			{ unique: true, fields: ['email'] },
 			{	fields: ['name'] },
-			{	fields: ['email'] },
-			{	fields: ['hash'] },
 			{	fields: ['bio'] },
 			{	fields: ['followers'] },
 			{	fields: ['following'] },

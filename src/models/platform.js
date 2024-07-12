@@ -158,7 +158,6 @@ module.exports = (User, sequelize, Sequelize) => {
         { fields: ['user'] },
         { fields: ['base'] },
         { fields: ['name'] },
-        { fields: ['privileges'], using: 'gin', operator: 'jsonb_path_ops' },
         { fields: ['expiry'] },
         { fields: ['expired'] },
         { fields: ['createdAt'] },
