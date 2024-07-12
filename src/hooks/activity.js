@@ -55,6 +55,7 @@ const activityHook = async data => {
   }
   // Try to update the user, topic or story data
   try {
+    const kind = data.kind.toLowerCase();
     // check for kind
     if (kind === kindData.User) {
       // create activity directly
@@ -75,7 +76,9 @@ const activityHook = async data => {
       // switch if the nullable is false
       if (data.nullable === false) {
         // add to to the data object
-        data.to = data.type === 'reply' ? await findReplyAuthor(data.target) : await findStoryAuthor(data.target);
+        if(data.action === actionData.Reply) {
+          data.to = data.type === 'reply' ? await findReplyAuthor(data.target) : await findStoryAuthor(data.target);
+        }
 
         // create activity directly
         await Activity.create(data);
@@ -96,26 +99,6 @@ const activityHook = async data => {
 }
 
 
-
-
-
-/**
- * @function findTopicAuthor
- * @name findTopicAuthor
- * @description A function that finds the author of a topic
- * @param {String} hash - The topic hash
- * @returns {Promise<String>} - Returns a promise of the author hash
-*/
-const findTopicAuthor = async hash => {
-  // Find the topic
-  const topic = await Topic.findOne({ attributes: ['author'], where: { hash } });
-
-  // Return the author hash on if topic is found otherwise throw an error
-  if (!topic) throw new Error('Topic not found');
-
-  return topic.author;
-}
-
 /**
  * @function findStoryAuthor
  * @name findStoryAuthor
@@ -125,12 +108,12 @@ const findTopicAuthor = async hash => {
 */
 const findStoryAuthor = async hash => {
   // Find the story
-  const story = await Story.findOne({ attributes: ['author'], where: { hash } });
+  const story = await Story.findOne({ attributes: ['author', 'content', 'title'], where: { hash } });
 
   // Return the author hash on if story is found otherwise throw an error
   if (!story) throw new Error('Story not found');
 
-  return story.author;
+  return story;
 }
 
 /**
@@ -142,7 +125,7 @@ const findStoryAuthor = async hash => {
 */
 const findReplyAuthor = async hash => {
   // Find the reply
-  const reply = await Reply.findOne({ attributes: ['author'], where: { hash } });
+  const reply = await Reply.findOne({ attributes: ['author', 'content'], where: { hash } });
 
   // Return the author hash on if reply is found otherwise throw an error
   if (!reply) throw new Error('Reply not found');

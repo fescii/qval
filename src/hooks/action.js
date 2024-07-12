@@ -44,6 +44,7 @@ const actionHook = async data => {
       break;
       case 'story':
         // call the story updater
+        console.log(data)
         await storyUpdater(data.action, data.hashes.target, data.value);
       break;
       case 'reply':

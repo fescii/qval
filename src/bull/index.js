@@ -17,7 +17,7 @@ const addActivity = async data => {
   }
 
   // construct the job payload: for queueing || add the job to the queue
-  await actionQueue.add('activityJob', data, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  await activityQueue.add('activityJob', data, { attempts: 3, backoff: 1000, removeOnComplete: true });
 }
 
 module.exports = {

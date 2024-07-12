@@ -41,9 +41,9 @@ const createStoryReply = async (req, res, next) => {
 
   // Add activity to the queue
   await addActivity({
-    kind: 'reply', action: 'reply', author: req.user.hash, name: req.user.name,
+    kind: 'story', action: 'reply', author: req.user.hash, name: req.user.name,
     target: reply.story, to: null, verb: 'replied',
-    type: 'story', nullable: false
+    type: 'story', nullable: false,
   });
 
   // Return the response
@@ -94,7 +94,7 @@ const createReply = async (req, res, next) => {
   await addActivity({
     kind: 'reply', action: 'reply', author: req.user.hash, name: req.user.name,
     target: reply.reply, to: null, verb: 'replied',
-    type: 'reply', nullable: false
+    type: 'reply', nullable: false,
   });
 
   // Return the response
