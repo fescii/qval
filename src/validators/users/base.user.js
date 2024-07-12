@@ -35,7 +35,7 @@ const validateUser = async data => {
 
     // validate email
     // noinspection RegExpRedundantEscape
-    let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    let validRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!data.email.match(validRegex)){
       return {
@@ -66,7 +66,6 @@ const validateUser = async data => {
       error: "There was an error validating user data!"
     }
   }
-  
 }
 
 /**
@@ -97,7 +96,7 @@ const validateLogin = async data => {
 
     // validate email
     // noinspection RegExpRedundantEscape
-    let validRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    let validRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!data.email.match(validRegex)) {
       return {
@@ -111,7 +110,10 @@ const validateLogin = async data => {
       password: await sanitizeUtil.sanitizeInput(data.password)
     }
 
-    return { data: validatedData, error:null }
+    // Return a promise which resolves to the validated data
+    return new Promise((resolve, reject) => {
+      resolve({ data: validatedData, error: null });
+    })
   }
   else {
     return {

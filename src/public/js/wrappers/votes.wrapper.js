@@ -164,7 +164,7 @@ export default class VotesAuthor extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  // perfom actions
+  // perform actions
   performVote = (option, selected, votes) => {
     // get url to 
     let hash = this.getAttribute('hash');
@@ -267,8 +267,8 @@ export default class VotesAuthor extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -462,7 +462,7 @@ export default class VotesAuthor extends HTMLElement {
               // revert any checked input
               outerThis.revertInputs(inputs)
 
-              // prevet this function from proceeding
+              // prevent this function from proceeding
               return;
             } 
 

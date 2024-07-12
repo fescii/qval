@@ -13,11 +13,10 @@ export default class UrlPopup extends HTMLElement {
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
-    // this.innerHTML = this.getTemplate();
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
     this.disableScroll();
 
     // Select the close button & overlay
@@ -31,7 +30,6 @@ export default class UrlPopup extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // console.log('We are inside disconnectedCallback');\
     this.enableScroll()
   }
 

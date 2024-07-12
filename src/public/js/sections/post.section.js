@@ -112,6 +112,7 @@ export default class PostSection extends HTMLElement {
                 break;
               case "likes":
                 contentContainer.innerHTML = outerThis.getLikes();
+                break;
               default:
                 break;
             }
@@ -124,7 +125,6 @@ export default class PostSection extends HTMLElement {
       window.onpopstate = event => {
         // This event will be triggered when the browser's back button is clicked
 
-        // console.log(event.state);
         if (event.state) {
           if (event.state.page) {
             outerThis.updatePage(event.state.content)

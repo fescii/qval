@@ -107,7 +107,7 @@ const editEmail = async (email, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
+    
     await transaction.rollback();
     return {
       user: null,
@@ -156,7 +156,7 @@ const editContact = async (contact, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
+    
     await transaction.rollback();
     return {
       user: null,
@@ -206,7 +206,7 @@ const editBio = async (bio, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
+    
     await transaction.rollback();
     return {
       user: null,
@@ -258,7 +258,6 @@ const editPicture = async (picture, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
     await transaction.rollback();
     return {
       user: null,
@@ -308,7 +307,7 @@ const editName = async (name, hash) => {
     };
   }
   catch (error) {
-    // console.log(error);
+    
     await transaction.rollback();
     return {
       user: null,

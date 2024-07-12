@@ -14,10 +14,8 @@ import ActivityContainer from "./containers/activity.container.js";
 import FormContainer from "./containers/form.container.js";
 import HighlightsContainer from "./containers/highlights.container.js";
 import InfoContainer from "./containers/info.container.js";
-import LogonContainer from "./containers/logon.container.js";
 import PeopleContainer from "./containers/people.container.js";
 import DiscoverPeople from "./containers/people.discover.js";
-import RelatedContainer from "./containers/related.container.js";
 import StatContainer from "./containers/stat.container.js";
 import StoriesContainer from "./containers/stories.container.js";
 import TopicsContainer from "./containers/topics.container.js";
@@ -31,7 +29,6 @@ import CustomSpan from "./elements/span.element.js";
 import QuickPost from "./post/quick.post.js";
 import PollPoll from "./post/poll.post.js";
 import StoryPost from "./post/story.post.js";
-import SummeryPost from "./post/summery.post.js";
 
 // Import feeds
 import ActivityFeed from "./feeds/activity.feed.js";
@@ -115,10 +112,8 @@ customElements.define("activity-container", ActivityContainer);
 customElements.define("form-container", FormContainer);
 customElements.define("highlights-container", HighlightsContainer);
 customElements.define("info-container", InfoContainer);
-customElements.define("logon-container", LogonContainer);
 customElements.define("people-container", PeopleContainer);
 customElements.define("discover-people", DiscoverPeople);
-customElements.define("related-container", RelatedContainer);
 customElements.define("stat-container", StatContainer);
 customElements.define("stories-container", StoriesContainer);
 customElements.define("topics-container", TopicsContainer);
@@ -132,7 +127,6 @@ customElements.define("custom-span", CustomSpan, { extends: "span" });
 customElements.define("quick-post", QuickPost);
 customElements.define("poll-post", PollPoll);
 customElements.define("story-post", StoryPost);
-customElements.define("summery-post", SummeryPost);
 
 // Register feeds
 customElements.define("activity-feed", ActivityFeed);

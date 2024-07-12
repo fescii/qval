@@ -65,7 +65,7 @@ const searchTopics = async(req, res, next) => {
   const reqData = {
     user,
     query,
-    page: page = parseInt(page, 10) || 1,
+    page: parseInt(page),
     limit: 10
   }
 

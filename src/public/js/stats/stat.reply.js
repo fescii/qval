@@ -137,17 +137,6 @@ export default class StatReply extends HTMLElement {
     const views = this.parseToNumber(this.getAttribute('views'));
     return /* html */`
       <span class="content">
-        ${this.getAttribute('content')}
-      </span>
-      ${this.getActions(likes, views)}
-    `;
-  }
-
-  getBody = () => {
-    const likes = this.parseToNumber(this.getAttribute('likes'));
-    const views = this.parseToNumber(this.getAttribute('views'));
-    return /* html */`
-      <span class="content">
         ${this.removeHtml(this.innerHTML)}
       </span>
       ${this.getActions(likes, views)}
@@ -156,7 +145,6 @@ export default class StatReply extends HTMLElement {
 
   removeHtml = text => {
     const mql = window.matchMedia('(max-width: 660px)');
-    let str = text;
     // Check if the text is encoded (contains &lt; or &gt;)
     if (text.includes('&lt;') || text.includes('&gt;')) {
       // remove them from the text

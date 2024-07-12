@@ -159,58 +159,38 @@ const getUserFollowing = async (req, res) => {
  * @returns Page: Renders settings page || error page
 */
 const getAccount = async (req, res) => {
-  // get user from the request object
-  if(!req.user || !req.user.hash) {
-    // redirect to the login page
+  if (!req.user?.hash) {
     return res.redirect('/join/login');
   }
-  const hash = req.user.hash;
 
-  // get the params from the request
+  const hash = req.user.hash;
   let current = req.params.current;
 
-  // query the database for the user
   const { user, error } = await getUserProfile(hash);
 
-  // if there is an error, render the error page
   if (error) {
-    console.log(error)
-    return res.status(500).render('500')
+    console.log(error);
+    return res.status(500).render('500');
   }
 
-  // if there is no user, render the 404 page
   if (!user) {
-    return res.status(404).render('404')
+    return res.status(404).render('404');
   }
 
-  // update the user object
-  if (!user.contact) {
-    user.contact = {
-      email: null,
-      x: null,
-      threads: null,
-      phone: null,
-      link: null,
-      linkedin: null
-    }
-  }
-  else {
-    user.contact = {
-      email: user.contact.email ? user.contact.email : null,
-      x: user.contact.x ? user.contact.x : null,
-      threads: user.contact.threads ? user.contact.threads : null,
-      phone: user.contact.phone ? user.contact.phone : null,
-      link: user.contact.link ? user.contact.link : null,
-      linkedin: user.contact.linkedin ? user.contact.linkedin : null,
-    }
-  }
+  user.contact = {
+    email: user.contact?.email || null,
+    x: user.contact?.x || null,
+    threads: user.contact?.threads || null,
+    phone: user.contact?.phone || null,
+    link: user.contact?.link || null,
+    linkedin: user.contact?.linkedin || null,
+  };
 
-  // add tab to the user object
-  user.tab = current ? current : 'stats';
+  user.tab = current || 'stats';
 
   res.render('pages/settings', {
     data: user
-  })
+  });
 }
 
 // Export all public content controllers

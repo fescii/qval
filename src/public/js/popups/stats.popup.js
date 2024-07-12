@@ -14,11 +14,9 @@ export default class StatsPopup extends HTMLElement {
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
-    // this.innerHTML = this.getTemplate();
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     this.disableScroll();
 
     // Select the close button & overlay
@@ -84,9 +82,7 @@ export default class StatsPopup extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // Throw a custom error
-        // throw new Error('Request timed out');
+        reject(new Error('Request timed out'));
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -138,7 +134,6 @@ export default class StatsPopup extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // console.log('We are inside disconnectedCallback');\
     this.enableScroll()
   }
 
@@ -190,10 +185,6 @@ export default class StatsPopup extends HTMLElement {
   }
 
   getWelcome() {
-    let name = this.getAttribute('name') || 'User'
-
-    // if the name ends with an 's', add an apostrophe else add an apostrophe and an 's'
-    name = name.endsWith('s') ? `${name}'` : `${name}'s`;
     return `
       <div class="welcome">
         <h2>Highlights</h2>

@@ -16,7 +16,7 @@ export default class FeedContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
     const feedContainer = this.shadowObj.querySelector('.stories');
 
     // check if the total
@@ -200,8 +200,8 @@ export default class FeedContainer extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

@@ -330,7 +330,7 @@ const findTopicWhenLoggedIn = async (query, user) => {
 
 
 /**
- * @functionn findTopicWhenLoggedOut
+ * @function findTopicWhenLoggedOut
  * @description Query to find a topic when logged out
  * @param {String} query - The query of the topic
  * @returns {Object} - The topic object or null, and the error if any
@@ -405,7 +405,7 @@ const findTopicsByQuery = async (query) => {
 
 const mapFields = (data, hash) => {
   if (data.length <= 0) {
-    return html = /*html*/`
+    return /*html*/`
       <div class="empty">
         <p>The topic has no information yet. You can contribute to this topic by adding relevent information about the topic.</p>
         <a href="/t/${hash}/contribute" class="button">Contribute</a>

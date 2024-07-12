@@ -16,21 +16,13 @@ export default class RepliesFeed extends HTMLElement {
     this.render();
   }
 
-  setQuery = query => {
-    // if the query is null || empty
-    if(!query || query === "" || query !== "true") {
-      return false;
-    }
-
-    return true;
-  }
+  setQuery = query => !(!query || query === "" || query !== "true");
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const repliesContainer = this.shadowObj.querySelector('.replies');
 
     // check if the container exists
@@ -94,7 +86,6 @@ export default class RepliesFeed extends HTMLElement {
 
   fetchReplies = repliesContainer => {
     const outerThis = this;
-    // const url = `${this._url}?page=${this._page}`;
     const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
@@ -158,8 +149,8 @@ export default class RepliesFeed extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

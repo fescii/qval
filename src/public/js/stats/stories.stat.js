@@ -26,7 +26,7 @@ export default class StoriesStat extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
+    
   }
 
   formatNumber = n => {

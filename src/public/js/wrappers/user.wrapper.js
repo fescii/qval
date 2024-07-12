@@ -22,12 +22,7 @@ export default class UserWrapper extends HTMLElement {
 
   // observe the attributes on change
   attributeChangedCallback(name, oldValue, newValue) {
-    // if (oldValue !== newValue) {
-    //   // console.log('Attribute changed: ', name, newValue);
-    // }
-    // else {
-    //   console.log('Attribute not changed: ', name, newValue);
-    // }
+  
   }
 
   render() {
@@ -150,7 +145,7 @@ export default class UserWrapper extends HTMLElement {
     );
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -261,8 +256,8 @@ export default class UserWrapper extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
-        // reject(new Error('Request timed out'));
+        reject(new Error('Request timed out'));
+        
       }, timeout);
 
       fetch(url, { ...options, signal })

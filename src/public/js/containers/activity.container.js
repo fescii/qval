@@ -49,23 +49,17 @@ export default class ActivityContainer extends HTMLElement {
             activeTab.classList.remove('active');
             tab.classList.add('active');
             activeTab = tab;
-            switch (tab.dataset.element) {
-              case "all":
-                contentContainer.innerHTML = outerThis.getAll();
-                break;
-              case "stories":
-                contentContainer.innerHTML = outerThis.getAll();
-                break;
-              case "replies":
-                contentContainer.innerHTML = outerThis.getAll();
-                break;
-              case "saved":
-                contentContainer.innerHTML = outerThis.getAll();
-              default:
-                contentContainer.innerHTML = outerThis.getAll();
-                break;
+            if (tab.dataset.element === "all") {
+              contentContainer.innerHTML = outerThis.getAll();
+            } else if (tab.dataset.element === "stories") {
+              // TODO: Add stories
+            } else if (tab.dataset.element === "replies") {
+              // TODO: Add replies
+            } else if (tab.dataset.element === "saved") {
+              // TODO: Add saved
+            } else {
+              contentContainer.innerHTML = outerThis.getAll();
             }
-
           }
         })
       })

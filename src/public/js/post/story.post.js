@@ -302,8 +302,6 @@ export default class StoryPost extends HTMLElement {
   }
 
   getHeader = () => {
-    let authorUrl = this.getAttribute('author-url');
-    authorUrl = authorUrl.trim().toLowerCase();
     return /*html*/`
       <div class="meta top-meta">
         <span class="by">by</span>

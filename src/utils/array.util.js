@@ -23,11 +23,9 @@ const sumArray = async (arr) => arr.reduce((accumulator, currentValue) => accumu
  * @function slugify
  * @description A function to slugify a text
  * @param {String} text - The text to slugify
- * @returns {String} - The slugified text
+ * @returns {String} - The slugify text
 */
 const slugify = (text) => {
-  // return text.trim().replace(/\s+/g, ' ').
-  //   toLowerCase().replace(/\s+/g, '-');
 
   // remove all commas, periods, and other punctuation
   // replace all spaces with hyphens

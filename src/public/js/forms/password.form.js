@@ -144,7 +144,7 @@ export default class FormPassword extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
+        reject(new Error('Request timed out'));
         // Throw a custom error
         // throw new Error('Request timed out');
       }, timeout);

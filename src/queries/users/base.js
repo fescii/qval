@@ -109,7 +109,7 @@ const getUserByHash = async (hash, currentUser) => {
  * @param {String} hash - The hash of the user
  * @returns {Object} - The user object or null, and the error if any
 */
-const getUser = async (hash, you=false,) => {
+const getUser = async (hash, you=false) => {
   try {
     // Find the user by hash
     const user = await User.findOne({ 
@@ -148,7 +148,7 @@ const getUserWhenLoggedIn = async (hash, currentUser) => {
   try {
     // check if hash and current user are the same
     if (hash === currentUser) {
-      return getUser(hash, true, true);
+      return getUser(hash, true);
     }
     // Find the user by hash
     const user = await User.findOne({ 

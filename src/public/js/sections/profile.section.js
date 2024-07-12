@@ -127,7 +127,6 @@ export default class ProfileSection extends HTMLElement {
       window.onpopstate = event => {
         // This event will be triggered when the browser's back button is clicked
 
-        // console.log(event.state);
         if (event.state) {
           if (event.state.page) {
             outerThis.updatePage(event.state.content)

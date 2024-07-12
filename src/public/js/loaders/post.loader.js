@@ -14,7 +14,7 @@ export default class PostLoader extends HTMLElement {
 	}
 
 	connectedCallback() {
-		// console.log('We are inside connectedCallback');
+		
 	}
 
 	getTemplate() {

@@ -18,12 +18,7 @@ export default class PeopleFeed extends HTMLElement {
   }
 
   setQuery = query => {
-    // if the query is null || empty
-    if(!query || query === "" || query !== "true") {
-      return false;
-    }
-
-    return true;
+    return query && query !== "" && query === "true";
   }
 
   render() {
@@ -101,7 +96,6 @@ export default class PeopleFeed extends HTMLElement {
 
   fetchPeople = peopleContainer => {
     const outerThis = this;
-    // const url = `${this._url}?page=${this._page}`;
     const url = this._query ? `${this._url}&page=${this._page}` : `${this._url}?page=${this._page}`;
 
     if(!this._block && !this._empty) {
@@ -160,7 +154,7 @@ export default class PeopleFeed extends HTMLElement {
       setTimeout(() => {
         controller.abort();
         // add property to the error object
-        reject({ name: 'AbortError', message: 'Request timed out' });
+        reject(new Error('Request timed out'));
         // Throw a custom error
         // throw new Error('Request timed out');
       }, timeout);

@@ -17,8 +17,6 @@ export default class TopicSection extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
-
     const contentContainer = this.shadowObj.querySelector('div.feeds');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
 
@@ -128,7 +126,6 @@ export default class TopicSection extends HTMLElement {
       window.onpopstate = event => {
         // This event will be triggered when the browser's back button is clicked
 
-        // console.log(event.state);
         if (event.state) {
           if (event.state.page) {
             outerThis.updatePage(event.state.content)

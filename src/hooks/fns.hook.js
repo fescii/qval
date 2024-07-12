@@ -348,8 +348,8 @@ const updateStoryVotes = async (storyHash, option) => {
 
     if(!story || story.kind !== 'poll') return;
 
-    // check array lenth against votes'
-    if (story.votes.lenth < option - 1) return;
+    // check array length against votes'
+    if (story.votes.length < option - 1) return;
 
     // update votes
     let voted = story.votes.map((vote, index) => {
@@ -359,7 +359,7 @@ const updateStoryVotes = async (storyHash, option) => {
     // Update the story votes by the option: consider postgres index array increment
     await story.update({votes: voted});
   } catch (error) {
-    // throw an error
+    // rethrow the error
     throw error;
   }
 }

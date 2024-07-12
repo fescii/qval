@@ -154,7 +154,6 @@ export default class StatStory extends HTMLElement {
 
   removeHtml = text => {
     const mql = window.matchMedia('(max-width: 660px)');
-    let str = text;
     // Check if the text is encoded (contains &lt; or &gt;)
     if (text.includes('&lt;') || text.includes('&gt;')) {
       // remove them from the text

@@ -14,7 +14,6 @@ export default class TrendingContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    // console.log('We are inside connectedCallback');
     const contentContainer = this.shadowObj.querySelector('.stories');
 
     this.fetchStories(contentContainer);
