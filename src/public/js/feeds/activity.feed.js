@@ -111,7 +111,8 @@ export default class ActivityFeed extends HTMLElement {
     return activities.map(activity => {
       return /*html*/`
         <activity-item id="${activity.id}" hash="${activity.target}" time="${activity.createdAt}" kind="${activity.kind}"
-          to="${activity.to}" content="${activity.content}" verb="${activity.verb}" action="${activity.action}" author="${activity.author}">
+          to="${activity.to}" verb="${activity.verb}" action="${activity.action}" author="${activity.author}">
+          ${activity.content}
         </activity-item>
       `
     }).join('');

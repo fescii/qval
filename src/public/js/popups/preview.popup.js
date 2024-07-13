@@ -88,7 +88,7 @@ export default class PreviewPopup extends HTMLElement {
               const bio = user.bio === null ? 'This user has not added a bio yet.' : user.bio;
               const userContent = outerThis.removeHtml(bio, user.name);
               outerThis._story = outerThis.mapUser(user);
-              const content = outerThis.getUserActions(userContent, `/u/${user.hash}`, user.hash, user.followers);
+              const content = outerThis.getUserContent(userContent, `/u/${user.hash.toLowerCase()}`, user.hash, user.followers);
 
               // remove the loader
               previewLoader.remove();
@@ -290,11 +290,14 @@ export default class PreviewPopup extends HTMLElement {
   }
 
   mapUser = user => {
+    const url = `/u/${user.hash.toLowerCase()}`;
     return /*html*/`
-			<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
+			<app-profile tab="stories" hash="${user.hash}" you="${user.you}" url="${url}" stories="${user.stories}" replies="${user.replies}"
         picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
-        following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
-			</user-wrapper>
+        following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }"
+        followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
+        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies">
+			</app-profile>
     `
   }
 
@@ -302,18 +305,21 @@ export default class PreviewPopup extends HTMLElement {
     const author = topic.topic_author;
     const sections = topic.topic_sections;
     const url = `/t/${topic.hash.toLowerCase()}`;
+    let apiUrl = `/api/v1${url}`
     // Remove all HTML tags
     const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
     return /*html*/`
-      <topic-wrapper hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
+      <app-topic tab="article" hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
         topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
         subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
-        author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
+        stories-url="${apiUrl}/stories" contributors-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 
+        author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}" 
+        author-stories="${author.stories}" author-replies="${author.replies}"
         author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
         author-following="${author.following}" author-follow="${author.is_following}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
         author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
         ${sections}
-      </topic-wrapper>
+      </app-topic>
     `
   }
 

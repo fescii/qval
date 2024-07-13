@@ -17,15 +17,15 @@ export default class TopicWrapper extends HTMLElement {
   }
 
   connectedCallback() {
-     // get url
-     let url = this.getAttribute('url');
+    // get url
+    let url = this.getAttribute('url');
 
-     url = url.trim().toLowerCase();
+    url = url.trim().toLowerCase();
  
-     // Get the body
-     const body = document.querySelector('body');
+    // Get the body
+    const body = document.querySelector('body');
  
-     this.openTopicPage(url, body);
+    this.openTopicPage(url, body);
 
     // perform actions
     this.performActions();
@@ -67,7 +67,7 @@ export default class TopicWrapper extends HTMLElement {
     }
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -504,18 +504,16 @@ export default class TopicWrapper extends HTMLElement {
       ${this.innerHTML}
     </app-topic>
    `
- }
+  }
 
- getHighlights = () => {
-
-  return /* html */`
-    <topic-popup url="/api/v1/t/${this.getAttribute('hash').toLowerCase()}/stats" name="${this.getAttribute('name')}" views="${this.getAttribute('views')}"
-      followers="${this.getAttribute('followers')}" subscribers="${this.getAttribute('subscribers')}" 
-      stories="${this.getAttribute('stories')}">
-    </copic-popup>
-  `
-}
-
+  getHighlights = () => {
+    return /* html */`
+      <topic-popup url="/api/v1/t/${this.getAttribute('hash').toLowerCase()}/stats" name="${this.getAttribute('name')}" views="${this.getAttribute('views')}"
+        followers="${this.getAttribute('followers')}" subscribers="${this.getAttribute('subscribers')}" 
+        stories="${this.getAttribute('stories')}">
+      </topic-popup>
+    `
+  }
 
   getStyles() {
     return /* css */`

@@ -138,43 +138,17 @@ export default class ActivityItem extends HTMLElement {
   getBody = () => {
     return /* html */`
       ${this.getHeader(this.getAttribute('kind'))}
-      ${this.getContent(this.getAttribute('content'))}
+      ${this.getContent(this.innerHTML)}
       ${this.getActions()}
     `;
   }
 
-  getContent = (content) => {
-    if (this.getAttribute('kind') === 'user' && this.getAttribute('action') === 'follow') {
-      try {
-        // check if content contains -
-        if (content.includes('-')) {
-          const contentArr = content.split('-');
-          return /* html */ `
-            <div class="foot">
-              ${contentArr[0]} - <span class="by">author<span>${contentArr[1]}</span></span>
-            </div>
-          `
-        }
-      } catch (error) {
-        return /* html */ `
-          <div class="foot">
-            User username/hash - <span class="by">author<span>${this.getAttribute('to')}</span></span>
-          </div>
-        `
-      }
-    
-      return /* html */ `
-        <div class="foot">
-          User username/hash - <span class="by">author<span>${this.getAttribute('to')}</span></span>
-        </div>
-      `
-    } else {
-      return `
-        <span class="content">
-          ${this.getAttribute('content')}
-        </span>
-      `
-    }
+  getContent = content => {
+    return `
+      <span class="content">
+        ${content}
+      </span>
+    `
   }
 
   getActions = () => {

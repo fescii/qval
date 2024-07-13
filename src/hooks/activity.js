@@ -38,7 +38,7 @@ const activityHook = async data => {
     // check for kind
     if (kind === kindData.User) {
       // find user information
-      const content = await findUserInfo(data.author);
+      const content = await findUserInfo(data.to);
 
       // add author and content to the data object
       data.content = content;
@@ -164,8 +164,12 @@ const findUserInfo = async hash => {
 
   // Return the user hash on if user is found otherwise throw an error
   if (!user) throw new Error('User not found');
+  const bio = user.bio ? user.bio : 'The user has not added to their bio yet!';
 
-  return `${user.name} - @${user.hash}`;
+  return `
+    ${"<h4>" + user.name + "</h4>"}
+    <p>${summarize(bio)}</p>
+  `
 }
 
 
