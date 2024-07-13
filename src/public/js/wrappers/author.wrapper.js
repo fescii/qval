@@ -12,7 +12,13 @@ export default class AuthorWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
     this.render();
+  }
+
+  setAttributes = (name, value) => {
+    this.parent.setAttribute(name, value);
   }
 
   render() {
@@ -364,7 +370,7 @@ export default class AuthorWrapper extends HTMLElement {
   updateFollowers = (followed) => {
     const outerThis = this;
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -373,6 +379,10 @@ export default class AuthorWrapper extends HTMLElement {
 
     // Set the followers attribute
     this.setAttribute('followers', followers.toString());
+    this.setAttribute('user-follow', followed.toString());
+
+    this.setAttributes('author-followers', followers.toString());
+    this.setAttributes('author-follow', followed.toString());
 
     // select the followers element
     const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');

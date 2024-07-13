@@ -309,7 +309,7 @@ export default class PreviewPopup extends HTMLElement {
     // Remove all HTML tags
     const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
     return /*html*/`
-      <app-topic tab="article" hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
+      <app-topic tab="article" hash="${topic.hash}" name="${topic.name}" summary="${noHtmlContent}" slug="${topic.slug}"
         topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
         subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
         stories-url="${apiUrl}/stories" contributors-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 

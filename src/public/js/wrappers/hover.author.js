@@ -12,11 +12,17 @@ export default class HoverAuthor extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.parent = this.getRootNode().host;
+
     this.render();
   }
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  setAttributes = (name, value) => {
+    this.parent.setAttribute(name, value);
   }
 
   connectedCallback() {
@@ -194,7 +200,7 @@ export default class HoverAuthor extends HTMLElement {
       // Activate view
       outerThis.activateView(url, body);
 
-      // perfom actions
+      // perform actions
       outerThis.performActions();
 
       // Activate username link
@@ -286,7 +292,7 @@ export default class HoverAuthor extends HTMLElement {
     window.onscroll = function () { };
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const outerThis = this;
@@ -501,7 +507,7 @@ export default class HoverAuthor extends HTMLElement {
   updateFollowers = (followed) => {
     const outerThis = this;
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -510,6 +516,10 @@ export default class HoverAuthor extends HTMLElement {
 
     // Set the followers attribute
     this.setAttribute('followers', followers.toString());
+    this.setAttribute('user-follow', followed.toString());
+
+    this.setAttributes('author-followers', followers.toString());
+    this.setAttributes('author-follow', followed.toString());
 
     // select the followers element
     const followersStat = outerThis.shadowObj.querySelector('.stats > span.followers');
