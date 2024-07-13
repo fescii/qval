@@ -598,7 +598,7 @@ export default class AppUser extends HTMLElement {
   getActivity = () =>  {
     return /* html */`
       <activity-container url="/settings/activity" api-all="/api/v1/c/all" api-users="/api/v1/c/users"
-        api-stories="/api/v1/c/stories" api-replies="/api/v1/c/replies">
+        api-stories="/api/v1/c/stories" api-replies="/api/v1/c/replies" api-topics="/api/v1/c/topics">
       </activity-container>
     `;
   }

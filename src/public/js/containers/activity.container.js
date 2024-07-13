@@ -49,17 +49,8 @@ export default class ActivityContainer extends HTMLElement {
             activeTab.classList.remove('active');
             tab.classList.add('active');
             activeTab = tab;
-            if (tab.dataset.element === "all") {
-              contentContainer.innerHTML = outerThis.getAll();
-            } else if (tab.dataset.element === "stories") {
-              // TODO: Add stories
-            } else if (tab.dataset.element === "replies") {
-              // TODO: Add replies
-            } else if (tab.dataset.element === "saved") {
-              // TODO: Add saved
-            } else {
-              contentContainer.innerHTML = outerThis.getAll();
-            }
+            const url = tab.getAttribute('url');
+            contentContainer.innerHTML = outerThis.getAll(url);
           }
         })
       })
@@ -80,14 +71,14 @@ export default class ActivityContainer extends HTMLElement {
       ${this.getHeader()}
       ${this.getTab()}
 			<div class="content">
-				${this.getAll()}
+				${this.getAll(this.getAttribute('api-all'))}
       </div>
     `;
   }
 
-  getAll = () => {
+  getAll = url => {
     return /* html */`
-			<activity-feed url="${this.getAttribute('api-all')}" page="1" limit="10"></activity-feed>
+			<activity-feed url="${url}" page="1" limit="10"></activity-feed>
 		`
   }
 
@@ -105,19 +96,19 @@ export default class ActivityContainer extends HTMLElement {
     return /* html */`
       <div class="actions">
         <ul id="tab" class="tab">
-          <li data-element="all" class="tab-item all active">
+          <li data-element="all" class="tab-item all active" url="${this.getAttribute('api-all')}">
             <span class="text">All</span>
           </li>
-          <li data-element="stories" class="tab-item stories">
+          <li data-element="stories" class="tab-item stories" url="${this.getAttribute('api-stories')}">
             <span class="text">Stories</span>
           </li>
-          <li data-element="replies" class="tab-item replies">
+          <li data-element="replies" class="tab-item replies" url="${this.getAttribute('api-replies')}">
             <span class="text">Replies</span>
           </li>
-          <li data-element="people" class="tab-item people">
+          <li data-element="people" class="tab-item people" url="${this.getAttribute('api-users')}">
             <span class="text">People</span>
           </li>
-          <li data-element="topics" class="tab-item topics">
+          <li data-element="topics" class="tab-item topics" url="${this.getAttribute('api-topics')}">
             <span class="text">Topics</span>
           </li>
           <span class="line"></span>

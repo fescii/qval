@@ -55,14 +55,20 @@ export default class ActivityItem extends HTMLElement {
     if (seconds < 60) {
       return 'Just now';
     }
+
+    // check for minutes
+    if (seconds < 3600) {
+      return `${Math.floor(seconds / 60)} mins ago`;
+    }
+
     // check if seconds is less than 86400: return time AM/PM
     if (seconds < 86400) {
       // check if the date is today or yesterday
       if (date.getDate() === currentTime.getDate()) {
-        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
       }
       else {
-        return date.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: true });
+        return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
       }
     }
 
@@ -98,7 +104,25 @@ export default class ActivityItem extends HTMLElement {
 
   getContent = (content) => {
     const mql = window.matchMedia('(max-width: 660px)');
-    if (!content || !content === '' || content === "null") {
+    if (this.getAttribute('kind') === 'user' && this.getAttribute('action') === 'follow') {
+      try {
+        // check if content contains -
+        if (content.includes('-')) {
+          const contentArr = content.split('-');
+          return /* html */ `
+            <div class="foot">
+              ${contentArr[0]} - <span class="by">author<span>${contentArr[1]}</span></span>
+            </div>
+          `
+        }
+      } catch (error) {
+        return /* html */ `
+          <div class="foot">
+            User username/hash - <span class="by">author<span>${this.getAttribute('to')}</span></span>
+          </div>
+        `
+      }
+    
       return /* html */ `
         <div class="foot">
           User username/hash - <span class="by">author<span>${this.getAttribute('to')}</span></span>
@@ -124,7 +148,6 @@ export default class ActivityItem extends HTMLElement {
     const viewUrl = this.getUrl(this.getAttribute('kind'), this.getAttribute('hash'));
     return /*html*/`
       <div class="actions">
-        ${this.getEdit(this.getAttribute('author'), this.getAttribute('to'), this.getAttribute('kind'))}
         <a href="${viewUrl}" class="action view" id="view-action">view</a>
         <span class="action time plain">${this.getLapseTime(this.getAttribute('time'))}</span>
       </div>
@@ -150,21 +173,6 @@ export default class ActivityItem extends HTMLElement {
     }
   }
 
-  getEdit = (author, to, kind) => {
-    author = author.toLowerCase();
-    to = to.toLowerCase();
-
-    // Check if the author is the current user
-    if (author === to) {
-      if (kind === 'story' || kind === 'reply') {
-        return /* html */`
-          <a href="${this.getUrl(kind, this.getAttribute('hash'))}/edit" class="action edit" id="edit-action">edit</a>
-        `
-      }
-    } 
-    
-    return ''
-  }
 
   getHeader = (kind) => {
     const itemType = this.getAttribute('action');
@@ -200,13 +208,24 @@ export default class ActivityItem extends HTMLElement {
         </div>
       `
     }
+
+    if (itemType === 'reply') {
+      return /* html */`
+        <div class="head">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="reply" fill="currentColor">
+            <path d="M1.75 1h8.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 10.25 10H7.061l-2.574 2.573A1.458 1.458 0 0 1 2 11.543V10h-.25A1.75 1.75 0 0 1 0 8.25v-5.5C0 1.784.784 1 1.75 1ZM1.5 2.75v5.5c0 .138.112.25.25.25h1a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h3.5a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25Zm13 2a.25.25 0 0 0-.25-.25h-.5a.75.75 0 0 1 0-1.5h.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 14.25 12H14v1.543a1.458 1.458 0 0 1-2.487 1.03L9.22 12.28a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l2.22 2.22v-2.19a.75.75 0 0 1 .75-.75h1a.25.25 0 0 0 .25-.25Z"></path>
+          </svg>
+          <span class="text">You ${this.getAttribute('verb')} to this ${kind}</span>
+        </div>
+      `
+    }
     
     return /* html */`
       <div class="head">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
           <path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
         </svg>
-        <span class="text">You ${this.getAttribute('verb')} a ${kind}</span>
+        <span class="text">You ${this.getAttribute('verb')} this ${kind}</span>
       </div>
     `
   }
@@ -292,6 +311,7 @@ export default class ActivityItem extends HTMLElement {
         margin: -2px 0 0 0;
       }
 
+      .head svg.reply,
       .head svg.liked {
         width: 13px;
         height: 13px;
