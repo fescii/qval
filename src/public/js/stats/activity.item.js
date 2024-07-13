@@ -14,7 +14,48 @@ export default class ActivityItem extends HTMLElement {
   }
 
   connectedCallback() {
-    
+    // open preview
+    this.openPreview();
+  }
+
+  openPreview = () => {
+    // get replying-to
+    const viewBtn = this.shadowObj.querySelector('.actions > .action#view-action');
+    const body = document.querySelector('body');
+    const hash = this.getAttribute('hash');
+    const url = this.getPreviewUrl(this.getAttribute('kind'), hash.toLowerCase());
+
+    if (viewBtn) {
+      viewBtn.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        //get the preview
+        let preview = this.getPreview(url);
+
+        // open the preview
+        body.insertAdjacentHTML('beforeend', preview);
+      });
+    }
+  }
+
+  getPreviewUrl = (kind, hash) => {
+    if (kind === 'story') {
+      return `/api/v1/p/${hash}/preview`;
+    }
+
+    if (kind === 'reply') {
+      return `/api/v1/r/${hash}/preview`;
+    }
+
+    if (kind === 'user') {
+      return `/api/v1/u/${hash}/preview`;
+    }
+
+    if (kind === 'topic') {
+      return `/api/v1/t/${hash}/preview`;
+    }
   }
 
   disableScroll() {
@@ -103,7 +144,6 @@ export default class ActivityItem extends HTMLElement {
   }
 
   getContent = (content) => {
-    const mql = window.matchMedia('(max-width: 660px)');
     if (this.getAttribute('kind') === 'user' && this.getAttribute('action') === 'follow') {
       try {
         // check if content contains -
@@ -129,13 +169,6 @@ export default class ActivityItem extends HTMLElement {
         </div>
       `
     } else {
-      if (mql.matches) {
-        return `
-          <span class="content">
-            ${content.length > 80 ? content.slice(0, 80) + '..' : content}
-          </span>
-        `
-      }
       return `
         <span class="content">
           ${this.getAttribute('content')}
@@ -172,7 +205,6 @@ export default class ActivityItem extends HTMLElement {
       return `/t/${hash}`;
     }
   }
-
 
   getHeader = (kind) => {
     const itemType = this.getAttribute('action');
@@ -219,6 +251,17 @@ export default class ActivityItem extends HTMLElement {
         </div>
       `
     }
+
+    if (itemType === 'vote') {
+      return /* html */`
+        <div class="head">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="reply" fill="currentColor">
+            <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm1.5 0a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm10.28-1.72-4.5 4.5a.75.75 0 0 1-1.06 0l-2-2a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l1.47 1.47 3.97-3.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+          </svg>
+          <span class="text">You ${this.getAttribute('verb')} to this ${kind}</span>
+        </div>
+      `
+    }
     
     return /* html */`
       <div class="head">
@@ -227,6 +270,12 @@ export default class ActivityItem extends HTMLElement {
         </svg>
         <span class="text">You ${this.getAttribute('verb')} this ${kind}</span>
       </div>
+    `
+  }
+
+  getPreview = url => {
+    return /*html*/`
+      <preview-popup url="${url}"></preview-popup> 
     `
   }
 
@@ -408,6 +457,11 @@ export default class ActivityItem extends HTMLElement {
       @media screen and (max-width:660px) {
         ::-webkit-scrollbar {
           -webkit-appearance: none;
+        }
+
+        a,
+        .actions > .action {
+          cursor: default !important;
         }
       }
     </style>

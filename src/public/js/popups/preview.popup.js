@@ -57,7 +57,7 @@ export default class PreviewPopup extends HTMLElement {
             if(result.reply) {
               const reply = result.reply;
               outerThis._story = outerThis.mapReply(reply);
-              const replyContent = outerThis.removeHtml(reply.content);
+              const replyContent = outerThis.removeHtml(reply.content, null);
               const content = outerThis.getContent(replyContent, `/r/${reply.hash.toLowerCase()}`, reply.reply_author.hash, reply.views, reply.likes);
 
               // remove the loader
@@ -68,9 +68,9 @@ export default class PreviewPopup extends HTMLElement {
               // open the story
               outerThis.openStory();
             }
-            else {
+            else if (result.story){
               const story = result.story;
-              const storyContent = story.title ? story.title : outerThis.removeHtml(story.content);
+              const storyContent = outerThis.removeHtml(story.content, story.title);
               outerThis._story = outerThis.mapStory(story);
               const content = outerThis.getContent(storyContent, `/p/${story.hash.toLowerCase()}`, story.story_author.hash, story.views, story.likes);
 
@@ -82,6 +82,44 @@ export default class PreviewPopup extends HTMLElement {
 
               // open the story
               outerThis.openStory();
+            }
+            else if (result.user){
+              const user = result.user;
+              const bio = user.bio === null ? 'This user has not added a bio yet.' : user.bio;
+              const userContent = outerThis.removeHtml(bio, user.name);
+              outerThis._story = outerThis.mapUser(user);
+              const content = outerThis.getUserActions(userContent, `/u/${user.hash}`, user.hash, user.followers);
+
+              // remove the loader
+              previewLoader.remove();
+
+              // insert the content
+              contentContainer.insertAdjacentHTML('beforeend', content);
+
+              // open the story
+              outerThis.openStory();
+            }
+            else if (result.topic){
+              const topic = result.topic;
+              const topicContent = outerThis.removeHtml(topic.summary, topic.name);
+              outerThis._story = outerThis.mapTopic(topic);
+              const content = outerThis.getTopicContent(topicContent, `/t/${topic.hash.toLowerCase()}`, topic.author, topic.followers);
+
+              // remove the loader
+              previewLoader.remove();
+
+              // insert the content
+              contentContainer.insertAdjacentHTML('beforeend', content);
+
+              // open the story
+              outerThis.openStory();
+            }
+
+            else {
+              // display error message
+              const content = outerThis.getEmpty();
+              previewLoader.remove();
+              contentContainer.insertAdjacentHTML('beforeend', content);
             }
           }
           else {
@@ -109,8 +147,6 @@ export default class PreviewPopup extends HTMLElement {
         controller.abort();
         // add property to the error object
         reject(new Error('Request timed out'));
-        // Throw a custom error
-        // throw new Error('Request timed out');
       }, timeout);
 
       fetch(url, { ...options, signal })
@@ -123,7 +159,7 @@ export default class PreviewPopup extends HTMLElement {
     });
   }
 
-  removeHtml = text => {
+  removeHtml = (text, title)=> {
     let str = text;
     // Check if the text is encoded (contains &lt; or &gt;)
     if (text.includes('&lt;') || text.includes('&gt;')) {
@@ -134,9 +170,10 @@ export default class PreviewPopup extends HTMLElement {
       str = text.replace(/<[^>]*>/g, '');
     }
 
-    // trim the text and return first 200 characters
-    return str.trim().substring(0, 280) + '...';
-
+    return `
+      ${title ? "<h3>" + title + "</h3>" : ""}
+      ${str.length > 250 ? "<p>" + str.substring(0, 250) + "</p>" : "<p>" + str + "</p>"}
+    `
   }
 
   openStory = () => {
@@ -252,6 +289,65 @@ export default class PreviewPopup extends HTMLElement {
     `
   }
 
+  mapUser = user => {
+    return /*html*/`
+			<user-wrapper hash="${user.hash}" you="${user.you}" url="/u/${user.hash}" stories="${user.stories}" replies="${user.replies}" posts="${user.posts}"
+        picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
+        following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }">
+			</user-wrapper>
+    `
+  }
+
+  mapTopic = topic => {
+    const author = topic.topic_author;
+    const sections = topic.topic_sections;
+    const url = `/t/${topic.hash.toLowerCase()}`;
+    // Remove all HTML tags
+    const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
+    return /*html*/`
+      <topic-wrapper hash="${topic.hash}" name="${topic.name}" description="${noHtmlContent}" slug="${topic.slug}"
+        topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
+        subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
+        author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
+        author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
+        author-following="${author.following}" author-follow="${author.is_following}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
+        author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
+        ${sections}
+      </topic-wrapper>
+    `
+  }
+
+  mapTopicSections = (data, hash) => {
+    if (data.length <= 0) {
+      return /*html*/`
+        <div class="empty">
+          <p>The topic has no information yet. You can contribute to this topic by adding relevant information about the topic.</p>
+          <a href="/t/${hash}/contribute" class="button">Contribute</a>
+        </div>
+      `;
+    }
+    else {
+      const html = data.map(section => {
+        const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+        return /*html*/`
+          <div class="section" order="${section.order}" id="section${section.order}">
+            ${title}
+            ${section.content}
+          </div>
+        `
+      }).join('');
+  
+      const last = /*html*/`
+        <div class="last">
+          <p>Do you have more information about this topic? You can contribute to this topic by adding or editing information.</p>
+          <a href="/t/${hash}/contribute" class="button">Contribute</a>
+        </div>
+      `
+  
+      return html + last;
+    }
+  }
+
   formatNumber = n => {
     if (n >= 0 && n <= 999) {
       return n.toString();
@@ -363,6 +459,28 @@ export default class PreviewPopup extends HTMLElement {
     `
   }
 
+  getUserContent = (content, url, hash, followers) => {
+    return /*html*/`
+      <p>${content}</p>
+      <span class="meta">
+        <span class="by">@</span>
+        <span class="hash">${hash}</span>
+      </span>
+      ${this.getUserActions(followers, url)}
+    `
+  }
+
+  getTopicContent = (content, url, hash, followers) => {
+    return /*html*/`
+      <p>${content}</p>
+      <span class="meta">
+        <span class="by">by</span>
+        <span class="hash">${hash}</span>
+      </span>
+      ${this.getTopicActions(followers, url)}
+    `
+  }
+
   getActions = (likes, views, url) => {
     return /*html*/`
       <div class="actions">
@@ -372,6 +490,28 @@ export default class PreviewPopup extends HTMLElement {
         </span>
         <span class="action views plain">
           <span class="no">${this.formatNumber(views)}</span> <span class="text">views</span>
+        </span>
+      </div>
+    `
+  }
+
+  getUserActions = (followers, url) => {
+    return /*html*/`
+      <div class="actions">
+        <a href="${url}" class="action view" id="view-action">view</a>
+        <span class="action likes plain">
+          <span class="no">${this.formatNumber(followers)}</span> <span class="text">followers</span>
+        </span>
+      </div>
+    `
+  }
+
+  getTopicActions = (followers, url) => {
+    return /*html*/`
+      <div class="actions">
+        <a href="${url}" class="action view" id="view-action">view</a>
+        <span class="action likes plain">
+          <span class="no">${this.formatNumber(followers)}</span> <span class="text">followers</span>
         </span>
       </div>
     `
@@ -531,9 +671,14 @@ export default class PreviewPopup extends HTMLElement {
           flex-flow: column;
           color: var(--text-color);
           line-height: 1.4;
-          gap: 0;
+          gap: 4px;
           margin: 0;
           padding: 0;
+        }
+
+        .preview p,
+        .preview h3 {
+          margin: 0;
         }
 
         .meta {
@@ -637,7 +782,7 @@ export default class PreviewPopup extends HTMLElement {
           flex-flow: row;
           align-items: center;
           gap: 20px;
-          margin: 15px 0 0;
+          margin: 10px 0 0;
         }
         
         .actions > .action {

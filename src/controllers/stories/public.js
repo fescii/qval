@@ -220,7 +220,7 @@ const getStoryPreview = async (req, res) => {
   if (error) { 
     return res.status(500).json({
       success: false,
-      message: 'An error occured'
+      message: 'An error occurred'
     })
   }
 
@@ -271,7 +271,7 @@ const getReplyPreview = async (req, res) => {
   if (error) { 
     return res.status(500).json({
       success: false,
-      message: 'An error occured'
+      message: 'An error occurred'
     });
   }
 

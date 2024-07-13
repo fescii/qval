@@ -7,7 +7,7 @@ const {
 } = require('./edit');
 
 const {
-  getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount, fetchUser
 } = require('./public')
 
 const notificationsController = require('./notifications');
@@ -18,6 +18,6 @@ module.exports = {
   updateProfileBio, updateProfileContact, updateProfileName,
   updateProfilePassword, updateProfilePicture, updateProfileEmail,
   getPerson, getUserReplies, getUserFollowers, getUserFollowing,
-  fetchRecommendedUsers, getAccount,
+  fetchRecommendedUsers, getAccount, fetchUser,
   notifications: notificationsController
 }

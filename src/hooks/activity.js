@@ -100,11 +100,12 @@ const findStoryInfo = async hash => {
   // Return the author hash on if story is found otherwise throw an error
   if (!story) throw new Error('Story not found');
 
-  if(!story.title) {
-    story.title = summarize(story.content);
-  }
+  const content = `
+    ${story.title ? "<h4>" + story.title + "</h4>" : ''}
+    <p>${summarize(story.content)}</p>
+  `
 
-  return { author: story.author, content: story.title };
+  return { author: story.author, content };
 }
 
 /**
@@ -121,8 +122,9 @@ const findReplyInfo = async hash => {
   // Return the author hash on if reply is found otherwise throw an error
   if (!reply) throw new Error('Reply not found');
 
-  const content = summarize(reply.content);
-
+  const content = `
+    <p>${summarize(reply.content)}</p>
+  `
   return { author: reply.author, content };
 }
 
@@ -135,12 +137,17 @@ const findReplyInfo = async hash => {
 */
 const findTopicInfo = async hash => {
   // Find the topic
-  const topic = await Topic.findOne({ attributes: ['author', 'name'], where: { hash } });
+  const topic = await Topic.findOne({ attributes: ['author', 'name', 'summary'], where: { hash } });
 
   // Return the author hash on if topic is found otherwise throw an error
   if (!topic) throw new Error('Topic not found');
 
-  return {author: topic.author, content: topic.name};
+  const content = `
+    <h4>${topic.name}</h4>
+    <p>${summarize(topic.summary)}</p>
+  `
+
+  return {author: topic.author, content};
 }
 
 /**
@@ -153,7 +160,7 @@ const findTopicInfo = async hash => {
 
 const findUserInfo = async hash => {
   // Find the user
-  const user = await User.findOne({ attributes: ['hash', 'name'], where: { hash } });
+  const user = await User.findOne({ attributes: ['bio', 'name'], where: { hash } });
 
   // Return the user hash on if user is found otherwise throw an error
   if (!user) throw new Error('User not found');
@@ -179,7 +186,7 @@ const summarize = text => {
     str = text.replace(/<[^>]*>/g, '');
   }
 
-  return str.trim().substring(0, 150) + '...';
+  return `${str.length > 120 ? str.substring(0, 120) + '...' : str}`;
 }
 
 // Export the activity hook
