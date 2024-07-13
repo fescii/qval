@@ -392,7 +392,6 @@ export default class ProfileSection extends HTMLElement {
         }
 
         .tab-control > .author {
-          /* border-top: var(--border); */
           border-bottom: var(--border);
           padding: 10px 0;
           display: flex;
@@ -425,7 +424,6 @@ export default class ProfileSection extends HTMLElement {
         }
 
         .tab-control > ul.tab > li.tab-item {
-          /* border: var(--border); */
           color: var(--gray-color);
           font-family: var(--font-text), sans-serif;
           font-weight: 400;
@@ -480,7 +478,6 @@ export default class ProfileSection extends HTMLElement {
 
         @media screen and (max-width: 660px) {
           .tab-control {
-            border-bottom: var(--border-mobile);
             margin: 0;
             position: sticky;
             top: 50px;

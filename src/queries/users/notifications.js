@@ -1,7 +1,9 @@
 // Import user and sequelize from models
 const { sequelize, Sequelize } = require('../../models').models;
 const {
-  userNotifications, userUnreadNotifications, userReadNotifications
+  userNotifications, userUnreadNotifications, userReadNotifications,
+  userStoriesNotifications, userRepliesNotifications, userTopicsNotifications,
+  userPeopleNotifications
 } = require('../raw').profile;
 
 const { Activity } = require('../../models').models;
@@ -70,9 +72,82 @@ const fetchUserReadNotifications = async reqData => {
   });
 };
 
+/**
+ * @function fetchStoriesNotifications
+ * @description A query function to get the stories notifications of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 notifications
+*/
+const fetchStoriesNotifications = async reqData => {
+  const  { user, limit, page } = reqData;
 
+  // calculate the offset
+  const offset = (page - 1) * limit;
+  
+  return await sequelize.query(userStoriesNotifications, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
+};
+
+/**
+ * @function fetchRepliesNotifications
+ * @description A query function to get the replies notifications of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 notifications
+*/
+const fetchRepliesNotifications = async reqData => {
+  const  { user, limit, page } = reqData;
+
+  // calculate the offset
+  const offset = (page - 1) * limit;
+  
+  return await sequelize.query(userRepliesNotifications, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
+};
+
+/**
+ * @function fetchTopicsNotifications
+ * @description A query function to get the topics notifications of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 notifications
+*/
+const fetchTopicsNotifications = async reqData => {
+  const  { user, limit, page } = reqData;
+
+  // calculate the offset
+  const offset = (page - 1) * limit;
+  
+  return await sequelize.query(userTopicsNotifications, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
+};
+
+
+/**
+ * @function fetchPeopleNotifications
+ * @description A query function to get the stories notifications of a user
+ * @param {Object} reqData - The request data
+ * @returns {Promise<Array>} - A promise that resolves to an array of 10 notifications
+*/
+const fetchPeopleNotifications = async reqData => {
+  const  { user, limit, page } = reqData;
+
+  // calculate the offset
+  const offset = (page - 1) * limit;
+  
+  return await sequelize.query(userPeopleNotifications, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
+};
 
 module.exports = {
   fetchUserNotifications, totalUnreadNotifications,
-  fetchUserUnreadNotifications, fetchUserReadNotifications
+  fetchUserUnreadNotifications, fetchUserReadNotifications,
+  fetchStoriesNotifications, fetchRepliesNotifications,
+  fetchTopicsNotifications, fetchPeopleNotifications
 }

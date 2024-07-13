@@ -38,7 +38,7 @@ const activityHook = async data => {
     // check for kind
     if (kind === kindData.User) {
       // find user information
-      const content = await findUserInfo(data.to);
+      const content = await findUserInfo(data.author);
 
       // add author and content to the data object
       data.content = content;

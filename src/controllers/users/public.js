@@ -232,7 +232,7 @@ const getAccount = async (req, res) => {
 
   user.tab = current || 'stats';
 
-  res.render('pages/settings', {
+  res.render('pages/updates', {
     data: user
   });
 }

@@ -39,6 +39,7 @@ import RepliesFeed from "./feeds/replies.feed.js";
 import StatFeed from "./feeds/stat.feed.js";
 import TopicFeed from "./feeds/topic.feed.js";
 import HomeFeed from "./feeds/home.feed.js";
+import UpdateFeed from "./feeds/update.feed.js";
 
 // Import forms
 import BioForm from "./forms/bio.form.js";
@@ -73,6 +74,7 @@ import StatStory from "./stats/stat.story.js";
 import StoriesStat from "./stats/stories.stat.js";
 import UsersStat from "./stats/users.stat.js";
 import MonthStat from "./stats/month.stat.js";
+import UpdateItem from "./stats/update.item.js";
 
 // Import wrappers
 import AuthorWrapper from "./wrappers/author.wrapper.js";
@@ -138,6 +140,7 @@ customElements.define("replies-feed", RepliesFeed);
 customElements.define("stat-feed", StatFeed);
 customElements.define("topics-feed", TopicFeed);
 customElements.define("home-feed", HomeFeed);
+customElements.define("update-feed", UpdateFeed);
 
 // Register forms
 customElements.define("bio-form", BioForm);
@@ -172,6 +175,7 @@ customElements.define("stat-story", StatStory);
 customElements.define("stories-stat", StoriesStat);
 customElements.define("users-stat", UsersStat);
 customElements.define("month-stat", MonthStat);
+customElements.define("update-item", UpdateItem);
 
 // Register wrappers
 customElements.define("author-wrapper", AuthorWrapper);

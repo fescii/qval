@@ -48,8 +48,8 @@ module.exports = (app) => {
   app.get('/api/v1/users/recommended', checkToken, fetchRecommendedUsers);
 
   // Route for handling user settings page
-  app.get('/settings', checkToken, getAccount);
+  app.get('/user', checkToken, getAccount);
 
   // Route for handling user settings page
-  app.get('/settings/:current', checkToken, getAccount);
+  app.get('/user/:current', checkToken, getAccount);
 }

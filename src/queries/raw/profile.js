@@ -156,7 +156,7 @@ const userTopicsActivities = /*sql*/`
 const userNotifications = /*sql*/`
   SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
   FROM activity.activities n
-  WHERE n.to = :user AND n.deleted = false
+  WHERE n.to = :user AND n.deleted = false AND n.author != :user
   ORDER BY n."createdAt" DESC, n.read ASC
   LIMIT :limit
   OFFSET :offset;
@@ -170,7 +170,7 @@ const userNotifications = /*sql*/`
 const userUnreadNotifications = /*sql*/`
   SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
   FROM activity.activities n
-  WHERE n.to = :user AND n.deleted = false AND n.read = false
+  WHERE n.to = :user AND n.deleted = false AND n.read = false AND n.author != :user
   ORDER BY n."createdAt" DESC
   LIMIT :limit
   OFFSET :offset;
@@ -184,8 +184,64 @@ const userUnreadNotifications = /*sql*/`
 const userReadNotifications = /*sql*/`
   SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
   FROM activity.activities n
-  WHERE n.to = :user AND n.deleted = false AND n.read = true
+  WHERE n.to = :user AND n.deleted = false AND n.read = true AND n.author != :user
   ORDER BY n."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userStoriesNotifications
+ * @description A query that fetches stories notifications by a logged in user ordered by date(createdAt) and read status
+ * @returns {string} A SQL query
+*/
+const userStoriesNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.kind = 'story' AND n.author != :user
+  ORDER BY n."createdAt" DESC, n.read ASC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userTopicsNotifications
+ * @description A query that fetches topic notifications by a logged in user ordered by date(createdAt) and read status
+ * @returns {string} A SQL query
+*/
+const userTopicsNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.kind = 'topic' AND n.author != :user
+  ORDER BY n."createdAt" DESC, n.read ASC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userRepliesNotifications
+ * @description A query that fetches reply notifications by a logged in user ordered by date(createdAt) and read status
+ * @returns {string} A SQL query
+*/
+const userRepliesNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.kind = 'reply' AND n.author != :user
+  ORDER BY n."createdAt" DESC, n.read ASC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userPeopleNotifications
+ * @description A query that fetches people notifications by a logged in user ordered by date(createdAt) and read status
+ * @returns {string} A SQL query
+*/
+const userPeopleNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.kind = 'user' AND n.author != :user
+  ORDER BY n."createdAt" DESC, n.read ASC
   LIMIT :limit
   OFFSET :offset;
 `
@@ -195,5 +251,7 @@ module.exports = {
   userStoriesStats, userRepliesStats, userNotifications,
   userStories, userReplies, userActivities, userStoriesActivities,
   userRepliesActivities, userPeopleActivities, userTopicsActivities,
-  userUnreadNotifications, userReadNotifications
+  userUnreadNotifications, userReadNotifications,
+  userStoriesNotifications, userRepliesNotifications, userTopicsNotifications,
+  userPeopleNotifications
 }

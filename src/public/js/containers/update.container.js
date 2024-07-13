@@ -78,7 +78,7 @@ export default class UpdateContainer extends HTMLElement {
 
   getAll = url => {
     return /* html */`
-			<activity-feed url="${url}" page="1" limit="10"></activity-feed>
+			<update-feed url="${url}" page="1" limit="10"></update-feed>
 		`
   }
 
@@ -86,7 +86,8 @@ export default class UpdateContainer extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Your activity is a summary of your interactions on the platform. You can view your stories, replies and likes.
+          Your updates contains summary of all actions performed by other users on your content or profile.
+          You can filter by stories, replies, people, and topics.
         </p>
       </div>
     `;

@@ -1,7 +1,8 @@
 // Import necessary modules, middlewares, and controllers
 const {
   getNotifications, getReadNotifications, getTotalUnreadNotifications,
-  getUnreadNotifications
+  getUnreadNotifications, getStoriesNotifications, getRepliesNotifications,
+  getTopicsNotifications, getPeopleNotifications
 } = require('../../controllers').userController.notifications;
 
 const {
@@ -34,6 +35,18 @@ module.exports = app => {
   // Route for getting all unread notifications
   app.get('/api/v1/n/unread', verifyToken, getUnreadNotifications);
 
-  // Route for getting total unread notifications
+  // Route for getting unread notifications
   app.get('/api/v1/n/unread/total', verifyToken, getTotalUnreadNotifications);
+
+  // Route for getting stories notifications
+  app.get('/api/v1/n/stories', verifyToken, getStoriesNotifications);
+
+  // Route for getting  replies notifications
+  app.get('/api/v1/n/replies', verifyToken, getRepliesNotifications);
+
+  // Route for getting topics notifications
+  app.get('/api/v1/n/topics', verifyToken, getTopicsNotifications);
+
+  // Route for getting people notifications
+  app.get('/api/v1/n/users', verifyToken, getPeopleNotifications);
 }
