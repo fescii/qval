@@ -93,6 +93,62 @@ const userActivities = /*sql*/`
 `
 
 /**
+ * @var {string} userStoriesActivities
+ * @description A query that fetches stories activities by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userStoriesActivities = /*sql*/`
+  SELECT a.id, a.kind, a.action, a.read, a.author, a.name, a.target, a.to, a.content, a.verb, a.deleted, a."createdAt", a."updatedAt"
+  FROM activity.activities a
+  WHERE a.author = :user AND a.kind = 'story'
+  ORDER BY a."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userRepliesActivities
+ * @description A query that fetches replies activities by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userRepliesActivities = /*sql*/`
+  SELECT a.id, a.kind, a.action, a.read, a.author, a.name, a.target, a.to, a.content, a.verb, a.deleted, a."createdAt", a."updatedAt"
+  FROM activity.activities a
+  WHERE a.author = :user AND a.kind = 'reply'
+  ORDER BY a."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userPeopleActivities
+ * @description A query that fetches people activities by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userPeopleActivities = /*sql*/`
+  SELECT a.id, a.kind, a.action, a.read, a.author, a.name, a.target, a.to, a.content, a.verb, a.deleted, a."createdAt", a."updatedAt"
+  FROM activity.activities a
+  WHERE a.author = :user AND a.kind = 'user'
+  ORDER BY a."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userTopicsActivities
+ * @description A query that fetches topics activities by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userTopicsActivities = /*sql*/`
+  SELECT a.id, a.kind, a.action, a.read, a.author, a.name, a.target, a.to, a.content, a.verb, a.deleted, a."createdAt", a."updatedAt"
+  FROM activity.activities a
+  WHERE a.author = :user AND a.kind = 'topic'
+  ORDER BY a."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
  * @var {string} userNotifications
  * @description A query that fetches notifications by a logged in user ordered by date(createdAt) and read status
  * @returns {string} A SQL query
@@ -106,8 +162,38 @@ const userNotifications = /*sql*/`
   OFFSET :offset;
 `
 
+/**
+ * @var {string} userUnreadNotifications
+ * @description A query that fetches unread notifications by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userUnreadNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.read = false
+  ORDER BY n."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
+/**
+ * @var {string} userReadNotifications
+ * @description A query that fetches read notifications by a logged in user ordered by date(createdAt)
+ * @returns {string} A SQL query
+*/
+const userReadNotifications = /*sql*/`
+  SELECT n.id, n.id, n.kind, n.action, n.read, n.author, n.name, n.target, n.to, n.content, n.verb, n."createdAt", n."updatedAt"
+  FROM activity.activities n
+  WHERE n.to = :user AND n.deleted = false AND n.read = true
+  ORDER BY n."createdAt" DESC
+  LIMIT :limit
+  OFFSET :offset;
+`
+
 
 module.exports = {
   userStoriesStats, userRepliesStats, userNotifications,
-  userStories, userReplies, userActivities
+  userStories, userReplies, userActivities, userStoriesActivities,
+  userRepliesActivities, userPeopleActivities, userTopicsActivities,
+  userUnreadNotifications, userReadNotifications
 }

@@ -1,7 +1,6 @@
 const {
-  getUserStats, getUserAllStats,
-  fetchStoriesStats, fetchRepliesStats,
-  getStories, getReplies, getActivities, getNotifications, getUnreadNotifications
+  getUserStats, getUserAllStats, getUserStories,
+  getUserStoriesStats, getUserReplies, getUserRepliesStats
 } = require('../../controllers').statsController;
 
 const { verifyToken } = require('../../middlewares').authMiddleware;
@@ -30,23 +29,14 @@ module.exports = (app, url) => {
   app.get(`${url}/u/stats`, verifyToken, getUserAllStats);
 
   // Route for finding all stories stats by an author
-  app.get(`${url}/user/stories`, verifyToken, getStories);
+  app.get(`${url}/user/stories`, verifyToken, getUserStories);
 
   // Route for finding all stories by an author
-  app.get(`${url}/user/stats/stories`, verifyToken, fetchStoriesStats);
+  app.get(`${url}/user/stats/stories`, verifyToken, getUserStoriesStats);
 
   // Route for finding all replies stats by an author
-  app.get(`${url}/user/stats/replies`, verifyToken, fetchRepliesStats);
+  app.get(`${url}/user/stats/replies`, verifyToken, getUserRepliesStats);
 
   // Route for finding all replies by an author
-  app.get(`${url}/user/replies`, verifyToken, getReplies);
-
-  // Route for finding all activities by an author
-  app.get(`${url}/user/activities`, verifyToken, getActivities);
-
-  // Route for finding all notifications by an author
-  app.get(`${url}/user/notifications`, verifyToken, getNotifications);
-
-  // Route for finding all unread notifications by an author
-  app.get(`${url}/user/notifications/unread`, verifyToken, getUnreadNotifications);
+  app.get(`${url}/user/replies`, verifyToken, getUserReplies);
 }

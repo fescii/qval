@@ -57,13 +57,12 @@ export default class ActivityItem extends HTMLElement {
     }
     // check if seconds is less than 86400: return time AM/PM
     if (seconds < 86400) {
-
       // check if the date is today or yesterday
       if (date.getDate() === currentTime.getDate()) {
-        return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
       }
       else {
-        return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
+        return date.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: true });
       }
     }
 
@@ -122,13 +121,49 @@ export default class ActivityItem extends HTMLElement {
   }
 
   getActions = () => {
-    const viewUrl = this.getAttribute('url');
+    const viewUrl = this.getUrl(this.getAttribute('kind'), this.getAttribute('hash'));
     return /*html*/`
       <div class="actions">
+        ${this.getEdit(this.getAttribute('author'), this.getAttribute('to'), this.getAttribute('kind'))}
         <a href="${viewUrl}" class="action view" id="view-action">view</a>
         <span class="action time plain">${this.getLapseTime(this.getAttribute('time'))}</span>
       </div>
     `
+  }
+
+  getUrl = (kind, hash) => {
+    hash = hash.toLowerCase();
+    if (kind === 'story') {
+      return `/p/${hash}`;
+    }
+
+    if (kind === 'reply') {
+      return `/r/${hash}`;
+    }
+
+    if (kind === 'user') {
+      return `/u/${hash}`;
+    }
+
+    if (kind === 'topic') {
+      return `/t/${hash}`;
+    }
+  }
+
+  getEdit = (author, to, kind) => {
+    author = author.toLowerCase();
+    to = to.toLowerCase();
+
+    // Check if the author is the current user
+    if (author === to) {
+      if (kind === 'story' || kind === 'reply') {
+        return /* html */`
+          <a href="${this.getUrl(kind, this.getAttribute('hash'))}/edit" class="action edit" id="edit-action">edit</a>
+        `
+      }
+    } 
+    
+    return ''
   }
 
   getHeader = (kind) => {
@@ -338,7 +373,7 @@ export default class ActivityItem extends HTMLElement {
       .actions > .action.plain {
         padding: 0;
         pointer-events: none;
-        font-family: var(--font-read), sans-serif;
+        font-family: var(--font-main), sans-serif;
         color: var(--gray-color);
         font-size: 0.95rem;
         border: none;

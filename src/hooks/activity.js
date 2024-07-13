@@ -1,4 +1,4 @@
-const { Activity, Story, Reply, Topic } = require('../models').models;
+const { Activity, Story, Reply, Topic, User } = require('../models').models;
 
 /**
  * @object kindData
@@ -37,6 +37,12 @@ const activityHook = async data => {
     const kind = data.kind.toLowerCase();
     // check for kind
     if (kind === kindData.User) {
+      // find user information
+      const content = await findUserInfo(data.author);
+
+      // add author and content to the data object
+      data.content = content;
+
       // create activity directly
       await Activity.create(data);
     } else if (kind === kindData.Story) {
@@ -85,7 +91,7 @@ const activityHook = async data => {
  * @name findStoryInfo
  * @description A function that finds the author of a story
  * @param {String} hash - The story hash
- * @returns {Promise<String>} - Returns a promise of the author hash and content
+ * @returns {Promise<Object>} - Returns a promise of the author hash and content
 */
 const findStoryInfo = async hash => {
   // Find the story
@@ -106,7 +112,7 @@ const findStoryInfo = async hash => {
  * @name findReplyInfo
  * @description A function that finds the author of a reply
  * @param {String} hash - The reply hash
- * @returns {Promise<String>} - Returns a promise of the author hash and content
+ * @returns {Promise<Object>} - Returns a promise of the author hash and content
 */
 const findReplyInfo = async hash => {
   // Find the reply
@@ -125,7 +131,7 @@ const findReplyInfo = async hash => {
  * @name findTopicInfo
  * @description A function that finds the author of a topic
  * @param {String} hash - The topic hash
- * @returns {Promise<String>} - Returns a promise of the author hash and content
+ * @returns {Promise<Object>} - Returns a promise of the author hash and content
 */
 const findTopicInfo = async hash => {
   // Find the topic
@@ -136,6 +142,25 @@ const findTopicInfo = async hash => {
 
   return {author: topic.author, content: topic.name};
 }
+
+/**
+ * @function findUserInfo
+ * @name findUserInfo
+ * @description A function that finds the user information
+ * @param {String} hash - The user hash
+ * @returns {Promise<Object>} - Returns a promise of the user hash and content
+*/
+
+const findUserInfo = async hash => {
+  // Find the user
+  const user = await User.findOne({ attributes: ['hash', 'name'], where: { hash } });
+
+  // Return the user hash on if user is found otherwise throw an error
+  if (!user) throw new Error('User not found');
+
+  return `${user.name} - @${user.hash}`;
+}
+
 
 /**
  * @function summarize

@@ -269,7 +269,6 @@ export default class ActivityContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .actions > ul.tab > li.active {

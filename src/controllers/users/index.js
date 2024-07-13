@@ -10,11 +10,14 @@ const {
   getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount
 } = require('./public')
 
+const notificationsController = require('./notifications');
+
 // Export all users controllers
 module.exports = {
   register, checkIfEmailExits, followUser, getAuthorContact,
   updateProfileBio, updateProfileContact, updateProfileName,
   updateProfilePassword, updateProfilePicture, updateProfileEmail,
   getPerson, getUserReplies, getUserFollowers, getUserFollowing,
-  fetchRecommendedUsers, getAccount
+  fetchRecommendedUsers, getAccount,
+  notifications: notificationsController
 }

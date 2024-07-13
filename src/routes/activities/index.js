@@ -1,6 +1,9 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  deletingActivity, readingActivity
+  deletingActivity, readingActivity, 
+  getActivities, getStoriesActivities,
+  getPeopleActivities, getRepliesActivities,
+  getTopicsActivities
 } = require('../../controllers').activityController;
 
 const {
@@ -25,8 +28,23 @@ module.exports = app => {
   });
 
   // Route for handling reading an activity
-  app.post('/api/v1/n/:id', verifyToken, readingActivity);
+  app.post('/api/v1/c/:id', verifyToken, readingActivity);
 
   // Route for handling deleting an activity
-  app.post('/api/v1/n/:id/:status', verifyToken, deletingActivity);
+  app.post('/api/v1/c/:id/:status', verifyToken, deletingActivity);
+
+  // Route for getting all activities
+  app.get('/api/v1/c/all', verifyToken, getActivities);
+
+  // Route for getting all stories activities
+  app.get('/api/v1/c/stories', verifyToken, getStoriesActivities);
+
+  // Route for getting all people activities
+  app.get('/api/v1/c/users', verifyToken, getPeopleActivities);
+
+  // Route for getting all replies activities
+  app.get('/api/v1/c/replies', verifyToken, getRepliesActivities);
+
+  // Route for getting all topics activities
+  app.get('/api/v1/c/topics', verifyToken, getTopicsActivities);
 }
