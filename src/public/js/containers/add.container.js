@@ -91,6 +91,7 @@ export default class FormContainer extends HTMLElement {
 	      :host {
           font-size: 16px;
           background-color: var(--background);
+          border-bottom: var(--border);
           padding: 0;
           display: flex;
           flex-flow: column;

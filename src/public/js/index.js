@@ -21,6 +21,7 @@ import StoriesContainer from "./containers/stories.container.js";
 import TopicsContainer from "./containers/topics.container.js";
 import TrendingContainer from "./containers/trending.container.js";
 import FeedContainer from "./containers/feed.container.js";
+import UpdateContainer from "./containers/update.container.js";
 
 // Import custom elements
 import CustomSpan from "./elements/span.element.js";
@@ -119,6 +120,7 @@ customElements.define("stories-container", StoriesContainer);
 customElements.define("topics-container", TopicsContainer);
 customElements.define("trending-container", TrendingContainer);
 customElements.define("feed-container", FeedContainer);
+customElements.define("update-container", UpdateContainer);
 
 // Register custom elements
 customElements.define("custom-span", CustomSpan, { extends: "span" });
