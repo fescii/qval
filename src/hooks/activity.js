@@ -164,7 +164,7 @@ const findUserInfo = async hash => {
 
   // Return the user hash on if user is found otherwise throw an error
   if (!user) throw new Error('User not found');
-  const bio = user.bio ? user.bio : 'The user has not added to their bio yet!';
+  const bio = user.bio ? user.bio : 'This user has not added to their bio yet!';
 
   return `
     ${"<h4>" + user.name + "</h4>"}
