@@ -14,8 +14,9 @@ export default class UpdateItem extends HTMLElement {
   }
 
   connectedCallback() {
-    // open preview
+    // open preview & author
     this.openPreview();
+    this.openAuthor();
   }
 
   openPreview = () => {
@@ -40,6 +41,28 @@ export default class UpdateItem extends HTMLElement {
     }
   }
 
+  openAuthor = () => {
+    // get replying-to
+    const viewBtn = this.shadowObj.querySelector('.actions > .action#author-action');
+    const body = document.querySelector('body');
+    const url = this.getAuthorUrl(this.getAttribute('author'));
+
+    if (viewBtn) {
+      viewBtn.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        //get the preview
+        let preview = this.getPreview(url);
+
+        // open the preview
+        body.insertAdjacentHTML('beforeend', preview);
+      });
+    }
+  }
+
+
   getPreviewUrl = (kind, hash) => {
     if (kind === 'story') {
       return `/api/v1/p/${hash}/preview`;
@@ -56,6 +79,11 @@ export default class UpdateItem extends HTMLElement {
     if (kind === 'topic') {
       return `/api/v1/t/${hash}/preview`;
     }
+  }
+
+  getAuthorUrl = author => {
+    author = author.toLowerCase();
+    return `/api/v1/u/${author}/preview`;
   }
 
   disableScroll() {
@@ -99,18 +127,14 @@ export default class UpdateItem extends HTMLElement {
 
     // check for minutes
     if (seconds < 3600) {
-      return `${Math.floor(seconds / 60)} mins ago`;
+      const min = Math.floor(seconds / 60)
+      return `${min === 1 ? '1 min' : min + ' mins'}`;
     }
 
-    // check if seconds is less than 86400: return time AM/PM
+    // check for hours
     if (seconds < 86400) {
-      // check if the date is today or yesterday
-      if (date.getDate() === currentTime.getDate()) {
-        return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
-      }
-      else {
-        return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
-      }
+      const hours = Math.floor(seconds / 3600)
+      return `${hours === 1 ? '1 hr' : hours + ' hrs'}`;
     }
 
     // check if seconds is less than 604800: return day and time
@@ -153,9 +177,11 @@ export default class UpdateItem extends HTMLElement {
 
   getActions = () => {
     const viewUrl = this.getUrl(this.getAttribute('kind'), this.getAttribute('hash'));
+    const author = this.getAuthor(this.getAttribute('kind'), this.getAttribute('author'));
     return /*html*/`
       <div class="actions">
         <a href="${viewUrl}" class="action view" id="view-action">view</a>
+        ${author}
         <span class="action time plain">${this.getLapseTime(this.getAttribute('time'))}</span>
       </div>
     `
@@ -180,9 +206,20 @@ export default class UpdateItem extends HTMLElement {
     }
   }
 
+  getAuthor = (kind, author) => {
+    author = author.toLowerCase();
+    if (kind !== 'user') {
+      return `
+        <a href="/u/${author}" class="action author" id="author-action">user</a>
+      `;
+    }
+    
+    return '';
+  }
+
   getHeader = (kind) => {
     const itemType = this.getAttribute('action');
-    const name = this.getAttribute('name');
+    const name = `<span class="author">${this.getAttribute('author')}</span>`
     if (itemType === 'like') {
       return /* html */`
         <div class="head">
@@ -195,12 +232,22 @@ export default class UpdateItem extends HTMLElement {
     }
 
     if (itemType === 'follow') {
+      if (kind === 'topic') {
+        return /* html */`
+          <div class="head">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="at" fill="currentColor">
+              <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+            </svg>
+            <span class="text">${name} followed your topic</span>
+          </div>
+        `
+      }
       return /* html */`
         <div class="head">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="at" fill="currentColor">
             <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
           </svg>
-          <span class="text">${name} started following you</span>
+          <span class="text">${name} followed you</span>
         </div>
       `
     }
@@ -347,7 +394,13 @@ export default class UpdateItem extends HTMLElement {
         color: var(--gray-color);
         font-size: 0.9rem;
         font-family: var(--font-read), sans-serif;
-        font-style: italic;
+        /*font-style: italic;*/
+      }
+
+      .head span.author {
+        color: var(--gray-color);
+        font-size: 0.8rem;
+        font-family: var(--font-mono), monospace;
       }
 
       .content {
@@ -407,6 +460,7 @@ export default class UpdateItem extends HTMLElement {
         border-radius: 10px;
       }
 
+      .actions > .action.author,
       .actions > .action.edit {
         border: none;
         background: var(--action-linear);

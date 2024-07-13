@@ -398,7 +398,6 @@ export default class UpdateFeed extends HTMLElement {
           .last {
             width: 100%;
             padding: 10px 0 25px;
-            border-bottom: var(--border);
             display: flex;
             flex-flow: column;
             align-items: center;

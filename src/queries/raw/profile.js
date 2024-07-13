@@ -14,7 +14,7 @@ const userStoriesStats = /*sql*/ `
   LEFT JOIN (SELECT story, option FROM story.votes WHERE author = :user) AS vt ON s.hash = vt.story
   LEFT JOIN  story_sections ss ON s.hash = ss.story
   LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
-  WHERE s.author = :user
+  WHERE s.author = :user AND s.published = true
   ORDER BY s.views DESC, s."createdAt" DESC, s.replies DESC
   LIMIT :limit 
   OFFSET :offset;
