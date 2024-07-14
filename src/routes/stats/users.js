@@ -29,7 +29,7 @@ module.exports = (app, url) => {
   app.get(`${url}/u/stats`, verifyToken, getUserAllStats);
 
   // Route for finding all stories stats by an author
-  app.get(`${url}/user/stories`, verifyToken, getUserStories);
+  app.get(`${url}/user/content/stories`, verifyToken, getUserStories);
 
   // Route for finding all stories by an author
   app.get(`${url}/user/stats/stories`, verifyToken, getUserStoriesStats);
@@ -38,5 +38,5 @@ module.exports = (app, url) => {
   app.get(`${url}/user/stats/replies`, verifyToken, getUserRepliesStats);
 
   // Route for finding all replies by an author
-  app.get(`${url}/user/replies`, verifyToken, getUserReplies);
+  app.get(`${url}/user/content/replies`, verifyToken, getUserReplies);
 }

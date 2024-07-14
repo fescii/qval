@@ -432,6 +432,8 @@ export default class AppUser extends HTMLElement {
       contentContainer.innerHTML = this.getUpdates();
     } else if (name === 'typography' || name === 'theme') {
       contentContainer.innerHTML = this.getSoon();
+    } else if (name === 'content') {
+      contentContainer.innerHTML = this.getContent();
     } else {
       contentContainer.innerHTML = this.getStats();
     }
@@ -609,6 +611,14 @@ export default class AppUser extends HTMLElement {
     `;
   }
 
+  getContent = () =>  {
+    return /* html */`
+      <content-container url="/user/content" tab="stories"
+        stories="/api/v1/user/content/stories" replies="/api/v1/user/content/replies">
+      </content-container>
+    `;
+  }
+
   getSoon = () => {
     return /* html */`
       <div class="reading coming-soon">
@@ -710,6 +720,15 @@ export default class AppUser extends HTMLElement {
                 <path d="M580.3 267.2c56.2-56.2 56.2-147.3 0-203.5C526.8 10.2 440.9 7.3 383.9 57.2l-6.1 5.4c-10 8.7-11 23.9-2.3 33.9s23.9 11 33.9 2.3l6.1-5.4c38-33.2 95.2-31.3 130.9 4.4c37.4 37.4 37.4 98.1 0 135.6L433.1 346.6c-37.4 37.4-98.2 37.4-135.6 0c-35.7-35.7-37.6-92.9-4.4-130.9l4.7-5.4c8.7-10 7.7-25.1-2.3-33.9s-25.1-7.7-33.9 2.3l-4.7 5.4c-49.8 57-46.9 142.9 6.6 196.4c56.2 56.2 147.3 56.2 203.5 0L580.3 267.2zM59.7 244.8C3.5 301 3.5 392.1 59.7 448.2c53.6 53.6 139.5 56.4 196.5 6.5l6.1-5.4c10-8.7 11-23.9 2.3-33.9s-23.9-11-33.9-2.3l-6.1 5.4c-38 33.2-95.2 31.3-130.9-4.4c-37.4-37.4-37.4-98.1 0-135.6L207 165.4c37.4-37.4 98.1-37.4 135.6 0c35.7 35.7 37.6 92.9 4.4 130.9l-5.4 6.1c-8.7 10-7.7 25.1 2.3 33.9s25.1 7.7 33.9-2.3l5.4-6.1c49.9-57 47-142.9-6.5-196.5c-56.2-56.2-147.3-56.2-203.5 0L59.7 244.8z" />
               </svg>
               <span class="text">Your socials</span>
+            </a>
+          </li>
+          <li url="/user/content" class="tab-item content" data-name="content">
+            <span class="line"></span>
+            <a href="/user/content" class="tab-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                <path d="M7.122.392a1.75 1.75 0 0 1 1.756 0l5.003 2.902c.83.481.83 1.68 0 2.162L8.878 8.358a1.75 1.75 0 0 1-1.756 0L2.119 5.456a1.251 1.251 0 0 1 0-2.162ZM8.125 1.69a.248.248 0 0 0-.25 0l-4.63 2.685 4.63 2.685a.248.248 0 0 0 .25 0l4.63-2.685ZM1.601 7.789a.75.75 0 0 1 1.025-.273l5.249 3.044a.248.248 0 0 0 .25 0l5.249-3.044a.75.75 0 0 1 .752 1.298l-5.248 3.044a1.75 1.75 0 0 1-1.756 0L1.874 8.814A.75.75 0 0 1 1.6 7.789Zm0 3.5a.75.75 0 0 1 1.025-.273l5.249 3.044a.248.248 0 0 0 .25 0l5.249-3.044a.75.75 0 0 1 .752 1.298l-5.248 3.044a1.75 1.75 0 0 1-1.756 0l-5.248-3.044a.75.75 0 0 1-.273-1.025Z"></path>
+              </svg>
+              <span class="text">Your content</span>
             </a>
           </li>
         </ul>

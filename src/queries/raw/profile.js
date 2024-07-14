@@ -45,7 +45,7 @@ const userRepliesStats = /*sql*/`
 */
 const userStories = /*sql*/ `
   WITH story_sections AS ( SELECT story, JSON_AGG( JSON_BUILD_ARRAY(kind, content, "order", id, title, "createdAt", "updatedAt") ORDER BY "order" ASC) AS sections FROM story.story_sections GROUP BY story)
-  SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", 
+  SELECT s.id, s.kind, s.author, s.hash, s.title, s.content, s.slug, s.topics, s.poll, s.votes, s.views, s.replies, s.likes, s.end, s."createdAt", s."updatedAt", s.published,
   COALESCE(l.liked, false) AS liked, vt.option, true AS you,
   JSON_BUILD_OBJECT('id', sa.id, 'hash', sa.hash, 'bio', sa.bio, 'name', sa.name,'picture', sa.picture,'followers', sa.followers,'following', sa.following, 'stories', sa.stories, 'verified', sa.verified,'contact', sa.contact, 'replies', sa.replies,'email', sa.email, 'is_following', false) AS story_author, 
   ss.sections AS story_sections_summary
@@ -66,7 +66,7 @@ const userStories = /*sql*/ `
  * @returns {string} A SQL query
 */
 const userReplies = /*sql*/`
-  WITH reply_likes AS ( SELECT reply, TRUE AS liked FROM story.likes WHERE author = :user),
+  WITH reply_likes AS ( SELECT reply, TRUE AS liked FROM story.likes WHERE author = :user)
   SELECT r.kind, r.author, r.story, r.reply, r.hash, r.content, r.views, r.likes, r.replies, r."createdAt", r."updatedAt", COALESCE(rl.liked, FALSE) AS liked, true AS you,
   JSON_BUILD_OBJECT('id', ra.id, 'hash', ra.hash, 'bio', ra.bio, 'name', ra.name, 'picture', ra.picture, 'followers', ra.followers, 'following', ra.following, 'stories', ra.stories, 'verified', ra.verified,'contact', ra.contact, 'replies', ra.replies,'email', ra.email, 'is_following', false) AS reply_author
   FROM story.replies r

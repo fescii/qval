@@ -555,7 +555,7 @@ module.exports = (User, sequelize, Sequelize) => {
         LEFT JOIN  story_sections ss ON s.hash = ss.story
         LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
         LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
-        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query) AND s.published = true
         ORDER BY rank DESC, s."createdAt" DESC
         LIMIT :limit 
         OFFSET :offset;
@@ -570,7 +570,7 @@ module.exports = (User, sequelize, Sequelize) => {
         FROM story.stories s
         LEFT JOIN  account.users sa ON s.author = sa.hash 
         LEFT JOIN  story_sections ss ON s.hash = ss.story
-        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query) AND s.published = true
         ORDER BY rank DESC, s."createdAt" DESC
         LIMIT :limit 
         OFFSET :offset;
