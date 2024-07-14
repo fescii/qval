@@ -2,13 +2,13 @@ const { redisConfig } = require('../configs').storageConfig;
 const { Worker } = require('bullmq');
 const { activityHook } = require('../hooks');
 
-
 // Initialize the Bull worker for the activityQueue
 const activityWorker = new Worker('activityQueue', async (job) => {
-  console.log('========Processing action job =====================');
-  console.log(job.data);
+  console.log('========Processing activity job =====================');
+  // console.log(job.data);
   console.log('==================================================');
   await activityHook(job.data); // Run the activity hook
+  
 }, {connection: redisConfig});
 
 activityWorker.on('completed', (job) => {

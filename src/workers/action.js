@@ -1,14 +1,19 @@
 const { redisConfig } = require('../configs').storageConfig;
 const { Worker } = require('bullmq');
 const { actionHook } = require('../hooks');
+const { socketQueue } = require('../bull');
 
 
 // Initialize the Bull worker for the upvoteQueue
 const actionWorker = new Worker('actionQueue', async (job) => {
   console.log('========Processing action job =====================');
-  console.log(job.data);
+  // console.log(job.data);
   console.log('==================================================');
   await actionHook(job.data); // Run the action hook
+
+  // Send the message to the WebSocket server using the socketQueue
+  await socketQueue.add('socketQueue', job.data, {attempts: 3, backoff: {type: 'exponential', delay: 1000}});
+
 }, {connection: redisConfig});
 
 actionWorker.on('completed', (job) => {

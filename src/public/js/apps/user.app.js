@@ -36,6 +36,9 @@ export default class AppUser extends HTMLElement {
     // Check if the display is greater than 600px using mql
     const mql = window.matchMedia('(max-width: 660px)');
 
+    // connect to the WebSocket server
+    this.wsConnect();
+
     // update the current tab
     this.updateCurrent(this._current);
 
@@ -82,6 +85,27 @@ export default class AppUser extends HTMLElement {
       // Open user profile
       this.handleUserClick(url, body);
     }
+  }
+
+  wsConnect = () => {
+    // Connect to the WebSocket server
+    const ws = new WebSocket('wss://localhost:3001');
+
+    ws.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+
+    ws.onmessage = (event) => {
+      console.log('Message received from server:', event.data);
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
   }
 
   // Open user profile
