@@ -6,6 +6,9 @@ export default class HeaderWrapper extends HTMLElement {
     // check if the user is authenticated
     this._authenticated = this.isLoggedIn('x-random-token');
 
+    this._user = null;
+    this._unverified = false;
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -52,12 +55,192 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   connectedCallback() {
+    const body = document.querySelector('body');
     // select the back svg
     const back = this.shadowObj.querySelector('nav.nav > .left svg');
 
     if (back) {
       // activate the back button
       this.activateBackButton(back);
+    }
+
+    this.fetchUpdate();
+
+    this.handleUserClick(body);
+  }
+
+  // handle icons click
+  handleUserClick = body => {
+    const outerThis = this;
+    // get a.meta.link
+    const links = this.shadowObj.querySelectorAll('div.links > a.link');
+
+    if(body && links) { 
+      links.forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+
+          const name = link.getAttribute('name');
+
+          try {
+            const url = link.getAttribute('href');
+
+            let content = outerThis.getContentPage(name, '');
+
+            if (name === 'logon') {
+              content =outerThis.getContentPage(name, document.location.pathname)
+            } else if(name === 'updates'){
+              content =outerThis.getContentPage(name, 'updates')
+            }
+            
+            // replace and push states
+            this.replaceAndPushStates(url, body, content);
+    
+            body.innerHTML = content;
+          } catch (error) {
+            outerThis.navigateToUser();
+          }
+        })
+      })
+    }
+  }
+
+  // Replace and push states
+  replaceAndPushStates = (url, body, profile) => {
+    // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+    // get window location
+    const pageUrl = window.location.href;
+    window.history.replaceState(
+      { page: 'page', content: elementString },
+      url, pageUrl
+    );
+
+    // Updating History State
+    window.history.pushState(
+      { page: 'page', content: profile},
+      url, url
+    );
+  }
+
+  getContentPage = (name, optional) => {
+    if (name === 'home') {
+      return this.getHome();
+    } else if(name === 'search'){
+      return this.getSearch();
+    } else if(name === 'logon'){
+      return this.getLogon(optional);
+    } else if(name === 'profile'){
+      return this.getUser(this._user, optional)
+    } else if(name === 'updates'){
+      return this.getUser(this._user, optional)
+    }
+  }
+
+  getNext = () => {
+    const body = document.querySelector('body');
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+    return firstElement.outerHTML;
+  }
+
+  fetchUpdate = () => {
+    const outerThis = this;
+		// fetch the user stats
+    const options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // set the cache control to max-age to 1 day
+        "Cache-Control": "max-age=86400",
+        "Accept": "application/json"
+      }
+    }
+
+    const url = '/api/v1/u/author/info'
+
+    this.getCacheData(url, options)
+      .then(result => {
+        if (result.unverified) {
+          outerThis._unverified = true;
+          return;
+        }
+        // check for success response
+        if (result.success) {
+          if(!result.user) {
+            // display empty message
+            outerThis._user = null;
+            return;
+          }
+
+          outerThis._user = result.user;
+        }
+        else {
+          outerThis._user = null;
+        }
+      })
+      .catch(error => {
+        outerThis._user = null;
+      });
+	}
+
+  navigateToUser = () => {
+    const current = document.location.pathname;
+    // check if unverified
+    if(this._unverified) {
+      result.redirect(`/join/login?next=${current}`, 302)
+      return;
+    }
+
+    if(this._user === null || !this._user) {
+      window.location.href = '/user/updates';
+      return;
+    }
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9000) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      setTimeout(() => {
+        controller.abort();
+        // add property to the error object
+        reject(new Error('Request timed out'));
+      }, timeout);
+
+      fetch(url, { ...options, signal })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -113,7 +296,7 @@ export default class HeaderWrapper extends HTMLElement {
     `
   }
 
-  getContent  = title => {
+  getContent = title => {
     // mql to check for mobile
     const mql = window.matchMedia('(max-width: 660px)');
     return /* html */ `
@@ -126,27 +309,25 @@ export default class HeaderWrapper extends HTMLElement {
     if (authenticated) {
       return /* html */ `
         <div class="links">
-          <a href="/discover" class="link discover" title="Home">
+          <a href="/home" class="link discover" name="home" title="Home">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"></path>
             </svg>
           </a>
-          <a href="/user" class="link profile" title="User">
+          <a href="/user/" class="link profile" name="profile" title="User">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
             </svg>
           </a>
-          <a href="/user/updates" class="link updates" title="Updates">
+          <a href="/user/updates" class="link updates" name="updates" title="Updates">
             <svg height="16" viewBox="0 0 16 16" fill="currentColor" width="16">
               <path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16ZM3 5a5 5 0 0 1 10 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0 1 13.482 13H2.518a1.516 1.516 0 0 1-1.263-2.36l1.703-2.554A.255.255 0 0 0 3 7.947Zm5-3.5A3.5 3.5 0 0 0 4.5 5v2.947c0 .346-.102.683-.294.97l-1.703 2.556a.017.017 0 0 0-.003.01l.001.006c0 .002.002.004.004.006l.006.004.007.001h10.964l.007-.001.006-.004.004-.006.001-.007a.017.017 0 0 0-.003-.01l-1.703-2.554a1.745 1.745 0 0 1-.294-.97V5A3.5 3.5 0 0 0 8 1.5Z"></path>
             </svg>
           </a>
-          <a href="/search" class="link search" title="Search">
+          <a href="/search" class="link search" name="search" title="Search">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11.7666" cy="11.7667" r="8.98856" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round" />
-              <path d="M18.0183 18.4853L21.5423 22.0001" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round" />
+              <circle cx="11.7666" cy="11.7667" r="8.98856" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M18.0183 18.4853L21.5423 22.0001" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
         </div>
@@ -155,15 +336,13 @@ export default class HeaderWrapper extends HTMLElement {
     else {
       return /* html */ `
         <div class="links">
-          <a href="/join/login?next=${this.getAttribute('url')}" class="link signin">
+          <a href="/join/login" class="link signin" name="logon">
             <span class="text">Sign in</span>
           </a>
-          <a href="" class="link search">
+          <a href="" class="link search" name="search" title="Search">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11.7666" cy="11.7667" r="8.98856" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round" />
-              <path d="M18.0183 18.4853L21.5423 22.0001" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round" />
+              <circle cx="11.7666" cy="11.7667" r="8.98856" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M18.0183 18.4853L21.5423 22.0001" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
         </div>
@@ -220,19 +399,16 @@ export default class HeaderWrapper extends HTMLElement {
     `
   }
 
-  getLogon = () => {
+  getLogon = next => {
     return /* html */ `
       <app-logon
-        name="join" next="/home"
-        api-login="/api/v1/a/login"
-        api-register="/api/v1/a/register"
-        api-check-email="/api/v1/a/check-email"
-        api-forgot-password="/api/v1/a/forgot-password"
-        api-verify-token="/api/v1/a/verify-token"
-        api-reset-password="/api/v1/a/reset-password"
-        join-url="/join" login="/join/login"
-        register="/join/register" forgot="/join/recover"
-      >
+        name="join" next="${next}" api-login="/api/v1/a/login"
+        api-register="/api/v1/a/register" api-check-email="/api/v1/a/check-email"
+        api-forgot-password="/api/v1/a/forgot-password" api-verify-token="/api/v1/a/verify-token"
+        api-reset-password="/api/v1/a/reset-password" join-url="/join" login="/join/login"
+        register="/join/register" forgot="/join/recover">
+        ${this.getNext()}
+      </app-logon>
     `
   }
 
@@ -244,6 +420,25 @@ export default class HeaderWrapper extends HTMLElement {
         trending-topics="/api/v1/q/trending/topics" trending-replies="/api/v1/q/trending/replies">
       </app-search>
     `
+  }
+
+  getUser = (data, current) => {
+    if(!data) throw new Error("User not found");
+
+    const url = `/u/${data.hash.toLowerCase()}`;
+    const contact = data.contact ? JSON.stringify(data.contact) : null;
+
+    return /*html*/ `
+      <app-user hash="${data.hash}" home-url="/home" current="${current}" 
+        verified="${data.verified}" email="${data.email}" stories-url="/api/v1${url}/stories" 
+        replies-url="/api/v1${url}/replies" stories="${data.stories}" replies="${data.replies}"
+        user-link="${data.contact.link}" user-email="${data.contact.email}" 
+        user-x="${data.contact.x}" user-threads="${data.contact.threads}" user-linkedin="${data.contact.linkedin}" 
+        user-username="${data.hash}" user-you="true" user-url="${url}" user-img="${data.picture}"  user-verified="${data.verified}" 
+        user-name="${data.name}" user-followers="${data.followers}" user-contact='${contact}' user-following="${data.following}" 
+        user-follow="false" user-bio="${data.bio === null ? 'This user has not added a bio yet.' : data.bio}">
+      </app-user>
+    `;
   }
 
   getStyles() {

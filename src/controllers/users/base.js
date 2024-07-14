@@ -1,5 +1,5 @@
 // Import base user queries
-const { addUser, checkIfUserExits, findAuthorContact, getRecommendedUsers } = require('../../queries').userQueries;
+const { addUser, checkIfUserExits, findAuthorInfo, getRecommendedUsers } = require('../../queries').userQueries;
 
 // Import email validator
 const { validateEmail } = require('../../validators').userValidator;
@@ -96,33 +96,37 @@ const checkIfEmailExits = async (req, res, next) => {
 }
 
 /**
- * @function getAuthorContact
- * @description Controller to get author contact details
+ * @function getAuthorInfo
+ * @description Controller to get author details
  * @param {Request} req - Request object
  * @param {Response} res - Response object
  * @param {Function} next - Next middleware function
  * @returns {Object} - Returns response object || pass the error to the next middleware
 */
-const getAuthorContact = async (req, res, next) => {
+const getAuthorInfo = async (req, res, next) => {
   // Get the author hash from the request params
-  const { hash } = req.params;
+  const hash = req.user.hash;
 
-  // Get the author contact details
-  const {
-    contact,
-    error
-  } = await findAuthorContact(hash.toUpperCase());
+  try {
+    // Get the author contact details
+    const user = await findAuthorInfo(hash.toUpperCase());
 
-  // If error is not equal to undefined throw an error
-  if (error) {
+    // if user not found
+    if(!user) {
+      return res.status(200).send({
+        success: false,
+        message: "User was not found!"
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      user,
+      message: "User details found!"
+    });
+  } catch (error) {
     return next(error);
   }
-
-  return res.status(200).send({
-    success: true,
-    contact,
-    message: "Contact details found!"
-  });
 }
 
 /**
@@ -173,6 +177,6 @@ const fetchRecommendedUsers = async (req, res, next) => {
 
 
 module.exports = {
-  register, getAuthorContact,
+  register, getAuthorInfo,
   checkIfEmailExits, fetchRecommendedUsers
 };

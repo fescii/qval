@@ -313,6 +313,7 @@ export default class AppSearch extends HTMLElement {
   }
 
   activateOnPopState = () => {
+    const outerThis = this;
     // Update state on window.onpopstate
     window.onpopstate = event => {
       if (event.state) {

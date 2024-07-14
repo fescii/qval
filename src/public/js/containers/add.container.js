@@ -170,8 +170,8 @@ export default class FormContainer extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
             font-size: 16px;
-						padding: 10px 0 0;
-            border-bottom: none;
+						padding: 10px 0;
+            /*border-bottom: none;*/
             gap: 10px;
 					}
 

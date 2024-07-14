@@ -211,31 +211,22 @@ const getUserProfile = async hash => {
 }
 
 /**
- * @module findAuthorContact
+ * @module findAuthorInfo
  * @description a module that finds the author contact information: an object field
  * @param {String} hash - The author hash
  * @returns {Object} contact - The author contact object || null || error
 */
-const findAuthorContact = async hash => {
-  try {
-    const user = await User.findOne({ where: { hash }, attributes: ['contact'] });
-
-    // Check if the user exists
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // return the contact
-    return { contact: user.contact, error: null };
-  } 
-  catch (error) {
-    return { contact: null, error };
-  }
+const findAuthorInfo = async hash => {
+  // Find the user by hash
+  return await User.findOne({ 
+    attributes:['hash', 'bio', 'name', 'email', 'picture', 'followers', 'following', 'stories', 'verified', 'replies', "contact", 'contact'],
+    where: { hash }
+  });
 }
 
 
 // Export the queries
 module.exports = {
   addUser, getUserByHash, getUserProfile,
-  checkIfUserExits, findAuthorContact
+  checkIfUserExits, findAuthorInfo
 };

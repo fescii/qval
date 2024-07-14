@@ -177,11 +177,6 @@ export default class PreviewPopup extends HTMLElement {
   }
 
   openStory = () => {
-    // get url
-    let url = this.getAttribute('url');
-
-    url = url.trim().toLowerCase();
-
     // Get the body
     const body = document.querySelector('body');
 
@@ -191,6 +186,8 @@ export default class PreviewPopup extends HTMLElement {
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        let url = content.getAttribute('href');
 
         // Get full post
         const post =  this._story;

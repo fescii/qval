@@ -5,7 +5,7 @@ export default class AppUser extends HTMLElement {
 
     this.setTitle();
 
-    this._open = false;
+    this._open = this.setOpen(this.getAttribute('current'));
 
     this._current = this.getAttribute('current') || 'stats';
 
@@ -22,6 +22,14 @@ export default class AppUser extends HTMLElement {
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  setOpen = current => {
+    if(current === '' || current === null || !current) {
+      return true;
+    }
+
+    return false;
   }
 
   connectedCallback() {
@@ -66,6 +74,8 @@ export default class AppUser extends HTMLElement {
 
       // populate the current contents
       this.populateCurrent(tabContainer, contentContainer);
+
+      this.activateCloseTabs(mql.matches, btn, contentContainer, tabContainer);
     }
 
     if (url && body) {
@@ -135,6 +145,29 @@ export default class AppUser extends HTMLElement {
         window.history.back();
       }
     });
+  }
+
+  activateCloseTabs = (mql, btn, contentContainer, tabContainer) => {
+    const tabs = tabContainer.querySelectorAll('ul.tab')
+    // Check if open is true
+    if (mql && this._open) {
+      // add gap to the tab container
+      tabContainer.style.setProperty('gap', '10px');
+
+      tabs.forEach(tab => {
+        // set max-height to max-content
+        tab.style.setProperty('max-height', 'max-content');
+      });
+
+      // display content container to none
+      contentContainer.style.setProperty('display', 'none');
+
+      // rotate the button
+      btn.style.setProperty('transform', 'rotate(180deg)');
+
+      // Update open to true
+      this._open = true;
+    }
   }
 
   openCloseTabs = (tabs, btn, contentContainer, tabContainer) => {
