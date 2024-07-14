@@ -174,10 +174,8 @@ export default class StatStory extends HTMLElement {
 
   getActions = (likes, views) => {
     const viewUrl = this.getAttribute('url');
-    const editUrl = viewUrl + '/edit';
     return /*html*/`
       <div class="actions">
-        <a href="${editUrl}" class="action edit" id="edit-action">edit</a>
         <a href="${viewUrl}" class="action view" id="view-action">view</a>
         <span class="action likes plain">
           <span class="no">${this.formatNumber(likes)}</span> <span class="text">${likes === 1 ? 'like' : 'likes'}</span>

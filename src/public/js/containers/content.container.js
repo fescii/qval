@@ -206,7 +206,6 @@ export default class ContentContainer extends HTMLElement {
         }
 
         .top {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           gap: 5px;
@@ -320,7 +319,6 @@ export default class ContentContainer extends HTMLElement {
         }
 
         .content {
-          /* border: var(--border); */
           display: flex;
           flex-flow: column;
           gap: 10px;

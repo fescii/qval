@@ -149,47 +149,50 @@ export default class FormProfile extends HTMLElement {
     });
   }
 
-  // Function to resize image
+  // Function to resize image and crop to square
   resizeImage = async file => {
     return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        const maxSize = 150;
-        let width = img.width;
-        let height = img.height;
-
-        // Calculate dimensions while maintaining aspect ratio
-        if (width > height) {
-          if (width > maxSize) {
-            height *= maxSize / width;
-            width = maxSize;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const maxSize = 300;
+          canvas.width = maxSize;
+          canvas.height = maxSize;
+          const aspectRatio = img.width / img.height;
+          let sourceX = 0;
+          let sourceY = 0;
+          let sourceWidth = img.width;
+          let sourceHeight = img.height;
+          if (aspectRatio > 1) {
+            sourceX = (img.width - img.height) / 2;
+            sourceWidth = img.height;
+          } else {
+            sourceY = (img.height - img.width) / 2;
+            sourceHeight = img.width;
           }
-        } else {
-          if (height > maxSize) {
-            width *= maxSize / height;
-            height = maxSize;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        // Draw image on canvas
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Convert canvas to blob with WebP format
-        canvas.toBlob((blob) => resolve({ blob, width, height }), 'image/webp', 1);
+          ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, maxSize, maxSize);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve({ blob, width: maxSize, height: maxSize });
+              } else {
+                reject(new Error('Failed to create blob'));
+              }
+            },
+            'image/webp',
+            0.9
+          );
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = event.target.result;
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
 
   fetchWithTimeout = (url, options, timeout = 9000) => {
     return new Promise((resolve, reject) => {
@@ -267,7 +270,7 @@ export default class FormProfile extends HTMLElement {
       <div class="top">
         <p class="desc">
           Your profile picture is how people will recognize you on the platform. You can use a photo of yourself or an avatar. <br>
-          Note that the image will be cropped to a square and resized to 150x150 pixels, and may take time to reflect everywhere.
+          <span>Note that the image will be cropped to a square and resized to 300x300 pixels, and may take time to reflect everywhere due to local cache.<span>
         </p>
       </div>
     `;
@@ -411,6 +414,15 @@ export default class FormProfile extends HTMLElement {
           color: var(--gray-color);
           font-size: 1rem;
           font-family: var(--font-main), sans-serif;
+        }
+
+        .top > .desc > span {
+          margin: 0;
+          color: var(--gray-color);
+          font-size: 0.85rem;
+          line-height: 1.5;
+          font-style: italic;
+          font-family: var(--font-read), sans-serif;
         }
 
         form.fields {

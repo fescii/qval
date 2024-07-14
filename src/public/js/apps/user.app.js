@@ -860,7 +860,7 @@ export default class AppUser extends HTMLElement {
     else {
       return /*html*/`
         <div class="avatar">
-          <img src="${picture}" alt="Author picture">
+          <img src="${picture}" alt="Author picture" async lazy="true">
           ${this.checkVerified(this.getAttribute('verified'))}
         </div>
       `

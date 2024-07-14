@@ -126,17 +126,22 @@ export default class HeaderWrapper extends HTMLElement {
     if (authenticated) {
       return /* html */ `
         <div class="links">
-          <a href="/discover" class="link discover">
+          <a href="/discover" class="link discover" title="Home">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"></path>
             </svg>
           </a>
-          <a href="/profile" class="link profile">
+          <a href="/user" class="link profile" title="User">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
               <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
             </svg>
           </a>
-          <a href="/search" class="link search">
+          <a href="/user/updates" class="link updates" title="Updates">
+            <svg height="16" viewBox="0 0 16 16" fill="currentColor" width="16">
+              <path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16ZM3 5a5 5 0 0 1 10 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0 1 13.482 13H2.518a1.516 1.516 0 0 1-1.263-2.36l1.703-2.554A.255.255 0 0 0 3 7.947Zm5-3.5A3.5 3.5 0 0 0 4.5 5v2.947c0 .346-.102.683-.294.97l-1.703 2.556a.017.017 0 0 0-.003.01l.001.006c0 .002.002.004.004.006l.006.004.007.001h10.964l.007-.001.006-.004.004-.006.001-.007a.017.017 0 0 0-.003-.01l-1.703-2.554a1.745 1.745 0 0 1-.294-.97V5A3.5 3.5 0 0 0 8 1.5Z"></path>
+            </svg>
+          </a>
+          <a href="/search" class="link search" title="Search">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11.7666" cy="11.7667" r="8.98856" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                 stroke-linejoin="round" />
@@ -373,6 +378,7 @@ export default class HeaderWrapper extends HTMLElement {
           justify-content: center;
         }
 
+        nav.nav > .links > a.link.updates:hover,
         nav.nav > .links > a.link.discover:hover,
         nav.nav > .links > a.link.profile:hover,
         nav.nav > .links > a.link.search:hover {
@@ -393,6 +399,12 @@ export default class HeaderWrapper extends HTMLElement {
         nav.nav > .links > a.link.discover > svg {
           width: 20px;
           height: 20px;
+        }
+
+        nav.nav > .links > a.link.updates > svg{
+          width: 20px;
+          height: 20px;
+          margin: 1px 0 0 0;
         }
 
         nav.nav > .links > a.link.profile > svg {
@@ -442,7 +454,7 @@ export default class HeaderWrapper extends HTMLElement {
           nav.nav > .left h3 {
             margin: 0;
             font-family: var(--font-main), sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
