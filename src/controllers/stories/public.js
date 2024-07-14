@@ -38,15 +38,17 @@ const getStory = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: story.hash,
-    },
-    user: story.author,
-    action: 'story',
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== story.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: story.hash,
+      },
+      user: story.author,
+      action: 'story',
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
   // add tab to the story object
   story.tab = 'replies';
@@ -86,15 +88,17 @@ const getStoryLikes = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: story.hash,
-    },
-    action: 'story',
-    user: story.author,
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== story.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: story.hash,
+      },
+      user: story.author,
+      action: 'story',
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
   // add tab to the story object
   story.tab = 'likes';
@@ -131,15 +135,17 @@ const getReply = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: reply.hash,
-    },
-    action: 'reply',
-    user: reply.author,
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== reply.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: reply.hash,
+      },
+      action: 'reply',
+      user: reply.author,
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
   // add tab to the reply object
   reply.tab = 'replies';
@@ -176,15 +182,17 @@ const getReplyLikes = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: reply.hash,
-    },
-    action: 'reply',
-    user: reply.author,
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== reply.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: reply.hash,
+      },
+      action: 'reply',
+      user: reply.author,
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
   // add tab to the reply object
   reply.tab = 'likes';
@@ -220,7 +228,7 @@ const getStoryPreview = async (req, res) => {
   if (error) { 
     return res.status(500).json({
       success: false,
-      message: 'An error occured'
+      message: 'An error occurred'
     })
   }
 
@@ -233,15 +241,17 @@ const getStoryPreview = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: story.hash,
-    },
-    user: story.author,
-    action: 'story',
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== story.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: story.hash,
+      },
+      user: story.author,
+      action: 'story',
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
   // return the story object
   res.status(200).json({
@@ -271,7 +281,7 @@ const getReplyPreview = async (req, res) => {
   if (error) { 
     return res.status(500).json({
       success: false,
-      message: 'An error occured'
+      message: 'An error occurred'
     });
   }
 
@@ -284,15 +294,17 @@ const getReplyPreview = async (req, res) => {
   }
 
   // add the job to the queue
-  await actionQueue.add('actionJob', {
-    kind: 'view',
-    hashes: {
-      target: reply.hash,
-    },
-    action: 'reply',
-    user: reply.author,
-    value: 1,
-  }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  if (user.hash !== reply.author) {
+    await actionQueue.add('actionJob', {
+      kind: 'view',
+      hashes: {
+        target: reply.hash,
+      },
+      action: 'reply',
+      user: reply.author,
+      value: 1,
+    }, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
   
   res.status(200).json({
     reply: reply,

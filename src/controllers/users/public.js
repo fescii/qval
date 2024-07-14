@@ -41,6 +41,7 @@ const getPerson = async (req, res) => {
   })
 }
 
+
 /**
  * @controller {get} /t/:slug(:hash) Topic
  * @name getUserReplies
@@ -115,6 +116,7 @@ const getUserFollowers = async (req, res) => {
   })
 }
 
+
 /**
  * @controller {get} /u/:hash/following
  * @name getUserFollowing
@@ -153,6 +155,48 @@ const getUserFollowing = async (req, res) => {
 }
 
 /**
+ * @controller {get} /t/:slug(:hash) Topic
+ * @name getPerson
+ * @description This route will the user page for the app.
+ * @returns Page: Renders user page
+*/
+const fetchUser = async (req, res) => {
+  //get the params from the request
+  let param = req.params.hash;
+
+  // get user from the request object
+  const currentUser = req.user;
+
+  // convert the user hash to lowercase
+  param = param.toUpperCase();
+
+  // query the database for the user
+  const { user, error } = await getUserByHash(param, currentUser.hash);
+
+  // if there is an error, render the error page
+  if (error) { 
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred'
+    })
+  }
+
+  // if there is no user, render the 404 page
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'User found',
+    user
+  });
+}
+
+/**
  * @controller {get} /settings
  * @name getAccount
  * @description This route will the user settings page for the app.
@@ -188,12 +232,13 @@ const getAccount = async (req, res) => {
 
   user.tab = current || 'stats';
 
-  res.render('pages/settings', {
+  res.render('pages/updates', {
     data: user
   });
 }
 
 // Export all public content controllers
 module.exports = {
-  getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount
+  getPerson, getUserReplies, getUserFollowers, getUserFollowing, getAccount,
+  fetchUser
 }

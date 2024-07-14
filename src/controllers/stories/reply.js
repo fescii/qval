@@ -1,6 +1,8 @@
 // Import all reply queries from storyQueries
 const { addReply, editReply, removeReply } = require('../../queries').storyQueries;
 
+const { addActivity } = require('../../bull');
+
 /**
  * @function createStoryReply
  * @description Controller for creating a reply to a story
@@ -36,6 +38,13 @@ const createStoryReply = async (req, res, next) => {
     console.log('eRR:', error)
     return next(error);
   }
+
+  // Add activity to the queue
+  await addActivity({
+    kind: 'story', action: 'reply', author: req.user.hash, name: req.user.name,
+    target: reply.story, to: null, verb: 'replied',
+    type: 'story', nullable: false,
+  });
 
   // Return the response
   return res.status(201).send({
@@ -80,6 +89,13 @@ const createReply = async (req, res, next) => {
     console.log('eRR:', error)
     return next(error);
   }
+
+  // Add activity to the queue
+  await addActivity({
+    kind: 'reply', action: 'reply', author: req.user.hash, name: req.user.name,
+    target: reply.reply, to: null, verb: 'replied',
+    type: 'reply', nullable: false,
+  });
 
   // Return the response
   return res.status(201).send({
@@ -130,6 +146,13 @@ const updateReply = async (req, res, next) => {
       message: "The reply you are trying to update was not found!",
     });
   }
+
+  // Add activity to the queue
+  await addActivity({
+    kind: 'reply', action: 'update', author: req.user.hash, name: req.user.name,
+    target: reply.hash, to: null, verb: 'updated reply content',
+    nullable: true
+  });
 
   // Return the response
   return res.status(201).send({

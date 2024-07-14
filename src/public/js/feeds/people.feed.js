@@ -246,6 +246,15 @@ export default class PeopleFeed extends HTMLElement {
 						</p>
 					</div>
 				`
+      case 'search':
+				return `
+					<div class="empty">
+						<h2 class="title">No user found!</h2>
+						<p class="next">
+							The search keyword did not match any user, try searching using a different keyword.
+						</p>
+					</div>
+				`
 			default:
 				return `
 					<div class="empty">
@@ -293,6 +302,15 @@ export default class PeopleFeed extends HTMLElement {
 						<h2 class="title">No more people.</h2>
 						<p class="next">
 							You have reached the end of the people who this user is following. You can always come back later to check for new people.
+						</p>
+					</div>
+				`
+      case 'search':
+				return `
+					<div class="last">
+						<h2 class="title">The end of results</h2>
+						<p class="next">
+							You have reached the end of the people who matched the query. You can try searching using different keyword.
 						</p>
 					</div>
 				`

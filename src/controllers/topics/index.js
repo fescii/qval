@@ -15,7 +15,7 @@ const {
 } = require('./action');
 
 const {
-  getTopic, getTopicStories, getTopicContributors
+  getTopic, getTopicStories, getTopicContributors, fetchTopic
 } = require('./public');
 
 // Export all topic controllers
@@ -25,5 +25,5 @@ module.exports = {
   updateTopicSection, deleteDraft, deleteTopicSection,
   acceptDraft, getTopicSections, getTopicDrafts,
   searchTopics, getTopicByHash, followTopic, subscribeTopic,
-  getTopic, getTopicStories, getTopicContributors
+  getTopic, getTopicStories, getTopicContributors, fetchTopic
 }

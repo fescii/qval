@@ -1,4 +1,4 @@
-const { auth } = require('../../configs/mpesa.config');
+const { addActivity } = require('../../bull');
 
 const { checkAuthority } = require('../../utils').roleUtil;
 const { Privileges } = require('../../configs').platformConfig;
@@ -39,6 +39,14 @@ const createStory = async (req, res, next) => {
   if (error) {
     return next(error);
   }
+
+  // add activity to the queue
+  await addActivity({
+    kind: 'story', action: 'create', author: req.user.hash, target: story.hash, 
+    name: req.user.name, to: null, verb: 'created',
+    // this indicates the activity to is nullable
+    nullable: true
+  })
 
   // Return the response
   return res.status(201).send({
@@ -185,6 +193,14 @@ const updateStory = async (req, res, next) => {
     });
   }
 
+  // add activity to the queue
+  await addActivity({
+    kind: 'story', action: 'update', author: req.user.hash, target: story.hash,
+    name: req.user.name, to: null, verb: 'updated story content',
+    // this indicates the activity to is nullable
+    nullable: true
+  })
+
   // Return success response
   return res.status(200).send({
     success: true,
@@ -305,6 +321,14 @@ const updateTitle = async (req, res, next) => {
     });
   }
 
+  // add activity to the queue
+  await addActivity({
+    kind: 'story', action: 'update', author: req.user.hash, target: story.hash,
+    name: req.user.name, to: null, verb: 'updated story title',
+    // this indicates the activity to is nullable
+    nullable: true
+  })
+
   // Return success response
   return res.status(200).send({
     success: true,
@@ -385,6 +409,14 @@ const updateSlug = async (req, res, next) => {
       message: "Story not you are trying to update was not found!"
     });
   }
+
+  // add activity to the queue
+  await addActivity({
+    kind: 'story', action: 'update', author: req.user.hash, target: story.hash,
+    name: req.user.name, to: null, verb: 'updated story slug',
+    // this indicates the activity to is nullable
+    nullable: true
+  })
 
   // Return success response
   return res.status(200).send({

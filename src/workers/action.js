@@ -1,6 +1,6 @@
 const { redisConfig } = require('../configs').storageConfig;
 const { Worker } = require('bullmq');
-const { actionHook } = require('../hooks').actionHook;
+const { actionHook } = require('../hooks');
 
 
 // Initialize the Bull worker for the upvoteQueue

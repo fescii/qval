@@ -1,6 +1,10 @@
 // Import user and sequelize from models
 const { sequelize, Sequelize } = require('../../models').models;
-const { userReplies, userRepliesStats, userStories, userStoriesStats } = require('../raw').profile;
+const { 
+  userReplies, userRepliesStats, userStories, 
+  userStoriesStats
+} = require('../raw').profile;
+
 
 
 // Map story fields(sections) to html
@@ -31,84 +35,50 @@ const mapFields = (content, data) => {
 
 
 /**
- * @function getUserStoriesStats
+ * @function fetchUserStoriesStats
  * @description A query function to get the stories of a user: most viewed, most liked
  * @param {Object} reqData - The request data
  * @returns {Promise<Array>} - A promise that resolves to an array of the top 5 recommended users
 */
-const getUserStoriesStats = async reqData => {
+const fetchUserStoriesStats = async reqData => {
   const  { user, limit, page } = reqData;
 
   // calculate the offset
   const offset = (page - 1) * limit;
 
-  try {
-    const stories = await sequelize.query(userStoriesStats, {
-      replacements: {
-        user,
-        offset, 
-        limit 
-      },
-      type: Sequelize.QueryTypes.SELECT
-    });
+  const stories = await sequelize.query(userStoriesStats, {
+    replacements: {user, offset,  limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
 
-    // map the stories' sections
-    const storiesData = stories.map(story => {
-      story.you = user === story.author;
-      // add story sections to the story
-      if (story.kind === 'story') {
-        story.story_sections = mapFields(story.content, story.story_sections_summary);
-      }
-
-      return story;
-    });
-
-    return {
-      stories: storiesData,
-      error: null
+  // map the stories' sections
+  return stories.map(story => {
+    story.you = user === story.author;
+    // add story sections to the story
+    if (story.kind === 'story') {
+      story.story_sections = mapFields(story.content, story.story_sections_summary);
     }
-  }
-  catch (error) {
-    return {
-      stories: [],
-      error: error
-    }
-  }
+
+    return story;
+  });
 };
 
 /**
- * @function getUserRepliesStats
+ * @function fetchUserRepliesStats
  * @description A query function to get the replies of a user: most viewed, most liked
  * @param {Object} reqData - The request data
  * @returns {Promise<Array>} - A promise that resolves to an array of the top 5 recommended users
 */
-const getUserRepliesStats = async reqData => {
+const fetchUserRepliesStats = async reqData => {
   const  { user, limit, page } = reqData;
 
   // calculate the offset
   const offset = (page - 1) * limit;
 
-  try {
-    const replies = await sequelize.query(userRepliesStats, {
-      replacements: {
-        user,
-        offset, 
-        limit 
-      },
-      type: Sequelize.QueryTypes.SELECT
-    });
-
-    return {
-      replies: replies,
-      error: null
-    }
-  }
-  catch (error) {
-    return {
-      replies: [],
-      error: error.message
-    }
-  }
+  return await sequelize.query(userRepliesStats, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
 };
 
 /**
@@ -123,38 +93,21 @@ const fetchUserStories = async reqData => {
   // calculate the offset
   const offset = (page - 1) * limit;
 
-  try {
-    const stories = await sequelize.query(userStories, {
-      replacements: {
-        user,
-        offset, 
-        limit 
-      },
-      type: Sequelize.QueryTypes.SELECT
-    });
+  const stories = await sequelize.query(userStories, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
 
-    // map the stories' sections
-    const storiesData = stories.map(story => {
-      story.you = user === story.author;
-      // add story sections to the story
-      if (story.kind === 'story') {
-        story.story_sections = mapFields(story.content, story.story_sections_summary);
-      }
-
-      return story;
-    });
-
-    return {
-      stories: storiesData,
-      error: null
+  // map the stories' sections
+  return stories.map(story => {
+    story.you = user === story.author;
+    // add story sections to the story
+    if (story.kind === 'story') {
+      story.story_sections = mapFields(story.content, story.story_sections_summary);
     }
-  }
-  catch (error) {
-    return {
-      stories: [],
-      error: error.message
-    }
-  }
+
+    return story;
+  });
 };
 
 /**
@@ -169,32 +122,13 @@ const fetchUserReplies = async reqData => {
   // calculate the offset
   const offset = (page - 1) * limit;
 
-  try {
-    const replies = await sequelize.query(userReplies, {
-      replacements: {
-        user,
-        offset, 
-        limit 
-      },
-      type: Sequelize.QueryTypes.SELECT
-    });
-
-    return {
-      replies: replies,
-      error: null
-    }
-  }
-  catch (error) {
-    return {
-      replies: [],
-      error: error.message
-    }
-  }
+  return await sequelize.query(userReplies, {
+    replacements: { user, offset, limit },
+    type: Sequelize.QueryTypes.SELECT
+  });
 };
 
 module.exports = {
-  getUserStoriesStats,
-  getUserRepliesStats,
-  fetchUserStories,
-  fetchUserReplies
+  fetchUserStoriesStats, fetchUserRepliesStats,
+  fetchUserStories, fetchUserReplies
 }

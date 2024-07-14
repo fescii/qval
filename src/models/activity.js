@@ -35,17 +35,14 @@ module.exports = (sequelize, Sequelize, User) => {
     kind: {
       type: Sequelize.ENUM('story', 'reply', 'topic', 'user'),
       allowNull: false,
-      index: true,
     },
     action: {
       type: Sequelize.ENUM('follow', 'like', 'reply', 'create', 'update', 'vote', 'subscribe'),
       allowNull: false,
-      index: true,
     },
 		author: {
 			type: Sequelize.STRING,
 			allowNull: false,
-      index: true,
 		},
     name: {
       type: Sequelize.STRING,
@@ -53,31 +50,51 @@ module.exports = (sequelize, Sequelize, User) => {
     },
 		target: {
 			type: Sequelize.STRING,
-			unique: true,
+			allowNull: false,
+		},
+		deleted: {
+			type: Sequelize.BOOLEAN,
 			allowNull: true,
-      index: true,
+			defaultValue: false,
 		},
 		to: {
 			type: Sequelize.STRING,
-			unique: true,
 			allowNull: true,
-      index: true,
 		},
-	},{
-			schema: 'activity',
-			freezeTableName: true,
-			timestamps: true,
-      timezone: 'UTC',
-			indexes: [
-				{
-					fields: ['createdAt']
-				}
-			]
+		content: {
+			type: Sequelize.STRING,
+			allowNull: true,
+		},
+		verb:{
+			type: Sequelize.STRING,
+			allowNull: true,
+		}
+	},
+	{
+		schema: 'activity',
+		freezeTableName: true,
+		timestamps: true,
+    timezone: 'UTC',
+		indexes: [
+			{ unique: true, fields: ['id'] },
+			{ fields: ['kind'] },
+			{ fields: ['action'] },
+			{ fields: ['author'] },
+			{ fields: ['target'] },
+			{	fields: ['to'] },
+			{	fields: ['read'] },
+			{	fields: ['deleted'] },
+			{	fields: ['createdAt']}
+		]
 	});
 
 	// Define associations: User --> Activity
   User.hasMany(Activity, { foreignKey: 'author', sourceKey: 'hash', as: 'user_activities', onDelete: 'CASCADE' });
-  Activity.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'user_activity', onDelete: 'CASCADE' });
+  Activity.belongsTo(User, { foreignKey: 'author', targetKey: 'hash', as: 'activity_user', onDelete: 'CASCADE' });
+
+	// Define associations: User --> Activity
+	User.hasMany(Activity, { foreignKey: 'to', sourceKey: 'hash', as: 'user_notifications', onDelete: 'CASCADE' });
+	Activity.belongsTo(User, { foreignKey: 'to', targetKey: 'hash', as: 'notification_user', onDelete: 'CASCADE' });
 
 	return {Activity};
 }

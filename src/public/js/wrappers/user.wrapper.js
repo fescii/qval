@@ -356,7 +356,7 @@ export default class UserWrapper extends HTMLElement {
   updateFollowers = (followed) => {
     const outerThis = this;
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -600,7 +600,7 @@ export default class UserWrapper extends HTMLElement {
     url = url.trim().toLowerCase();
 
    return /* html */`
-      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}" tab="stories"
+      <app-profile tab="stories" you="${this.getAttribute('you')}" url="${url}"
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}"
         followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
         hash="${this.getAttribute('hash')}" picture="${this.getAttribute('picture')}" verified="${this.getAttribute('verified')}"

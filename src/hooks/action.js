@@ -4,7 +4,7 @@ const {
   updateTopicFollowers, updateTopicSubscribers, updateTopicViews, updateTopicStories,
   updateStoryVotes, updateStoryViews, updateStoryLikes, updateStoryReplies, 
   updateReplyViews, updateReplyReplies, updateReplyLikes, viewContent, updateUserViews
-} = require('./fns.hook');
+} = require('./fns');
 
 // import update tags query 
 const { tagStory } = require('../queries').topicQueries;
@@ -44,6 +44,7 @@ const actionHook = async data => {
       break;
       case 'story':
         // call the story updater
+        console.log(data)
         await storyUpdater(data.action, data.hashes.target, data.value);
       break;
       case 'reply':
@@ -195,6 +196,4 @@ const replyUpdater = async (action, replyHash, value) => {
 
 
 // Export all hooks
-module.exports = {
-  actionHook
-}
+module.exports = actionHook;

@@ -15,6 +15,7 @@ const recentLoggedIn = /*sql*/ `
   LEFT JOIN  story_sections ss ON s.hash = ss.story
   LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
   LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
+  WHERE s.published = true
   ORDER BY s."createdAt" DESC, s.replies DESC
   LIMIT 10;
 `;
@@ -32,6 +33,7 @@ const recentStories = /*sql*/ `
   FROM story.stories s
   LEFT JOIN  account.users sa ON s.author = sa.hash 
   LEFT JOIN  story_sections ss ON s.hash = ss.story
+  WHERE s.published = true
   ORDER BY s."createdAt" DESC, s.replies DESC
   LIMIT 10;
 `;
@@ -53,6 +55,7 @@ const followingStories = /*sql*/ `
   LEFT JOIN (SELECT story, option FROM story.votes WHERE author = :user) AS vt ON s.hash = vt.story
   LEFT JOIN  story_sections ss ON s.hash = ss.story
   LEFT JOIN (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
+  WHERE s.published = true
   ORDER BY s."createdAt" DESC, s.replies DESC 
   LIMIT 10;
 `

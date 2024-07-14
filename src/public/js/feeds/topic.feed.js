@@ -142,6 +142,7 @@ export default class TopicFeed extends HTMLElement {
           topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
           subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
           author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}"
+          author-stories="${author.stories}" author-replies="${author.replies}"
           author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
           author-following="${author.following}" author-follow="${author.is_following}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
           author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">

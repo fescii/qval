@@ -1,5 +1,6 @@
 // Import action queries from storyQueries
 const { likeStory, likeReply, viewContent } = require('../../queries').storyQueries;
+const { addActivity } = require('../../bull');
 
 /**
  * @function likeStory
@@ -29,11 +30,20 @@ const likeStoryController = async (req, res, next) => {
     return next(error);
   }
 
+  // add activity to the queue
+  if (liked) {
+    addActivity({
+      kind: 'story', action: 'like', author: req.user.hash, name: req.user.name,
+      to: null, target: hash.toUpperCase(), verb: 'liked',
+      nullable: false,
+    });
+  }   
+
   // return response
   return res.status(200).json({
     success: true,
     liked: liked,
-    message: `You ${liked ? 'liked' : 'unliked'} the story`
+    message: `You've ${liked ? 'like' : 'unlike'} the story`
   });
 }
 
@@ -65,11 +75,20 @@ const likeReplyController = async (req, res, next) => {
     return next(error);
   }
 
+  // add activity to the queue
+  if (liked) {
+    addActivity({
+      kind: 'reply', action: 'like', author: req.user.hash, name: req.user.name,
+      to: null, target: hash.toUpperCase(), verb: 'liked',
+      nullable: false,
+    });
+  }
+
   // return response
   return res.status(200).json({
     success: true,
     liked: liked,
-    message: `You ${liked ? 'liked' : 'unliked'} the reply`
+    message: `You've ${liked ? 'like' : 'unlike'} the reply`
   });
 }
 
@@ -106,7 +125,7 @@ const viewContentController = async (req, res, next) => {
   return res.status(200).json({
     success: true,
     viewed: viewed,
-    message: `You ${viewed ? 'viewed' : 'unviewed'} the content`
+    message: `You ${viewed ? 'viewed' : 'unview'} the content`
   });
 }
 

@@ -313,6 +313,7 @@ export default class AppSearch extends HTMLElement {
   }
 
   activateOnPopState = () => {
+    const outerThis = this;
     // Update state on window.onpopstate
     window.onpopstate = event => {
       if (event.state) {
@@ -837,7 +838,7 @@ export default class AppSearch extends HTMLElement {
             left: -12px;
             top: calc(50% - 22px);
             color: var(--text-color);
-            cursor: pointer;
+            cursor: default !important;
             width: 42px;
             height: 42px;
           }

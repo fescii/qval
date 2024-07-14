@@ -1,7 +1,7 @@
 // Import necessary modules, middlewares, and controllers
 const {
   getPerson, getUserReplies, getUserFollowers, getUserFollowing, fetchRecommendedUsers, 
-  getAccount
+  getAccount, fetchUser
 } = require('../../controllers').userController;
 
 const {
@@ -41,12 +41,15 @@ module.exports = (app) => {
   // Route for handling user following page
   app.get('/u/:hash/following', checkToken, getUserFollowing);
 
+  // Route for handling user fetch page
+  app.get('/api/v1/u/:hash/preview', checkToken, fetchUser);
+
   // Route for handling recommended users page
   app.get('/api/v1/users/recommended', checkToken, fetchRecommendedUsers);
 
   // Route for handling user settings page
-  app.get('/settings', checkToken, getAccount);
+  app.get('/user', checkToken, getAccount);
 
   // Route for handling user settings page
-  app.get('/settings/:current', checkToken, getAccount);
+  app.get('/user/:current', checkToken, getAccount);
 }

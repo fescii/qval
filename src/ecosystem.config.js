@@ -5,7 +5,7 @@ module.exports = {
   apps: [
     {
       name: 'express-app',
-      script: 'app.js', // Replace with your main Express server file
+      script: 'app.js',
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {
@@ -17,7 +17,7 @@ module.exports = {
     },
     {
       name: 'action-worker',
-      script: './workers/action.worker.js', // Replace with your Bull worker file
+      script: './workers/action.js',
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {
@@ -29,7 +29,7 @@ module.exports = {
     },
     {
       name: 'mail-worker',
-      script: './workers/mail.worker.js', // Replace with your Bull worker file
+      script: './workers/mail.js',
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {
@@ -39,5 +39,17 @@ module.exports = {
         NODE_ENV: 'production'
       }
     },
+    {
+      name: 'activity-worker',
+      script: './workers/activity.js',
+      watch: true,
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      env: {
+        NODE_ENV: 'development'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    }
   ]
 };

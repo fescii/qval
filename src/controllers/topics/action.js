@@ -1,6 +1,6 @@
-// import foolow and subscribe queries
+// import follow and subscribe queries
 const { follow, subscribe } = require('../../queries/topics');
-
+const { addActivity } = require('../../bull');
 
 /**
  * @function followTopic
@@ -31,11 +31,19 @@ const followTopic = async (req, res, next) => {
     return next(error);
   }
 
+  // add activity to the queue
+  if (followed) {
+    addActivity({
+      kind: 'topic', action: 'follow', author: req.user.hash, name: req.user.name,
+      to: null, target: topic, verb: 'followed',
+    });
+  }
+
   // return success message
   return res.status(200).send({
     success: true,
     followed: followed,
-    message: followed ? 'You are now following this topic!' : 'You have unfollowed this topic!'
+    message: followed ? "You've follow this topic!" : "You've unfollow this topic!"
   });
 }
 
@@ -66,6 +74,14 @@ const subscribeTopic = async (req, res, next) => {
   // if there is an error, pass it to the error middleware
   if (error) {
     return next(error);
+  }
+
+  // add activity to the queue
+  if (subscribed) {
+    addActivity({
+      kind: 'topic', action: 'subscribe', author: req.user.hash, name: req.user.name,
+      to: null, target: topic, verb: 'subscribed',
+    });
   }
 
   // return success message

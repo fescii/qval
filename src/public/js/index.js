@@ -21,6 +21,8 @@ import StoriesContainer from "./containers/stories.container.js";
 import TopicsContainer from "./containers/topics.container.js";
 import TrendingContainer from "./containers/trending.container.js";
 import FeedContainer from "./containers/feed.container.js";
+import UpdateContainer from "./containers/update.container.js";
+import ContentContainer from "./containers/content.container.js";
 
 // Import custom elements
 import CustomSpan from "./elements/span.element.js";
@@ -38,6 +40,8 @@ import RepliesFeed from "./feeds/replies.feed.js";
 import StatFeed from "./feeds/stat.feed.js";
 import TopicFeed from "./feeds/topic.feed.js";
 import HomeFeed from "./feeds/home.feed.js";
+import UpdateFeed from "./feeds/update.feed.js";
+import ContentFeed from "./feeds/content.feed.js";
 
 // Import forms
 import BioForm from "./forms/bio.form.js";
@@ -72,6 +76,9 @@ import StatStory from "./stats/stat.story.js";
 import StoriesStat from "./stats/stories.stat.js";
 import UsersStat from "./stats/users.stat.js";
 import MonthStat from "./stats/month.stat.js";
+import UpdateItem from "./stats/update.item.js";
+import ContentStory from "./stats/content.story.js";
+import ContentReply from "./stats/content.reply.js";
 
 // Import wrappers
 import AuthorWrapper from "./wrappers/author.wrapper.js";
@@ -119,6 +126,8 @@ customElements.define("stories-container", StoriesContainer);
 customElements.define("topics-container", TopicsContainer);
 customElements.define("trending-container", TrendingContainer);
 customElements.define("feed-container", FeedContainer);
+customElements.define("update-container", UpdateContainer);
+customElements.define("content-container", ContentContainer);
 
 // Register custom elements
 customElements.define("custom-span", CustomSpan, { extends: "span" });
@@ -136,6 +145,8 @@ customElements.define("replies-feed", RepliesFeed);
 customElements.define("stat-feed", StatFeed);
 customElements.define("topics-feed", TopicFeed);
 customElements.define("home-feed", HomeFeed);
+customElements.define("update-feed", UpdateFeed);
+customElements.define("content-feed", ContentFeed);
 
 // Register forms
 customElements.define("bio-form", BioForm);
@@ -170,6 +181,9 @@ customElements.define("stat-story", StatStory);
 customElements.define("stories-stat", StoriesStat);
 customElements.define("users-stat", UsersStat);
 customElements.define("month-stat", MonthStat);
+customElements.define("update-item", UpdateItem);
+customElements.define("content-story", ContentStory);
+customElements.define("content-reply", ContentReply);
 
 // Register wrappers
 customElements.define("author-wrapper", AuthorWrapper);

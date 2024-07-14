@@ -1,6 +1,8 @@
 // Import user action queries
 const { connectToUser } = require('../../queries/users');
 
+const { addActivity } = require('../../bull');
+
 /**
  * @function followUser
  * @description Controller to follow a user
@@ -50,11 +52,19 @@ const followUser = async (req, res, next) => {
     return next(error);
   }
 
+  // add activity to the queue
+  if (followed) {
+    addActivity({
+      kind: 'user', action: 'follow', author: req.user.hash, name: req.user.name,
+      to: followHash, target: followHash, verb: 'followed',
+    });
+  }
+
   // On success return response to the user
   return res.status(201).send({
     success: true,
     followed: followed,
-    message: followed ? "You are now following the user!" : "You have unfollowed the user!"
+    message: followed ? "You are now following the user!" : "You have unfollow the user!"
   });
 };
 

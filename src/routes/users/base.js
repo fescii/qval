@@ -4,7 +4,7 @@ const upload = require('../../middlewares').upload;
 const {
   updateProfilePicture, updateProfileBio, updateProfileName,
   updateProfileContact, updateProfilePassword, followUser,
-  getAuthorContact, updateProfileEmail
+  updateProfileEmail, getAuthorInfo
 } = require('../../controllers').userController;
 
 
@@ -66,5 +66,5 @@ module.exports = (app, url) => {
   );
 
   // Get author contact route
-  app.get(`${url}/:hash/contact`, getAuthorContact);
+  app.get(`${url}/author/info`, verifyToken, getAuthorInfo);
 };

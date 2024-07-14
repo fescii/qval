@@ -49,17 +49,8 @@ export default class ActivityContainer extends HTMLElement {
             activeTab.classList.remove('active');
             tab.classList.add('active');
             activeTab = tab;
-            if (tab.dataset.element === "all") {
-              contentContainer.innerHTML = outerThis.getAll();
-            } else if (tab.dataset.element === "stories") {
-              // TODO: Add stories
-            } else if (tab.dataset.element === "replies") {
-              // TODO: Add replies
-            } else if (tab.dataset.element === "saved") {
-              // TODO: Add saved
-            } else {
-              contentContainer.innerHTML = outerThis.getAll();
-            }
+            const url = tab.getAttribute('url');
+            contentContainer.innerHTML = outerThis.getAll(url);
           }
         })
       })
@@ -80,15 +71,14 @@ export default class ActivityContainer extends HTMLElement {
       ${this.getHeader()}
       ${this.getTab()}
 			<div class="content">
-				${this.getAll()}
+				${this.getAll(this.getAttribute('api-all'))}
       </div>
     `;
   }
 
-  getAll = () => {
+  getAll = url => {
     return /* html */`
-			<activity-feed api="${this.getAttribute('api-all')}" page="5">
-      </activity-feed>
+			<activity-feed url="${url}" page="1" limit="10"></activity-feed>
 		`
   }
 
@@ -96,7 +86,7 @@ export default class ActivityContainer extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Your activity is a summary of your interactions on the platform. You can view your stories, replies and likes/upvotes.
+          Your activity is a summary of your interactions on the platform. You can view your stories, replies and likes.
         </p>
       </div>
     `;
@@ -106,17 +96,20 @@ export default class ActivityContainer extends HTMLElement {
     return /* html */`
       <div class="actions">
         <ul id="tab" class="tab">
-          <li data-element="all" class="tab-item all active">
+          <li data-element="all" class="tab-item all active" url="${this.getAttribute('api-all')}">
             <span class="text">All</span>
           </li>
-          <li data-element="stories" class="tab-item stories">
+          <li data-element="stories" class="tab-item stories" url="${this.getAttribute('api-stories')}">
             <span class="text">Stories</span>
           </li>
-          <li data-element="replies" class="tab-item replies">
+          <li data-element="replies" class="tab-item replies" url="${this.getAttribute('api-replies')}">
             <span class="text">Replies</span>
           </li>
-          <li data-element="saved" class="tab-item saved">
-            <span class="text">Saved</span>
+          <li data-element="people" class="tab-item people" url="${this.getAttribute('api-users')}">
+            <span class="text">People</span>
+          </li>
+          <li data-element="topics" class="tab-item topics" url="${this.getAttribute('api-topics')}">
+            <span class="text">Topics</span>
           </li>
           <span class="line"></span>
         </ul>
@@ -185,7 +178,6 @@ export default class ActivityContainer extends HTMLElement {
         }
 
         .top {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           gap: 5px;
@@ -268,12 +260,10 @@ export default class ActivityContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
         }
 
         .actions > ul.tab > li.active {
           font-size: 0.95rem;
-          /*padding: 6px 10px 10px 10px;*/
         }
 
         .actions > ul.tab > li.active > .text {
@@ -281,7 +271,7 @@ export default class ActivityContainer extends HTMLElement {
           background: var(--accent-linear);
           background-clip: text;
           -webkit-background-clip: text;
-          font-family: var(--font-text);
+          font-family: var(--font-read);
         }
 
         .actions > ul.tab span.line {
@@ -301,7 +291,6 @@ export default class ActivityContainer extends HTMLElement {
         }
 
         .content {
-          /* border: var(--border); */
           display: flex;
           flex-flow: column;
           gap: 0;
@@ -318,10 +307,8 @@ export default class ActivityContainer extends HTMLElement {
           .top > .desc {
             margin: 0;
             padding: 6px 0 10px;
-            color: var(--gray-color);
             font-size: 1rem;
             line-height: 1.5;
-            font-family: var(--font-read), sans-serif;
           }
 
           .actions {

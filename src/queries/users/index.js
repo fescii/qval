@@ -4,13 +4,16 @@ const {
   editEmail, editName, editPicture
 } = require('./edit');
 const { connectToUser } = require('./action');
-const { addUser, checkIfUserExits, getUserByHash , findAuthorContact, getUserProfile } = require('./base');
+const { addUser, checkIfUserExits, getUserByHash , findAuthorInfo, getUserProfile } = require('./base');
 const { getRecommendedUsers } = require('./top');
 const profileQueries = require('./profile');
+const notificationQueries = require('./notifications');
+const activityQueries = require('./activities');
 
 module.exports = {
   editBio, editContact, editPassword, getRecommendedUsers,
   editEmail, editName, editPicture, getUserByHash,
-  connectToUser, addUser, checkIfUserExits, findAuthorContact,
-  getUserProfile, ...profileQueries
+  connectToUser, addUser, checkIfUserExits, findAuthorInfo,
+  getUserProfile, profile: profileQueries, notifications: notificationQueries,
+  activities: activityQueries
 };

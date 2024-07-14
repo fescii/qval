@@ -42,29 +42,24 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.ENUM('story', 'post', 'poll', 'article', 'blog', 'news', 'journal'),
       defaultValue: 'post',
       allowNull: false,
-      index: true,
     },
     published: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
       allowNull: false,
-      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
       allowNull: true,
-      index: true,
     },
     title: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -73,7 +68,6 @@ module.exports = (User, sequelize, Sequelize) => {
     slug: {
       type: Sequelize.STRING,
       unique: true,
-      allowNull: true
     },
     poll: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -82,7 +76,6 @@ module.exports = (User, sequelize, Sequelize) => {
     votes: {
       type: Sequelize.ARRAY(Sequelize.INTEGER),
       allowNull: true,
-      index: true,
     },
     topics: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -93,26 +86,22 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
     // add end date if the story type is poll
     end: {
       type: Sequelize.DATE,
       defaultValue: null,
       allowNull: true,
-      index: true,
     }
   },{
     schema: 'story',
@@ -120,9 +109,21 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['kind'] },
+      { fields: ['published'] },
+      { fields: ['author'] },
+      { unique: true, fields: ['hash'] },
+      { fields: ['title'] },
+      { fields: ['slug'] },
+      { fields: ['poll'] },
+      { fields: ['votes'] },
+      { fields: ['topics'] },
+      { fields: ['views'] },
+      { fields: ['likes'] },
+      { fields: ['replies'] },
+      { fields: ['end'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -182,13 +183,11 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      index: true,
     },
     kind: {
       type: Sequelize.ENUM('section', 'chapter', 'part', 'episode'),
       defaultValue: 'section',
       allowNull: false,
-      index: true,
     },
     order: {
       type: Sequelize.INTEGER,
@@ -197,12 +196,10 @@ module.exports = (User, sequelize, Sequelize) => {
     story: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     title: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -214,9 +211,12 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['kind'] },
+      { fields: ['order'] },
+      { fields: ['story'] },
+      { fields: ['title'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -234,22 +234,18 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      index: true,
     },
     story: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     option: {
       type: Sequelize.INTEGER,
       allowNull: false,
-      index: true,
     },
   },{
     schema: 'story',
@@ -257,9 +253,11 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['story'] },
+      { fields: ['author'] },
+      { fields: ['option'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -298,33 +296,27 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
       allowNull: false,
-      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     story: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     },
     reply: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     },
     hash: {
       type: Sequelize.STRING,
       unique: true,
       allowNull: true,
-      index: true,
     },
     content: {
       type: Sequelize.TEXT,
@@ -334,19 +326,16 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
     likes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
     replies: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      index: true,
     },
   },
   {
@@ -355,9 +344,17 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['kind'] },
+      { fields: ['author'] },
+      { fields: ['story'] },
+      { fields: ['reply'] },
+      { unique: true, fields: ['hash'] },
+      { fields: ['content'] },
+      { fields: ['views'] },
+      { fields: ['likes'] },
+      { fields: ['replies'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -410,27 +407,22 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply'),
       allowNull: false,
-      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     story: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     },
     reply: {
       type: Sequelize.STRING,
       allowNull: true,
-      index: true,
     }
   },
   {
@@ -439,9 +431,12 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['kind'] },
+      { fields: ['author'] },
+      { fields: ['story'] },
+      { fields: ['reply'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -488,22 +483,18 @@ module.exports = (User, sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      index: true,
     },
     kind: {
       type: Sequelize.ENUM('story', 'reply', 'topic'),
       allowNull: false,
-      index: true,
     },
     author: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
     target: {
       type: Sequelize.STRING,
       allowNull: false,
-      index: true,
     },
   },
   {
@@ -512,9 +503,11 @@ module.exports = (User, sequelize, Sequelize) => {
     timestamps: true,
     timezone: 'UTC',
     indexes: [
-      {
-        fields: ['createdAt']
-      }
+      { unique: true, fields: ['id'] },
+      { fields: ['kind'] },
+      { fields: ['author'] },
+      { fields: ['target'] },
+      { fields: ['createdAt'] }
     ]
   });
 
@@ -562,7 +555,7 @@ module.exports = (User, sequelize, Sequelize) => {
         LEFT JOIN  story_sections ss ON s.hash = ss.story
         LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
         LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
-        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query) AND s.published = true
         ORDER BY rank DESC, s."createdAt" DESC
         LIMIT :limit 
         OFFSET :offset;
@@ -577,7 +570,7 @@ module.exports = (User, sequelize, Sequelize) => {
         FROM story.stories s
         LEFT JOIN  account.users sa ON s.author = sa.hash 
         LEFT JOIN  story_sections ss ON s.hash = ss.story
-        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query)
+        WHERE to_tsvector('english', CONCAT(s.title, ' ', s.content, ' ', s.slug)) @@ to_tsquery('english', :query) AND s.published = true
         ORDER BY rank DESC, s."createdAt" DESC
         LIMIT :limit 
         OFFSET :offset;
@@ -617,7 +610,6 @@ module.exports = (User, sequelize, Sequelize) => {
       `,{ replacements: { query, offset, limit}, type: sequelize.QueryTypes.SELECT });
     }
   }
-
 
   //--- Defining the associations ---//
   // User <--> Story

@@ -17,6 +17,7 @@ const storiesLoggedIn = /*sql*/ `
   LEFT JOIN  story_sections ss ON s.hash = ss.story
   LEFT JOIN  (SELECT story, true AS liked FROM story.likes WHERE author = :user) AS l ON s.hash = l.story
   LEFT JOIN  (SELECT "to", true AS is_following FROM account.connects WHERE "from" = :user) AS c ON sa.hash = c."to"
+  WHERE s.published = true
   ORDER BY total_views DESC NULLS LAST, s."createdAt" DESC, s.replies DESC
   LIMIT :limit 
   OFFSET :offset;
@@ -57,6 +58,7 @@ const feedStories = /*sql*/ `
   LEFT JOIN  story_views sv ON s.hash = sv.target
   LEFT JOIN  account.users sa ON s.author = sa.hash 
   LEFT JOIN  story_sections ss ON s.hash = ss.story
+  WHERE s.published = true
   ORDER BY total_views DESC NULLS LAST, s."createdAt" DESC, s.replies DESC
   LIMIT :limit 
   OFFSET :offset;
