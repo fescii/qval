@@ -4,7 +4,7 @@ export default class ActionWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
@@ -26,7 +26,7 @@ export default class ActionWrapper extends HTMLElement {
   // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
     // check if old value is not equal to new value
-    if (oldValue !== newValue && name==='reload') {
+    if (name==='reload') {
       if(newValue === 'true') {
         // set the value of reload to false
         this.setAttribute('reload', 'false');
@@ -100,23 +100,6 @@ export default class ActionWrapper extends HTMLElement {
     }
     else {
       this.parent.setAttribute(name, value);
-    }
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
     }
   }
 

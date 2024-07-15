@@ -1,3 +1,17 @@
+// set hash if user is logged
+const setHash = name => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+
+  // add cookie to the window
+  window.hash = cookie;
+}
+
+// set hash
+setHash('hash');
+
 // Import apps
 import AppHome from "./apps/home.app.js";
 import AppPost from "./apps/post.app.js";
@@ -214,7 +228,6 @@ customElements.define("preview-popup", PreviewPopup);
 
 // Start WebSocketManager
 // Create a global instance
-
 // get host name
 const host = window.location.hostname;
 // console.log(host);

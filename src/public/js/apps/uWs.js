@@ -59,13 +59,14 @@ export default class WebSocketManager {
   }
 
   handleMessage(event) {
+    if (!event || event === undefined || !event.data) return;
     try {
       const data = JSON.parse(event.data);
-      // console.log('Data received from the server:', data);
       
       this.messageHandlers.forEach(handler => {
         if (typeof handler === 'function') {
           try {
+            if (!data) return;
             handler(data);
           } catch (handlerError) {
             console.error('Error in message handler:', handlerError);

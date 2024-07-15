@@ -41,10 +41,6 @@ const app = uWs.SSLApp(credentials).ws('/events', {
     console.log('A WebSocket connected');
     // subscribe to the events topic
     ws.subscribe('/events');
-
-    // Optional: Send a welcome message or notify others, ensuring the message is defined
-    const welcomeMessage = JSON.stringify({ message: 'A new user has connected.' });
-    ws.publish('/events', welcomeMessage); // Make sure this is appropriate for your use case
   },
   message: (ws, message, isBinary) => {
     /* Ok is false if backpressure was built up, wait for drain */

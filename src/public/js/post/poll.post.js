@@ -50,6 +50,13 @@ export default class PollPost extends HTMLElement {
     console.log('Message received in component:', message);
     const data = message.data;
 
+    const user = data?.user;
+    const userHash = window.hash;
+
+    if(user !== null && user === userHash) {
+      return;
+    }
+
     const author = this.shadowObj.querySelector('hover-author');
     const actionWrapper = this.shadowObj.querySelector('action-wrapper');
 

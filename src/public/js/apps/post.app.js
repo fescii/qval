@@ -60,6 +60,13 @@ export default class AppPost extends HTMLElement {
     console.log('Message received in component:', message);
     const data = message.data;
 
+    const user = data?.user;
+    const userHash = window.hash;
+
+    if(user !== null && user === userHash) {
+      return;
+    }
+
     const author = this.shadowObj.querySelector('author-wrapper');
 
     // get post-section element
@@ -72,6 +79,7 @@ export default class AppPost extends HTMLElement {
 
     const hash = this.getAttribute('hash').toUpperCase();
     const authorHash = this.getAttribute('author-hash').toUpperCase();
+
 
     if (message.type === 'action') {
       // get target from hashes
@@ -113,26 +121,31 @@ export default class AppPost extends HTMLElement {
     // update likes in the element and this element
     this.setAttribute('likes', value);
     element.setAttribute('likes', value);
+    element.setAttribute('reload', 'true');
   }
 
   updateViews = (element, value) => {
     // update views in the element and this element
     this.setAttribute('views', value);
     element.setAttribute('views', value);
+    element.setAttribute('reload', 'true');
   }
 
   updateReplies = (element, value) => {
     // update replies in the element and this element
     this.setAttribute('replies', value);
     element.setAttribute('replies', value);
+    element.setAttribute('reload', 'true');
   }
 
   updateFollowers = (element, value) => {
     element.setAttribute('followers', value);
+    element.setAttribute('reload', 'true');
   }
 
   updateAuthorFollowers = (element, value) => {
     element.setAttribute('author-followers', value);
+    element.setAttribute('reload', 'true');
   }
 
   parseToNumber = str => {

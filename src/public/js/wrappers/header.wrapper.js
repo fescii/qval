@@ -4,7 +4,7 @@ export default class HeaderWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     this._user = null;
     this._unverified = false;
@@ -18,23 +18,6 @@ export default class HeaderWrapper extends HTMLElement {
   // add attribute to watch for changes
   static get observedAttributes() {
     return ['section', 'type'];
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
   }
 
   render() {

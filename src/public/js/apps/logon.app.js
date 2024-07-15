@@ -9,7 +9,7 @@ export default class AppLogon extends HTMLElement {
     this.setTitle();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: 'open' });
@@ -82,21 +82,14 @@ export default class AppLogon extends HTMLElement {
     }
   }
 
-  isLoggedIn = name => {
+  setHash = name => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
 
     const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
+
+    // add cookie to the window
+    window.hash = cookie;
   }
 
   disconnectedCallback() {
@@ -1433,6 +1426,9 @@ export default class AppLogon extends HTMLElement {
   }
 
   redirectUser = url => {
+    // set window user(hash)
+    this.setHash('hash');
+
     // set 5 seconds timeout before redirecting
     setTimeout(() => {
       window.location.replace(url);

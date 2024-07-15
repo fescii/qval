@@ -4,7 +4,7 @@ export default class VotesAuthor extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
      // Get array of objects for poll options and parse to Array
     this._options = this.combinePollAndVotes(this.getAttribute('options'), this.getAttribute('votes'));
@@ -127,23 +127,6 @@ export default class VotesAuthor extends HTMLElement {
         return false;
       default:
         return false;
-    }
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
     }
   }
 

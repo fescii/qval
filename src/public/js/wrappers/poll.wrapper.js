@@ -11,7 +11,7 @@ export default class PollWrapper extends HTMLElement {
 
   // observe attributes 
   static get observedAttributes() {
-    return ['likes', 'replies', 'views', 'author-followers'];
+    return ['likes', 'replies', 'views', 'author-followers', 'reload'];
   }
 
   render() {
@@ -20,9 +20,13 @@ export default class PollWrapper extends HTMLElement {
 
   // on attribute change
   attributeChangedCallback(name, oldValue, newValue) {
+    const actionEl = this.shadowObj.querySelector('action-wrapper');
+    const authorEl = this.shadowObj.querySelector('author-wrapper');
+    if(name === 'reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      this.updateReload(actionEl, authorEl);
+    }
     if (oldValue !== newValue) {
-      const actionEl = this.shadowObj.querySelector('action-wrapper');
-      const authorEl = this.shadowObj.querySelector('author-wrapper');
       switch (name) {
         case 'likes':
           this.updateLikes(actionEl, newValue);
@@ -50,12 +54,21 @@ export default class PollWrapper extends HTMLElement {
     this.openUrl();
   }
 
+  updateReload = (elOne, elTwo) => {
+    if (elOne) {
+      elOne.setAttribute('reload', 'true');
+    }
+
+    if (elTwo) {
+      elTwo.setAttribute('reload', 'true');
+    }
+  }
+
   updateLikes = (element, value) => {
     // update likes in the element and this element
     this.setAttribute('likes', value);
     if (element) {
       element.setAttribute('likes', value);
-      element.setAttribute('reload', 'true');
     }
   }
 
@@ -72,7 +85,6 @@ export default class PollWrapper extends HTMLElement {
     this.setAttribute('views', value);
     if (element) {
       element.setAttribute('views', value);
-      element.setAttribute('reload', 'true');
     }
   }
 
@@ -81,7 +93,6 @@ export default class PollWrapper extends HTMLElement {
     this.setAttribute('replies', value);
     if (element) {
       element.setAttribute('replies', value);
-      element.setAttribute('reload', 'true');
     }
   }
 

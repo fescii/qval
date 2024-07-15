@@ -101,7 +101,7 @@ const signin = async (req, res, next) => {
 
   // Set cookie
   res.cookie('x-access-token', token, options);
-  res.cookie('user-hash', userHash, userOptions);
+  res.cookie('hash', userHash, userOptions);
 
 
   // Return a successful response

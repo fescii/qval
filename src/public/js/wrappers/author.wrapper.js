@@ -4,7 +4,7 @@ export default class AuthorWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // Check if user is the owner of the profile
     this._you = true ? this.getAttribute('you') === 'true' : false;
@@ -67,23 +67,6 @@ export default class AuthorWrapper extends HTMLElement {
 
     // open highlights
     this.openHighlights(body);
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
   }
 
   openHighlights = body => {
