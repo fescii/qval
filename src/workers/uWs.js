@@ -9,19 +9,29 @@ dotenv.config();
 // import path module
 const path = require('path');
 
-// const credentials = {
-//   key_file_name: 'misc/key.pem',
-//   cert_file_name: 'misc/cert.pem',
+const host = process.env['HOST'] || '192.168.68.49';
+const port = process.env['PORT'] || 3001;
+
+// let credentials;
+// try {
+//   credentials = {
+//     key_file_name: fs.readFileSync(path.join(__dirname, '../ssl_certs', 'key.pem')),
+//     cert_file_name: fs.readFileSync(path.join(__dirname, '../ssl_certs', 'cert.pem')),
+//   };
+// } catch (error) {
+//   console.error('Error reading SSL certificates:', error);
+//   process.exit(1);
 // }
 
 const credentials = {
-  key: fs.readFileSync(path.join(__dirname, '../ssl_certs', 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, '../ssl_certs', 'cert.pem')),
-}
+  key_file_name: path.join(__dirname, '../ssl_certs', 'key.pem'),
+  cert_file_name: path.join(__dirname, '../ssl_certs', 'cert.pem'),
+};
 
 
 // Create the WebSocket server
 const app = uWs.SSLApp(credentials).ws('/events', {
+// const app = uWs.App().ws('/events', {
   /* Options */
   compression: uWs.SHARED_COMPRESSOR,
   maxPayloadLength: 16 * 1024 * 1024,
@@ -29,9 +39,19 @@ const app = uWs.SSLApp(credentials).ws('/events', {
   /* Handlers */
   open: (ws, req) => {
     console.log('A WebSocket connected');
+    // subscribe to the events topic
+    ws.subscribe('/events');
   },
   message: (ws, message, isBinary) => {
-    console.log('A WebSocket message received:', message);
+    /* Ok is false if backpressure was built up, wait for drain */
+    let ok = ws.send(message, isBinary);
+
+    // check for publish message
+    if (ok) {
+      console.log('Message sent to the client');
+    } else {
+      console.log('Message not sent to the client');
+    }
   },
   drain: (ws) => {
     console.log('A WebSocket backpressure drained');
@@ -42,11 +62,11 @@ const app = uWs.SSLApp(credentials).ws('/events', {
   error: (ws, error) => {
     console.error('A WebSocket error occurred:', error);
   }
-}).listen(3001, (listenSocket) => {
+}).listen(host, port, (listenSocket) => {
   if (listenSocket) {
-    console.log('Listening to port 3001');
+    console.log(`Listening on wss://${host}:${port}`);
   } else {
-    console.error('Failed to listen to port 3001');
+    console.error(`Failed to listen to port ${port}`);
   }
 });
 
@@ -59,8 +79,9 @@ const socketWorker = new Worker('socketQueue', async (job) => {
   
   // Send the message to the WebSocket server
   // !Todo - Implement the WebSocket to send received messages to the client
-  // ws.send(job.data.message);
-  app.publish('/events', job.data);
+  // prepare the message to be sent to the client
+  const data = JSON.stringify(job.data);
+  app.publish('/events', data);
 }, {connection: redisConfig});
 
 socketWorker.on('completed', (job) => {

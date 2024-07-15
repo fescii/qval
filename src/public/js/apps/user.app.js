@@ -87,25 +87,103 @@ export default class AppUser extends HTMLElement {
     }
   }
 
-  wsConnect = () => {
-    // Connect to the WebSocket server
-    const ws = new WebSocket('wss://localhost:3001');
+  createWebSocket = host => {
+    if (window.wss && window.wss.readyState !== 3) return true;
 
-    ws.onopen = () => {
+    const port  = 3001
+
+    // create a new WebSocket connection
+    window.wss = new WebSocket(`wss://${host}:${port}/events`);
+
+    // debug the WebSocket connection
+    window.wss.onopen = () => {
       console.log('WebSocket connection established');
-    };
+      // SEND A MESSAGE
+      this.sendWsMessage();
 
-    ws.onmessage = (event) => {
-      console.log('Message received from server:', event.data);
-    };
+      return true;
+    }
 
-    ws.onerror = (error) => {
+    // on error
+    window.wss.onerror = (error) => {
       console.error('WebSocket error:', error);
-    };
 
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
+      return false;
+    }
+
+    // return default: false
+    return false;
+  }
+
+  wsConnect = () => {
+    // Try connecting to the WebSocket server at an interval of 5 seconds until it connects
+    // When it doest connect for like 5 minutes, stop trying to connect
+    let counter = 0;
+    const host = '192.168.68.49'
+
+    // connect to web socket for the first time
+    if (this.createWebSocket(host)) {
+      // receive messages
+      this.receiveWsMessage();
+
+      // send a message
+      this.sendWsMessage();
+
+      // on close reconnect// by recalling the interval
+      window.wss.onclose = () => {
+        console.log('WebSocket connection closed');
+        clearInterval(interval);
+        this.wsConnect();
+      }
+    }
+    else {
+      const interval = setInterval(() => {
+        if (this.createWebSocket(host)) {
+          clearInterval(interval);
+          // receive messages
+          this.receiveWsMessage();
+  
+          // send a message
+          this.sendWsMessage();
+  
+          // on close reconnect// by recalling the interval
+          window.wss.onclose = () => {
+            console.log('WebSocket connection closed');
+            clearInterval(interval);
+            this.wsConnect();
+          }
+        }
+  
+        counter += 1;
+  
+        if (counter === 60) {
+          clearInterval(interval);
+        }
+      }, 5000);
+    }
+  }
+
+  receiveWsMessage = () => {
+    // listen for messages
+    window.wss.onmessage = (event) => {
+      // console.log('Message received from server:', event.data);
+      // convert the data to JSON
+      const data = JSON.parse(event.data);
+
+      // log the data
+      console.log('Data received from the server:', data);
     };
+  }
+
+  sendWsMessage = () => {
+    const data = JSON.stringify({
+      message: 'Hello from the client',
+      id: 4589,
+      name: 'John Doe',
+      email: 'example@email.com'
+    })
+    // send a message to the server
+    window.wss.send(data);
   }
 
   // Open user profile

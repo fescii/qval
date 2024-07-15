@@ -128,14 +128,16 @@ export default class AppStory extends HTMLElement {
   getStoryBody = () => {
     let str = this.topics[0];
     let formatted = str.toLowerCase().replace(/(^|\s)\S/g, match => match.toUpperCase());
+    const contact = this.getAttribute("author-contact");
     // Show HTML Here
     return /* html */ `
       <story-section topic="${formatted}" hash="${this.getAttribute('hash')}" url="${this.getAttribute('url')}"
         story-title="${this.getAttribute('story-title')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" likes="${this.getAttribute('likes')}"
         views="${this.getAttribute('views')}" time="${this.getAttribute('time')}" author-you="${this.getAttribute('author-you')}"
         author-hash="${this.getAttribute('author-hash')}" author-img="${this.getAttribute('author-img')}" author-name="${this.getAttribute('author-name')}"
+        author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}"
         author-followers="${this.getAttribute('author-followers')}" author-following="${this.getAttribute('author-following')}" author-follow="${this.getAttribute('author-follow')}"
-        author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact='${this.getAttribute("author-contact")}'
+        author-verified="${this.getAttribute('author-verified')}" author-url="${this.getAttribute('author-url')}" author-contact='${contact}'
         author-bio="${this.getAttribute('author-bio')}">
         ${this.innerHTML}
       </story-section>

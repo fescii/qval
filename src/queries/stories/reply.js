@@ -72,6 +72,7 @@ const addJob = async reply => {
   // add the job to the queue
   await actionQueue.add('actionJob', {
     kind: reply.kind,
+    publish: true,
     hashes: {
       target: reply.reply !== null ? reply.reply : reply.story,
     },

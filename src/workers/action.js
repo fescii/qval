@@ -11,8 +11,16 @@ const actionWorker = new Worker('actionQueue', async (job) => {
   console.log('==================================================');
   await actionHook(job.data); // Run the action hook
 
-  // Send the message to the WebSocket server using the socketQueue
-  await socketQueue.add('socketQueue', job.data, {attempts: 3, backoff: {type: 'exponential', delay: 1000}});
+  // construct the message to be sent to the WebSocket server
+  if (job.data.publish) {
+    const message = {
+      type: 'action',
+      data: job.data
+    };
+  
+    // Send the message to the WebSocket server using the socketQueue
+    await socketQueue.add('socketQueue', message, { attempts: 3, backoff: 1000, removeOnComplete: true });
+  }
 
 }, {connection: redisConfig});
 

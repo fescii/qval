@@ -9,7 +9,9 @@ module.exports = {
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        PORT: process.env.PORT,
+        HOST: process.env.HOST
       },
       env_production: {
         NODE_ENV: 'production'
@@ -57,7 +59,9 @@ module.exports = {
       watch: true,
       ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'services', 'utils', 'views', 'configs', 'bull', 'app.js'],
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        PORT: process.env.WS_PORT,
+        HOST: process.env.HOST
       },
       env_production: {
         NODE_ENV: 'production'
