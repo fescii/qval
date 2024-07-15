@@ -121,13 +121,20 @@ export default class AppUser extends HTMLElement {
     let counter = 0;
     const host = '192.168.68.49'
 
+    const data = JSON.stringify({
+      message: 'Hello from the client',
+      id: 4589,
+      name: 'John Doe',
+      email: 'example@email.com'
+    })
+
     // connect to web socket for the first time
     if (this.createWebSocket(host)) {
       // receive messages
       this.receiveWsMessage();
 
       // send a message
-      this.sendWsMessage();
+      this.sendWsMessage(data);
 
       // on close reconnect// by recalling the interval
       window.wss.onclose = () => {
@@ -144,7 +151,7 @@ export default class AppUser extends HTMLElement {
           this.receiveWsMessage();
   
           // send a message
-          this.sendWsMessage();
+          this.sendWsMessage(data);
   
           // on close reconnect// by recalling the interval
           window.wss.onclose = () => {
@@ -175,15 +182,11 @@ export default class AppUser extends HTMLElement {
     };
   }
 
-  sendWsMessage = () => {
-    const data = JSON.stringify({
-      message: 'Hello from the client',
-      id: 4589,
-      name: 'John Doe',
-      email: 'example@email.com'
-    })
+  sendWsMessage = data => {
     // send a message to the server
-    window.wss.send(data);
+    if(window.wss) {
+      window.wss.send(data);
+    }
   }
 
   // Open user profile

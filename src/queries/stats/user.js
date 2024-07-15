@@ -2,9 +2,9 @@
 const { Sequelize, View, Subscribe } = require('../../models').models;
 
 /**
- * @function getTotatTopicsUserIsSubscribedTo
+ * @function getTotalTopicsUserIsSubscribedTo
  * @description Get total topics user is subscribed to
- * @paramm {String} - author - User's hash
+ * @param {String} - author - User's hash
  * @returns {Promise} - Promise (resolves total topics user is subscribed to | rejects with error)
 */
 const getTotalTopicsUserIsSubscribedTo = async author => {
@@ -20,7 +20,7 @@ const getTotalTopicsUserIsSubscribedTo = async author => {
 /**
  * @function getTotalUserViews
  * @description Get user total views: all time
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user all time views | rejects with error)
 */
 const  getTotalUserViews = async user => {
@@ -39,7 +39,7 @@ const  getTotalUserViews = async user => {
 /**
  * @function getTotalUserViewsThisMonth
  * @description Get user stories and replies views(where view date is in the last 30 days.
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies views | rejects with error)
 */
 const  getTotalUserViewsThisMonth = async user => {
@@ -60,7 +60,7 @@ const  getTotalUserViewsThisMonth = async user => {
 /**
  * @function getTotalPreviousMonthUserViews
  * @description Get user stories and replies views(where view date is in the last 60 days not last 30 days, and target in user stories and replies(array of hashes))
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies views | rejects with error)
 */
 const getTotalPreviousMonthUserViews = async user => {
@@ -83,7 +83,7 @@ const getTotalPreviousMonthUserViews = async user => {
 /**
  * @function getTotalUserRepliesViews
  * @description Get user replies views(where view date is in the last 30 days.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total replies views | rejects with error)
 */
 const getTotalUserRepliesViews = async user => {
@@ -104,7 +104,7 @@ const getTotalUserRepliesViews = async user => {
 /**
  * @function getTotalUserStoriesViews
  * @description Get user stories views(where view date is in the last 30 days.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories views | rejects with error)
 */
 const getTotalUserStoriesViews = async user => {
