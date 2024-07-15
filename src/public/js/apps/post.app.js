@@ -8,6 +8,9 @@ export default class AppPost extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -24,6 +27,9 @@ export default class AppPost extends HTMLElement {
     // Change style to flex
     this.style.display='flex';
 
+    // connect to the WebSocket
+    this.checkAndAddHandler();
+
     // mql query at: 660px
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -31,6 +37,114 @@ export default class AppPost extends HTMLElement {
 
     // scroll the window to the top and set height to 100vh
     window.scrollTo(0, 0);
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      console.log('WebSocket handler added successfully');
+    } else {
+      console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.handleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    console.log('Message received in component:', message);
+    const data = message.data;
+
+    const author = this.shadowObj.querySelector('author-wrapper');
+
+    // get post-section element
+    let wrapper = this.shadowObj.querySelector('post-wrapper');
+
+    // if post-section is not found, select poll-wrapper
+    if (!wrapper) {
+      wrapper = this.shadowObj.querySelector('poll-wrapper');
+    }
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    if (message.type === 'action') {
+      // get target from hashes
+      const target = data.hashes.target;
+      const to = data.hashes.to;
+      const from = data.hashes.from;
+
+      if(target === hash) {
+        const action = data.action;
+        if (action === 'like') {
+          // get likes parsed to number
+          const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+          // update likes
+          this.updateLikes(wrapper, likes);
+        } else if(action === 'reply'){
+          const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+          this.updateReplies(wrapper, replies);
+        } else if(action === 'view') {
+          const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+          this.updateViews(wrapper, views);
+        }
+      }
+      else if(to === authorHash) {
+        if(data.action === 'connect') {
+          const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+          this.setAttribute('author-followers', followers)
+          this.updateAuthorFollowers(wrapper, followers);
+          this.updateFollowers(author, followers);
+        }
+      }
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    element.setAttribute('likes', value);
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    element.setAttribute('views', value);
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    element.setAttribute('replies', value);
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
+  }
+
+  updateAuthorFollowers = (element, value) => {
+    element.setAttribute('author-followers', value);
+  }
+
+  parseToNumber = str => {
+    // Try parsing the string to an integer
+    const num = parseInt(str);
+
+    // Check if parsing was successful
+    if (!isNaN(num)) {
+      return num;
+    } else {
+      return 0;
+    }
   }
 
   // watch for mql changes

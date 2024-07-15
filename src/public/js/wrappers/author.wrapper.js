@@ -17,12 +17,35 @@ export default class AuthorWrapper extends HTMLElement {
     this.render();
   }
 
+
+  // observe the attributes
+  static get observedAttributes() {
+    return ['followers', 'user-follow'];
+  }
+
   setAttributes = (name, value) => {
     this.parent.setAttribute(name, value);
   }
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // check if old value is not equal to new value
+    if (oldValue !== newValue) {
+      if(name === 'followers') {
+        // get the followers element
+        const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+
+        // Update the followers
+        if(followers) {
+          followers.textContent = this.formatNumber(newValue);
+        }
+      }
+      
+    }
   }
   
   connectedCallback() {

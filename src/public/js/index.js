@@ -8,6 +8,9 @@ import AppStory from "./apps/story.app.js";
 import AppTopic from "./apps/topic.app.js";
 import AppUser from "./apps/user.app.js";
 
+// import uWS class
+import WebSocketManager from "./apps/uWs.js";
+
 // Import Containers
 import AddContainer from "./containers/add.container.js";
 import ActivityContainer from "./containers/activity.container.js";
@@ -207,3 +210,14 @@ customElements.define("contact-popup", ContactPopup);
 customElements.define("topic-popup", TopicPopup);
 customElements.define("views-popup", ViewsPopup);
 customElements.define("preview-popup", PreviewPopup);
+
+
+// Start WebSocketManager
+// Create a global instance
+
+// get host name
+const host = window.location.hostname;
+// console.log(host);
+
+window.wss = new WebSocketManager(`${host}`);
+window.wss.connect();

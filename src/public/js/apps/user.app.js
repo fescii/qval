@@ -5,6 +5,9 @@ export default class AppUser extends HTMLElement {
 
     this.setTitle();
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this._open = this.setOpen(this.getAttribute('current'));
 
     this._current = this.getAttribute('current') || 'stats';
@@ -33,11 +36,11 @@ export default class AppUser extends HTMLElement {
   }
 
   connectedCallback() {
+    // Add this component handler to the window wss object
+    this.checkAndAddHandler();
+
     // Check if the display is greater than 600px using mql
     const mql = window.matchMedia('(max-width: 660px)');
-
-    // connect to the WebSocket server
-    this.wsConnect();
 
     // update the current tab
     this.updateCurrent(this._current);
@@ -87,106 +90,29 @@ export default class AppUser extends HTMLElement {
     }
   }
 
-  createWebSocket = host => {
-    if (window.wss && window.wss.readyState !== 3) return true;
-
-    const port  = 3001
-
-    // create a new WebSocket connection
-    window.wss = new WebSocket(`wss://${host}:${port}/events`);
-
-    // debug the WebSocket connection
-    window.wss.onopen = () => {
-      console.log('WebSocket connection established');
-      // SEND A MESSAGE
-      this.sendWsMessage();
-
-      return true;
-    }
-
-    // on error
-    window.wss.onerror = (error) => {
-      console.error('WebSocket error:', error);
-
-      return false;
-    }
-
-    // return default: false
-    return false;
-  }
-
-  wsConnect = () => {
-    // Try connecting to the WebSocket server at an interval of 5 seconds until it connects
-    // When it doest connect for like 5 minutes, stop trying to connect
-    let counter = 0;
-    const host = '192.168.68.49'
-
-    const data = JSON.stringify({
-      message: 'Hello from the client',
-      id: 4589,
-      name: 'John Doe',
-      email: 'example@email.com'
-    })
-
-    // connect to web socket for the first time
-    if (this.createWebSocket(host)) {
-      // receive messages
-      this.receiveWsMessage();
-
-      // send a message
-      this.sendWsMessage(data);
-
-      // on close reconnect// by recalling the interval
-      window.wss.onclose = () => {
-        console.log('WebSocket connection closed');
-        clearInterval(interval);
-        this.wsConnect();
-      }
-    }
-    else {
-      const interval = setInterval(() => {
-        if (this.createWebSocket(host)) {
-          clearInterval(interval);
-          // receive messages
-          this.receiveWsMessage();
-  
-          // send a message
-          this.sendWsMessage(data);
-  
-          // on close reconnect// by recalling the interval
-          window.wss.onclose = () => {
-            console.log('WebSocket connection closed');
-            clearInterval(interval);
-            this.wsConnect();
-          }
-        }
-  
-        counter += 1;
-  
-        if (counter === 60) {
-          clearInterval(interval);
-        }
-      }, 5000);
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      console.log('WebSocket handler added successfully');
+    } else {
+      console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
     }
   }
 
-  receiveWsMessage = () => {
-    // listen for messages
-    window.wss.onmessage = (event) => {
-      // console.log('Message received from server:', event.data);
-      // convert the data to JSON
-      const data = JSON.parse(event.data);
-
-      // log the data
-      console.log('Data received from the server:', data);
-    };
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.handleWsMessage);
+    }
   }
 
-  sendWsMessage = data => {
-    // send a message to the server
-    if(window.wss) {
-      window.wss.send(data);
-    }
+  handleWsMessage = data => {
+    // Handle the message in this component
+    console.log('Message received in component:', data);
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
   }
 
   // Open user profile

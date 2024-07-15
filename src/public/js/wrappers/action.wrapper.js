@@ -25,12 +25,40 @@ export default class ActionWrapper extends HTMLElement {
 
   // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
-    // Check if the attribute is reload
+    // check if old value is not equal to new value
+    if (oldValue !== newValue && name==='reload') {
+      if(newValue === 'true') {
+        // set the value of reload to false
+        this.setAttribute('reload', 'false');
+        this.reRender();
+      }
+    }
   }
 
   render() {
     const full = this.convertToBool(this.getAttribute('full'));
     this.shadowObj.innerHTML = this.getTemplate(full);
+  }
+
+  reRender = () => {
+    this.render();
+    // like post
+    this.likePost();
+    // Check if user has liked the post
+    const liked = this.convertToBool(this.getAttribute('liked'))
+
+    const body = document.querySelector('body');
+     
+    // scroll likes
+    this.scrollLikes(liked);
+
+    const full = this.convertToBool(this.getAttribute('full'))
+
+    // open the form
+    this.openForm(full);
+
+    // open the highlights
+    this.openHighlights(body);
   }
 
   connectedCallback() {
@@ -51,6 +79,18 @@ export default class ActionWrapper extends HTMLElement {
 
     // open the highlights
     this.openHighlights(body);
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    element.textContent = value;
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    element.textContent = value;
   }
 
   setAttributes = (name, value) => {
@@ -544,9 +584,9 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-  parseToNumber = num_str => {
+  parseToNumber = str => {
     // Try parsing the string to an integer
-    const num = parseInt(num_str);
+    const num = parseInt(str);
 
     // Check if parsing was successful
     if (!isNaN(num)) {

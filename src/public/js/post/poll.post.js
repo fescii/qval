@@ -6,6 +6,9 @@ export default class PollPost extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -15,11 +18,88 @@ export default class PollPost extends HTMLElement {
 
   connectedCallback() {
     this.style.display = 'flex';
+
+    // Check and add handler
+    this.checkAndAddHandler();
+
     // Open poll post
     this.openPollPost();
 
     // Open url
     this.openUrl();
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      console.log('WebSocket handler added successfully');
+    } else {
+      console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.handleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    console.log('Message received in component:', message);
+    const data = message.data;
+
+    const author = this.shadowObj.querySelector('hover-author');
+    const actionWrapper = this.shadowObj.querySelector('action-wrapper');
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    if (message.type === 'action') {
+      // get target from hashes
+      const target = data.hashes.target;
+      const to = data.hashes.to;
+      const from = data.hashes.from;
+
+      if(target === hash) {
+        const action = data.action;
+        if (action === 'like') {
+          // get likes parsed to number
+          const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+          // update likes
+          this.setAttribute('likes', likes);
+          // update likes in the action wrapper
+          actionWrapper.setAttribute('likes', likes);
+          actionWrapper.setAttribute('reload', true);
+        } else if(action === 'reply'){
+          const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+          this.setAttribute('replies', replies);
+          actionWrapper.setAttribute('replies', replies);
+          actionWrapper.setAttribute('reload', true);
+        } else if(action === 'view') {
+          const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+          this.setAttribute('views', views);
+          actionWrapper.setAttribute('views', views);
+          actionWrapper.setAttribute('reload', true);
+        }
+      }
+      else if(to === authorHash) {
+        if(data.action === 'connect') {
+          const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+          this.setAttribute('author-followers', followers)
+          this.updateFollowers(author, followers);
+        }
+      }
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
   }
 
   // Open quick post
@@ -117,9 +197,9 @@ export default class PollPost extends HTMLElement {
     }
   }
 
-  parseToNumber = num_str => {
+  parseToNumber = str => {
     // Try parsing the string to an integer
-    const num = parseInt(num_str);
+    const num = parseInt(str);
 
     // Check if parsing was successful
     if (!isNaN(num)) {

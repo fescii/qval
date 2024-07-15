@@ -9,8 +9,37 @@ export default class PollWrapper extends HTMLElement {
     this.render();
   }
 
+  // observe attributes 
+  static get observedAttributes() {
+    return ['likes', 'replies', 'views', 'author-followers'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // on attribute change
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      const actionEl = this.shadowObj.querySelector('action-wrapper');
+      const authorEl = this.shadowObj.querySelector('author-wrapper');
+      switch (name) {
+        case 'likes':
+          this.updateLikes(actionEl, newValue);
+          break;
+        case 'replies':
+          this.updateReplies(actionEl, newValue);
+          break;
+        case 'views':
+          this.updateViews(actionEl, newValue);
+          break;
+        case 'author-followers':
+          this.updateFollowers(authorEl, newValue);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   connectedCallback() {
@@ -19,6 +48,41 @@ export default class PollWrapper extends HTMLElement {
 
     // Open the url
     this.openUrl();
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    if (element) {
+      element.setAttribute('likes', value);
+      element.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollowers = (element, value) => {
+    // update followers in the element and this element
+    this.setAttribute('author-followers', value);
+    if (element) {
+      element.setAttribute('author-followers', value);
+    }
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    if (element) {
+      element.setAttribute('views', value);
+      element.setAttribute('reload', 'true');
+    }
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    if (element) {
+      element.setAttribute('replies', value);
+      element.setAttribute('reload', 'true');
+    }
   }
 
   disableScroll() {
@@ -64,9 +128,9 @@ export default class PollWrapper extends HTMLElement {
     }
   }
 
-  parseToNumber = num_str => {
+  parseToNumber = str => {
     // Try parsing the string to an integer
-    const num = parseInt(num_str);
+    const num = parseInt(str);
 
     // Check if parsing was successful
     if (!isNaN(num)) {

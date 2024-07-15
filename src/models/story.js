@@ -448,6 +448,7 @@ module.exports = (User, sequelize, Sequelize) => {
     await actionQueue.add('actionJob', {
       kind: like.kind,
       publish: true,
+      user: like.author,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
@@ -463,6 +464,7 @@ module.exports = (User, sequelize, Sequelize) => {
     await actionQueue.add('actionJob', {
       kind: like.kind,
       publish: true,
+      user: like.author,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
