@@ -313,6 +313,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'topic',
+      publish: true,
+      user: subscribe.author,
       hashes: {
         topic: subscribe.topic,
       },
@@ -326,6 +328,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'topic',
+      publish: true,
+      user: subscribe.author,
       hashes: {
         topic: subscribe.topic,
       },
@@ -376,6 +380,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'topic',
+      publish: true,
+      user: follow.author,
       hashes: {
         target: follow.topic,
       },
@@ -389,6 +395,8 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'topic',
+      publish: true,
+      user: follow.author,
       hashes: {
         target: follow.topic,
       },

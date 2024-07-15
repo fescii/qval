@@ -375,6 +375,7 @@ module.exports = (User, sequelize, Sequelize) => {
     await actionQueue.add('actionJob', {
       kind: reply.kind,
       publish: true,
+      user: reply.author,
       hashes: {
         target: reply.reply !== null ? reply.reply : reply.story,
       },

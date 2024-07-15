@@ -224,6 +224,7 @@ module.exports = (sequelize, Sequelize) => {
 		await actionQueue.add('actionJob', {
 			kind: 'user',
 			publish: true,
+			user: connect.from,
 			hashes: {
 				from: connect.from,
 				to: connect.to
@@ -239,6 +240,7 @@ module.exports = (sequelize, Sequelize) => {
 		await actionQueue.add('actionJob', {
 			kind: 'user',
 			publish: true,
+			user: connect.from,
 			hashes: {
 				from: connect.from,
 				to: connect.to
