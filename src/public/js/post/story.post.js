@@ -74,7 +74,7 @@ export default class StoryPost extends HTMLElement {
     if (data.action === 'connect' && data.kind === 'user') {
       this.handleConnectAction(data, author, userHash, authorHash);
     } else if (target === hash) {
-      if (action === 'like') {
+      if (data.action === 'like') {
         if(user !== null && user === userHash) {
           return;
         }
@@ -86,13 +86,13 @@ export default class StoryPost extends HTMLElement {
         actionWrapper.setAttribute('likes', likes);
         actionWrapper.setAttribute('reload', 'true');
       } 
-      else if(action === 'reply'){
+      else if(data.action === 'reply'){
         const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
         this.setAttribute('replies', replies);
         actionWrapper.setAttribute('replies', replies);
         actionWrapper.setAttribute('reload', 'true');
       } 
-      else if(action === 'view') {
+      else if(data.action === 'view') {
         const views = this.parseToNumber(this.getAttribute('views')) + data.value;
         this.setAttribute('views', views);
         actionWrapper.setAttribute('views', views);
@@ -615,7 +615,7 @@ export default class StoryPost extends HTMLElement {
       h3.title {
         color: var(--title-color);
         font-family: var(--font-main), sans-serif;
-        margin: 0;
+        margin: 2px 0 7px 0;
         padding: 0;
         font-size: 1rem;
         font-weight: 600;

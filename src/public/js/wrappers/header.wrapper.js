@@ -608,8 +608,8 @@ export default class HeaderWrapper extends HTMLElement {
         }
 
         nav.nav > .links > a.link.discover > svg {
-          width: 23px;
-          height: 23px;
+          width: 22px;
+          height: 22px;
           margin: 1px 0 0 0;
         }
 
