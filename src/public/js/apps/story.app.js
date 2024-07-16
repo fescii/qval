@@ -5,6 +5,8 @@ export default class AppStory extends HTMLElement {
 
     this.setTitle(this.getAttribute('story-title'));
 
+    this.viewed = false;
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -36,6 +38,7 @@ export default class AppStory extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     // Change style to flex
     this.style.display='flex';
 
@@ -46,6 +49,13 @@ export default class AppStory extends HTMLElement {
     const mql = window.matchMedia('(max-width: 660px)');
 
     this.watchMediaQuery(mql);
+
+    // view the story
+    this.activateView();
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   checkAndAddHandler() {
@@ -63,6 +73,7 @@ export default class AppStory extends HTMLElement {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
   }
+  
 
   handleWsMessage = message => {
     // Handle the message in this component
@@ -107,7 +118,11 @@ export default class AppStory extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wss.sendMessage(data);
+    if (window.wss) {
+      window.wss.sendMessage(data);
+    } else {
+      console.warn('WebSocket connection not available. view information not sent.');
+    }
   }
 
   handleConnectAction = (data, author, wrapper, userHash, authorHash) => {
@@ -167,6 +182,38 @@ export default class AppStory extends HTMLElement {
   updateAuthorFollowers = (element, value) => {
     element.setAttribute('author-followers', value);
     element.setAttribute('reload', 'true');
+  }
+
+  activateView = () => {
+    if (!this.viewed) {
+      setTimeout(() => {
+        this.sendViewData();
+        this.viewed = true;
+      }, 5000);
+    }
+  } 
+
+  sendViewData() {
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+    // check if the author is the user
+    if (authorHash === window.hash) return;
+
+    const hash = this.getAttribute('hash').toUpperCase();
+
+    const viewData = {
+      type: 'action',
+      frontend: true,
+      data: {
+        kind: 'story',
+        publish: true,
+        hashes: { target: hash },
+        action: 'view',
+        value: 1
+      }
+    };
+
+    // send the view data
+    this.sendWsMessage(viewData);
   }
 
   // watch for mql changes

@@ -41,6 +41,7 @@ export default class AppProfile extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 
@@ -65,6 +66,7 @@ export default class AppProfile extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.enableScroll()
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }

@@ -36,6 +36,7 @@ export default class AppUser extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     // Add this component handler to the window wss object
     this.checkAndAddHandler();
 
@@ -101,6 +102,7 @@ export default class AppUser extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.enableScroll();
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }

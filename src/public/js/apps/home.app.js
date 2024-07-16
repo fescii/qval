@@ -21,6 +21,7 @@ export default class AppHome extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll()
     //Scroll the window to the top
     window.scrollTo(0, 0);
 
@@ -30,6 +31,10 @@ export default class AppHome extends HTMLElement {
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
     this.watchMediaQuery(mql);
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   // watch for mql changes

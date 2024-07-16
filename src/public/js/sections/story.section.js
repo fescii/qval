@@ -18,7 +18,6 @@ export default class StorySection extends HTMLElement {
     this.shadowObj.innerHTML = this.getTemplate();
   }
 
-
   // on attribute change
   attributeChangedCallback(name, oldValue, newValue) {
     const actionEl = this.shadowObj.querySelector('action-wrapper');
@@ -462,11 +461,11 @@ export default class StorySection extends HTMLElement {
         }
 
         div.head > h1.story-title {
-          margin: 8px 0 0 0;
+          margin: 15px 0 10px;
           padding: 0;
-          font-weight: 600;
-          font-size: 1.6rem;
-          line-height: 1.5;
+          font-weight: 700;
+          font-size: 1.7rem;
+          line-height: 1.2;
           font-family: var(--font-main), sans-serif;
           color: var(--title-color);
         }
@@ -505,7 +504,7 @@ export default class StorySection extends HTMLElement {
 
         article.article * {
           font-size: 1.05rem;
-          line-height: 1.4;
+          line-height: 1.3;
           color: inherit;
           font-family: inherit;
         }
@@ -525,12 +524,12 @@ export default class StorySection extends HTMLElement {
 
         article.article .intro p {
           margin: 0 0 5px 0;
-          line-height: 1.5;
+          line-height: 1.4;
         }
 
         article.article p {
           margin: 5px 0;
-          line-height: 1.5;
+          line-height: 1.4;
         }
 
         article.article a {
@@ -590,19 +589,19 @@ export default class StorySection extends HTMLElement {
         }
 
         article.article .section {
-          margin: 15px 0 0 0;
+          margin: 20px 0 0 0;
           padding: 0;
           display: flex;
           flex-flow: column;
         }
 
         article.article > .section > h2.title {
-          font-size: 1.3rem !important;
+          font-size: 1.35rem !important;
           color: var(--title-color);
-          font-weight: 500;
-          line-height: 1.5;
+          font-weight: 600;
+          line-height: 1.2;
           margin: 0;
-          padding: 0 0 0 13px;
+          padding: 2px 0 5px 13px;
           position: relative;
         }
 
@@ -611,7 +610,7 @@ export default class StorySection extends HTMLElement {
           position: absolute;
           bottom: 10%;
           left: 0;
-          width: 4px;
+          width: 3px;
           height: 80%;
           background: var(--accent-linear);
           border-radius: 5px;

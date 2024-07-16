@@ -40,6 +40,7 @@ export default class AppPost extends HTMLElement {
   }
 
   checkAndAddHandler() {
+    this.enableScroll();
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
       // console.log('WebSocket handler added successfully');
@@ -50,6 +51,7 @@ export default class AppPost extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.enableScroll();
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }

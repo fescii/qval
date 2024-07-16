@@ -452,7 +452,7 @@ export default class StoryPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-story  story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
+      <app-story view="true" story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
         story-title="${this.getAttribute('story-title')}" time="${this.getAttribute('time')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
@@ -613,13 +613,13 @@ export default class StoryPost extends HTMLElement {
       }
 
       h3.title {
-        color: var(--text-color);
-        font-family: var(--font-text), sans-serif;
+        color: var(--title-color);
+        font-family: var(--font-main), sans-serif;
         margin: 0;
         padding: 0;
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 600;
-        line-height: 1.4;
+        line-height: 1.2;
       }
 
       h3.title > a {
@@ -697,9 +697,8 @@ export default class StoryPost extends HTMLElement {
   
 
         h3.title {
-          color: var(--text-color);
           font-weight: 600;
-          line-height: 1.5;
+          line-height: 1.2;
         }
 
         h3.title > a {

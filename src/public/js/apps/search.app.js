@@ -69,6 +69,7 @@ export default class AppSearch extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     // Activate tab
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
@@ -93,6 +94,10 @@ export default class AppSearch extends HTMLElement {
     const mql = window.matchMedia('(max-width: 660px)');
 
     this.watchMediaQuery(mql, contentContainer);
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   // watch for mql changes

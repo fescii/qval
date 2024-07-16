@@ -26,6 +26,7 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     this.style.display = 'flex';
     // onpopstate event
     this.onPopEvent();
@@ -52,6 +53,7 @@ export default class AppTopic extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.enableScroll();
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }

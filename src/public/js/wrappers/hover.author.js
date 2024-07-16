@@ -113,6 +113,8 @@ export default class HoverAuthor extends HTMLElement {
       content.addEventListener('click', event => {
         event.preventDefault();
 
+        this.enableScroll();
+
         // Get full post
         const profile =  outerThis.getProfile();
 
@@ -135,6 +137,7 @@ export default class HoverAuthor extends HTMLElement {
 
   // Replace and push states
   replaceAndPushStates = (url, body, profile) => {
+    this.enableScroll();
     // Replace the content with the current url and body content
     // get the first custom element in the body
     const firstElement = body.firstElementChild;
@@ -171,8 +174,6 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
-
-          outerThis.disableScroll();
         });
 
         // add mouse leave event listener
@@ -182,7 +183,6 @@ export default class HoverAuthor extends HTMLElement {
 
           // remove the content from the content container
           contentContainer.innerHTML = outerThis.getLoader();
-          outerThis.enableScroll();
         });
       }
       else {
@@ -259,6 +259,8 @@ export default class HoverAuthor extends HTMLElement {
       content.addEventListener('click', event => {
         event.preventDefault();
 
+        outerThis.enableScroll();
+
         // Get full post
         const profile =  outerThis.getProfile();
   
@@ -279,6 +281,8 @@ export default class HoverAuthor extends HTMLElement {
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        outerThis.enableScroll();
 
         // Get full post
         const profile =  outerThis.getProfile();

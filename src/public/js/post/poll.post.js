@@ -164,7 +164,7 @@ export default class PollPost extends HTMLElement {
     this.viewTimer = setTimeout(() => {
       this.sendViewData();
       this.hasBeenViewed = true;
-    }, 2000); // 2 seconds
+    }, 5000); // 5 seconds
   }
 
   clearViewTimer() {
@@ -175,6 +175,10 @@ export default class PollPost extends HTMLElement {
   }
 
   sendViewData() {
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+    // check if the author is the user
+    if (authorHash === window.hash) return;
+
     const hash = this.getAttribute('hash').toUpperCase();
     const viewData = {
       type: 'action',
