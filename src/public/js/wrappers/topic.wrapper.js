@@ -116,6 +116,20 @@ export default class TopicWrapper extends HTMLElement {
     else if (data.action === 'subscribe') {
       const subscribers = this.parseToNumber(this.getAttribute('subscribers')) + value;
       this.setAttribute('subscribers', subscribers.toString());
+
+      // select subscribers element
+      const subscribersStat = this.shadowObj.querySelector('.stats > span.subscribers');
+      if (subscribersStat) {
+        // select no element
+        const no = subscribersStat.querySelector('.number');
+        const text = subscribersStat.querySelector('.label');
+
+        // Update the subscribers
+        no.textContent = this.formatNumber(subscribers);
+
+        // Update the text
+        text.textContent = subscribers === 1 ? 'subscriber' : 'subscribers';
+      }
     }
   }
 
