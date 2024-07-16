@@ -381,8 +381,8 @@ export default class PersonWrapper extends HTMLElement {
     followers = followers < 0 ? 0 : followers;
 
     // Set the followers attribute
-    this.setAttribute('followers', followers.toString());
-    this.setAttribute('user-follow', followed.toString());
+    // this.setAttribute('followers', followers.toString());
+    // this.setAttribute('user-follow', followed.toString());
   }
 
   parseToNumber = num_str => {

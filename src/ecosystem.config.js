@@ -7,7 +7,7 @@ module.exports = {
       name: 'express-app',
       script: 'app.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'workers'], 
       env: {
         NODE_ENV: 'development',
         PORT: process.env.PORT,
@@ -21,7 +21,7 @@ module.exports = {
       name: 'action-worker',
       script: './workers/action.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
       },
@@ -33,7 +33,7 @@ module.exports = {
       name: 'mail-worker',
       script: './workers/mail.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
       },
@@ -45,7 +45,7 @@ module.exports = {
       name: 'activity-worker',
       script: './workers/activity.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'],
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
       },

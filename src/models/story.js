@@ -267,6 +267,8 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing || add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'story',
+      publish: true,
+      user: vote.author,
       hashes: {
         target: vote.story,
       },

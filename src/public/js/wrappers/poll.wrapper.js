@@ -11,7 +11,7 @@ export default class PollWrapper extends HTMLElement {
 
   // observe attributes 
   static get observedAttributes() {
-    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow', 'vote'];
   }
 
   render() {
@@ -22,28 +22,25 @@ export default class PollWrapper extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     const actionEl = this.shadowObj.querySelector('action-wrapper');
     const authorEl = this.shadowObj.querySelector('author-wrapper');
+    const voteEl = this.shadowObj.querySelector('votes-wrapper');
     if(name === 'reload' && newValue === 'true') {
       this.setAttribute('reload', 'false');
       this.updateReload(actionEl, authorEl);
     }
     if (oldValue !== newValue) {
-      switch (name) {
-        case 'likes':
-          this.updateLikes(actionEl, newValue);
-          break;
-        case 'replies':
-          this.updateReplies(actionEl, newValue);
-          break;
-        case 'views':
-          this.updateViews(actionEl, newValue);
-          break;
-        case 'author-followers':
-          this.updateFollowers(authorEl, newValue);
-        case 'author-follow':
-          this.updateFollow(authorEl, newValue);
-          break;
-        default:
-          break;
+      if (name === 'likes') {
+        this.updateLikes(actionEl, newValue);
+      } else if (name === 'replies') {
+        this.updateReplies(actionEl, newValue);
+      } else if (name === 'views') {
+        this.updateViews(actionEl, newValue);
+      } else if (name === 'author-followers') {
+        this.updateFollowers(authorEl, newValue);
+        // Note: Missing break in the original switch, assuming intentional fall-through
+      } else if (name === 'author-follow') {
+        this.updateFollow(authorEl, newValue);
+      } else if (name === 'vote') {
+        voteEl.setAttribute('vote', this.getAttribute('vote'));
       }
     }
   }
@@ -84,7 +81,7 @@ export default class PollWrapper extends HTMLElement {
     // update followers in the element and this element
     this.setAttribute('author-followers', value);
     if (element) {
-      element.setAttribute('author-followers', value);
+      element.setAttribute('followers', value);
     }
   }
 
@@ -142,8 +139,11 @@ export default class PollWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

@@ -17,8 +17,37 @@ export default class ProfileWrapper extends HTMLElement {
     this.render();
   }
 
+  // observe the attributes
+  static get observedAttributes() {
+    return ['followers', 'user-follow', 'reload'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // check if old value is not equal to new value
+    if (name==='reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      // get the followers element
+      const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+
+      // Update the followers
+      if(followers) {
+        const totalFollowers = this.parseToNumber(this.getAttribute('followers'));
+        followers.textContent = totalFollowers >= 0 ? this.formatNumber(totalFollowers) : '0';
+      }
+
+      // get the follow button
+      const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
+
+      // Update the follow button
+      if(followBtn) {
+        this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+      }
+    }  
   }
 
   connectedCallback() {
@@ -32,6 +61,10 @@ export default class ProfileWrapper extends HTMLElement {
     this.openHighlights();
     this.openContact();
     this.openSettings(body);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
   setAttributes = (name, value) => {
@@ -98,7 +131,6 @@ export default class ProfileWrapper extends HTMLElement {
       url, url
     );
   }
-
 
   openHighlights = () => {
     // Get body
@@ -225,7 +257,7 @@ export default class ProfileWrapper extends HTMLElement {
             outerThis.updateFollowBtn(data.followed, followBtn);
 
             // Update the followers
-            outerThis.updateFollowers(data.followed);
+            // outerThis.updateFollowers(data.followed);
           }
         });
       })
@@ -347,7 +379,7 @@ export default class ProfileWrapper extends HTMLElement {
   updateFollowers = (followed) => {
     const outerThis = this;
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -358,9 +390,9 @@ export default class ProfileWrapper extends HTMLElement {
     this.setAttribute('user-follow', followed.toString());
 
     // Set the followers attribute
-    this.setAttribute('followers', followers.toString());
+    // this.setAttribute('followers', followers.toString());
 
-    this.setAttributes('followers', followers)
+    // this.setAttributes('followers', followers)
 
     this.setAttributes('user-follow', followed.toString());
 
@@ -400,8 +432,11 @@ export default class ProfileWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

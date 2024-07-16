@@ -109,8 +109,11 @@ export default class HighlightsContainer extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

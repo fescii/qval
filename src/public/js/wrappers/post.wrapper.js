@@ -28,24 +28,17 @@ export default class PostWrapper extends HTMLElement {
     }
 
     if (oldValue !== newValue) {
-      switch (name) {
-        case 'likes':
-          this.updateLikes(actionEl, newValue);
-          break;
-        case 'replies':
-          this.updateReplies(actionEl, newValue);
-          break;
-        case 'views':
-          this.updateViews(actionEl, newValue);
-          break;
-        case 'author-followers':
-          this.updateFollowers(authorEl, newValue);
-          break;
-        case 'author-follow':
-          this.updateFollow(authorEl, newValue);
-          break;
-        default:
-          break;
+      if (name === 'likes') {
+        this.updateLikes(actionEl, newValue);
+      } else if (name === 'replies') {
+        this.updateReplies(actionEl, newValue);
+      } else if (name === 'views') {
+        this.updateViews(actionEl, newValue);
+      } else if (name === 'author-followers') {
+        this.updateFollowers(authorEl, newValue);
+        // Note: Missing break in the original switch, assuming intentional fall-through
+      } else if (name === 'author-follow') {
+        this.updateFollow(authorEl, newValue);
       }
     }
   }
@@ -158,8 +151,11 @@ export default class PostWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

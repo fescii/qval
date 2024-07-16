@@ -55,6 +55,7 @@ export default class PollPost extends HTMLElement {
 
     const author = this.shadowObj.querySelector('hover-author');
     const actionWrapper = this.shadowObj.querySelector('action-wrapper');
+    const voteEl = this.shadowObj.querySelector('votes-wrapper');
 
     const hash = this.getAttribute('hash').toUpperCase();
     const authorHash = this.getAttribute('author-hash').toUpperCase();
@@ -87,6 +88,12 @@ export default class PollPost extends HTMLElement {
         this.setAttribute('views', views);
         actionWrapper.setAttribute('views', views);
         actionWrapper.setAttribute('reload', 'true');
+      } else if (data.action === 'vote') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // update vote
+        voteEl.setAttribute('vote', data.value);
       }
     }
   }
@@ -208,8 +215,11 @@ export default class PollPost extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

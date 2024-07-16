@@ -36,7 +36,8 @@ export default class UserWrapper extends HTMLElement {
 
         // Update the followers
         if(followers) {
-          followers.textContent = this.formatNumber(this.getAttribute('followers'));
+          const totalFollowers = this.parseToNumber(this.getAttribute('followers'));
+          followers.textContent = totalFollowers >= 0 ? this.formatNumber(totalFollowers) : '0';
         }
 
         // Update the follow button
@@ -469,8 +470,11 @@ export default class UserWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

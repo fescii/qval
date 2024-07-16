@@ -11,6 +11,9 @@ export default class AppProfile extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -41,11 +44,70 @@ export default class AppProfile extends HTMLElement {
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 
+    // connect to the WebSocket
+    this.checkAndAddHandler();
+
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
 
     // Watch for media query changes
     this.watchMediaQuery(mql);
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    console.log('Message received in component:', message);
+    const data = message.data;
+
+    const userHash = window.hash;
+
+    const authorHash = this.getAttribute('hash').toUpperCase();
+
+    const author = this.shadowObj.querySelector('profile-wrapper');
+
+    // handle connect action
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('followers')) + data.value;
+      this.setAttribute('followers', followers)
+      author.setAttribute('followers', followers);
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+        // update user-follow/auth-follow attribute
+        this.setAttribute('user-follow', value);
+        author.setAttribute('user-follow', value);
+      }
+
+      // reload the author component
+      author.setAttribute('reload', 'true');
+    }
   }
 
   // watch for mql changes
@@ -77,8 +139,11 @@ export default class AppProfile extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

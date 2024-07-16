@@ -42,9 +42,9 @@ export default class AppPost extends HTMLElement {
   checkAndAddHandler() {
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
-      // console.log('WebSocket handler added successfully');
+      console.log('WebSocket handler added successfully');
     } else {
-      // console.log('WebSocket manager not available, retrying...');
+      console.log('WebSocket manager not available, retrying...');
       setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
     }
   }
@@ -57,7 +57,7 @@ export default class AppPost extends HTMLElement {
 
   handleWsMessage = message => {
     // Handle the message in this component
-    // console.log('Message received in component:', message);
+    console.log('Message received in component:', message);
     const data = message.data;
 
     const user = data?.user;
@@ -90,7 +90,7 @@ export default class AppPost extends HTMLElement {
         const views = this.parseToNumber(this.getAttribute('views')) + data.value;
         this.updateViews(wrapper, views);
       }
-      if (data.action === 'like') {
+      else if (data.action === 'like') {
         if(user !== null && user === userHash) {
           return;
         }
@@ -98,6 +98,13 @@ export default class AppPost extends HTMLElement {
         const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
         // update likes
         this.updateLikes(wrapper, likes);
+      }
+      else if (data.action === 'vote') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // update likes
+        this.updateVote(wrapper, data.value);
       }
     }
   }
@@ -118,11 +125,15 @@ export default class AppPost extends HTMLElement {
         const value = data.value === 1 ? 'true' : 'false';
         // update user-follow/auth-follow attribute
         this.setAttribute('author-follow', value);
-        author.setAttribute('user-follow', value);
+        if(author) {
+          author.setAttribute('user-follow', value);
+        }
         wrapper.setAttribute('author-follow', value);
       }
 
-      author.setAttribute('reload', 'true');
+      if(author) {
+        author.setAttribute('reload', 'true');
+      }
     }
   }
 
@@ -131,6 +142,13 @@ export default class AppPost extends HTMLElement {
     this.setAttribute('likes', value);
     element.setAttribute('likes', value);
     element.setAttribute('reload', 'true');
+  }
+
+  updateVote = (element, value) => {
+    if(element) {
+      element.setAttribute('vote', value);
+      element.setAttribute('reload', 'true');
+    }
   }
 
   updateViews = (element, value) => {
@@ -148,6 +166,9 @@ export default class AppPost extends HTMLElement {
   }
 
   updateFollowers = (element, value) => {
+    if (!element) {
+      return;
+    }
     element.setAttribute('followers', value);
     element.setAttribute('reload', 'true');
   }

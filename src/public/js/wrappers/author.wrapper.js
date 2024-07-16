@@ -20,7 +20,7 @@ export default class AuthorWrapper extends HTMLElement {
 
   // observe the attributes
   static get observedAttributes() {
-    return ['followers', 'user-follow'];
+    return ['followers', 'user-follow', 'reload'];
   }
 
   setAttributes = (name, value) => {
@@ -41,7 +41,8 @@ export default class AuthorWrapper extends HTMLElement {
 
       // Update the followers
       if(followers) {
-        followers.textContent = this.formatNumber(newValue);
+        const totalFollowers = this.parseToNumber(this.getAttribute('followers'));
+        followers.textContent = totalFollowers >= 0 ? this.formatNumber(totalFollowers) : '0';
       }
 
       // get the follow button
@@ -264,7 +265,7 @@ export default class AuthorWrapper extends HTMLElement {
             outerThis.updateFollowBtn(data.followed, followBtn);
 
             // Update the followers
-            outerThis.updateFollowers(data.followed);
+            // outerThis.updateFollowers(data.followed);
           }
         });
       })
@@ -394,10 +395,10 @@ export default class AuthorWrapper extends HTMLElement {
     followers = followers < 0 ? 0 : followers;
 
     // Set the followers attribute
-    this.setAttribute('followers', followers.toString());
+    // this.setAttribute('followers', followers.toString());
     this.setAttribute('user-follow', followed.toString());
 
-    this.setAttributes('author-followers', followers.toString());
+    // this.setAttributes('author-followers', followers.toString());
     this.setAttributes('author-follow', followed.toString());
 
     // select the followers element
@@ -497,8 +498,11 @@ export default class AuthorWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
