@@ -12,17 +12,39 @@ export default class UserWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
   // attributes to observe
   static get observedAttributes() {
-    return ["hash", "picture", "name", "followers", "following", "user-follow", "verified", "url", "bio"];
+    return ["hash", "picture", "name", "followers", "following", "user-follow", "verified", "url", "reload"];
   }
 
-  // observe the attributes on change
+  // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
-  
+    // get the followers element
+    const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
+    // check if old value is not equal to new value
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
+
+        // Update the followers
+        if(followers) {
+          followers.textContent = this.formatNumber(this.getAttribute('followers'));
+        }
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+        }
+      }
+    }  
   }
 
   render() {
@@ -35,6 +57,9 @@ export default class UserWrapper extends HTMLElement {
 
     url = url.trim().toLowerCase();
 
+    // Check and add handler
+    this.checkAndAddHandler();
+
     // Get the body
     const body = document.querySelector('body');
 
@@ -46,6 +71,65 @@ export default class UserWrapper extends HTMLElement {
 
     // open highlights
     this.openHighlights(body);
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    const userHash = window.hash;
+
+    const authorHash = this.getAttribute('hash').toUpperCase();
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, userHash, authorHash);
+    }
+  }
+
+  handleConnectAction = (data, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('followers')) + data.value;
+      this.setAttribute('followers', followers)
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('user-follow', value);
+      }
+
+      this.setAttribute('reload', 'true');
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
   openHighlights = body => {

@@ -19,7 +19,7 @@ export default class HoverAuthor extends HTMLElement {
 
   // observe the attributes
   static get observedAttributes() {
-    return ['followers', 'user-follow'];
+    return ['followers', 'user-follow', 'reload'];
   }
 
   render() {
@@ -28,19 +28,26 @@ export default class HoverAuthor extends HTMLElement {
 
   // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
+    // get the followers element
+    const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
     // check if old value is not equal to new value
-    if (oldValue !== newValue) {
-      if(name === 'followers') {
-        // get the followers element
-        const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
 
         // Update the followers
         if(followers) {
-          followers.textContent = this.formatNumber(newValue);
+          followers.textContent = this.formatNumber(this.getAttribute('followers'));
+        }
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
         }
       }
-      
-    }
+    }  
   }
 
   setAttributes = (name, value) => {
@@ -67,6 +74,10 @@ export default class HoverAuthor extends HTMLElement {
 
     // handle user click
     this.handleUserClick(mql.matches, url, body, contentContainer);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
   disconnectedCallback() {
@@ -218,7 +229,6 @@ export default class HoverAuthor extends HTMLElement {
         const overlayBtn = outerThis.shadowObj.querySelector('span.pointer');
         // if overlayBtn
         if (overlayBtn) {
-  
           // add mouse leave event listener
           overlayBtn.addEventListener('click', e => {
             e.preventDefault();
@@ -388,7 +398,7 @@ export default class HoverAuthor extends HTMLElement {
             outerThis.updateFollowBtn(data.followed, followBtn);
 
             // Update the followers
-            outerThis.updateFollowers(data.followed);
+            // outerThis.updateFollowers(data.followed);
           }
         });
       })
@@ -522,6 +532,8 @@ export default class HoverAuthor extends HTMLElement {
     // Set the followers attribute
     this.setAttribute('followers', followers.toString());
     this.setAttribute('user-follow', followed.toString());
+
+    this.setAttribute('updated', 'true');
 
     this.setAttributes('author-followers', followers.toString());
     this.setAttributes('author-follow', followed.toString());

@@ -102,7 +102,7 @@ export default class AppUser extends HTMLElement {
 
   disconnectedCallback() {
     if (window.wss) {
-      window.wss.removeMessageHandler(this.handleWsMessage);
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
   }
 

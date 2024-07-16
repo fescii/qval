@@ -11,7 +11,7 @@ export default class PollWrapper extends HTMLElement {
 
   // observe attributes 
   static get observedAttributes() {
-    return ['likes', 'replies', 'views', 'author-followers', 'reload'];
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
   }
 
   render() {
@@ -39,6 +39,8 @@ export default class PollWrapper extends HTMLElement {
           break;
         case 'author-followers':
           this.updateFollowers(authorEl, newValue);
+        case 'author-follow':
+          this.updateFollow(authorEl, newValue);
           break;
         default:
           break;
@@ -61,6 +63,12 @@ export default class PollWrapper extends HTMLElement {
 
     if (elTwo) {
       elTwo.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollow = (element, value) => {
+    if (element) {
+      element.setAttribute('user-follow', value);
     }
   }
 

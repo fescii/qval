@@ -12,11 +12,36 @@ export default class PersonWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
+  }
+
+  // observe the attributes
+  static get observedAttributes() {
+    return ['followers', 'user-follow', 'reload'];
   }
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('button.action#follow-action');
+    // check if old value is not equal to new value
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+        }
+      }
+    }  
   }
 
   connectedCallback() {
@@ -25,6 +50,9 @@ export default class PersonWrapper extends HTMLElement {
 
     url = url.trim().toLowerCase();
 
+    // Check and add handler
+    this.checkAndAddHandler();
+
     // Get the body
     const body = document.querySelector('body');
 
@@ -32,6 +60,64 @@ export default class PersonWrapper extends HTMLElement {
 
     // Perform actions
     this.performActions();
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    console.log('Message received in component:', message);
+    const data = message.data;
+
+    const userHash = window.hash;
+    const authorHash = this.getAttribute('hash').toUpperCase();
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, userHash, authorHash);
+    }
+  }
+
+  handleConnectAction = (data, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('followers')) + data.value;
+      this.setAttribute('followers', followers)
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('user-follow', value);
+      }
+
+      this.setAttribute('reload', 'true');
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wsManager.sendMessage(data);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
   }
 
   // Open user profile
@@ -77,7 +163,7 @@ export default class PersonWrapper extends HTMLElement {
     );
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -287,7 +373,7 @@ export default class PersonWrapper extends HTMLElement {
 
   updateFollowers = (followed) => {
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 

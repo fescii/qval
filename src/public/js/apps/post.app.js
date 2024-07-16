@@ -42,33 +42,31 @@ export default class AppPost extends HTMLElement {
   checkAndAddHandler() {
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
-      console.log('WebSocket handler added successfully');
+      // console.log('WebSocket handler added successfully');
     } else {
-      console.log('WebSocket manager not available, retrying...');
+      // console.log('WebSocket manager not available, retrying...');
       setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
     }
   }
 
   disconnectedCallback() {
     if (window.wss) {
-      window.wss.removeMessageHandler(this.handleWsMessage);
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
   }
 
   handleWsMessage = message => {
     // Handle the message in this component
-    console.log('Message received in component:', message);
+    // console.log('Message received in component:', message);
     const data = message.data;
 
     const user = data?.user;
     const userHash = window.hash;
 
-    if(user !== null && user === userHash) {
-      return;
-    }
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
 
     const author = this.shadowObj.querySelector('author-wrapper');
-
     // get post-section element
     let wrapper = this.shadowObj.querySelector('post-wrapper');
 
@@ -77,44 +75,55 @@ export default class AppPost extends HTMLElement {
       wrapper = this.shadowObj.querySelector('poll-wrapper');
     }
 
-    const hash = this.getAttribute('hash').toUpperCase();
-    const authorHash = this.getAttribute('author-hash').toUpperCase();
+    const target = data.hashes.target;
 
-
-    if (message.type === 'action') {
-      // get target from hashes
-      const target = data.hashes.target;
-      const to = data.hashes.to;
-      const from = data.hashes.from;
-
-      if(target === hash) {
-        const action = data.action;
-        if (action === 'like') {
-          // get likes parsed to number
-          const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
-          // update likes
-          this.updateLikes(wrapper, likes);
-        } else if(action === 'reply'){
-          const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
-          this.updateReplies(wrapper, replies);
-        } else if(action === 'view') {
-          const views = this.parseToNumber(this.getAttribute('views')) + data.value;
-          this.updateViews(wrapper, views);
-        }
+    // handle connect action
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, wrapper, userHash, authorHash);
+    }
+    else if(hash === target) {
+      if (data.action === 'reply') {
+        const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+        this.updateReplies(wrapper, replies);
       }
-      else if(to === authorHash) {
-        if(data.action === 'connect') {
-          const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
-          this.setAttribute('author-followers', followers)
-          this.updateAuthorFollowers(wrapper, followers);
-          this.updateFollowers(author, followers);
+      else if(data.action === 'view') {
+        const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+        this.updateViews(wrapper, views);
+      }
+      if (data.action === 'like') {
+        if(user !== null && user === userHash) {
+          return;
         }
+        // get likes parsed to number
+        const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+        // update likes
+        this.updateLikes(wrapper, likes);
       }
     }
   }
 
   sendWsMessage(data) {
     window.wsManager.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author, wrapper, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateAuthorFollowers(wrapper, followers);
+      this.updateFollowers(author, followers);
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        author.setAttribute('user-follow', value);
+        wrapper.setAttribute('author-follow', value);
+      }
+
+      author.setAttribute('reload', 'true');
+    }
   }
 
   updateLikes = (element, value) => {

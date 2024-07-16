@@ -34,18 +34,24 @@ export default class AuthorWrapper extends HTMLElement {
   // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
     // check if old value is not equal to new value
-    if (oldValue !== newValue) {
-      if(name === 'followers') {
-        // get the followers element
-        const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    if (name==='reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      // get the followers element
+      const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
 
-        // Update the followers
-        if(followers) {
-          followers.textContent = this.formatNumber(newValue);
-        }
+      // Update the followers
+      if(followers) {
+        followers.textContent = this.formatNumber(newValue);
       }
-      
-    }
+
+      // get the follow button
+      const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
+
+      // Update the follow button
+      if(followBtn) {
+        this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+      }
+    }  
   }
   
   connectedCallback() {
@@ -67,6 +73,10 @@ export default class AuthorWrapper extends HTMLElement {
 
     // open highlights
     this.openHighlights(body);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
   openHighlights = body => {

@@ -32,30 +32,26 @@ export default class PollPost extends HTMLElement {
   checkAndAddHandler() {
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
-      console.log('WebSocket handler added successfully');
+      // console.log('WebSocket handler added successfully');
     } else {
-      console.log('WebSocket manager not available, retrying...');
+      // console.log('WebSocket manager not available, retrying...');
       setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
     }
   }
 
   disconnectedCallback() {
     if (window.wss) {
-      window.wss.removeMessageHandler(this.handleWsMessage);
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
   }
 
   handleWsMessage = message => {
     // Handle the message in this component
-    console.log('Message received in component:', message);
+    // console.log('Message received in component:', message);
     const data = message.data;
 
     const user = data?.user;
     const userHash = window.hash;
-
-    if(user !== null && user === userHash) {
-      return;
-    }
 
     const author = this.shadowObj.querySelector('hover-author');
     const actionWrapper = this.shadowObj.querySelector('action-wrapper');
@@ -63,46 +59,59 @@ export default class PollPost extends HTMLElement {
     const hash = this.getAttribute('hash').toUpperCase();
     const authorHash = this.getAttribute('author-hash').toUpperCase();
 
-    if (message.type === 'action') {
-      // get target from hashes
-      const target = data.hashes.target;
-      const to = data.hashes.to;
-      const from = data.hashes.from;
+    const target = data.hashes.target;
 
-      if(target === hash) {
-        const action = data.action;
-        if (action === 'like') {
-          // get likes parsed to number
-          const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
-          // update likes
-          this.setAttribute('likes', likes);
-          // update likes in the action wrapper
-          actionWrapper.setAttribute('likes', likes);
-          actionWrapper.setAttribute('reload', true);
-        } else if(action === 'reply'){
-          const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
-          this.setAttribute('replies', replies);
-          actionWrapper.setAttribute('replies', replies);
-          actionWrapper.setAttribute('reload', true);
-        } else if(action === 'view') {
-          const views = this.parseToNumber(this.getAttribute('views')) + data.value;
-          this.setAttribute('views', views);
-          actionWrapper.setAttribute('views', views);
-          actionWrapper.setAttribute('reload', true);
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    } else if (target === hash) {
+      if (data.action === 'like') {
+        if(user !== null && user === userHash) {
+          return;
         }
-      }
-      else if(to === authorHash) {
-        if(data.action === 'connect') {
-          const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
-          this.setAttribute('author-followers', followers)
-          this.updateFollowers(author, followers);
-        }
+        // get likes parsed to number
+        const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+        // update likes
+        this.setAttribute('likes', likes);
+        // update likes in the action wrapper
+        actionWrapper.setAttribute('likes', likes);
+        actionWrapper.setAttribute('reload', 'true');
+      } 
+      else if(data.action === 'reply'){
+        const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+        this.setAttribute('replies', replies);
+        actionWrapper.setAttribute('replies', replies);
+        actionWrapper.setAttribute('reload', 'true');
+      } 
+      else if(data.action === 'view') {
+        const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+        this.setAttribute('views', views);
+        actionWrapper.setAttribute('views', views);
+        actionWrapper.setAttribute('reload', 'true');
       }
     }
   }
 
   sendWsMessage(data) {
     window.wsManager.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateFollowers(author, this.getAttribute('author-followers'));
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        author.setAttribute('user-follow', value);
+      }
+
+      author.setAttribute('reload', 'true');
+    }
   }
 
   updateFollowers = (element, value) => {

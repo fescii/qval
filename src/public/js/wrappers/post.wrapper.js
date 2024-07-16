@@ -11,7 +11,7 @@ export default class PostWrapper extends HTMLElement {
 
   // observe attributes 
   static get observedAttributes() {
-    return ['likes', 'replies', 'views', 'author-followers', 'reload'];
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
   }
 
   render() {
@@ -41,6 +41,9 @@ export default class PostWrapper extends HTMLElement {
         case 'author-followers':
           this.updateFollowers(authorEl, newValue);
           break;
+        case 'author-follow':
+          this.updateFollow(authorEl, newValue);
+          break;
         default:
           break;
       }
@@ -59,6 +62,12 @@ export default class PostWrapper extends HTMLElement {
 
     if (elTwo) {
       elTwo.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollow = (element, value) => {
+    if (element) {
+      element.setAttribute('user-follow', value);
     }
   }
 
