@@ -695,7 +695,6 @@ export default class StoryPost extends HTMLElement {
           border: var(--border-mobile);
         }
   
-
         h3.title {
           font-weight: 600;
           line-height: 1.2;

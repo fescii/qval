@@ -484,24 +484,37 @@ export default class TopicSection extends HTMLElement {
 
         article.article * {
           font-size: 1.05rem;
-          line-height: 1.4;
+          line-height: 1.3;
           color: inherit;
           font-family: inherit;
         }
 
-        article.article .section {
-          margin: 0;
+        article.article > .section {
+          margin: 0 0 10px 0;
           padding: 0;
           display: flex;
           flex-flow: column;
         }
 
-        article.article > .section h2.title {
-          padding: 0 !important;
-          font-size: 1.5rem !important;
-          font-weight: 500;
-          line-height: 1.5;
+        article.article > .section > h2.title {
+          font-size: 1.35rem !important;
+          color: var(--title-color);
+          font-weight: 600;
+          line-height: 1.2;
           margin: 0;
+          padding: 2px 0 0 13px;
+          position: relative;
+        }
+
+        article.article > .section h2.title:before {
+          content: "";
+          position: absolute;
+          bottom: 10%;
+          left: 0;
+          width: 3px;
+          height: 80%;
+          background: var(--accent-linear);
+          border-radius: 5px;
         }
 
         article.article h6,
@@ -517,8 +530,13 @@ export default class TopicSection extends HTMLElement {
           margin: 10px 0;
         }
 
-        article.article p {
+        article.article .intro p {
           margin: 0 0 5px 0;
+          line-height: 1.4;
+        }
+
+        article.article p {
+          margin: 5px 0;
           line-height: 1.4;
         }
 

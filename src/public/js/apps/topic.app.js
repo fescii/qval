@@ -843,7 +843,6 @@ export default class AppTopic extends HTMLElement {
         }
 
         section.main {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           align-items: start;
@@ -879,8 +878,8 @@ export default class AppTopic extends HTMLElement {
         }
 
         .text-content > .topic-head .topic > h2 {
-          font-size: 1.5rem;
-          font-weight: 500;
+          font-size: 1.4rem;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
           color: var(--title-color);
@@ -888,12 +887,12 @@ export default class AppTopic extends HTMLElement {
 
         .text-content > .topic-head .topic > p.info {
           margin: 0;
-          font-size: 0.9rem;
-          font-style: italic;
-          font-weight: 400;
+          font-size: 0.8rem;
+          /*font-style: italic;*/
+          font-weight: 500;
           font-family: var(--font-text), sans-serif;
           margin: 0;
-          color: var(--text-color);
+          color: var(--gray-color);
         }
 
         .stats {
@@ -934,8 +933,11 @@ export default class AppTopic extends HTMLElement {
           margin: 8px 0 15px;
           font-size: 1rem;
           color: var(--text-color);
-          line-height: 1.4;
+          line-height: 1.3;
           font-family: var(--font-main);
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
         }
 
         .text-content > .actions {

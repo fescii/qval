@@ -588,7 +588,7 @@ export default class StorySection extends HTMLElement {
           color: inherit;
         }
 
-        article.article .section {
+        article.article > .section {
           margin: 20px 0 0 0;
           padding: 0;
           display: flex;
@@ -601,7 +601,8 @@ export default class StorySection extends HTMLElement {
           font-weight: 600;
           line-height: 1.2;
           margin: 0;
-          padding: 2px 0 5px 13px;
+          padding: 2px 0 0 13px;
+          margin: 0 0 5px;
           position: relative;
         }
 
@@ -618,7 +619,7 @@ export default class StorySection extends HTMLElement {
 
         @media screen and (max-width:660px) {
           :host {
-            margin: 0 0 15px;
+            margin: 0;
           }
 
           * {

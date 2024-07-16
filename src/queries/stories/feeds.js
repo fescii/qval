@@ -15,7 +15,7 @@ const {
 
 /**
  * @function findStoryReplies
- * @description a function that finds replies by author in the database: 10 at a time orderd by the date created
+ * @description a function that finds replies by author in the database: 10 at a time ordered by the date created
  * @param {Object} reqData - The request data object
  * @returns {Object} data - The replies object and error if any
 */
@@ -25,7 +25,7 @@ const findStoryReplies = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Contract offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the replies
@@ -103,7 +103,7 @@ const findStoryReplies = async (reqData) => {
 
 /**
  * @function findReplyReplies
- * @description a function that finds replies by author in the database: 10 at a time orderd by the date created
+ * @description a function that finds replies by author in the database: 10 at a time ordered by the date created
  * @param {Object} reqData - The request data object
  * @returns {Object} data - The replies object and error if any
 */
@@ -113,7 +113,7 @@ const findReplyReplies = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the replies
@@ -191,7 +191,7 @@ const findReplyReplies = async (reqData) => {
 
 /**
  * @function findStoryLikes
- * @description a function that finds likes by author in the database: 10 at a time orderd by the date created
+ * @description a function that finds likes by author in the database: 10 at a time ordered by the date created
  * @param {Object} reqData - The request data object
  * @returns {Object} data - The likes object and error if any
 */
@@ -201,7 +201,7 @@ const findStoryLikes = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the likes
@@ -258,7 +258,7 @@ const findStoryLikes = async (reqData) => {
 
 /**
  * @function findReplyLikes
- * @description a function that finds likes by author in the database: 10 at a time orderd by the date created
+ * @description a function that finds likes by author in the database: 10 at a time ordered by the date created
  * @param {Object} reqData - The request data object
  * @returns {Object} data - The likes object and error if any
 */
@@ -268,7 +268,7 @@ const findReplyLikes = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the likes

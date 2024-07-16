@@ -3,8 +3,8 @@ export default class StoryFeed extends HTMLElement {
     // We are not even going to touch this.
     super();
 
-    this._block = false;
-    this._empty = false;
+    this._block = true;
+    this._empty = true;
     this._page = this.parseToNumber(this.getAttribute('page'));
     this._url = this.getAttribute('url');
     this._kind = this.getAttribute('kind');
@@ -27,6 +27,8 @@ export default class StoryFeed extends HTMLElement {
 
     // check if the total
     if (storiesContainer) {
+      this._block = false;
+      this._empty = false;
       this.fetchReplies(storiesContainer);
       this.scrollEvent(storiesContainer);
     }
