@@ -316,7 +316,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       publish: true,
       user: subscribe.author,
       hashes: {
-        topic: subscribe.topic,
+        target: subscribe.topic,
       },
       action: 'subscribe',
       value: 1
@@ -331,7 +331,7 @@ module.exports = (User, Story, View, sequelize, Sequelize) => {
       publish: true,
       user: subscribe.author,
       hashes: {
-        topic: subscribe.topic,
+        target: subscribe.topic,
       },
       action: 'subscribe',
       value: -1

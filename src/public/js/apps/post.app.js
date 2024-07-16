@@ -110,7 +110,7 @@ export default class AppPost extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
   handleConnectAction = (data, author, wrapper, userHash, authorHash) => {

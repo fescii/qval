@@ -98,7 +98,7 @@ export default class QuickPost extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
   handleConnectAction = (data, author, userHash, authorHash) => {

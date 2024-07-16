@@ -122,10 +122,10 @@ export default class UserWrapper extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
-  updateFollowers = (element, value) => {
+  updateFollowersEl = (element, value) => {
     element.setAttribute('followers', value);
   }
 

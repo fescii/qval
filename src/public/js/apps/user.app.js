@@ -112,7 +112,7 @@ export default class AppUser extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
   // Open user profile

@@ -109,7 +109,7 @@ export default class PersonWrapper extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
   textToBoolean = text => {

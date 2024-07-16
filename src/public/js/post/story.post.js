@@ -121,7 +121,7 @@ export default class StoryPost extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wsManager.sendMessage(data);
+    window.wss.sendMessage(data);
   }
 
   updateFollowers = (element, value) => {

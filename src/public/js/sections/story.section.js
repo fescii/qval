@@ -9,8 +9,38 @@ export default class StorySection extends HTMLElement {
     this.render();
   }
 
+  // observe attributes 
+  static get observedAttributes() {
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+
+  // on attribute change
+  attributeChangedCallback(name, oldValue, newValue) {
+    const actionEl = this.shadowObj.querySelector('action-wrapper');
+    const authorEl = this.shadowObj.querySelector('author-wrapper');;
+    if(name === 'reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      this.updateReload(actionEl, authorEl);
+    }
+    if (oldValue !== newValue) {
+      if (name === 'likes') {
+        this.updateLikes(actionEl, newValue);
+      } else if (name === 'replies') {
+        this.updateReplies(actionEl, newValue);
+      } else if (name === 'views') {
+        this.updateViews(actionEl, newValue);
+      } else if (name === 'author-followers') {
+        this.updateFollowers(authorEl, newValue);
+        // Note: Missing break in the original switch, assuming intentional fall-through
+      } else if (name === 'author-follow') {
+        this.updateFollow(authorEl, newValue);
+      }
+    }
   }
 
   connectedCallback() {
@@ -24,6 +54,54 @@ export default class StorySection extends HTMLElement {
     this.adjustIndicator(content);
   }
 
+  updateReload = (elOne, elTwo) => {
+    if (elOne) {
+      elOne.setAttribute('reload', 'true');
+    }
+
+    if (elTwo) {
+      elTwo.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollow = (element, value) => {
+    if (element) {
+      element.setAttribute('user-follow', value);
+    }
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    if (element) {
+      element.setAttribute('likes', value);
+    }
+  }
+
+  updateFollowers = (element, value) => {
+    // update followers in the element and this element
+    this.setAttribute('author-followers', value);
+    if (element) {
+      element.setAttribute('followers', value);
+    }
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    if (element) {
+      element.setAttribute('views', value);
+    }
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    if (element) {
+      element.setAttribute('replies', value);
+    }
+  }
+  
   // fn to take number and return a string with commas
   numberWithCommas = x => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
