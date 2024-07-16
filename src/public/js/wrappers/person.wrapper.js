@@ -80,7 +80,7 @@ export default class PersonWrapper extends HTMLElement {
 
   handleWsMessage = message => {
     // Handle the message in this component
-    console.log('Message received in component:', message);
+    // console.log('Message received in component:', message);
     const data = message.data;
 
     const userHash = window.hash;

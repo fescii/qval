@@ -58,7 +58,7 @@ export default class TopicWrapper extends HTMLElement {
 
   handleWsMessage = message => {
     // Handle the message in this component
-    console.log('Message received in component:', message);
+    // console.log('Message received in component:', message);
     const data = message.data;
 
     const userHash = window.hash;
@@ -572,7 +572,7 @@ export default class TopicWrapper extends HTMLElement {
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
 
-    let apiUrl = `/api/v1/t/${this.getAttribute('hash')}`;
+    let apiUrl = `/api/v1/t/${this.getAttribute('slug')}`;
 
    return /* html */`
     <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}"

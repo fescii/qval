@@ -1425,9 +1425,21 @@ export default class AppLogon extends HTMLElement {
     }, 1000);
   }
 
-  redirectUser = url => {
+  redirectUser = async url => {
     // set window user(hash)
     this.setHash('hash');
+
+    // destroy the current user-cache
+    const userCache  = 'user-cache';
+
+    // open this cache and destroy it
+    await caches.open(userCache).then(cache => {
+      cache.keys().then(keys => {
+        keys.forEach(key => {
+          cache.delete(key);
+        })
+      });
+    });
 
     // set 5 seconds timeout before redirecting
     setTimeout(() => {

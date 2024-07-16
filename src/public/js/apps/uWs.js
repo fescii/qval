@@ -52,6 +52,7 @@ export default class WebSocketManager {
 
   sendMessage(data) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      // console.log('Sending message:', data);
       this.ws.send(JSON.stringify(data));
     } else {
       console.warn('WebSocket is not open. Message not sent.');

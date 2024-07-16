@@ -108,7 +108,7 @@ export default class AppUser extends HTMLElement {
 
   handleWsMessage = data => {
     // Handle the message in this component
-    console.log('Message received in component:', data);
+    // console.log('Message received in component:', data);
   }
 
   sendWsMessage(data) {

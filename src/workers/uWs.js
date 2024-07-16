@@ -42,13 +42,26 @@ const app = uWs.SSLApp(credentials).ws('/events', {
     // subscribe to the events topic
     ws.subscribe('/events');
   },
-  message: (ws, message, isBinary) => {
+  message: async (ws, message, isBinary) => {
     /* Ok is false if backpressure was built up, wait for drain */
     // let ok = ws.send(message, isBinary);
 
     // Check if message is defined before publishing
     if (message !== undefined && message !== null) {
-      ws.publish('/events', message);
+      // convert array buffer to sJSON
+      const data = JSON.parse(Buffer.from(message).toString('utf-8'));
+
+      // check if it is from frontend and type is action
+      if(data.frontend && data.type === 'action') {
+        // remove frontend from the data
+        delete data.frontend;
+
+        // add the message to the actionQueue
+        await actionQueue.add('actionJob', data.data, { attempts: 3, backoff: 1000, removeOnComplete: true });
+      }
+      else {
+        await ws.publish('/events', message);
+      }
     }
   },
   drain: (ws) => {
@@ -69,10 +82,11 @@ const app = uWs.SSLApp(credentials).ws('/events', {
 });
 
 
+
 // Initialize the Bull worker for the socketQueue
 const socketWorker = new Worker('socketQueue', async (job) => {
   console.log('========Processing socket job =====================');
-  console.log(job.data);
+  // console.log(job.data);
   console.log('==================================================');
   
   // Send the message to the WebSocket server

@@ -9,6 +9,14 @@ export default class QuickPost extends HTMLElement {
     this.boundHandleWsMessage = this.handleWsMessage.bind(this);
     this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
 
+    this.viewTimer = null;
+    this.hasBeenViewed = false;
+    this.observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5, // Consider the post visible when 50% is in view
+    };
+
     this.render();
   }
 
@@ -21,6 +29,8 @@ export default class QuickPost extends HTMLElement {
 
     // Check and add handler
     this.checkAndAddHandler();
+
+    this.setupIntersectionObserver();
 
     // Open read more
     this.openReadMore();
@@ -49,6 +59,11 @@ export default class QuickPost extends HTMLElement {
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
+
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.clearViewTimer();
   }
 
   handleWsMessage = message => {
@@ -98,7 +113,11 @@ export default class QuickPost extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wss.sendMessage(data);
+    if (window.wss) {
+      window.wss.sendMessage(data);
+    } else {
+      console.warn('WebSocket connection not available. view information not sent.');
+    }
   }
 
   handleConnectAction = (data, author, userHash, authorHash) => {
@@ -122,6 +141,58 @@ export default class QuickPost extends HTMLElement {
 
   updateFollowers = (element, value) => {
     element.setAttribute('followers', value);
+  }
+
+  setupIntersectionObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.startViewTimer();
+        } else {
+          this.clearViewTimer();
+        }
+      });
+    }, this.observerOptions);
+
+    this.observer.observe(this);
+  }
+
+  startViewTimer() {
+    if (this.hasBeenViewed) return;
+
+    this.viewTimer = setTimeout(() => {
+      this.sendViewData();
+      this.hasBeenViewed = true;
+    }, 2000); // 2 seconds
+  }
+
+  clearViewTimer() {
+    if (this.viewTimer) {
+      clearTimeout(this.viewTimer);
+      this.viewTimer = null;
+    }
+  }
+
+  sendViewData() {
+    const hash = this.getAttribute('hash').toUpperCase();
+    let kind = this.getAttribute('story');
+    if(kind === 'quick') {
+      kind = 'story';
+    }
+    const viewData = {
+      type: 'action',
+      frontend: true,
+      data: {
+        kind: kind,
+        publish: true,
+        hashes: { target: hash },
+        action: 'view',
+        value: 1
+      }
+    };
+
+    // send the view data
+    this.sendWsMessage(viewData);
   }
 
   disableScroll() {

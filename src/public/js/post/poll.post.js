@@ -9,6 +9,14 @@ export default class PollPost extends HTMLElement {
     this.boundHandleWsMessage = this.handleWsMessage.bind(this);
     this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
 
+    this.viewTimer = null;
+    this.hasBeenViewed = false;
+    this.observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5, // Consider the post visible when 50% is in view
+    };
+
     this.render();
   }
 
@@ -21,6 +29,8 @@ export default class PollPost extends HTMLElement {
 
     // Check and add handler
     this.checkAndAddHandler();
+
+    this.setupIntersectionObserver();
 
     // Open poll post
     this.openPollPost();
@@ -43,6 +53,11 @@ export default class PollPost extends HTMLElement {
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
+
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.clearViewTimer();
   }
 
   handleWsMessage = message => {
@@ -99,7 +114,11 @@ export default class PollPost extends HTMLElement {
   }
 
   sendWsMessage(data) {
-    window.wss.sendMessage(data);
+    if (window.wss) {
+      window.wss.sendMessage(data);
+    } else {
+      console.warn('WebSocket connection not available. view information not sent.');
+    }
   }
 
   handleConnectAction = (data, author, userHash, authorHash) => {
@@ -123,6 +142,54 @@ export default class PollPost extends HTMLElement {
 
   updateFollowers = (element, value) => {
     element.setAttribute('followers', value);
+  }
+
+  setupIntersectionObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.startViewTimer();
+        } else {
+          this.clearViewTimer();
+        }
+      });
+    }, this.observerOptions);
+
+    this.observer.observe(this);
+  }
+
+  startViewTimer() {
+    if (this.hasBeenViewed) return;
+
+    this.viewTimer = setTimeout(() => {
+      this.sendViewData();
+      this.hasBeenViewed = true;
+    }, 2000); // 2 seconds
+  }
+
+  clearViewTimer() {
+    if (this.viewTimer) {
+      clearTimeout(this.viewTimer);
+      this.viewTimer = null;
+    }
+  }
+
+  sendViewData() {
+    const hash = this.getAttribute('hash').toUpperCase();
+    const viewData = {
+      type: 'action',
+      frontend: true,
+      data: {
+        kind: 'story',
+        publish: true,
+        hashes: { target: hash },
+        action: 'view',
+        value: 1
+      }
+    };
+
+    // send the view data
+    this.sendWsMessage(viewData);
   }
 
   // Open quick post
