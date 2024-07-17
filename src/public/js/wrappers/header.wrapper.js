@@ -12,6 +12,9 @@ export default class HeaderWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -38,6 +41,9 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   connectedCallback() {
+    // connect to the WebSocket
+    this.checkAndAddHandler();
+
     const body = document.querySelector('body');
     // select the back svg
     const back = this.shadowObj.querySelector('nav.nav > .left svg');
@@ -58,6 +64,119 @@ export default class HeaderWrapper extends HTMLElement {
     this.handleUserClick(body);
   }
 
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    console.log('Message received in component:', message);
+    const data = message.data;
+
+    const userHash = window.hash;
+
+    // handle activity
+    if (message.type === 'activity') {
+      if (data.to === userHash) {
+        this.handleActivity(data);
+      }
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  handleActivity = async data => {
+    // construct url
+    const url = this.getUrl(data.kind, data.target, data.author);
+    const title = this.getNotificationTitle(data.kind, data.verb, data.name);
+    const notification = {
+      body: this.getNotificationContent(data.kind, data.content, data.name),
+      icon: "/static/img/favi.png",
+      link: url,
+    }
+
+    console.log('Notification:', notification);
+
+    // send the notification
+    if (window.notify) {
+      await window.notify.notify(title, notification);
+    }
+  }
+
+  getNotificationTitle = (kind, verb, name) => {
+    if (kind === 'user') {
+      return `${name} ${verb} you`;
+    }
+    else {
+      return `${name} ${verb} your ${kind}`;
+    }
+  }
+
+  getNotificationContent = (kind, content, name) => {
+    if (kind === 'user') {
+      return this.replaceName(content, name);
+    }
+
+    return this.separateTagsByNextLine(content);
+  }
+
+  replaceName = (html, name) => {
+    // remove all tags from the html
+    const text = html.replace(/(<([^>]+)>)/gi, "");
+
+    // replace name in the text with ''
+    const replaced = text.replace(name, '');
+
+    return replaced.trim();
+  }
+
+  separateTagsByNextLine = html => {
+    // Remove all tags, keeping only the content
+    const content = html.replace(/<[^>]*>/g, '\n');
+    
+    // Split the content by newlines, trim each line, and filter out empty lines
+    const lines = content.split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+    
+    // Join the non-empty lines with a newline character
+    return lines.join('\n');
+  }
+
+  getUrl = (kind, hash, author) => {
+    hash = hash.toLowerCase();
+    if (kind === 'story') {
+      return `/p/${hash}`;
+    }
+
+    if (kind === 'reply') {
+      return `/r/${hash}`;
+    }
+
+    if (kind === 'user') {
+      return `/u/${author.toLowerCase()}`;
+    }
+
+    if (kind === 'topic') {
+      return `/t/${hash}`;
+    }
+  }
+
   // handle icons click
   handleUserClick = body => {
     const outerThis = this;
@@ -74,19 +193,24 @@ export default class HeaderWrapper extends HTMLElement {
           try {
             const url = link.getAttribute('href');
 
-            let content = outerThis.getContentPage(name, '');
-
             if (name === 'logon') {
-              content =outerThis.getContentPage(name, document.location.pathname)
+              // replace and push states
+              this.replaceAndPushStates(url, body, outerThis.getLogon(document.location.pathname));
             } else if(name === 'updates'){
-              content =outerThis.getContentPage(name, 'updates')
+              // replace and push states
+              this.replaceAndPushStates(url, body, outerThis.getUser(outerThis._user, 'updates'));
+            } else if(name === 'profile'){
+              // replace and push states
+              this.replaceAndPushStates(url, body, outerThis.getUser(this._user, ''));
+            } else if(name === 'search') {
+              // replace and push states
+              this.replaceAndPushStates(url, body, outerThis.getSearch());
+            } else if (name === 'home') {
+              // replace and push states
+              this.replaceAndPushStates(url, body, outerThis.getHome());
             }
-            
-            // replace and push states
-            this.replaceAndPushStates(url, body, content);
-    
-            body.innerHTML = content;
           } catch (error) {
+            // console.log(error)
             outerThis.navigateToUser();
           }
         })
@@ -126,20 +250,9 @@ export default class HeaderWrapper extends HTMLElement {
       { page: 'page', content: profile},
       url, url
     );
-  }
 
-  getContentPage = (name, optional) => {
-    if (name === 'home') {
-      return this.getHome();
-    } else if(name === 'search'){
-      return this.getSearch();
-    } else if(name === 'logon'){
-      return this.getLogon(optional);
-    } else if(name === 'profile'){
-      return this.getUser(this._user, optional)
-    } else if(name === 'updates'){
-      return this.getUser(this._user, optional)
-    }
+    // update the body content
+    body.innerHTML = profile;
   }
 
   getNext = () => {
@@ -438,8 +551,8 @@ export default class HeaderWrapper extends HTMLElement {
       <app-user hash="${data.hash}" home-url="/home" current="${current}" 
         verified="${data.verified}" email="${data.email}" stories-url="/api/v1${url}/stories" 
         replies-url="/api/v1${url}/replies" stories="${data.stories}" replies="${data.replies}"
-        user-link="${data.contact.link}" user-email="${data.contact.email}" 
-        user-x="${data.contact.x}" user-threads="${data.contact.threads}" user-linkedin="${data.contact.linkedin}" 
+        user-link="${data.contact?.link}" user-email="${data.contact?.email}" 
+        user-x="${data.contact?.x}" user-threads="${data.contact?.threads}" user-linkedin="${data.contact?.linkedin}" 
         user-username="${data.hash}" user-you="true" user-url="${url}" user-img="${data.picture}"  user-verified="${data.verified}" 
         user-name="${data.name}" user-followers="${data.followers}" user-contact='${contact}' user-following="${data.following}" 
         user-follow="false" user-bio="${data.bio === null ? 'This user has not added a bio yet.' : data.bio}">

@@ -83,6 +83,8 @@ export default class PersonWrapper extends HTMLElement {
     // console.log('Message received in component:', message);
     const data = message.data;
 
+    if (message.type !== 'action') return;
+
     const userHash = window.hash;
     const authorHash = this.getAttribute('hash').toUpperCase();
 

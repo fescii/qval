@@ -77,6 +77,8 @@ export default class AppTopic extends HTMLElement {
     // console.log('Message received in component:', message);
     const data = message.data;
 
+    if (message.type !== 'action') return;
+
     const userHash = window.hash;
 
     const hash = this.getAttribute('hash').toUpperCase();

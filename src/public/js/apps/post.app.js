@@ -75,6 +75,8 @@ export default class AppPost extends HTMLElement {
     // console.log('Message received in component:', message);
     const data = message.data;
 
+    if (message.type !== 'action') return;
+
     const user = data?.user;
     const userHash = window.hash;
 

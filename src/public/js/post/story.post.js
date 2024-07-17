@@ -60,11 +60,12 @@ export default class StoryPost extends HTMLElement {
     // console.log('Message received in component:', message);
     const data = message.data;
 
+    if (message.type !== 'action') return;
+
     const user = data?.user;
     const userHash = window.hash;
 
     const author = this.shadowObj.querySelector('hover-author');
-    const actionWrapper = this.shadowObj.querySelector('action-wrapper');
 
     const hash = this.getAttribute('hash').toUpperCase();
     const authorHash = this.getAttribute('author-hash').toUpperCase();
@@ -82,21 +83,14 @@ export default class StoryPost extends HTMLElement {
         const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
         // update likes
         this.setAttribute('likes', likes);
-        // update likes in the action wrapper
-        actionWrapper.setAttribute('likes', likes);
-        actionWrapper.setAttribute('reload', 'true');
       } 
       else if(data.action === 'reply'){
         const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
         this.setAttribute('replies', replies);
-        actionWrapper.setAttribute('replies', replies);
-        actionWrapper.setAttribute('reload', 'true');
       } 
       else if(data.action === 'view') {
         const views = this.parseToNumber(this.getAttribute('views')) + data.value;
         this.setAttribute('views', views);
-        actionWrapper.setAttribute('views', views);
-        actionWrapper.setAttribute('reload', 'true');
       }
     }
   }

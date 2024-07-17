@@ -31,11 +31,6 @@ export default class AppProfile extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    // console.log(`Attribute ${name} changed from ${oldValue} to ${newValue}`);
-    // if (oldValue !== newValue) {
-    //   // log the name of the attribute that changed
-    //   console.log(name);
-    // }
 
     return;
   }
@@ -89,6 +84,8 @@ export default class AppProfile extends HTMLElement {
     // Handle the message in this component
     // console.log('Message received in component:', message);
     const data = message.data;
+
+    if (message.type !== 'action') return;
 
     const userHash = window.hash;
 
