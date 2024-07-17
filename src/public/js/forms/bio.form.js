@@ -74,6 +74,16 @@ export default class FormBio extends HTMLElement {
         return;
       }
 
+      // check if bio is more than 300 characters
+      if (data.bio.length > 300) {
+        const errorMsg = 'Bio must not be more than 300 characters long';
+
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, errorMsg));
+
+        return;
+      }
+
       // show loader
       const button = form.querySelector('.action.next');
       button.innerHTML = outerThis.getButtonLoader();

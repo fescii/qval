@@ -685,6 +685,11 @@ export default class PreviewPopup extends HTMLElement {
         .preview p,
         .preview h3 {
           margin: 0;
+          line-height: 1.2;
+        }
+
+        .preview h3 {
+          margin: 0 0 5px 0;
         }
 
         .meta {
@@ -908,6 +913,7 @@ export default class PreviewPopup extends HTMLElement {
             cursor: default !important;
             border-radius: 12px;
           }
+
           a {
             cursor: default !important;
           }
