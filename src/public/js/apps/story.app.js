@@ -45,6 +45,9 @@ export default class AppStory extends HTMLElement {
     // connect to the WebSocket
     this.checkAndAddHandler();
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // Get mql object
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -52,6 +55,16 @@ export default class AppStory extends HTMLElement {
 
     // view the story
     this.activateView();
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
   }
 
   disconnectedCallback() {
@@ -268,7 +281,6 @@ export default class AppStory extends HTMLElement {
   getTemplate = () => {
     // Show HTML Here
     return `
-      <notify-popup url="/some url"></notify-popup>
       ${this.getBody()}
       ${this.getStyles()}
     `;

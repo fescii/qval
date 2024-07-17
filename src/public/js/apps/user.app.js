@@ -40,6 +40,9 @@ export default class AppUser extends HTMLElement {
     // Add this component handler to the window wss object
     this.checkAndAddHandler();
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // Check if the display is greater than 600px using mql
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -88,6 +91,16 @@ export default class AppUser extends HTMLElement {
     if (url && body) {
       // Open user profile
       this.handleUserClick(url, body);
+    }
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
     }
   }
 

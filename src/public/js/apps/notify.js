@@ -1,6 +1,7 @@
 export default class NotificationManager {
   constructor() {
     this.isSupported = "Notification" in window;
+    this.permission = this.checkPermission();
   }
 
   checkPermission() {
@@ -8,7 +9,6 @@ export default class NotificationManager {
       console.warn("This browser does not support desktop notifications");
       return false;
     }
-
     return Notification.permission === "granted";
   }
 
@@ -17,35 +17,27 @@ export default class NotificationManager {
       console.warn("Notifications not supported");
       return false;
     }
-
     const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-      console.log("Notification permission granted");
-      return true;
-    } else {
-      console.log("Notification permission denied");
-      return false;
-    }
+    this.permission = permission === "granted";
+    console.log(this.permission ? "Notification permission granted" : "Notification permission denied");
+    return this.permission;
   }
 
   async notify(title, options = {}) {
-    if (!this.checkPermission()) {
+    if (!this.permission) {
       console.log("Notification permission not granted. Requesting permission...");
-      const granted = await this.requestPermission();
-      if (!granted) {
+      if (!(await this.requestPermission())) {
         console.warn("Failed to get notification permission");
         return null;
       }
     }
 
     const notification = new Notification(title, options);
-
     if (options.link) {
       notification.onclick = () => {
         window.open(options.link, '_blank');
       };
     }
-
     return notification;
   }
 

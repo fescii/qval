@@ -45,6 +45,9 @@ export default class AppProfile extends HTMLElement {
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // connect to the WebSocket
     this.checkAndAddHandler();
 
@@ -53,6 +56,16 @@ export default class AppProfile extends HTMLElement {
 
     // Watch for media query changes
     this.watchMediaQuery(mql);
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
   }
 
   checkAndAddHandler() {

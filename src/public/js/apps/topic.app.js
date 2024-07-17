@@ -34,6 +34,9 @@ export default class AppTopic extends HTMLElement {
     // connect to the WebSocket
     this.checkAndAddHandler();
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // perform actions
     this.performActions();
 
@@ -49,6 +52,16 @@ export default class AppTopic extends HTMLElement {
     } else {
       // console.log('WebSocket manager not available, retrying...');
       setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
     }
   }
 

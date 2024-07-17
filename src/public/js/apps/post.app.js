@@ -27,6 +27,9 @@ export default class AppPost extends HTMLElement {
     // Change style to flex
     this.style.display='flex';
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // connect to the WebSocket
     this.checkAndAddHandler();
 
@@ -37,6 +40,16 @@ export default class AppPost extends HTMLElement {
 
     // scroll the window to the top and set height to 100vh
     window.scrollTo(0, 0);
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
   }
 
   checkAndAddHandler() {

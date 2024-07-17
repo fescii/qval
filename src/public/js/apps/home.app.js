@@ -25,12 +25,25 @@ export default class AppHome extends HTMLElement {
     //Scroll the window to the top
     window.scrollTo(0, 0);
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // onpopstate event
     this.onPopEvent();
 
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
     this.watchMediaQuery(mql);
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
   }
 
   disconnectedCallback() {
