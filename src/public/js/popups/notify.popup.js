@@ -75,13 +75,9 @@ export default class NotifyPopup extends HTMLElement {
     btn.addEventListener('click', async e => {
       e.preventDefault();
       // Request permission
-      const permission = await Notification.requestPermission();
-      if(permission === 'granted') {
-        console.log('Notification permission granted');
-      } else {
-        console.log('Notification permission denied');
+      if(window.notify && !window.notify.permission) {
+        await window.notify.requestPermission();
       }
-
       // Close the modal
       this.remove();
     });
