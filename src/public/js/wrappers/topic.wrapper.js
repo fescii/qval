@@ -4,10 +4,13 @@ export default class TopicWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
+
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
 
     this.render();
   }
@@ -21,6 +24,9 @@ export default class TopicWrapper extends HTMLElement {
     let url = this.getAttribute('url');
 
     url = url.trim().toLowerCase();
+
+    // connect to the WebSocket
+    this.checkAndAddHandler();
  
     // Get the body
     const body = document.querySelector('body');
@@ -34,20 +40,98 @@ export default class TopicWrapper extends HTMLElement {
     this.openHighlights(body);
   }
 
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
     }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const userHash = window.hash;
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    const author = this.shadowObj.querySelector('author-wrapper');
+
+    const target = data.hashes.target;
+
+    // handle connect action
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    }
+    else if (data.kind === 'topic' && target === hash) {
+      this.handleTopicAction(data, data.value, userHash);
+
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author,userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateFollowers(author, followers);
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        if(author) {
+          author.setAttribute('user-follow', value);
+        }
+      }
+
+      if(author) {
+        author.setAttribute('reload', 'true');
+      }
+    }
+  }
+
+  handleTopicAction = (data, value, userHash) => {
+    if (data.user === userHash)  return;
+
+    // if action is follow
+    if (data.action === 'follow') {
+      this.updateFollowers(value === 1);
+    }
+    else if (data.action === 'subscribe') {
+      const subscribers = this.parseToNumber(this.getAttribute('subscribers')) + value;
+      this.setAttribute('subscribers', subscribers.toString());
+
+      // select subscribers element
+      const subscribersStat = this.shadowObj.querySelector('.stats > span.subscribers');
+      if (subscribersStat) {
+        // select no element
+        const no = subscribersStat.querySelector('.number');
+        const text = subscribersStat.querySelector('.label');
+
+        // Update the subscribers
+        no.textContent = this.formatNumber(subscribers);
+
+        // Update the text
+        text.textContent = subscribers === 1 ? 'subscriber' : 'subscribers';
+      }
     }
   }
 
@@ -370,8 +454,11 @@ export default class TopicWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -487,7 +574,7 @@ export default class TopicWrapper extends HTMLElement {
     // trim white spaces and convert to lowercase
     url = url.trim().toLowerCase();
 
-    let apiUrl = `/api/v1/t/${this.getAttribute('hash')}`;
+    let apiUrl = `/api/v1/t/${this.getAttribute('slug')}`;
 
    return /* html */`
     <app-topic tab="article" hash="${this.getAttribute('hash')}" subscribers="${this.getAttribute('subscribers')}"

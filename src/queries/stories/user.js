@@ -55,9 +55,6 @@ const findUserStory = async (query, user) => {
     // add you you to the story
     data.you = true;
 
-    // add authenicated to the story
-    data.authenticated = true;
-
     // return the story
     return { 
       story: data,
@@ -110,8 +107,6 @@ const findUserReply = async (hash, user) => {
     // add you you to the reply
     data.you = true;
 
-    // add authenicated to the reply
-    data.authenticated = true;
 
     // return the reply
     return { 
@@ -284,7 +279,7 @@ const getUserReplies = async (where, order, user, limit, offset) => {
 
 /**
  * @function fetchFollowersWhenLoggedIn
- * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
+ * @description a query function to fetch all followers/following belonging to a particular user: when logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
  * @param {String} user - The user hash
@@ -336,7 +331,7 @@ const fetchFollowersWhenLoggedIn = async (where, order, user, limit, offset) => 
 
 /**
  * @function fetchFollowingWhenLoggedIn
- * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
+ * @description a query function to fetch all followers/following belonging to a particular user: when logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
  * @param {String} user - The user hash
@@ -387,15 +382,15 @@ const fetchFollowingWhenLoggedIn = async (where, order, user, limit, offset) => 
 }
 
 /**
- * @function fetchFollowersWhenLoggeOut
- * @description a query funtion to fetch all followers/following belonging to a particular user: when logged out
+ * @function fetchFollowersWhenLoggedOut
+ * @description a query function to fetch all followers/following belonging to a particular user: when logged out
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
  * @param {Number} limit - The limit for pagination
  * @param {Number} offset - The offset for pagination
  * @returns {Object} data - The people object and error if any
 */
-const fetchFollowersWhenLoggeOut = async (where, order, limit, offset) => {
+const fetchFollowersWhenLoggedOut = async (where, order, limit, offset) => {
   try {
     // Find the people from the connect table
     const connects = await Connect.findAll({
@@ -434,7 +429,7 @@ const fetchFollowersWhenLoggeOut = async (where, order, limit, offset) => {
 
 /**
  * @function fetchFollowingWhenLoggedOut
- * @description a query funtion to fetch all followers/following belonging to a particular user: when logged in
+ * @description a query function to fetch all followers/following belonging to a particular user: when logged in
  * @param {Object} where - The where condition for the query: the where object
  * @param {Array} order - The order for the query: the order array
  * @param {Number} limit - The limit for pagination
@@ -478,12 +473,9 @@ const fetchFollowingWhenLoggedOut = async (where, order, limit, offset) => {
   }
 }
 
-
-
-
 // Export the module
 module.exports = {
   findUserStory, findUserReply, getUserStories, getUserReplies,
   fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn,
-  fetchFollowersWhenLoggeOut, fetchFollowingWhenLoggedOut
+  fetchFollowersWhenLoggedOut, fetchFollowingWhenLoggedOut
 };

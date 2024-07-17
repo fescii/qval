@@ -69,6 +69,11 @@ export default class AppSearch extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
+
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // Activate tab
     const contentContainer = this.shadowObj.querySelector('div.content-container');
     const tabContainer = this.shadowObj.querySelector('ul#tab');
@@ -93,6 +98,20 @@ export default class AppSearch extends HTMLElement {
     const mql = window.matchMedia('(max-width: 660px)');
 
     this.watchMediaQuery(mql, contentContainer);
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
+  }
+
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   // watch for mql changes

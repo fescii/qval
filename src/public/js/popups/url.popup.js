@@ -234,6 +234,7 @@ export default class UrlPopup extends HTMLElement {
           color: var(--white-color);
           font-size: 0.95rem;
           font-weight: 500;
+          cursor: pointer;
           display: flex;
           width: max-content;
           flex-flow: row;
@@ -260,6 +261,8 @@ export default class UrlPopup extends HTMLElement {
           :host {
             border: none;
             background-color: var(--modal-background);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             padding: 0px;
             justify-self: end;
             display: flex;
@@ -326,6 +329,10 @@ export default class UrlPopup extends HTMLElement {
             margin: 15px 0;
             width: 100%;
             gap: 35px;
+          }
+
+          .welcome > .actions > .action {
+            cursor: default !important;
           }
         }
       </style>

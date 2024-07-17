@@ -116,8 +116,11 @@ export default class StatsPopup extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -346,7 +349,7 @@ export default class StatsPopup extends HTMLElement {
   getEmpty = () => {
     return /* html */`
       <div class="empty">
-        <p>User heighlights were not loaded, and error while fetching data</p>
+        <p>User highlights were not loaded, and error while fetching data</p>
         <p>Try refreshing the page or check your internet connection. If the problem persists, please contact support.</p>
       </div>
     `
@@ -607,8 +610,8 @@ export default class StatsPopup extends HTMLElement {
         }
         
         ul.highlights > li.item > .link .numbers {
-          color: var(--text-color);
-          font-weight: 500;
+          color: var(--highlight-color);
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           font-size: 0.95rem;
           display: inline-block;

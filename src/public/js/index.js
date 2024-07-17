@@ -1,3 +1,17 @@
+// set hash if user is logged
+const setHash = name => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
+
+  // add cookie to the window
+  window.hash = cookie;
+}
+
+// set hash
+setHash('hash');
+
 // Import apps
 import AppHome from "./apps/home.app.js";
 import AppPost from "./apps/post.app.js";
@@ -7,6 +21,10 @@ import AppSearch from "./apps/search.app.js";
 import AppStory from "./apps/story.app.js";
 import AppTopic from "./apps/topic.app.js";
 import AppUser from "./apps/user.app.js";
+
+// import uWS class and NotificationManager
+import WebSocketManager from "./apps/uWs.js";
+import NotificationManager from "./apps/notify.js";
 
 // Import Containers
 import AddContainer from "./containers/add.container.js";
@@ -102,6 +120,20 @@ import ContactPopup from "./popups/contact.popup.js";
 import TopicPopup from "./popups/topic.popup.js";
 import ViewsPopup from "./popups/views.popup.js";
 import PreviewPopup from "./popups/preview.popup.js";
+import NotifyPopup from "./popups/notify.popup.js";
+
+// Start WebSocketManager
+// Create a global instance
+// get host name
+const host = window.location.hostname;
+// console.log(host);
+
+window.wss = new WebSocketManager(`${host}`);
+window.wss.connect();
+
+// Start NotificationManager
+// Create a global instance
+window.notify = new NotificationManager();
 
 // Register apps
 customElements.define("app-home", AppHome);
@@ -207,3 +239,4 @@ customElements.define("contact-popup", ContactPopup);
 customElements.define("topic-popup", TopicPopup);
 customElements.define("views-popup", ViewsPopup);
 customElements.define("preview-popup", PreviewPopup);
+customElements.define("notify-popup", NotifyPopup);

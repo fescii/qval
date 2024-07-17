@@ -8,7 +8,7 @@ const {
 /**
  * @function totalReplyViewsThisMonth
  * @description Get user stories views(where view date is in the last 30 days.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies views | rejects with error)
 */
 const totalReplyViewsThisMonth = async user => {
@@ -30,7 +30,7 @@ const totalReplyViewsThisMonth = async user => {
 /**
  * @function totalReplyPreviousMonthViews
  * @description Get user stories views(where view date is between 30 and 60 days ago.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies views | rejects with error)
 */
 const totalReplyPreviousMonthViews = async user => {
@@ -54,7 +54,7 @@ const totalReplyPreviousMonthViews = async user => {
 /**
  * @function totalReplyLikesThisMonth
  * @description Get user stories likes(where like date is in the last 30 days.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies likes | rejects with error) 
 */
 const totalReplyLikesThisMonth = async user => {
@@ -76,7 +76,7 @@ const totalReplyLikesThisMonth = async user => {
 /**
  * @function totalReplyLikesLastMonth
  * @description Get user stories likes(where like date is between 30 and 60 days ago.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies likes | rejects with error) 
 */
 const totalReplyLikesLastMonth = async user => {
@@ -100,7 +100,7 @@ const totalReplyLikesLastMonth = async user => {
 /**
  * @function totalReplyRepliesThisMonth
  * @description Get user stories replies(where reply date is in the last 30 days.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies replies | rejects with error) 
 */
 const totalReplyRepliesThisMonth = async user => {
@@ -123,7 +123,7 @@ const totalReplyRepliesThisMonth = async user => {
 /**
  * @function totalReplyRepliesLastMonth
  * @description Get user stories replies(where reply date is between 30 and 60 days ago.)
- * @paramm {String} - user - User's hash
+ * @param {String} - user - User's hash
  * @returns {Promise} - Promise (resolves user total stories and replies replies | rejects with error) 
 */
 const totalReplyRepliesLastMonth = async user => {
@@ -146,10 +146,7 @@ const totalReplyRepliesLastMonth = async user => {
 
 // Export module
 module.exports = {
-  totalReplyViewsThisMonth,
-  totalReplyPreviousMonthViews,
-  totalReplyLikesThisMonth,
-  totalReplyLikesLastMonth,
-  totalReplyRepliesThisMonth,
-  totalReplyRepliesLastMonth
+  totalReplyViewsThisMonth, totalReplyPreviousMonthViews,
+  totalReplyLikesThisMonth, totalReplyLikesLastMonth,
+  totalReplyRepliesThisMonth, totalReplyRepliesLastMonth
 }

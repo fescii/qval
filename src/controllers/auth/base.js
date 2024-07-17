@@ -79,11 +79,8 @@ const signin = async (req, res, next) => {
     hash: user.hash, name: user.name
   });
 
-  // generate a random token ( thsi is will be used to check if user is logeed in the frontend)
-  let randomToken = await tokenUtil.generateToken({
-    // contact user hash with random string
-    hash: user.hash + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-  });
+  // user hash ( this is will be used to check if user is logged in the frontend)
+  let userHash = user.hash;
 
   // Add cookie to the response object
   let options = {
@@ -95,7 +92,7 @@ const signin = async (req, res, next) => {
   }
 
   // add options for the random token
-  let randomOptions = {
+  let userOptions = {
     maxAge: cookie_age,
     httpOnly: false,
     secure: true,
@@ -104,7 +101,7 @@ const signin = async (req, res, next) => {
 
   // Set cookie
   res.cookie('x-access-token', token, options);
-  res.cookie('x-random-token', randomToken, randomOptions);
+  res.cookie('hash', userHash, userOptions);
 
 
   // Return a successful response

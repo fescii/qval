@@ -4,7 +4,7 @@ export default class VotesAuthor extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
      // Get array of objects for poll options and parse to Array
     this._options = this.combinePollAndVotes(this.getAttribute('options'), this.getAttribute('votes'));
@@ -71,7 +71,7 @@ export default class VotesAuthor extends HTMLElement {
 
   // observe the attributes
   static get observedAttributes() {
-    return ['options', 'votes', 'end-time', 'voted', 'selected', 'you', 'reload'];
+    return ['options', 'votes', 'end-time', 'voted', 'selected', 'you', 'reload', 'vote'];
   }
 
   // listen for changes in the attributes
@@ -98,6 +98,42 @@ export default class VotesAuthor extends HTMLElement {
         }
       }
     }
+
+    if (name === 'vote') {
+      const value = this.parseToNumber(this.getAttribute('vote'));
+      if(value === 0) {
+        return;
+      }
+
+      this.setAttribute('vote', 0)
+      // add one to the option votes where the option name is equal to the new value
+      this._options = this._options.map(option => {
+        if (option.name === value) {
+          return { ...option, votes: option.votes + 1 };
+        }
+        else {
+          return option;
+        }
+      });
+      
+
+      // update votes attribute
+      this.setAttribute('votes', this._options.map(option => option.votes).join(','));
+
+      this.render();
+
+      // re attach the event listeners
+      this.updatePollTime();
+      // Check if user has voted
+      if (this._voted) {
+        // disable all inputs
+        this.disableInputs();
+      }
+      else {
+        // Listen for checked radio button
+        this.listenForChecked();
+      }
+    }  
   }
 
   render() {
@@ -120,31 +156,7 @@ export default class VotesAuthor extends HTMLElement {
   }
 
   convertToBool = str => {
-    switch (str) {
-      case 'true':
-        return true;
-      case 'false':
-        return false;
-      default:
-        return false;
-    }
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
+    return str === 'true' ? true : false;
   }
 
   disableScroll() {
@@ -235,14 +247,16 @@ export default class VotesAuthor extends HTMLElement {
             // Show toast message
             outerThis.showToast(data.message, true);
 
-            // update the voted attribute
-            const { poll, votes } = outerThis.separatePollAndVotes(outerThis._options);
+            outerThis._voted = true;
+            console.log(data)
 
+            // update the voted attribute
+            const sepObj = outerThis.separatePollAndVotes(outerThis._options);
             // set attributes
-            outerThis.setAttributes('options', poll);
-            outerThis.setAttributes('votes', votes);
+            outerThis.setAttributes('options', sepObj.poll);
+            outerThis.setAttributes('votes', sepObj.votes);
             outerThis.setAttributes('voted', 'true');
-            outerThis.setAttributes('selected', data.vote.option);
+            outerThis.setAttributes('selected', data.vote[0].option);
           }
         });
       })
@@ -367,8 +381,11 @@ export default class VotesAuthor extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

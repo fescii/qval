@@ -54,6 +54,7 @@ body {
   width: 100%;
   min-height: var(--vh-height, 100vh);
   font-family: var(--font-main), sans-serif;
+  background-color: var(--background);
 }
 
 body.stop-scrolling {

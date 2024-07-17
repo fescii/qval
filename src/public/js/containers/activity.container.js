@@ -199,9 +199,9 @@ export default class ActivityContainer extends HTMLElement {
         .top > .desc {
           margin: 0;
           padding: 6px 0 10px;
-          color: var(--gray-color);
+          color: var(--text-color);
           font-size: 1rem;
-          line-height: 1.5;
+          line-height: 1.3;
           font-family: var(--font-main), sans-serif;
         }
 

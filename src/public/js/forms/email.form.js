@@ -349,7 +349,7 @@ export default class FormEmail extends HTMLElement {
         .top > .desc {
           margin: 0;
           padding: 10px 0;
-          color: var(--gray-color);
+          color: var(--text-color);
           font-size: 1rem;
           font-family: var(--font-main), sans-serif;
         }
@@ -437,7 +437,7 @@ export default class FormEmail extends HTMLElement {
         }
 
         form.fields label {
-          color: var(--text-color);
+          color: var(--label-color);
           font-size: 1.1rem;
           font-family: var(--font-main), sans-serif;
           transition: all 0.3s ease-in-out;
@@ -446,6 +446,7 @@ export default class FormEmail extends HTMLElement {
 
         form.fields .field input {
           border: var(--input-border);
+          background: var(--background);
           font-size: 1rem;
           width: 100%;
           height: 40px;
@@ -583,10 +584,13 @@ export default class FormEmail extends HTMLElement {
           .top > .desc {
             margin: 0;
             padding: 6px 0 10px;
-            color: var(--gray-color);
             font-size: 1rem;
             line-height: 1.5;
             font-family: var(--font-main), sans-serif;
+          }
+
+          form.fields .actions > .action {
+            cursor: default !important;
           }
         }
       </style>

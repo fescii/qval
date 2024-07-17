@@ -9,13 +9,103 @@ export default class PostWrapper extends HTMLElement {
     this.render();
   }
 
+  // observe attributes 
+  static get observedAttributes() {
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // on attribute change
+  attributeChangedCallback(name, oldValue, newValue) {
+    const actionEl = this.shadowObj.querySelector('action-wrapper');
+    const authorEl = this.shadowObj.querySelector('author-wrapper');
+    if(name === 'reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      this.updateReload(actionEl, authorEl);
+    }
+
+    if (oldValue !== newValue) {
+      if (name === 'likes') {
+        this.updateLikes(actionEl, newValue);
+      } else if (name === 'replies') {
+        this.updateReplies(actionEl, newValue);
+      } else if (name === 'views') {
+        this.updateViews(actionEl, newValue);
+      } else if (name === 'author-followers') {
+        this.updateFollowers(authorEl, newValue);
+        // Note: Missing break in the original switch, assuming intentional fall-through
+      } else if (name === 'author-follow') {
+        this.updateFollow(authorEl, newValue);
+      }
+    }
   }
 
   connectedCallback() {
     // open the url
     this.openUrl();
+  }
+
+  updateReload = (elOne, elTwo) => {
+    if (elOne) {
+      elOne.setAttribute('reload', 'true');
+    }
+
+    if (elTwo) {
+      elTwo.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollow = (element, value) => {
+    if (element) {
+      element.setAttribute('user-follow', value);
+    }
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    if (element) {
+      element.setAttribute('likes', value);
+    }
+  }
+
+  updateFollowers = (element, value) => {
+    // update followers in the element and this element
+    this.setAttribute('author-followers', value);
+    if (element) {
+      element.setAttribute('followers', value);
+    }
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    if (element) {
+      element.setAttribute('views', value);
+    }
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    if (element) {
+      element.setAttribute('replies', value);
+    }
+  }
+
+  parseToNumber = str => {
+    // Try parsing the string to an integer
+    const num = parseInt(str);
+
+    // Check if parsing was successful
+    if (!isNaN(num)) {
+      return num;
+    } else {
+      return 0;
+    }
   }
 
   disableScroll() {
@@ -61,19 +151,10 @@ export default class PostWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
     }
-  }
-
-  parseToNumber = num_str => {
-    // Try parsing the string to an integer
-    const num = parseInt(num_str);
-
-    // Check if parsing was successful
-    if (!isNaN(num)) {
-      return num;
-    } else {
+    else {
       return 0;
     }
   }
@@ -190,10 +271,10 @@ export default class PostWrapper extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}" contact='${this.getAttribute("author-contact")}'
-        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-        verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
+			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}" contact='${this.getAttribute("author-contact")}'
+        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
         bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`

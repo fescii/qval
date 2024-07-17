@@ -107,8 +107,11 @@ export default class StatReply extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -268,7 +271,7 @@ export default class StatReply extends HTMLElement {
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;
@@ -302,7 +305,8 @@ export default class StatReply extends HTMLElement {
       .actions > .action.plain > span.no {
         font-family: var(--font-main), sans-serif;
         font-size: 0.85rem;
-        color: var(--text-color);
+        color: var(--highlight-color);
+        font-weight: 500;
       }
 
       .actions > .action.plain > span.text {
@@ -322,7 +326,6 @@ export default class StatReply extends HTMLElement {
         .actions > .action.plain > span.no {
           font-family: var(--font-main), sans-serif;
           font-size: 0.8rem;
-          color: var(--text-color);
         }
 
         a {

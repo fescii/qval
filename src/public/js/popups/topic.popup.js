@@ -116,8 +116,11 @@ export default class TopicPopup extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -611,6 +614,8 @@ export default class TopicPopup extends HTMLElement {
         @media screen and ( max-width: 600px ){
           :host {
             border: none;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             background-color: var(--modal-background);
             padding: 0px;
             justify-self: end;

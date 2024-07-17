@@ -4,7 +4,7 @@ export default class HoverAuthor extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // Check if user is the owner of the profile
     this._you = true ? this.getAttribute('you') === 'true' : false;
@@ -17,8 +17,38 @@ export default class HoverAuthor extends HTMLElement {
     this.render();
   }
 
+  // observe the attributes
+  static get observedAttributes() {
+    return ['followers', 'user-follow', 'reload'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // get the followers element
+    const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
+    // check if old value is not equal to new value
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
+
+        // Update the followers
+        if(followers) {
+          const totalFollowers = this.parseToNumber(this.getAttribute('followers'));
+          followers.textContent = totalFollowers >= 0 ? this.formatNumber(totalFollowers) : '0';
+        }
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+        }
+      }
+    }  
   }
 
   setAttributes = (name, value) => {
@@ -47,25 +77,12 @@ export default class HoverAuthor extends HTMLElement {
     this.handleUserClick(mql.matches, url, body, contentContainer);
   }
 
-  disconnectedCallback() {
-    this.enableScroll()
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
+  disconnectedCallback() {
+    this.enableScroll()
   }
 
   openHighlights = (body, contentContainer) => {
@@ -96,6 +113,8 @@ export default class HoverAuthor extends HTMLElement {
       content.addEventListener('click', event => {
         event.preventDefault();
 
+        this.enableScroll();
+
         // Get full post
         const profile =  outerThis.getProfile();
 
@@ -118,6 +137,7 @@ export default class HoverAuthor extends HTMLElement {
 
   // Replace and push states
   replaceAndPushStates = (url, body, profile) => {
+    this.enableScroll();
     // Replace the content with the current url and body content
     // get the first custom element in the body
     const firstElement = body.firstElementChild;
@@ -154,8 +174,6 @@ export default class HoverAuthor extends HTMLElement {
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
-
-          outerThis.disableScroll();
         });
 
         // add mouse leave event listener
@@ -165,7 +183,6 @@ export default class HoverAuthor extends HTMLElement {
 
           // remove the content from the content container
           contentContainer.innerHTML = outerThis.getLoader();
-          outerThis.enableScroll();
         });
       }
       else {
@@ -175,13 +192,13 @@ export default class HoverAuthor extends HTMLElement {
           e.stopPropagation()
           e.stopImmediatePropagation();
 
+          outerThis.disableScroll();
+
           // change the display of the content container
           contentContainer.style.display = 'flex';
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
-
-          outerThis.disableScroll();
         });
       }
     }
@@ -213,7 +230,6 @@ export default class HoverAuthor extends HTMLElement {
         const overlayBtn = outerThis.shadowObj.querySelector('span.pointer');
         // if overlayBtn
         if (overlayBtn) {
-  
           // add mouse leave event listener
           overlayBtn.addEventListener('click', e => {
             e.preventDefault();
@@ -243,6 +259,8 @@ export default class HoverAuthor extends HTMLElement {
       content.addEventListener('click', event => {
         event.preventDefault();
 
+        outerThis.enableScroll();
+
         // Get full post
         const profile =  outerThis.getProfile();
   
@@ -263,6 +281,8 @@ export default class HoverAuthor extends HTMLElement {
     if(body && content) {
       content.addEventListener('click', event => {
         event.preventDefault();
+
+        outerThis.enableScroll();
 
         // Get full post
         const profile =  outerThis.getProfile();
@@ -383,7 +403,7 @@ export default class HoverAuthor extends HTMLElement {
             outerThis.updateFollowBtn(data.followed, followBtn);
 
             // Update the followers
-            outerThis.updateFollowers(data.followed);
+            // outerThis.updateFollowers(data.followed);
           }
         });
       })
@@ -518,6 +538,8 @@ export default class HoverAuthor extends HTMLElement {
     this.setAttribute('followers', followers.toString());
     this.setAttribute('user-follow', followed.toString());
 
+    this.setAttribute('updated', 'true');
+
     this.setAttributes('author-followers', followers.toString());
     this.setAttributes('author-follow', followed.toString());
 
@@ -557,8 +579,11 @@ export default class HoverAuthor extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -1238,6 +1263,8 @@ export default class HoverAuthor extends HTMLElement {
             right: 0;
             z-index: 100;
             background-color: var(--modal-overlay);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             min-width: 100dvw;
             width: 100dvw;
             height: 100dvh;

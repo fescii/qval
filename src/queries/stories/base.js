@@ -106,7 +106,7 @@ const addStory = async (user, data) => {
 // add a job to the queue
 const addJob = async story => {
   if (story.topics.length > 0) {
-    // add the job to the queue: to tagg the story to the topic
+    // add the job to the queue: to tag the story to the topic
     await actionQueue.add('actionJob', {
       kind: 'tag',
       hashes: {

@@ -8,6 +8,9 @@ export default class AppPost extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -24,6 +27,12 @@ export default class AppPost extends HTMLElement {
     // Change style to flex
     this.style.display='flex';
 
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
+    // connect to the WebSocket
+    this.checkAndAddHandler();
+
     // mql query at: 660px
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -31,6 +40,171 @@ export default class AppPost extends HTMLElement {
 
     // scroll the window to the top and set height to 100vh
     window.scrollTo(0, 0);
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
+  }
+
+  checkAndAddHandler() {
+    this.enableScroll();
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    this.enableScroll();
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const user = data?.user;
+    const userHash = window.hash;
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    const author = this.shadowObj.querySelector('author-wrapper');
+    // get post-section element
+    let wrapper = this.shadowObj.querySelector('post-wrapper');
+
+    // if post-section is not found, select poll-wrapper
+    if (!wrapper) {
+      wrapper = this.shadowObj.querySelector('poll-wrapper');
+    }
+
+    const target = data.hashes.target;
+
+    // handle connect action
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, wrapper, userHash, authorHash);
+    }
+    else if(hash === target) {
+      if (data.action === 'reply') {
+        const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+        this.updateReplies(wrapper, replies);
+      }
+      else if(data.action === 'view') {
+        const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+        this.updateViews(wrapper, views);
+      }
+      else if (data.action === 'like') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // get likes parsed to number
+        const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+        // update likes
+        this.updateLikes(wrapper, likes);
+      }
+      else if (data.action === 'vote') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // update likes
+        this.updateVote(wrapper, data.value);
+      }
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author, wrapper, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateAuthorFollowers(wrapper, followers);
+      this.updateFollowers(author, followers);
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        if(author) {
+          author.setAttribute('user-follow', value);
+        }
+        wrapper.setAttribute('author-follow', value);
+      }
+
+      if(author) {
+        author.setAttribute('reload', 'true');
+      }
+    }
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    element.setAttribute('likes', value);
+    element.setAttribute('reload', 'true');
+  }
+
+  updateVote = (element, value) => {
+    if(element) {
+      element.setAttribute('vote', value);
+      element.setAttribute('reload', 'true');
+    }
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    element.setAttribute('views', value);
+    element.setAttribute('reload', 'true');
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    element.setAttribute('replies', value);
+    element.setAttribute('reload', 'true');
+  }
+
+  updateFollowers = (element, value) => {
+    if (!element) {
+      return;
+    }
+    element.setAttribute('followers', value);
+    element.setAttribute('reload', 'true');
+  }
+
+  updateAuthorFollowers = (element, value) => {
+    element.setAttribute('author-followers', value);
+    element.setAttribute('reload', 'true');
+  }
+
+  parseToNumber = str => {
+    // Try parsing the string to an integer
+    const num = parseInt(str);
+
+    // Check if parsing was successful
+    if (!isNaN(num)) {
+      return num;
+    } else {
+      return 0;
+    }
   }
 
   // watch for mql changes

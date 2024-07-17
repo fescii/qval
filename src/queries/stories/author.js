@@ -8,7 +8,7 @@ const {
 const {
   getUserReplies, getUserStories,
   fetchFollowersWhenLoggedIn, fetchFollowingWhenLoggedIn,
-  fetchFollowersWhenLoggeOut, fetchFollowingWhenLoggedOut
+  fetchFollowersWhenLoggedOut, fetchFollowingWhenLoggedOut
 } = require('./user');
 
 
@@ -212,7 +212,7 @@ const findFollowersByAuthor = async (reqData) => {
 
     // check if user is logged in
     if (!user){
-      followers = await fetchFollowersWhenLoggeOut(where, order, limit, offset);
+      followers = await fetchFollowersWhenLoggedOut(where, order, limit, offset);
     }
     else {
       followers =  await fetchFollowersWhenLoggedIn(where, order, user, limit, offset); 

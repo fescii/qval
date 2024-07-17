@@ -6,10 +6,13 @@ export default class AppTopic extends HTMLElement {
     this.setTitle(this.getAttribute('name'));
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
+
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
 
     this.render();
   }
@@ -23,9 +26,16 @@ export default class AppTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
     this.style.display = 'flex';
     // onpopstate event
     this.onPopEvent();
+
+    // connect to the WebSocket
+    this.checkAndAddHandler();
+
+    // request user to enable notifications
+    this.checkNotificationPermission();
 
     // perform actions
     this.performActions();
@@ -33,6 +43,98 @@ export default class AppTopic extends HTMLElement {
     // Watch for media query changes
     const mql = window.matchMedia('(max-width: 660px)');
     this.watchMediaQuery(mql);
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
+  }
+
+  disconnectedCallback() {
+    this.enableScroll();
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const userHash = window.hash;
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    const author = this.shadowObj.querySelector('author-wrapper');
+
+    const target = data.hashes.target;
+
+    // handle connect action
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    }
+    else if (data.kind === 'topic' && target === hash) {
+      this.handleTopicAction(data, data.value, userHash);
+
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  handleConnectAction = (data, author,userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateFollowers(author, followers);
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        if(author) {
+          author.setAttribute('user-follow', value);
+        }
+      }
+
+      if(author) {
+        author.setAttribute('reload', 'true');
+      }
+    }
+  }
+
+  handleTopicAction = (data, value, userHash) => {
+    if (data.user === userHash)  return;
+
+    // if action is follow
+    if (data.action === 'follow') {
+      this.updateFollowers(value === 1);
+    }
+    else if (data.action === 'subscribe') {
+      const subscribers = this.parseToNumber(this.getAttribute('subscribers')) + value;
+      this.setAttribute('subscribers', subscribers.toString());
+    }
   }
 
   // watch for mql changes
@@ -47,23 +149,6 @@ export default class AppTopic extends HTMLElement {
       // perform actions
       this.performActions();
     });
-  }
-
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
-    }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
-    }
   }
 
   // perform actions
@@ -477,8 +562,11 @@ export default class AppTopic extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -770,7 +858,6 @@ export default class AppTopic extends HTMLElement {
         }
 
         section.main {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           align-items: start;
@@ -806,8 +893,8 @@ export default class AppTopic extends HTMLElement {
         }
 
         .text-content > .topic-head .topic > h2 {
-          font-size: 1.5rem;
-          font-weight: 500;
+          font-size: 1.4rem;
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           margin: 0;
           color: var(--title-color);
@@ -815,12 +902,12 @@ export default class AppTopic extends HTMLElement {
 
         .text-content > .topic-head .topic > p.info {
           margin: 0;
-          font-size: 0.9rem;
-          font-style: italic;
-          font-weight: 400;
+          font-size: 0.8rem;
+          /*font-style: italic;*/
+          font-weight: 500;
           font-family: var(--font-text), sans-serif;
           margin: 0;
-          color: var(--text-color);
+          color: var(--gray-color);
         }
 
         .stats {
@@ -861,8 +948,11 @@ export default class AppTopic extends HTMLElement {
           margin: 8px 0 15px;
           font-size: 1rem;
           color: var(--text-color);
-          line-height: 1.4;
+          line-height: 1.3;
           font-family: var(--font-main);
+          display: flex;
+          flex-flow: column;
+          gap: 8px;
         }
 
         .text-content > .actions {

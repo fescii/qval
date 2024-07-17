@@ -267,6 +267,8 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing || add the job to the queue
     await actionQueue.add('actionJob', {
       kind: 'story',
+      publish: true,
+      user: vote.author,
       hashes: {
         target: vote.story,
       },
@@ -374,6 +376,8 @@ module.exports = (User, sequelize, Sequelize) => {
     // construct the job payload: for queueing || add the job to the queue
     await actionQueue.add('actionJob', {
       kind: reply.kind,
+      publish: true,
+      user: reply.author,
       hashes: {
         target: reply.reply !== null ? reply.reply : reply.story,
       },
@@ -446,6 +450,8 @@ module.exports = (User, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: like.kind,
+      publish: true,
+      user: like.author,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
@@ -460,6 +466,8 @@ module.exports = (User, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: like.kind,
+      publish: true,
+      user: like.author,
       hashes: {
         target: like.reply !== null ? like.reply : like.story,
       },
@@ -516,6 +524,7 @@ module.exports = (User, sequelize, Sequelize) => {
     // add the job to the queue
     await actionQueue.add('actionJob', {
       kind: view.kind,
+      publish: true,
       hashes: {
         target: view.target,
       },

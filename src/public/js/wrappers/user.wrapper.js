@@ -7,22 +7,45 @@ export default class UserWrapper extends HTMLElement {
     this._you = this.getAttribute('you') === 'true';
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
+
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
 
     this.render();
   }
 
   // attributes to observe
   static get observedAttributes() {
-    return ["hash", "picture", "name", "followers", "following", "user-follow", "verified", "url", "bio"];
+    return ["hash", "picture", "name", "followers", "following", "user-follow", "verified", "url", "reload"];
   }
 
-  // observe the attributes on change
+  // listen for changes in the attributes
   attributeChangedCallback(name, oldValue, newValue) {
-  
+    // get the followers element
+    const followers = this.shadowObj.querySelector('.stats > span.followers > .number');
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('.actions > .action#follow-action');
+    // check if old value is not equal to new value
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
+
+        // Update the followers
+        if(followers) {
+          const totalFollowers = this.parseToNumber(this.getAttribute('followers'));
+          followers.textContent = totalFollowers >= 0 ? this.formatNumber(totalFollowers) : '0';
+        }
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+        }
+      }
+    }  
   }
 
   render() {
@@ -34,6 +57,9 @@ export default class UserWrapper extends HTMLElement {
     let url = this.getAttribute('url');
 
     url = url.trim().toLowerCase();
+
+    // Check and add handler
+    this.checkAndAddHandler();
 
     // Get the body
     const body = document.querySelector('body');
@@ -48,21 +74,65 @@ export default class UserWrapper extends HTMLElement {
     this.openHighlights(body);
   }
 
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
 
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const userHash = window.hash;
+
+    const authorHash = this.getAttribute('hash').toUpperCase();
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, userHash, authorHash);
     }
+  }
+
+  handleConnectAction = (data, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('followers')) + data.value;
+      this.setAttribute('followers', followers)
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('user-follow', value);
+      }
+
+      this.setAttribute('reload', 'true');
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  updateFollowersEl = (element, value) => {
+    element.setAttribute('followers', value);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
   }
 
   openHighlights = body => {
@@ -402,8 +472,11 @@ export default class UserWrapper extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 

@@ -5,7 +5,7 @@ const { mailHook } = require('../hooks');
 
 // Initialize the Bull worker for the mailQueue
 const mailWorker = new Worker('mailQueue', async (job) => {
-  console.log('Processing email job:', job.data);
+  console.log('Processing email job:');
   await mailHook(job.data); // Run the mailHook function for each job (upvote)
 }, { connection: redisConfig });
 

@@ -7,9 +7,11 @@ module.exports = {
       name: 'express-app',
       script: 'app.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'workers'], 
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        PORT: process.env.PORT,
+        HOST: process.env.HOST
       },
       env_production: {
         NODE_ENV: 'production'
@@ -19,7 +21,7 @@ module.exports = {
       name: 'action-worker',
       script: './workers/action.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
       },
@@ -31,7 +33,7 @@ module.exports = {
       name: 'mail-worker',
       script: './workers/mail.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
       },
@@ -43,9 +45,23 @@ module.exports = {
       name: 'activity-worker',
       script: './workers/activity.js',
       watch: true,
-      ignore_watch: ['node_modules', 'logs', 'uploads', 'public'], // Ignore specific directories for file watching
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'queries', 'utils', 'views', 'configs', 'app.js'],
       env: {
         NODE_ENV: 'development'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
+      name: 'websocket-worker',
+      script: './workers/uWs.js',
+      watch: true,
+      ignore_watch: ['node_modules', 'logs', 'uploads', 'public', 'ssl_certs', 'controllers', 'models', 'routes', 'services', 'utils', 'views', 'configs', 'bull', 'app.js'],
+      env: {
+        NODE_ENV: 'development',
+        PORT: process.env.WS_PORT,
+        HOST: process.env.HOST
       },
       env_production: {
         NODE_ENV: 'production'

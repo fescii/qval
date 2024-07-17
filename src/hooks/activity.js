@@ -1,4 +1,6 @@
 const { Activity, Story, Reply, Topic, User } = require('../models').models;
+// import socketQueue
+const { socketQueue } = require('../bull');
 
 /**
  * @object kindData
@@ -44,7 +46,16 @@ const activityHook = async data => {
       data.content = content;
 
       // create activity directly
-      await Activity.create(data);
+      const activity = await Activity.create(data);
+
+      // construct socket payload
+      const socketData = {
+        type: 'activity',
+        data: activity
+      }
+
+      // add the job to the socket queue
+      await socketQueue.add('socketJob', socketData, { attempts: 3, backoff: 1000, removeOnComplete: true });
     } else if (kind === kindData.Story) {
       const { author, content } = await findStoryInfo(data.target);
         
@@ -53,7 +64,16 @@ const activityHook = async data => {
       data.content = content;
 
       // create activity directly
-      await Activity.create(data);
+      const activity = await Activity.create(data);
+
+      // construct socket payload
+      const socketData = {
+        type: 'activity',
+        data: activity
+      }
+
+      // add the job to the socket queue
+      await socketQueue.add('socketJob', socketData, { attempts: 3, backoff: 1000, removeOnComplete: true });
     } else if (kind === kindData.Reply) {
       const { author, content } = await findReplyInfo(data.target);
 
@@ -62,7 +82,16 @@ const activityHook = async data => {
       data.content = content;
 
       // create activity directly
-      await Activity.create(data);
+      const activity = await Activity.create(data);
+
+      // construct socket payload
+      const socketData = {
+        type: 'activity',
+        data: activity
+      }
+
+      // add the job to the socket queue
+      await socketQueue.add('socketJob', socketData, { attempts: 3, backoff: 1000, removeOnComplete: true });
     } else if(kind === kindData.Topic) {
       // create activity directly
       const { author, content } = await findTopicInfo(data.target);
@@ -72,7 +101,16 @@ const activityHook = async data => {
       data.content = content;
 
       // create activity directly
-      await Activity.create(data);
+      const activity = await Activity.create(data);
+
+      // construct socket payload
+      const socketData = {
+        type: 'activity',
+        data: activity
+      }
+
+      // add the job to the socket queue
+      await socketQueue.add('socketJob', socketData, { attempts: 3, backoff: 1000, removeOnComplete: true });
     }
     else {
       console.log('Kind not found in the options');

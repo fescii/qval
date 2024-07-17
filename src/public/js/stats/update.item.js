@@ -24,7 +24,8 @@ export default class UpdateItem extends HTMLElement {
     const viewBtn = this.shadowObj.querySelector('.actions > .action#view-action');
     const body = document.querySelector('body');
     const hash = this.getAttribute('hash');
-    const url = this.getPreviewUrl(this.getAttribute('kind'), hash.toLowerCase());
+    const author = this.getAttribute('author');
+    const url = this.getPreviewUrl(this.getAttribute('kind'), hash.toLowerCase(), author.toLowerCase());
 
     if (viewBtn) {
       viewBtn.addEventListener('click', event => {
@@ -63,7 +64,7 @@ export default class UpdateItem extends HTMLElement {
   }
 
 
-  getPreviewUrl = (kind, hash) => {
+  getPreviewUrl = (kind, hash, author) => {
     if (kind === 'story') {
       return `/api/v1/p/${hash}/preview`;
     }
@@ -73,7 +74,7 @@ export default class UpdateItem extends HTMLElement {
     }
 
     if (kind === 'user') {
-      return `/api/v1/u/${hash}/preview`;
+      return `/api/v1/u/${author}/preview`;
     }
 
     if (kind === 'topic') {

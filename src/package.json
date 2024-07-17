@@ -2,7 +2,7 @@
   "name": "qval",
   "type": "commonjs",
   "version": "0.1.0",
-  "description": "Blog site using supabase",
+  "description": "Qval is text based micro blogging platform",
   "main": "app.js",
   "scripts": {
     "start": "pm2-runtime start ecosystem.config.js --env development",
@@ -32,6 +32,6 @@
     "postgres": "^3.3.4",
     "sequelize": "^6.37.3",
     "spdy": "^4.0.2",
-    "ws": "^8.17.1"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.44.0"
   }
 }

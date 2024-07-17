@@ -5,6 +5,9 @@ export default class AppUser extends HTMLElement {
 
     this.setTitle();
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this._open = this.setOpen(this.getAttribute('current'));
 
     this._current = this.getAttribute('current') || 'stats';
@@ -33,6 +36,13 @@ export default class AppUser extends HTMLElement {
   }
 
   connectedCallback() {
+    this.enableScroll();
+    // Add this component handler to the window wss object
+    this.checkAndAddHandler();
+
+    // request user to enable notifications
+    this.checkNotificationPermission();
+
     // Check if the display is greater than 600px using mql
     const mql = window.matchMedia('(max-width: 660px)');
 
@@ -82,6 +92,43 @@ export default class AppUser extends HTMLElement {
       // Open user profile
       this.handleUserClick(url, body);
     }
+  }
+
+  checkNotificationPermission = () => {
+    const body = document.querySelector('body');
+    if (window.notify && !window.notify.permission) {
+      // request user to enable notifications
+      const html =/*html*/`<notify-popup url="/notifications"></notify-popup>`;
+
+      body.insertAdjacentHTML('beforeend', html);
+    }
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      console.log('WebSocket handler added successfully');
+    } else {
+      console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    this.enableScroll();
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', data);
+    if (message.type !== 'action') return;
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
   }
 
   // Open user profile
@@ -662,7 +709,7 @@ export default class AppUser extends HTMLElement {
             </path>
           </svg>
           <span class="text">
-            Wait, I can explain 🤭, <br /> This feature is under development
+            Wait, I can explain 🤭, this feature is under development
           </span>
         </h3>
         <p class="info">
@@ -1097,6 +1144,7 @@ export default class AppUser extends HTMLElement {
 
         section.tab > div.header > svg {
           cursor: pointer;
+          color: var(--title-color);
           width: 35px;
           height: 35px;
           margin: 0 0 0 -5px;
@@ -1442,6 +1490,14 @@ export default class AppUser extends HTMLElement {
             gap: 0;
             height: max-content;
             position: unset;
+          }
+  
+          section.tab > ul.tab > span.title {
+            color: var(--text-color);
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
           }
 
           section.tab > div.header > .name {

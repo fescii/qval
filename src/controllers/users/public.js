@@ -197,14 +197,14 @@ const fetchUser = async (req, res) => {
 }
 
 /**
- * @controller {get} /settings
+ * @controller {get} /user
  * @name getAccount
  * @description This route will the user settings page for the app.
  * @returns Page: Renders settings page || error page
 */
 const getAccount = async (req, res) => {
   if (!req.user?.hash) {
-    return res.redirect('/join/login');
+    return res.redirect('/join/login?next=/user');
   }
 
   const hash = req.user.hash;

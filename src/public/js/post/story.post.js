@@ -8,6 +8,9 @@ export default class StoryPost extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
   }
 
@@ -17,6 +20,10 @@ export default class StoryPost extends HTMLElement {
 
   connectedCallback() {
     this.style.display = 'flex';
+
+    // Check and add handler
+    this.checkAndAddHandler();
+
     // get url
     let url = this.getAttribute('url');
 
@@ -32,12 +39,95 @@ export default class StoryPost extends HTMLElement {
     this.openUrl();
   }
 
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const user = data?.user;
+    const userHash = window.hash;
+
+    const author = this.shadowObj.querySelector('hover-author');
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    const target = data.hashes.target;
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    } else if (target === hash) {
+      if (data.action === 'like') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // get likes parsed to number
+        const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+        // update likes
+        this.setAttribute('likes', likes);
+      } 
+      else if(data.action === 'reply'){
+        const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+        this.setAttribute('replies', replies);
+      } 
+      else if(data.action === 'view') {
+        const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+        this.setAttribute('views', views);
+      }
+    }
+  }
+
+  handleConnectAction = (data, author, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateFollowers(author, this.getAttribute('author-followers'));
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        author.setAttribute('user-follow', value);
+      }
+
+      author.setAttribute('reload', 'true');
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
+  }
+
   getSummaryAndWords = () => {
     const mql = window.matchMedia('(max-width: 660px)');
     // get this content
     let content = this.innerHTML.toString();
 
-    // remove all html tags and clases and extra spaces and tabs
+    // remove all html tags and classes and extra spaces and tabs
     content = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
     let summary = content.substring(0, 500);
@@ -154,8 +244,11 @@ export default class StoryPost extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -353,7 +446,7 @@ export default class StoryPost extends HTMLElement {
 
   getFullPost = () => {
     return /* html */`
-      <app-story  story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
+      <app-story view="true" story="story" tab="replies" hash="${this.getAttribute('hash')}"  url="${this.getAttribute('url')}" topics="${this.getAttribute('topics')}" 
         story-title="${this.getAttribute('story-title')}" time="${this.getAttribute('time')}"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}"
@@ -464,6 +557,7 @@ export default class StoryPost extends HTMLElement {
         display: inline-block;
         margin: 0 0 -2px;
       }
+
       .content {
         display: flex;
         position: relative;
@@ -514,13 +608,13 @@ export default class StoryPost extends HTMLElement {
       }
 
       h3.title {
-        color: var(--text-color);
-        font-family: var(--font-text), sans-serif;
-        margin: 0;
+        color: var(--title-color);
+        font-family: var(--font-main), sans-serif;
+        margin: 2px 0 7px 0;
         padding: 0;
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 600;
-        line-height: 1.4;
+        line-height: 1.2;
       }
 
       h3.title > a {
@@ -596,11 +690,9 @@ export default class StoryPost extends HTMLElement {
           border: var(--border-mobile);
         }
   
-
         h3.title {
-          color: var(--text-color);
           font-weight: 600;
-          line-height: 1.5;
+          line-height: 1.2;
         }
 
         h3.title > a {

@@ -4,7 +4,7 @@ export default class PersonWrapper extends HTMLElement {
     super();
 
     // check if the user is authenticated
-    this._authenticated = this.isLoggedIn('x-random-token');
+    this._authenticated = window.hash ? true : false;
 
     // Check if user is the owner of the profile
     this._you = true ? this.getAttribute('you') === 'true' : false;
@@ -12,11 +12,36 @@ export default class PersonWrapper extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
     this.render();
+  }
+
+  // observe the attributes
+  static get observedAttributes() {
+    return ['followers', 'user-follow', 'reload'];
   }
 
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // listen for changes in the attributes
+  attributeChangedCallback(name, oldValue, newValue) {
+    // get the follow button
+    const followBtn = this.shadowObj.querySelector('button.action#follow-action');
+    // check if old value is not equal to new value
+    if (name === 'reload') {
+      if(newValue === 'true') {
+        this.setAttribute('reload', 'false');
+
+        // Update the follow button
+        if(followBtn) {
+          this.updateFollowBtn(this.textToBoolean(this.getAttribute('user-follow')), followBtn);
+        }
+      }
+    }  
   }
 
   connectedCallback() {
@@ -24,6 +49,9 @@ export default class PersonWrapper extends HTMLElement {
     let url = this.getAttribute('url');
 
     url = url.trim().toLowerCase();
+
+    // Check and add handler
+    this.checkAndAddHandler();
 
     // Get the body
     const body = document.querySelector('body');
@@ -34,21 +62,64 @@ export default class PersonWrapper extends HTMLElement {
     this.performActions();
   }
 
-  isLoggedIn = name => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
 
-    const cookie = parts.length === 2 ? parts.pop().split(';').shift() : null;
-    
-    if (!cookie) {
-      return false; // Cookie does not exist
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
-    
-    // if cookie exists, check if it is valid
-    if (cookie) {
-      // check if the cookie is valid
-      return true;
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const userHash = window.hash;
+    const authorHash = this.getAttribute('hash').toUpperCase();
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, userHash, authorHash);
     }
+  }
+
+  handleConnectAction = (data, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('followers')) + data.value;
+      this.setAttribute('followers', followers)
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('user-follow', value);
+      }
+
+      this.setAttribute('reload', 'true');
+    }
+  }
+
+  sendWsMessage(data) {
+    window.wss.sendMessage(data);
+  }
+
+  textToBoolean = text => {
+    return text === 'true' ? true : false;
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
   }
 
   // Open user profile
@@ -94,7 +165,7 @@ export default class PersonWrapper extends HTMLElement {
     );
   }
 
-  // perfom actions
+  // perform actions
   performActions = () => {
     const outerThis = this;
     // get body 
@@ -304,7 +375,7 @@ export default class PersonWrapper extends HTMLElement {
 
   updateFollowers = (followed) => {
     let value = followed ? 1 : -1;
-    // Get followers attribute : concvert to number then add value
+    // Get followers attribute : convert to number then add value
 
     let followers = this.parseToNumber(this.getAttribute('followers')) + value;
 
@@ -312,8 +383,8 @@ export default class PersonWrapper extends HTMLElement {
     followers = followers < 0 ? 0 : followers;
 
     // Set the followers attribute
-    this.setAttribute('followers', followers.toString());
-    this.setAttribute('user-follow', followed.toString());
+    // this.setAttribute('followers', followers.toString());
+    // this.setAttribute('user-follow', followed.toString());
   }
 
   parseToNumber = num_str => {

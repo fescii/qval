@@ -372,8 +372,11 @@ export default class PreviewPopup extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -682,6 +685,11 @@ export default class PreviewPopup extends HTMLElement {
         .preview p,
         .preview h3 {
           margin: 0;
+          line-height: 1.2;
+        }
+
+        .preview h3 {
+          margin: 0 0 5px 0;
         }
 
         .meta {
@@ -836,6 +844,8 @@ export default class PreviewPopup extends HTMLElement {
           :host {
             border: none;
             background-color: var(--modal-background);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             padding: 0px;
             justify-self: end;
             display: flex;
@@ -905,6 +915,7 @@ export default class PreviewPopup extends HTMLElement {
             cursor: default !important;
             border-radius: 12px;
           }
+
           a {
             cursor: default !important;
           }

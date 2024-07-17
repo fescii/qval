@@ -102,7 +102,7 @@ export default class FormContainer extends HTMLElement {
         }
 
         p.title {
-          color: var(--text-color);
+          color: var(--title-color);
           font-family: var(--font-main), sans-serif;
           font-weight: 500;
           font-size: 1.1rem;
@@ -115,7 +115,6 @@ export default class FormContainer extends HTMLElement {
           padding: 0 0 5px 0;
           font-size: 1rem;
           font-weight: 400;
-          color: var(--gray-color);
           position: relative;
           overflow-x: scroll;
           scrollbar-width: none;
@@ -128,12 +127,12 @@ export default class FormContainer extends HTMLElement {
 
         div.options > a.option {
           border: none;
-          color: var(--gray-color);
+          color: var(--add-color);
           background: var(--option-background);
           font-family: var(--font-text), sans-serif;
           cursor: pointer;
           text-decoration: none;
-          padding: 2px 10px;
+          padding: 2px 10px 3px;
           font-weight: 500;
           width: 80px;
           cursor: pointer;
@@ -170,8 +169,6 @@ export default class FormContainer extends HTMLElement {
 				@media screen and (max-width:660px) {
 					:host {
             font-size: 16px;
-						padding: 10px 0;
-            /*border-bottom: none;*/
             gap: 10px;
 					}
 
@@ -198,9 +195,9 @@ export default class FormContainer extends HTMLElement {
 
           div.options > a.option {
             cursor: default !important;
-            color: var(--gray-color);
+            color: var(--add-color);
             font-family: var(--font-text), sans-serif;
-            padding: 3px 10px;
+            padding: 3px 10px 4px;
             font-weight: 600;
             width: 80px;
           }

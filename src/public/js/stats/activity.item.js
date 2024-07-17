@@ -23,6 +23,7 @@ export default class ActivityItem extends HTMLElement {
     const viewBtn = this.shadowObj.querySelector('.actions > .action#view-action');
     const body = document.querySelector('body');
     const hash = this.getAttribute('hash');
+    const author = this.getAttribute('author');
     const url = this.getPreviewUrl(this.getAttribute('kind'), hash.toLowerCase());
 
     if (viewBtn) {

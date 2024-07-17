@@ -9,8 +9,37 @@ export default class StorySection extends HTMLElement {
     this.render();
   }
 
+  // observe attributes 
+  static get observedAttributes() {
+    return ['likes', 'replies', 'views', 'author-followers', 'reload', 'author-follow'];
+  }
+
   render() {
     this.shadowObj.innerHTML = this.getTemplate();
+  }
+
+  // on attribute change
+  attributeChangedCallback(name, oldValue, newValue) {
+    const actionEl = this.shadowObj.querySelector('action-wrapper');
+    const authorEl = this.shadowObj.querySelector('author-wrapper');;
+    if(name === 'reload' && newValue === 'true') {
+      this.setAttribute('reload', 'false');
+      this.updateReload(actionEl, authorEl);
+    }
+    if (oldValue !== newValue) {
+      if (name === 'likes') {
+        this.updateLikes(actionEl, newValue);
+      } else if (name === 'replies') {
+        this.updateReplies(actionEl, newValue);
+      } else if (name === 'views') {
+        this.updateViews(actionEl, newValue);
+      } else if (name === 'author-followers') {
+        this.updateFollowers(authorEl, newValue);
+        // Note: Missing break in the original switch, assuming intentional fall-through
+      } else if (name === 'author-follow') {
+        this.updateFollow(authorEl, newValue);
+      }
+    }
   }
 
   connectedCallback() {
@@ -24,6 +53,54 @@ export default class StorySection extends HTMLElement {
     this.adjustIndicator(content);
   }
 
+  updateReload = (elOne, elTwo) => {
+    if (elOne) {
+      elOne.setAttribute('reload', 'true');
+    }
+
+    if (elTwo) {
+      elTwo.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollow = (element, value) => {
+    if (element) {
+      element.setAttribute('user-follow', value);
+    }
+  }
+
+  updateLikes = (element, value) => {
+    // update likes in the element and this element
+    this.setAttribute('likes', value);
+    if (element) {
+      element.setAttribute('likes', value);
+    }
+  }
+
+  updateFollowers = (element, value) => {
+    // update followers in the element and this element
+    this.setAttribute('author-followers', value);
+    if (element) {
+      element.setAttribute('followers', value);
+    }
+  }
+
+  updateViews = (element, value) => {
+    // update views in the element and this element
+    this.setAttribute('views', value);
+    if (element) {
+      element.setAttribute('views', value);
+    }
+  }
+
+  updateReplies = (element, value) => {
+    // update replies in the element and this element
+    this.setAttribute('replies', value);
+    if (element) {
+      element.setAttribute('replies', value);
+    }
+  }
+  
   // fn to take number and return a string with commas
   numberWithCommas = x => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -50,8 +127,11 @@ export default class StorySection extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
@@ -226,10 +306,11 @@ export default class StorySection extends HTMLElement {
 
   getAuthor = () => {
     return /* html */`
-			<author-wrapper hash="${this.getAttribute('author-hash')}" you="${this.getAttribute('author-you')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
-       followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}"
-       verified="${this.getAttribute('author-verified')}" url="${this.getAttribute('author-url')}" time="${this.getAttribute('time')}"
-       bio="${this.getAttribute('author-bio')}" contact='${this.getAttribute("author-contact")}'>
+			<author-wrapper you="${this.getAttribute('author-you')}" hash="${this.getAttribute('author-hash')}" picture="${this.getAttribute('author-img')}" name="${this.getAttribute('author-name')}"
+        stories="${this.getAttribute('author-stories')}" replies="${this.getAttribute('author-replies')}"
+        followers="${this.getAttribute('author-followers')}" following="${this.getAttribute('author-following')}" user-follow="${this.getAttribute('author-follow')}" contact='${this.getAttribute("author-contact")}'
+        verified="${this.getAttribute('author-verified')}" url="/u/${this.getAttribute('author-hash').toLowerCase()}"
+        bio="${this.getAttribute('author-bio')}">
       </author-wrapper>
 		`
   }
@@ -380,11 +461,11 @@ export default class StorySection extends HTMLElement {
         }
 
         div.head > h1.story-title {
-          margin: 8px 0 0 0;
+          margin: 15px 0 10px;
           padding: 0;
-          font-weight: 600;
-          font-size: 1.6rem;
-          line-height: 1.5;
+          font-weight: 700;
+          font-size: 1.7rem;
+          line-height: 1.2;
           font-family: var(--font-main), sans-serif;
           color: var(--title-color);
         }
@@ -423,7 +504,7 @@ export default class StorySection extends HTMLElement {
 
         article.article * {
           font-size: 1.05rem;
-          line-height: 1.4;
+          line-height: 1.3;
           color: inherit;
           font-family: inherit;
         }
@@ -443,12 +524,12 @@ export default class StorySection extends HTMLElement {
 
         article.article .intro p {
           margin: 0 0 5px 0;
-          line-height: 1.5;
+          line-height: 1.4;
         }
 
         article.article p {
           margin: 5px 0;
-          line-height: 1.5;
+          line-height: 1.4;
         }
 
         article.article a {
@@ -507,20 +588,21 @@ export default class StorySection extends HTMLElement {
           color: inherit;
         }
 
-        article.article .section {
-          margin: 15px 0 0 0;
+        article.article > .section {
+          margin: 20px 0 0 0;
           padding: 0;
           display: flex;
           flex-flow: column;
         }
 
         article.article > .section > h2.title {
-          font-size: 1.3rem !important;
+          font-size: 1.35rem !important;
           color: var(--title-color);
-          font-weight: 500;
-          line-height: 1.5;
+          font-weight: 600;
+          line-height: 1.2;
           margin: 0;
-          padding: 0 0 0 13px;
+          padding: 2px 0 0 13px;
+          margin: 0 0 5px;
           position: relative;
         }
 
@@ -529,7 +611,7 @@ export default class StorySection extends HTMLElement {
           position: absolute;
           bottom: 10%;
           left: 0;
-          width: 4px;
+          width: 3px;
           height: 80%;
           background: var(--accent-linear);
           border-radius: 5px;
@@ -537,7 +619,7 @@ export default class StorySection extends HTMLElement {
 
         @media screen and (max-width:660px) {
           :host {
-            margin: 0 0 15px;
+            margin: 0;
           }
 
           * {

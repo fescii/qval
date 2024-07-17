@@ -6,6 +6,17 @@ export default class PollPost extends HTMLElement {
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
+    this.boundHandleWsMessage = this.handleWsMessage.bind(this);
+    this.checkAndAddHandler = this.checkAndAddHandler.bind(this);
+
+    this.viewTimer = null;
+    this.hasBeenViewed = false;
+    this.observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5, // Consider the post visible when 50% is in view
+    };
+
     this.render();
   }
 
@@ -15,11 +26,176 @@ export default class PollPost extends HTMLElement {
 
   connectedCallback() {
     this.style.display = 'flex';
+
+    // Check and add handler
+    this.checkAndAddHandler();
+
+    this.setupIntersectionObserver();
+
     // Open poll post
     this.openPollPost();
 
     // Open url
     this.openUrl();
+  }
+
+  checkAndAddHandler() {
+    if (window.wss) {
+      window.wss.addMessageHandler(this.boundHandleWsMessage);
+      // console.log('WebSocket handler added successfully');
+    } else {
+      // console.log('WebSocket manager not available, retrying...');
+      setTimeout(this.checkAndAddHandler, 500); // Retry after 500ms
+    }
+  }
+
+  disconnectedCallback() {
+    if (window.wss) {
+      window.wss.removeMessageHandler(this.boundHandleWsMessage);
+    }
+
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.clearViewTimer();
+  }
+
+  handleWsMessage = message => {
+    // Handle the message in this component
+    // console.log('Message received in component:', message);
+    const data = message.data;
+
+    if (message.type !== 'action') return;
+
+    const user = data?.user;
+    const userHash = window.hash;
+
+    const author = this.shadowObj.querySelector('hover-author');
+    const actionWrapper = this.shadowObj.querySelector('action-wrapper');
+    const voteEl = this.shadowObj.querySelector('votes-wrapper');
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+
+    const target = data.hashes.target;
+
+    if (data.action === 'connect' && data.kind === 'user') {
+      this.handleConnectAction(data, author, userHash, authorHash);
+    } else if (target === hash) {
+      if (data.action === 'like') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // get likes parsed to number
+        const likes = (this.parseToNumber(this.getAttribute('likes')) + data.value);
+        // update likes
+        this.setAttribute('likes', likes);
+        // update likes in the action wrapper
+        actionWrapper.setAttribute('likes', likes);
+        actionWrapper.setAttribute('reload', 'true');
+      } 
+      else if(data.action === 'reply'){
+        const replies = this.parseToNumber(this.getAttribute('replies')) + data.value;
+        this.setAttribute('replies', replies);
+        actionWrapper.setAttribute('replies', replies);
+        actionWrapper.setAttribute('reload', 'true');
+      } 
+      else if(data.action === 'view') {
+        const views = this.parseToNumber(this.getAttribute('views')) + data.value;
+        this.setAttribute('views', views);
+        actionWrapper.setAttribute('views', views);
+        actionWrapper.setAttribute('reload', 'true');
+      } else if (data.action === 'vote') {
+        if(user !== null && user === userHash) {
+          return;
+        }
+        // update vote
+        voteEl.setAttribute('vote', data.value);
+      }
+    }
+  }
+
+  sendWsMessage(data) {
+    if (window.wss) {
+      window.wss.sendMessage(data);
+    } else {
+      console.warn('WebSocket connection not available. view information not sent.');
+    }
+  }
+
+  handleConnectAction = (data, author, userHash, authorHash) => {
+    const to = data.hashes.to;
+    if(to === authorHash) {
+      const followers = this.parseToNumber(this.getAttribute('author-followers')) + data.value;
+      this.setAttribute('author-followers', followers)
+      this.updateFollowers(author, this.getAttribute('author-followers'));
+
+      if (data.hashes.from === userHash) {
+        const value = data.value === 1 ? 'true' : 'false';
+  
+        // update user-follow/auth-follow attribute
+        this.setAttribute('author-follow', value);
+        author.setAttribute('user-follow', value);
+      }
+
+      author.setAttribute('reload', 'true');
+    }
+  }
+
+  updateFollowers = (element, value) => {
+    element.setAttribute('followers', value);
+  }
+
+  setupIntersectionObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.startViewTimer();
+        } else {
+          this.clearViewTimer();
+        }
+      });
+    }, this.observerOptions);
+
+    this.observer.observe(this);
+  }
+
+  startViewTimer() {
+    if (this.hasBeenViewed) return;
+
+    this.viewTimer = setTimeout(() => {
+      this.sendViewData();
+      this.hasBeenViewed = true;
+    }, 5000); // 5 seconds
+  }
+
+  clearViewTimer() {
+    if (this.viewTimer) {
+      clearTimeout(this.viewTimer);
+      this.viewTimer = null;
+    }
+  }
+
+  sendViewData() {
+    const authorHash = this.getAttribute('author-hash').toUpperCase();
+    // check if the author is the user
+    if (authorHash === window.hash) return;
+
+    const hash = this.getAttribute('hash').toUpperCase();
+    const viewData = {
+      type: 'action',
+      frontend: true,
+      data: {
+        kind: 'story',
+        publish: true,
+        hashes: { target: hash },
+        action: 'view',
+        value: 1
+      }
+    };
+
+    // send the view data
+    this.sendWsMessage(viewData);
   }
 
   // Open quick post
@@ -112,14 +288,17 @@ export default class PollPost extends HTMLElement {
     } else if (n >= 100000000 && n <= 999999999) {
       const value = (n / 1000000).toFixed(0);
       return `${value}M`;
-    } else {
+    } else if (n >= 1000000000) {
       return "1B+";
+    }
+    else {
+      return 0;
     }
   }
 
-  parseToNumber = num_str => {
+  parseToNumber = str => {
     // Try parsing the string to an integer
-    const num = parseInt(num_str);
+    const num = parseInt(str);
 
     // Check if parsing was successful
     if (!isNaN(num)) {

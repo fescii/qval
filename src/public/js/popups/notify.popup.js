@@ -1,4 +1,4 @@
-export default class JoinPopup extends HTMLElement {
+export default class NotifyPopup extends HTMLElement {
   constructor() {
 
     // We are not even going to touch this.
@@ -16,74 +16,23 @@ export default class JoinPopup extends HTMLElement {
   }
 
   connectedCallback() {
-    
     this.disableScroll();
-
-    // Const body element
-    const body = document.querySelector('body');
-
-    // Handle action click
-    this.handleActionClick(body);
 
     // Select the close button & overlay
     const overlay = this.shadowObj.querySelector('.overlay');
-    const btn = this.shadowObj.querySelector('#close-btn');
+    const btns = this.shadowObj.querySelectorAll('.cancel-btn');
+
+    const notifyBtn = this.shadowObj.querySelector('.notify-btn');
 
     // Close the modal
-    if (overlay && btn) {
-      this.closePopup(overlay, btn);
+    if (overlay && btns) {
+      this.closePopup(overlay, btns);
     }
-  }
 
-  // Open user profile
-  handleActionClick = (body) => {
-    const outerThis = this;
-    // get a.meta.link
-    const actions = this.shadowObj.querySelectorAll('.actions > a.action');
-
-    if(body && actions) { 
-      actions.forEach(content => {
-        content.addEventListener('click', event => {
-          event.preventDefault();
-
-          // get join
-          const join = outerThis.getJoin(content.dataset.name);
-
-          // get url
-          let url = content.dataset.name === 'login' ? outerThis.getAttribute('login') : outerThis.getAttribute('register');
-
-          if (content.dataset.name === 'forgot') {
-            url = '/join/recover';   
-          }
-          
-          // replace and push states
-          outerThis.replaceAndPushStates(url, body, join);
-
-          body.innerHTML = join;
-        })
-      })
+    // Request notification permission
+    if (notifyBtn) {
+      this.requestNotificationPermission(notifyBtn);
     }
-  }
-
-  replaceAndPushStates = (url, body, join) => {
-     // get the first custom element in the body
-     const firstElement = body.firstElementChild;
-
-     // convert the custom element to a string
-     const elementString = firstElement.outerHTML;
-
-    // get window location
-    const pageUrl = window.location.href;
-    window.history.replaceState(
-      { page: 'page', content: elementString },
-      url, pageUrl
-    );
-
-    // Updating History State
-    window.history.pushState(
-      { page: 'page', content: join},
-      url, url
-    );
   }
 
   disconnectedCallback() {
@@ -108,14 +57,28 @@ export default class JoinPopup extends HTMLElement {
   }
 
   // close the modal
-  closePopup = (overlay, btn) => {
+  closePopup = (overlay, btns) => {
     overlay.addEventListener('click', e => {
       e.preventDefault();
       this.remove();
     });
 
-    btn.addEventListener('click', e => {
+    btns.forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        this.remove();
+      });
+    })
+  }
+
+  requestNotificationPermission = async btn => {
+    btn.addEventListener('click', async e => {
       e.preventDefault();
+      // Request permission
+      if(window.notify && !window.notify.permission) {
+        await window.notify.requestPermission();
+      }
+      // Close the modal
       this.remove();
     });
   }
@@ -125,7 +88,7 @@ export default class JoinPopup extends HTMLElement {
     return `
       <div class="overlay"></div>
       <section id="content" class="content">
-        <span class="control" id="close-btn">
+        <span class="control cancel-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
             <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
             </svg>
@@ -138,29 +101,17 @@ export default class JoinPopup extends HTMLElement {
   getWelcome() {
     return `
       <div class="welcome">
-        <h2>Unauthorized.</h2>
+        <h2>Notification</h2>
 				<p>
-          Please note that you need to be logged in order to perform certain actions on this platform.
-          Although you can still view content, you will not be able to interact with it.
+          We would like to send you notifications about new updates and features on this platform.
+          You can choose to cancel this action if you don't want to receive notifications.
         </p>
         <div class="actions">
-          <a data-name="login" href="${this.getAttribute('login')}?next=${this.getAttribute('next')}" class="login action">Login</a>
-          <a data-name="forgot" href="/join/recover?next=${this.getAttribute('next')}" class="recover action">Recover</a>
-          <a data-name="register" href="${this.getAttribute('register')}?next=${this.getAttribute('next')}" class="register action">Register</a>
+          <span class="cancel-btn action">Cancel</span>
+          <span blank="true" class="notify-btn action">Allow</span>
         </div>
 			</div>
     `
-  }
-
-  getJoin = action => {
-   return /* html */`
-    <app-logon name="${action}" next="${this.getAttribute('next')}" api-login="/api/v1/a/login" 
-      api-register="/api/v1/a/register" api-check-email="/api/v1/a/check-email" 
-      api-forgot-password="/api/v1/a/forgot-password" api-verify-token="/api/v1/a/verify-token" 
-      api-reset-password="/api/v1/a/reset-password" join-url="/join" login="/join/login" 
-      register="/join/register" forgot="/join/recover">
-    </app-logon>
-   `
   }
 
   getStyles() {
@@ -226,8 +177,8 @@ export default class JoinPopup extends HTMLElement {
           gap: 0px;
           justify-content: center;
           position: absolute;
-          right: 15px;
-          top: 15px;
+          right: 14px;
+          top: 14px;
         }
 
         #content span.control svg {
@@ -244,14 +195,14 @@ export default class JoinPopup extends HTMLElement {
           width: 90%;
           display: flex;
           flex-flow: column;
-          align-items: center;
+          align-items: start;
           justify-content: center;
           row-gap: 0;
         }
 
         .welcome > h2 {
           width: 100%;
-          font-size: 1.35rem;
+          font-size: 1.5rem;
           font-weight: 600;
           margin: 0 0 10px;
           padding: 10px 10px;
@@ -264,45 +215,59 @@ export default class JoinPopup extends HTMLElement {
         }
 
         .welcome  p {
-          margin: 0;
-          text-align: center;
-          font-family: var(--font-read), sans-serif;
+          margin: 10px 0 10px;
+          text-align: start;
+          font-family: var(--font-main), sans-serif;
           color: var(--text-color);
           line-height: 1.3;
           font-size: 1rem;
         }
 
+        .welcome p span.url {
+          display: inline-block;
+          padding: 2px 8px 3px;
+          margin: 0 5px;
+          width: max-content;
+          font-size: 0.8rem;
+          font-weight: 400;
+          border-radius: 5px;
+          background-color: var(--gray-background);
+          font-family: var(--font-mono), monospace;
+          color: var(--gray-color);
+          font-weight: 500;
+          border-radius: 5px;
+        }
+
         .welcome > .actions {
-          margin: 20px 0 5px;
-          width: 80%;
           display: flex;
+          font-family: var(--font-main), sans-serif;
+          width: 100%;
           flex-flow: row;
           align-items: center;
-          justify-content: space-between;
-          gap: 30px;
+          gap: 20px;
+          margin: 10px 0 0;
         }
-
-        .welcome > .actions a {
-          background: var(--stage-no-linear);
+        
+        .welcome > .actions > .action {
+          background: var(--accent-linear);
           text-decoration: none;
-          padding: 5px 20px 6px;
-          cursor: pointer;
-          margin: 20px 0;
-          width: 150px;
-          justify-self: center;
-          text-align: center;
           color: var(--white-color);
-          border: none;
-          font-size: 1.15rem;
+          font-size: 0.95rem;
           font-weight: 500;
-          border-radius: 12px;
+          cursor: pointer;
+          display: flex;
+          width: max-content;
+          flex-flow: row;
+          align-items: center;
+          text-transform: lowercase;
+          justify-content: center;
+          padding: 4px 15px 5px;
+          border-radius: 10px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
         }
 
-        .welcome > .actions a.register {
-          background: var(--stage-active-linear);
-        }
-
-        .welcome > .actions a.recover {
+        .welcome > .actions .action.cancel-btn {
           background: var(--gray-background);
           color: var(--text-color);
         }
@@ -312,12 +277,13 @@ export default class JoinPopup extends HTMLElement {
             width: 90%;
           }
         }
+
         @media screen and ( max-width: 600px ){
           :host {
             border: none;
-            background-color: var(--modal-background);
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
+            background-color: var(--modal-background);
             padding: 0px;
             justify-self: end;
             display: flex;
@@ -335,7 +301,7 @@ export default class JoinPopup extends HTMLElement {
 
           #content {
             box-sizing: border-box !important;
-            padding: 20px 0 0 0;
+            padding: 25px 0 0 0;
             margin: 0;
             width: 100%;
             max-width: 100%;
@@ -350,8 +316,8 @@ export default class JoinPopup extends HTMLElement {
           #content span.control {
             cursor: default !important;
             display: none;
-            top: 12px;
-            right: 12px;
+            top: 15px;
+            right: 15px;
           }
 
           .welcome {
@@ -360,28 +326,32 @@ export default class JoinPopup extends HTMLElement {
           }
 
           .welcome > h2 {
+            width: 100%;
+            font-size: 1.35rem;
+            font-weight: 600;
             margin: 0 0 10px;
+            padding: 10px 10px;
+            background-color: var(--gray-background);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-weight: 500;
+          }
+
+          .welcome  p {
+            margin: 4px 0 0;
+            color: var(--text-color);
+            line-height: 1.3;
+            font-size: 1rem;
           }
 
           .welcome > .actions {
+            margin: 18px 0;
             width: 100%;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 18px;
-            margin: 10px 0 20px;
+            gap: 35px;
           }
 
-          .welcome > .actions .action {
-            background: var(--stage-no-linear);
-            text-decoration: none;
-            padding: 6px 15px 7px;
-            font-size: 1rem;
-            cursor: default;
-            margin: 5px 0;
-            width: max-content;
+          .welcome > .actions > .action {
             cursor: default !important;
-            border-radius: 12px;
           }
         }
       </style>
