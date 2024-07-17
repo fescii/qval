@@ -191,7 +191,6 @@ export default class StatContainer extends HTMLElement {
         }
 
         .top {
-          /* border: 1px solid #6b7280; */
           display: flex;
           flex-flow: column;
           gap: 5px;
@@ -213,7 +212,7 @@ export default class StatContainer extends HTMLElement {
         .top > .desc {
           margin: 0;
           padding: 10px 0;
-          color: var(--gray-color);
+          color: var(--text-color);
           font-size: 1rem;
           font-family: var(--font-main), sans-serif;
         }
@@ -321,9 +320,9 @@ export default class StatContainer extends HTMLElement {
           .top > .desc {
             margin: 0;
             padding: 6px 0 10px;
-            color: var(--gray-color);
+            color: var(--text-color);
             font-size: 1rem;
-            line-height: 1.5;
+            line-height: 1.3;
             font-family: var(--font-main), sans-serif;
           }
 

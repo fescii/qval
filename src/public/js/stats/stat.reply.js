@@ -271,7 +271,7 @@ export default class StatReply extends HTMLElement {
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;
@@ -305,7 +305,8 @@ export default class StatReply extends HTMLElement {
       .actions > .action.plain > span.no {
         font-family: var(--font-main), sans-serif;
         font-size: 0.85rem;
-        color: var(--text-color);
+        color: var(--highlight-color);
+        font-weight: 500;
       }
 
       .actions > .action.plain > span.text {
@@ -325,7 +326,6 @@ export default class StatReply extends HTMLElement {
         .actions > .action.plain > span.no {
           font-family: var(--font-main), sans-serif;
           font-size: 0.8rem;
-          color: var(--text-color);
         }
 
         a {

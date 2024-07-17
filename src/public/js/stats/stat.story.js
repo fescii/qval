@@ -149,7 +149,7 @@ export default class StatStory extends HTMLElement {
 
   getTitle = kind => {
     if (kind === "story") {
-      return `<h4 class="story-title">${this.getAttribute('story-title')}</h4>`
+      return `<h4 class="title">${this.getAttribute('story-title')}</h4>`
     } else {
       return ''
     }
@@ -304,7 +304,7 @@ export default class StatStory extends HTMLElement {
 
       .content > h4.title {
         margin: 0;
-        color: var(--text-color);
+        color: var(--title-color);
         font-family: var(--font-main), sans-serif;
         line-height: 1.5;
         font-size: 1.05rem;
@@ -322,7 +322,7 @@ export default class StatStory extends HTMLElement {
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;
@@ -356,7 +356,8 @@ export default class StatStory extends HTMLElement {
       .actions > .action.plain > span.no {
         font-family: var(--font-main), sans-serif;
         font-size: 0.85rem;
-        color: var(--text-color);
+        color: var(--highlight-color);
+        font-weight: 600;
       }
 
       .actions > .action.plain > span.text {
@@ -376,7 +377,8 @@ export default class StatStory extends HTMLElement {
         .actions > .action.plain > span.no {
           font-family: var(--font-main), sans-serif;
           font-size: 0.8rem;
-          color: var(--text-color);
+          color: var(--highlight-color);
+          font-weight: 500;
         }
 
         a {

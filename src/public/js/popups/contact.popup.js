@@ -209,7 +209,7 @@ export default class ContactPopup extends HTMLElement {
   getEmpty = () => {
     return /* html */`
       <div class="empty">
-        <p>This user hasn not publicly shared any contact information. Note that this information is only available if the user chose to share it publicly.</p>
+        <p>This user hasn't publicly shared any contact information. Note that this information is only available if the user chose to share it publicly.</p>
         <p class="italics">You can still interact with the user via public information on their profile.</p>
       </div>
     `
@@ -485,6 +485,8 @@ export default class ContactPopup extends HTMLElement {
           :host {
             border: none;
             background-color: var(--modal-background);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             padding: 0px;
             justify-self: end;
             display: flex;

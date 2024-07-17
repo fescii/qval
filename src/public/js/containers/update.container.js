@@ -88,7 +88,7 @@ export default class UpdateContainer extends HTMLElement {
         <p class="desc">
           Your updates contains summary of all actions performed by other users on your content or profile.
           You can filter by stories, replies, people, and topics.<br>
-          Note: <span>A button label <b>user</b> will preview the user who has perform the action/update.
+          <span>Note that a button label <b>user</b> will preview the user who has perform the action/update.
         </p>
       </div>
     `;
@@ -201,7 +201,7 @@ export default class UpdateContainer extends HTMLElement {
         .top > .desc {
           margin: 0;
           padding: 6px 0 10px;
-          color: var(--gray-color);
+          color: var(--text-color);
           font-size: 1rem;
           line-height: 1.5;
           font-family: var(--font-main), sans-serif;

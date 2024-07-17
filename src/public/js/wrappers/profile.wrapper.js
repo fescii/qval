@@ -832,7 +832,10 @@ export default class ProfileWrapper extends HTMLElement {
         }
 
         .top > .info > .name > span.username {
-          color: var(--gray-color);
+          color: transparent;
+          background: var(--accent-linear);
+          background-clip: text;
+          -webkit-background-clip: text;
           font-family: var(--font-mono), monospace;
           font-size: 0.9rem;
           font-weight: 500;
@@ -886,7 +889,7 @@ export default class ProfileWrapper extends HTMLElement {
         }
 
         .stats > .stat > .number {
-          color: var(--text-color);
+          color: var(--highlight-color);
           font-family: var(--font-main), sans-serif;
           font-size: 0.84rem;
           font-weight: 500;

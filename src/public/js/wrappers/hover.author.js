@@ -192,13 +192,13 @@ export default class HoverAuthor extends HTMLElement {
           e.stopPropagation()
           e.stopImmediatePropagation();
 
+          outerThis.disableScroll();
+
           // change the display of the content container
           contentContainer.style.display = 'flex';
 
           // Fetch content
           outerThis.fetchContent(url, mql, contentContainer);
-
-          outerThis.disableScroll();
         });
       }
     }
@@ -1263,6 +1263,8 @@ export default class HoverAuthor extends HTMLElement {
             right: 0;
             z-index: 100;
             background-color: var(--modal-overlay);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             min-width: 100dvw;
             width: 100dvw;
             height: 100dvh;

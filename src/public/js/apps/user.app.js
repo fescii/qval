@@ -709,7 +709,7 @@ export default class AppUser extends HTMLElement {
             </path>
           </svg>
           <span class="text">
-            Wait, I can explain 🤭, <br /> This feature is under development
+            Wait, I can explain 🤭, this feature is under development
           </span>
         </h3>
         <p class="info">
@@ -1144,6 +1144,7 @@ export default class AppUser extends HTMLElement {
 
         section.tab > div.header > svg {
           cursor: pointer;
+          color: var(--title-color);
           width: 35px;
           height: 35px;
           margin: 0 0 0 -5px;

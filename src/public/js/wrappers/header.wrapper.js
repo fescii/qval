@@ -662,6 +662,7 @@ export default class HeaderWrapper extends HTMLElement {
         }
 
         nav.nav > .left svg {
+          color: var(--title-color);
           cursor: pointer;
           width: 28px;
           height: 28px;

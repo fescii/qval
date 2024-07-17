@@ -608,7 +608,7 @@ export default class StoryPost extends HTMLElement {
       }
 
       h3.title {
-        color: var(--text-color);
+        color: var(--title-color);
         font-family: var(--font-main), sans-serif;
         margin: 2px 0 7px 0;
         padding: 0;

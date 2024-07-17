@@ -167,7 +167,7 @@ export default class ViewsPopup extends HTMLElement {
     const likesFormatted = this.formatNumber(likes);
     const viewsFormatted = this.formatNumber(views);
 
-    // contruct you text
+    // construct you text
     let youText = you ? 'You and ' : '';
 
     let textContent = `${youText}<span class="numbers">${this.formatNumber(likes - 1)}</span> other ${likes - 1 === 1 ? 'person' : 'people'} likes this`;
@@ -474,8 +474,8 @@ export default class ViewsPopup extends HTMLElement {
         }
         
         ul.highlights > li.item > .link .numbers {
-          color: var(--text-color);
-          font-weight: 500;
+          color: var(--highlight-color);
+          font-weight: 600;
           font-family: var(--font-main), sans-serif;
           font-size: 0.95rem;
           display: inline-block;
@@ -500,6 +500,8 @@ export default class ViewsPopup extends HTMLElement {
           :host {
             border: none;
             background-color: var(--modal-background);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             padding: 0px;
             justify-self: end;
             display: flex;
