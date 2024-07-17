@@ -107,8 +107,8 @@ export default class NotifyPopup extends HTMLElement {
       <div class="welcome">
         <h2>Notification</h2>
 				<p>
-          You need to allow notifications, this will help you get the latest updates and news from our platform.
-          You can choose to cancel this action if you don't want to receive notifications.<span class="url">/notify</span>
+          We would like to send you notifications about new updates and features on this platform.
+          You can choose to cancel this action if you don't want to receive notifications.
         </p>
         <div class="actions">
           <span class="cancel-btn action">Cancel</span>
@@ -347,7 +347,7 @@ export default class NotifyPopup extends HTMLElement {
           }
 
           .welcome > .actions {
-            margin: 15px 0;
+            margin: 18px 0;
             width: 100%;
             gap: 35px;
           }
