@@ -73,7 +73,6 @@ export default class AppStory extends HTMLElement {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
   }
-  
 
   handleWsMessage = message => {
     // Handle the message in this component
@@ -269,6 +268,7 @@ export default class AppStory extends HTMLElement {
   getTemplate = () => {
     // Show HTML Here
     return `
+      <notify-popup url="/some url"></notify-popup>
       ${this.getBody()}
       ${this.getStyles()}
     `;

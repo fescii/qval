@@ -22,8 +22,9 @@ import AppStory from "./apps/story.app.js";
 import AppTopic from "./apps/topic.app.js";
 import AppUser from "./apps/user.app.js";
 
-// import uWS class
+// import uWS class and NotificationManager
 import WebSocketManager from "./apps/uWs.js";
+import NotificationManager from "./apps/notify.js";
 
 // Import Containers
 import AddContainer from "./containers/add.container.js";
@@ -119,6 +120,20 @@ import ContactPopup from "./popups/contact.popup.js";
 import TopicPopup from "./popups/topic.popup.js";
 import ViewsPopup from "./popups/views.popup.js";
 import PreviewPopup from "./popups/preview.popup.js";
+import NotifyPopup from "./popups/notify.popup.js";
+
+// Start WebSocketManager
+// Create a global instance
+// get host name
+const host = window.location.hostname;
+// console.log(host);
+
+window.wss = new WebSocketManager(`${host}`);
+window.wss.connect();
+
+// Start NotificationManager
+// Create a global instance
+window.notify = new NotificationManager();
 
 // Register apps
 customElements.define("app-home", AppHome);
@@ -224,13 +239,4 @@ customElements.define("contact-popup", ContactPopup);
 customElements.define("topic-popup", TopicPopup);
 customElements.define("views-popup", ViewsPopup);
 customElements.define("preview-popup", PreviewPopup);
-
-
-// Start WebSocketManager
-// Create a global instance
-// get host name
-const host = window.location.hostname;
-// console.log(host);
-
-window.wss = new WebSocketManager(`${host}`);
-window.wss.connect();
+customElements.define("notify-popup", NotifyPopup);

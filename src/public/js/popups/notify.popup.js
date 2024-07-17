@@ -1,4 +1,4 @@
-export default class UrlPopup extends HTMLElement {
+export default class NotifyPopup extends HTMLElement {
   constructor() {
 
     // We are not even going to touch this.
@@ -16,16 +16,22 @@ export default class UrlPopup extends HTMLElement {
   }
 
   connectedCallback() {
-    
     this.disableScroll();
 
     // Select the close button & overlay
     const overlay = this.shadowObj.querySelector('.overlay');
     const btns = this.shadowObj.querySelectorAll('.cancel-btn');
 
+    const notifyBtn = this.shadowObj.querySelector('.notify-btn');
+
     // Close the modal
     if (overlay && btns) {
       this.closePopup(overlay, btns);
+    }
+
+    // Request notification permission
+    if (notifyBtn) {
+      this.requestNotificationPermission(notifyBtn);
     }
   }
 
@@ -65,6 +71,22 @@ export default class UrlPopup extends HTMLElement {
     })
   }
 
+  requestNotificationPermission = async btn => {
+    btn.addEventListener('click', async e => {
+      e.preventDefault();
+      // Request permission
+      const permission = await Notification.requestPermission();
+      if(permission === 'granted') {
+        console.log('Notification permission granted');
+      } else {
+        console.log('Notification permission denied');
+      }
+
+      // Close the modal
+      this.remove();
+    });
+  }
+
   getTemplate() {
     // Show HTML Here
     return `
@@ -81,18 +103,16 @@ export default class UrlPopup extends HTMLElement {
   }
 
   getWelcome() {
-    const url = this.getAttribute('url');
-    let max = url.length > 50 ? url.substring(0, 50) + '...' : url;
     return `
       <div class="welcome">
-        <h2>External link.</h2>
+        <h2>Notification</h2>
 				<p>
-          You are about to leave the application and visit an external website. We are not responsible for the content of the external website.
-          By clicking continue, you will be redirected to below address <br> <span class="url">${max}</span>
+          You need to allow notifications, this will help you get the latest updates and news from our platform.
+          You can choose to cancel this action if you don't want to receive notifications.<span class="url">/notify</span>
         </p>
         <div class="actions">
           <span class="cancel-btn action">Cancel</span>
-          <a noopenner="true" blank="true" target="_blank" href="${url}" class="action">Continue</a>
+          <span blank="true" class="notify-btn action">Allow</span>
         </div>
 			</div>
     `
@@ -199,23 +219,27 @@ export default class UrlPopup extends HTMLElement {
         }
 
         .welcome  p {
-          margin: 10px 0 0;
+          margin: 10px 0 10px;
           text-align: start;
-          font-family: var(--font-read), sans-serif;
+          font-family: var(--font-main), sans-serif;
           color: var(--text-color);
           line-height: 1.3;
           font-size: 1rem;
         }
 
         .welcome p span.url {
-          display: flex;
-          padding: 0;
-          margin: 10px 0 5px;
-          font-size: 0.95rem;
+          display: inline-block;
+          padding: 2px 8px 3px;
+          margin: 0 5px;
+          width: max-content;
+          font-size: 0.8rem;
           font-weight: 400;
           border-radius: 5px;
-          color: var(--anchor-color);
+          background-color: var(--gray-background);
+          font-family: var(--font-mono), monospace;
+          color: var(--gray-color);
           font-weight: 500;
+          border-radius: 5px;
         }
 
         .welcome > .actions {
@@ -257,6 +281,7 @@ export default class UrlPopup extends HTMLElement {
             width: 90%;
           }
         }
+
         @media screen and ( max-width: 600px ){
           :host {
             border: none;
@@ -310,14 +335,12 @@ export default class UrlPopup extends HTMLElement {
             padding: 10px 10px;
             background-color: var(--gray-background);
             border-radius: 12px;
-            font-family: var(--font-read), sans-serif;
             color: var(--text-color);
             font-weight: 500;
           }
 
           .welcome  p {
             margin: 4px 0 0;
-            font-family: var(--font-read), sans-serif;
             color: var(--text-color);
             line-height: 1.3;
             font-size: 1rem;

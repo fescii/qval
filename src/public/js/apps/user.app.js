@@ -1476,6 +1476,14 @@ export default class AppUser extends HTMLElement {
             height: max-content;
             position: unset;
           }
+  
+          section.tab > ul.tab > span.title {
+            color: var(--text-color);
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+          }
 
           section.tab > div.header > .name {
             margin: 0 0 0 5px;
