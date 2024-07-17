@@ -83,7 +83,7 @@ export default class HeaderWrapper extends HTMLElement {
 
   handleWsMessage = message => {
     // Handle the message in this component
-    console.log('Message received in component:', message);
+    // console.log('Message received in component:', message);
     const data = message.data;
 
     const userHash = window.hash;
@@ -109,8 +109,6 @@ export default class HeaderWrapper extends HTMLElement {
       icon: "/static/img/favi.png",
       link: url,
     }
-
-    console.log('Notification:', notification);
 
     // send the notification
     if (window.notify) {

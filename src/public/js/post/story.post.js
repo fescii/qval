@@ -557,6 +557,7 @@ export default class StoryPost extends HTMLElement {
         display: inline-block;
         margin: 0 0 -2px;
       }
+
       .content {
         display: flex;
         position: relative;
@@ -607,7 +608,7 @@ export default class StoryPost extends HTMLElement {
       }
 
       h3.title {
-        color: var(--title-color);
+        color: var(--text-color);
         font-family: var(--font-main), sans-serif;
         margin: 2px 0 7px 0;
         padding: 0;
