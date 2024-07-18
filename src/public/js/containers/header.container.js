@@ -860,7 +860,7 @@ export default class HeaderContainer extends HTMLElement {
       }
 
       ul.right > li.link.signin > a {
-        border: var(--border-mobile);
+        border: var(--border-button);
         padding: 4px 15px;
         font-family: var(--font-read);
         border-radius: 10px;

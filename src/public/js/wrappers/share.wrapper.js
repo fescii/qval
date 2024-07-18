@@ -380,7 +380,7 @@ export default class ShareWrapper extends HTMLElement {
           z-index: 4;
           left: calc(50% - 100px);
           padding: 0;
-          border: var(--border);
+          border: var(--border-button);
           background: var(--background);
           box-shadow: var(--card-box-shadow);
           width: 200px;

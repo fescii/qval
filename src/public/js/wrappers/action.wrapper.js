@@ -887,6 +887,7 @@ export default class ActionWrapper extends HTMLElement {
         span.write.action.open > span.numbers {
           color: transparent;
           background: var(--accent-linear);
+          font-weight: 500;
           background-clip: text;
           -webkit-background-clip: text;
         }
@@ -1050,7 +1051,7 @@ export default class ActionWrapper extends HTMLElement {
           span.play:hover,
           span.stat:hover,
           span.action:hover {
-            /*background: none;*/
+            background: none;
           }
         }
       </style>

@@ -100,18 +100,14 @@ export default class ActivityItem extends HTMLElement {
 
     // check for minutes
     if (seconds < 3600) {
-      return `${Math.floor(seconds / 60)} mins ago`;
+      const min = Math.floor(seconds / 60)
+      return `${min === 1 ? '1 min' : min + ' mins'}`;
     }
 
-    // check if seconds is less than 86400: return time AM/PM
+    // check for hours
     if (seconds < 86400) {
-      // check if the date is today or yesterday
-      if (date.getDate() === currentTime.getDate()) {
-        return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
-      }
-      else {
-        return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
-      }
+      const hours = Math.floor(seconds / 3600)
+      return `${hours === 1 ? '1 hr' : hours + ' hrs'}`;
     }
 
     // check if seconds is less than 604800: return day and time
@@ -359,7 +355,7 @@ export default class ActivityItem extends HTMLElement {
       }
 
       .content {
-        color: var(--text-color);
+        color: var(--highlight-color);
         font-family: var(--font-text), sans-serif;
         display: flex;
         flex-flow: column;
@@ -367,6 +363,13 @@ export default class ActivityItem extends HTMLElement {
         gap: 5px;
         padding: 0;
         width: 100%;
+      }
+
+      .content h4 {
+        color: var(--title-color);
+        font-weight: 500;
+        font-size: 1.1rem;
+        font-family: var(--font-text), sans-serif;
       }
 
       .foot {
@@ -397,12 +400,12 @@ export default class ActivityItem extends HTMLElement {
         width: 100%;
         flex-flow: row;
         align-items: center;
-        gap: 8px;
+        gap: 15px;
         margin: 5px 0 0 0;
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;

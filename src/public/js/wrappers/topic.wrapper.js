@@ -680,7 +680,7 @@ export default class TopicWrapper extends HTMLElement {
           align-items: center;
           color: var(--title-color);
           font-family: var(--font-main), sans-serif;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           line-height: 1.3;
           font-weight: 500;
           break-word: break-all;
@@ -747,7 +747,7 @@ export default class TopicWrapper extends HTMLElement {
         div.actions > .action.following {
           padding: 2px 10px;
           background: none;
-          border: var(--border-mobile);
+          border: var(--border-button);
           color: var(--gray-color);
           font-weight: 500;
           font-size: 0.9rem;
@@ -786,7 +786,7 @@ export default class TopicWrapper extends HTMLElement {
         }
 
         .stats > .stat > .number {
-          color: var(--text-color);
+          color: var(--highlight-color);
           font-family: var(--font-main), sans-serif;
           font-size: 0.9rem;
           font-weight: 500;

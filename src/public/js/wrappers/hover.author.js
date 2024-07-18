@@ -1088,7 +1088,7 @@ export default class HoverAuthor extends HTMLElement {
           align-items: center;
           gap: 5px;
           line-height: 1.2;
-          color: var(--text-color);
+          color: var(--title-color);
           font-family: var(--font-main), sans-serif;
           font-size: 1.1rem;
           font-weight: 600;
@@ -1157,9 +1157,9 @@ export default class HoverAuthor extends HTMLElement {
         }
         
         .stats > .stat > .number {
-          color: var(--text-color);
+          color: var(--highlight-color);
           font-family: var(--font-main), sans-serif;
-          font-size: 0.84rem;
+          font-size: 0.85rem;
           font-weight: 500;
           margin: 0 0 -2px 0;
         }

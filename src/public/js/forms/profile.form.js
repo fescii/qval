@@ -497,7 +497,7 @@ export default class FormProfile extends HTMLElement {
 
         form.fields .field input {
           border: var(--input-border);
-          background: var(--background);
+          background-color: var(--background) !important;
           font-size: 1rem;
           width: 100%;
           height: 40px;
@@ -505,10 +505,20 @@ export default class FormProfile extends HTMLElement {
           padding: 10px 12px;
           border-radius: 12px;
           color: var(--text-color);
-          -webkit-border-radius: 12px;
-          -moz-border-radius: 12px;
-          -ms-border-radius: 12px;
-          -o-border-radius: 12px;
+        }
+        
+        form.fields .field input:-webkit-autofill,
+        form.fields .field input:-webkit-autofill:hover, 
+        form.fields .field input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+          -webkit-text-fill-color: var(--text-color) !important;
+          transition: background-color 5000s ease-in-out 0s;
+          color: var(--text-color) !important;
+        }
+        
+        form.fields .field input:autofill {
+          filter: none;
+          color: var(--text-color) !important;
         }
 
         form.fields .field input:focus {

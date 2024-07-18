@@ -63,12 +63,7 @@ export default class ContentContainer extends HTMLElement {
           // Calculate half tab width - 10px
           const tabWidth = (tab.offsetWidth / 2) - 20;
 
-          if (index === 0) {
-            line.style.left = '0';
-          }
-          else {
-            line.style.left = `${tab.offsetLeft + tabWidth}px`;
-          }
+          line.style.left = `${tab.offsetLeft + tabWidth}px`;
 
           if (tab.dataset.element === activeTab.dataset.element) {
             return;

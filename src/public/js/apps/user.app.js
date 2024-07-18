@@ -1320,7 +1320,7 @@ export default class AppUser extends HTMLElement {
         }
 
         section.tab > ul.tab > span.title {
-          color: var(--gray-color);
+          color: var(--highlight-color);
           display: inline-block;
           padding: 15px 10px 6px 10px;
           font-size: 0.9rem;
@@ -1367,6 +1367,7 @@ export default class AppUser extends HTMLElement {
         }
         section.tab > ul.tab > li.tab-item.active > a.tab-link {
           background-color: var(--tab-background);
+          color: var(--highlight-color);
         }
 
         section.content {

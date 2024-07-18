@@ -850,7 +850,7 @@ export default class AuthorWrapper extends HTMLElement {
         }
 
         .top > .avatar > .svg-avatar {
-          border: var(--border);
+          border: var(--border-button);
           width: 100%;
           height: 100%;
           display: flex;
@@ -1130,7 +1130,7 @@ export default class AuthorWrapper extends HTMLElement {
             top: 20px;
             rotate: 180deg;
             right: 5px;
-            color: var(--gray-color);
+            color: var(--title-color);
             cursor: default !important;
             width: 22px;
             height: 22px;

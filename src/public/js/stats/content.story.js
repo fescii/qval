@@ -332,12 +332,12 @@ export default class ContentStory extends HTMLElement {
         width: 100%;
         flex-flow: row;
         align-items: center;
-        gap: 8px;
+        gap: 15px;
         margin: 5px 0 0 0;
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;
