@@ -125,7 +125,6 @@ export default class DiscoverPeople extends HTMLElement {
     }).join('');
   }
 
-	// Activate controls
 	activateControls = contentContainer => {
 		// select all controls
 		const leftControl = this.shadowObj.querySelector('.control.left');

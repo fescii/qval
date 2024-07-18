@@ -26,7 +26,12 @@ export default class TopicsContainer extends HTMLElement {
 
 	fetching = (url, topicsContainer) => {
     const outerThis = this;
-    const options = { method: 'GET'}
+    const options = { 
+      method: 'GET',
+      // set the cache control to max-age to 1 day
+      "Cache-Control": "max-age=86400",
+      "Accept": "application/json"
+    }
     this.getCacheData(url, options)
     .then(result => {
       if (result.success) {
