@@ -23,8 +23,13 @@ export default class HomeFeed extends HTMLElement {
 
     // check if the total
     if (feedContainer) {
-      this.fetchFeeds(feedContainer);
-      this.scrollEvent(feedContainer);
+      setTimeout(() => {
+        this.fetchFeeds(feedContainer);
+      }, 2000);
+    
+      setTimeout(() => {
+        this.scrollEvent(feedContainer);
+      }, 4000);
     }
   }
 
@@ -93,10 +98,8 @@ export default class HomeFeed extends HTMLElement {
     if (!this._block && !this._empty) {
       outerThis._empty = true;
       outerThis._block = true;
-      setTimeout(() => {
-        // fetch the stories
-        outerThis.fetching(url, feedContainer)
-      }, 2000);
+      // fetch the stories
+      outerThis.fetching(url, feedContainer)
     }
   }
 
@@ -118,7 +121,10 @@ export default class HomeFeed extends HTMLElement {
       if (window.scrollY > margin && !outerThis._empty && !outerThis._block) {
         outerThis._page += 1;
         outerThis.populateFeeds(outerThis.getLoader(), feedContainer);
-        outerThis.fetchFeeds(feedContainer);
+
+        this.setTimeout(() => {
+          outerThis.fetchFeeds(feedContainer);
+        }, 2000);
       }
     });
 
@@ -251,7 +257,7 @@ export default class HomeFeed extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   parseToNumber = num_str => {
     // Try parsing the string to an integer

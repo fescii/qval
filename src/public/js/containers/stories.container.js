@@ -18,52 +18,52 @@ export default class StoriesContainer extends HTMLElement {
   connectedCallback() {
     const contentContainer = this.shadowObj.querySelector('.stories');
 
-    this.fetchStories(contentContainer);
+    setTimeout(() => {
+      this.fetchStories(contentContainer);
+    }, 1000);
   }
 
-  fetchStories = (contentContainer) => {
+  fetchStories = contentContainer => {
     const outerThis = this;
-		setTimeout(() => {
-      // fetch the user stats
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          // check for success response
-          if (data.success) {
-            if(data.stories.length === 0) {
-              // display empty message
-              const content = outerThis.getEmpty();
-              contentContainer.innerHTML = content;
-              return;
-            }
-            // update the content
-            const content = outerThis.mapFields(data.stories);
-            contentContainer.innerHTML = content;
-            // set the last item border-bottom to none
-            outerThis.setLastItem(contentContainer);
-          }
-          else {
-            // display error message
+		// fetch the user stats
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    };
+
+    this.fetchWithTimeout(this._url, options)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        // check for success response
+        if (data.success) {
+          if(data.stories.length === 0) {
+            // display empty message
             const content = outerThis.getEmpty();
             contentContainer.innerHTML = content;
+            return;
           }
-        })
-        .catch(error => {
+          // update the content
+          const content = outerThis.mapFields(data.stories);
+          contentContainer.innerHTML = content;
+          // set the last item border-bottom to none
+          outerThis.setLastItem(contentContainer);
+        }
+        else {
           // display error message
           const content = outerThis.getEmpty();
           contentContainer.innerHTML = content;
-        });
-		}, 100)
+        }
+      })
+      .catch(error => {
+        // display error message
+        const content = outerThis.getEmpty();
+        contentContainer.innerHTML = content;
+      });
 	}
 
   fetchWithTimeout = (url, options, timeout = 9500) => {
@@ -92,7 +92,7 @@ export default class StoriesContainer extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   mapFields = data => {
     return data.map(story => {

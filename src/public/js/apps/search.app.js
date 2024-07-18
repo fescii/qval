@@ -649,11 +649,12 @@ export default class AppSearch extends HTMLElement {
 
         form.search > .contents > input {
           border: var(--border-mobile);
+          background-color: var(--background) !important;
           display: flex;
           flex-flow: row;
           align-items: center;
           font-family: var(--font-text);
-          color: var(--text-color);
+          color: var(--highlight-color);
           font-size: 1rem;
           padding: 8px 10px 8px 35px;
           gap: 0;
@@ -663,6 +664,20 @@ export default class AppSearch extends HTMLElement {
           -moz-border-radius: 18px;
           -ms-border-radius: 18px;
           -o-border-radius: 18px;
+        }
+        
+        form.search > .contents > input:-webkit-autofill,
+        form.search > .contents > input:-webkit-autofill:hover, 
+        form.search > .contents > input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+          -webkit-text-fill-color: var(--text-color) !important;
+          transition: background-color 5000s ease-in-out 0s;
+          color: var(--highlight-color) !important;
+        }
+        
+        form.search > .contents > input:autofill {
+          filter: none;
+          color: var(--highlight-color) !important;
         }
 
         form.search > .contents > svg {

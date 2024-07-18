@@ -44,30 +44,32 @@ export default class FeedContainer extends HTMLElement {
 
   fetching = (url, feedContainer) => {
     const outerThis = this;
-    this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
-      response.json().then((result) => {
-        // check if the request was aborted
-
-        if (result.success) {
-          const data = result.data;
-          // console.log(data)
-          if (data.last && outerThis._page === 1 && data.stories.length === 0 && data.replies.length === 0) {
-            outerThis.populateFeeds(outerThis.getEmptyMsg(), feedContainer);
-          }
-          else {
-            const content = outerThis.mapFeeds(data.stories, data.replies);
-            outerThis.populateFeeds(content, feedContainer);
-            outerThis.setLastItem(feedContainer);
-          }
+    const options = { 
+      method: 'GET',
+      // set the cache control to max-age to 2 hours
+      "Cache-Control": "max-age=7200",
+      "Accept": "application/json"
+    }
+    this.getCacheData(url, options)
+    .then(result => {
+      if (result.success) {
+        const data = result.data;
+        if (data.last && outerThis._page === 1 && data.stories.length === 0 && data.replies.length === 0) {
+          outerThis.populateFeeds(outerThis.getEmptyMsg(), feedContainer);
         }
         else {
-          outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
+          const content = outerThis.mapFeeds(data.stories, data.replies);
+          outerThis.populateFeeds(content, feedContainer);
+          outerThis.setLastItem(feedContainer);
         }
-      })
-        .catch((error) => {
-          console.log(error)
-          outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
-        });
+      }
+      else {
+        outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
+      }
+    })
+    .catch((error) => {
+      // console.log(error)
+      outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
     });
   }
 
@@ -78,10 +80,8 @@ export default class FeedContainer extends HTMLElement {
     if (!this._block && !this._empty) {
       outerThis._empty = true;
       outerThis._block = true;
-      setTimeout(() => {
-        // fetch the stories
-        outerThis.fetching(url, feedContainer)
-      }, 1000);
+      // fetch the stories
+      outerThis.fetching(url, feedContainer);
     }
   }
 
@@ -194,6 +194,26 @@ export default class FeedContainer extends HTMLElement {
     `
   }
 
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
@@ -220,7 +240,7 @@ export default class FeedContainer extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   parseToNumber = num_str => {
     // Try parsing the string to an integer

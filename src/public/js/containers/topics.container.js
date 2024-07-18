@@ -26,29 +26,49 @@ export default class TopicsContainer extends HTMLElement {
 
 	fetching = (url, topicsContainer) => {
     const outerThis = this;
-    this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
-      response.json().then((result) => {
-        if (result.success) {
-					const data = result.data;
-					if(data.topics.length === 0) {
-						topicsContainer.innerHTML = outerThis.getWrongMessage();
-					}
-					else {
-						const content = outerThis.mapFields(data.topics);
-            topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
-          	topicsContainer.innerHTML =  content
-            outerThis.setLastItem(topicsContainer);
-					}
+    const options = { method: 'GET'}
+    this.getCacheData(url, options)
+    .then(result => {
+      if (result.success) {
+        const data = result.data;
+        if(data.topics.length === 0) {
+          topicsContainer.innerHTML = outerThis.getWrongMessage();
         }
         else {
-          topicsContainer.innerHTML = outerThis.getWrongMessage();
+          const content = outerThis.mapFields(data.topics);
+          topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
+          topicsContainer.innerHTML =  content
+          outerThis.setLastItem(topicsContainer);
         }
-        })
-        .catch((error) => {
-          console.log(error)
-          topicsContainer.innerHTML = outerThis.getWrongMessage();
-        });
+      }
+      else {
+        topicsContainer.innerHTML = outerThis.getWrongMessage();
+      }
+    })
+    .catch((error) => {
+      // console.log(error)
+      topicsContainer.innerHTML = outerThis.getWrongMessage();
     });
+  }
+
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   fetchTopics = topicsContainer => {
@@ -56,10 +76,7 @@ export default class TopicsContainer extends HTMLElement {
     const url = `${this._url}?limit=10`;
 
     if(!this._block && !this._empty) {
-      setTimeout(() => {
-        // fetch the topics
-        outerThis.fetching(url, topicsContainer)
-      }, 1000);
+      outerThis.fetching(url, topicsContainer);
     }
   }
 
@@ -74,7 +91,6 @@ export default class TopicsContainer extends HTMLElement {
     topicsContainer.insertAdjacentHTML('beforeend', content);
   }
   
-
   mapFields = data => {
     return data.map(topic => {
       const author = topic.topic_author;
