@@ -667,6 +667,7 @@ export default class PersonWrapper extends HTMLElement {
           align-items: center;
           justify-content: center;
           border-radius: 50%;
+          color: var(--user-background);
         }
 
         .head > .avatar > svg path#top {
@@ -693,7 +694,6 @@ export default class PersonWrapper extends HTMLElement {
           font-family: var(--font-text), sans serif;
           font-weight: 500;
           font-size: 0.9rem;
-          /* prevet the text from overflowing */
           white-space: nowrap;
           overflow: hidden;
         }
@@ -767,7 +767,6 @@ export default class PersonWrapper extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            background-color: var(--author-background);
           }
 
           .action,

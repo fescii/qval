@@ -187,7 +187,6 @@ export default class TopicsContainer extends HTMLElement {
 		return /*html*/`
 			<div class="title">
 				<h2>Most read topics</h2>
-				<p class="info">The most engaging topics on the platform</p>
 			</div>
 		`
 	}
@@ -261,7 +260,7 @@ export default class TopicsContainer extends HTMLElement {
 				  padding: 0;
 				  display: flex;
 				  flex-flow: column;
-				  gap: 8px;
+				  gap: 0;
 				}
 
 				.empty {
@@ -340,10 +339,10 @@ export default class TopicsContainer extends HTMLElement {
           display: flex;
 					width: 100%;
           flex-flow: column;
-					padding: 5px 5px 8px;
+					padding: 5px 10px 6px;
           gap: 0;
 					background: var(--light-linear);
-					border-radius: 10px;
+					border-radius: 7px;
         }
 
         .title > h2 {
@@ -378,16 +377,6 @@ export default class TopicsContainer extends HTMLElement {
 					a {
 						cursor: default !important;
 					}
-
-          .title {
-            display: flex;
-            width: 100%;
-            flex-flow: column;
-            padding: 5px 5px 5px;
-            gap: 0;
-            background: var(--light-linear);
-            border-radius: 10px;
-          }
 				}
 	    </style>
     `;

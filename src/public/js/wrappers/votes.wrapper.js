@@ -1003,10 +1003,11 @@ export default class VotesAuthor extends HTMLElement {
 
         .info > .total .total {
           font-family: var(--font-main), sans-serif;
-          font-weight: 500;
+          color: var(--highlight-color);
+          font-weight: 600;
           font-size: 0.8rem;
           display: inline-block;
-          margin: 2px 0 0 0;
+          margin: 1px 0 0 0;
         }
         .info .count {
           font-family: var(--font-main), sans-serif;

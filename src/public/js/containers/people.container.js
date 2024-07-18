@@ -98,7 +98,6 @@ export default class PeopleContainer extends HTMLElement {
     }).join('');
   }
 
-
 	getTemplate = () => {
 		// Show HTML Here
 		return `
@@ -118,7 +117,6 @@ export default class PeopleContainer extends HTMLElement {
 		return /* html */`
 			<div class="title">
 				<h2>Authors to follow</h2>
-				<p class="info">Here are this month's top authorsss.</p>
 			</div>
 			<div class="content">
 				${this.getLoader()}
@@ -230,10 +228,10 @@ export default class PeopleContainer extends HTMLElement {
           display: flex;
 					width: 100%;
           flex-flow: column;
-					padding: 5px 5px 8px;
+					padding: 5px 10px 6px;
           gap: 0;
 					background: var(--light-linear);
-					border-radius: 10px;
+					border-radius: 7px;
         }
 
         .title > h2 {

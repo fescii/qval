@@ -281,8 +281,6 @@ export default class NotifyPopup extends HTMLElement {
         @media screen and ( max-width: 600px ){
           :host {
             border: none;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
             background-color: var(--modal-background);
             padding: 0px;
             justify-self: end;

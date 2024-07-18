@@ -765,7 +765,7 @@ export default class TopicWrapper extends HTMLElement {
         }
 
         .stats > span.sp {
-          margin: 0 0 2px 0;
+          margin: 0 0 0px 0;
           font-size: 0.8rem;
         }
 

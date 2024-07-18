@@ -123,14 +123,14 @@ export default class DiscoverPeople extends HTMLElement {
 	// Activate controls
 	activateControls = contentContainer => {
 		// select all controls
-		const letfControl = this.shadowObj.querySelector('.control.left');
+		const leftControl = this.shadowObj.querySelector('.control.left');
 		const rightControl = this.shadowObj.querySelector('.control.right');
 
 		// If left control and right control exists
-		if (letfControl && rightControl) {
+		if (leftControl && rightControl) {
 
 			// add event listener to left control
-			letfControl.addEventListener('click', () => {
+			leftControl.addEventListener('click', () => {
 				// Scroll by 200px smoothly
 				contentContainer.scrollTo({
 					left: contentContainer.scrollLeft - 300,
@@ -203,7 +203,6 @@ export default class DiscoverPeople extends HTMLElement {
 		return /*html*/`
 			<div class="title">
 				<h2>Discover people</h2>
-				<p class="info">Trending authors on the platform</p>
 			</div>
 		`
 	}
@@ -300,32 +299,11 @@ export default class DiscoverPeople extends HTMLElement {
           font-weight: 400;
         }
 
-        .title {
-				  padding: 2px 0 10px 5px;
-				  display: flex;
-				  flex-flow: column;
-				  gap: 0;
-				}
-
-				.title h4 {
-				  color: #1f2937;
-				  font-size: 1.3rem;
-				  font-weight: 500;
-					padding: 0;
-					margin: 0;
-				}
-
-				.title > span {
-				  color: var(--gray-color);
-          font-family: var(--font-text);
-				  font-size: 0.85rem;
-				}
-
 				.people-list {
 					background-color: var(--background);
 					display: flex;
 					flex-flow: row;
-					padding: 0 50px 0 0;
+					padding: 0;
 					gap: 20px;
 					width: 100%;
           max-width: 100%;
@@ -344,10 +322,10 @@ export default class DiscoverPeople extends HTMLElement {
 					position: absolute;
 					z-index: 3;
 					opacity: 0;
-					top: 30%;
+					top: 20%;
 					left: 0;
 					width: 40px;
-					height: 70%;
+					height: 80%;
 					pointer-events: none;
 					display: flex;
 					align-items: center;
@@ -384,10 +362,10 @@ export default class DiscoverPeople extends HTMLElement {
           display: flex;
 					width: 100%;
           flex-flow: column;
-					padding: 5px 5px 8px;
+					padding: 5px 10px 6px;
           gap: 0;
 					background: var(--light-linear);
-					border-radius: 10px;
+					border-radius: 7px;
         }
 
         .title > h2 {
@@ -413,14 +391,6 @@ export default class DiscoverPeople extends HTMLElement {
         		font-size: 16px;
 						padding: 15px 0 10px;
 						border-bottom: none;
-					}
-
-					.title {
-						padding: 2px 0 10px 8px;
-						margin: 0 0 10px 0;
-						display: flex;
-						flex-flow: column;
-						gap: 0;
 					}
 
 					a {
