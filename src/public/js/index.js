@@ -9,6 +9,31 @@ const setHash = name => {
   window.hash = cookie;
 }
 
+const setTheme = currentTheme =>{
+  // Check the current theme
+  const htmlElement = document.documentElement;
+  
+  // Update the data-theme attribute
+  htmlElement.setAttribute('data-theme', currentTheme);
+  
+  // Store the preference in local storage
+  localStorage.setItem('theme', currentTheme);
+  
+  // Update the theme-color meta tag
+  const metaThemeColor = document.querySelector("meta[name=theme-color]");
+  if (currentTheme === 'dark') {
+    metaThemeColor.setAttribute("content", "#000000");
+  } else {
+    metaThemeColor.setAttribute("content", "#ffffff");
+  }
+}
+
+// get theme from local storage
+const currentTheme = localStorage.getItem('theme') || 'light';
+
+// set the theme
+setTheme(currentTheme);
+
 // set hash
 setHash('hash');
 

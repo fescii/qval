@@ -117,7 +117,7 @@ export default class RepliesStat extends HTMLElement {
     return /* html */`
       <div class="title">
         <h4 class="text">Your replies</h4>
-        <span class="desc">Past thirty days replies engagements</span>
+        <span class="desc">Replies stats for the last 30 days</span>
       </div>
     `
   }
@@ -332,8 +332,8 @@ export default class RepliesStat extends HTMLElement {
 
         .title > span.desc {
           color: var(--gray-color);
-          font-size: 0.9rem;
-          font-family: var(--font-read), sans-serif;
+          font-size: 0.85rem;
+          font-family: var(--font-main), sans-serif;
         }
 
         .cards {

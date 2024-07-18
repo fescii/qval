@@ -117,7 +117,7 @@ export default class StoriesStat extends HTMLElement {
     return /* html */`
       <div class="title">
         <h4 class="text">Your stories</h4>
-        <span class="desc">Past thirty days stories engagements</span>
+        <span class="desc">Stories stats for the last 30 days</span>
       </div>
     `
   }
@@ -336,8 +336,8 @@ export default class StoriesStat extends HTMLElement {
 
         .title > span.desc {
           color: var(--gray-color);
-          font-size: 0.9rem;
-          font-family: var(--font-read), sans-serif;
+          font-size: 0.85rem;
+          font-family: var(--font-main), sans-serif;
         }
 
         .cards {

@@ -104,6 +104,50 @@ export default class AppUser extends HTMLElement {
     }
   }
 
+  activateThemeIcons = () => {
+    const btns = this.shadowObj.querySelectorAll('div.themes > .themes-container > .theme > button');
+    if (btns) {
+      // select the other btn and remove activated class
+      btns.forEach(btn => {
+        btn.addEventListener('click', event => {
+          event.preventDefault();
+          const currentTheme = btn.getAttribute('name');
+          this.setTheme(currentTheme);
+  
+          // select the other btn and remove activated class
+          btns.forEach(btnInner => {
+            btnInner.classList.remove('activated');
+            btnInner.textContent = 'Activate';
+          });
+  
+          // update 
+          btn.classList.toggle('activated');
+          btn.textContent = 'Activated'
+        });
+        
+      });
+    }
+  }
+
+  setTheme = currentTheme =>{
+    // Check the current theme
+    const htmlElement = document.documentElement;
+    
+    // Update the data-theme attribute
+    htmlElement.setAttribute('data-theme', currentTheme);
+    
+    // Store the preference in local storage
+    localStorage.setItem('theme', currentTheme);
+    
+    // Update the theme-color meta tag
+    const metaThemeColor = document.querySelector("meta[name=theme-color]");
+    if (currentTheme === 'dark') {
+      metaThemeColor.setAttribute("content", "#000000");
+    } else {
+      metaThemeColor.setAttribute("content", "#ffffff");
+    }
+  }
+
   checkAndAddHandler() {
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
@@ -510,8 +554,12 @@ export default class AppUser extends HTMLElement {
       contentContainer.innerHTML = this.getActivity();
     } else if (name === 'updates') {
       contentContainer.innerHTML = this.getUpdates();
-    } else if (name === 'typography' || name === 'theme') {
+    } else if (name === 'typography') {
       contentContainer.innerHTML = this.getSoon();
+    } else if (name === 'theme') {
+      contentContainer.innerHTML = this.getThemes();
+      // activate theme icons
+      this.activateThemeIcons();
     } else if (name === 'content') {
       contentContainer.innerHTML = this.getContent();
     } else {
@@ -719,6 +767,60 @@ export default class AppUser extends HTMLElement {
         </p>
       </div>
     `
+  }
+
+  getThemes = () =>  {
+    // get theme from local storage
+    const theme = localStorage.getItem('theme') || 'light';
+
+    return /* html */`
+      <div class="themes">
+        <div class="top">
+          <p class="desc">
+            Choose a theme that suits your preference. You can switch between light and dark themes at any time.<br>
+            <span>Note that in the near future, we will be adding more themes to choose from, and will also allow you to create or customize your own theme.</span>
+          </p>
+        </div>
+        <div class="themes-container">
+          ${this.getCurrentTheme(theme)}
+        </div>
+        <p class="soon">
+          More themes will appear here once they are available. Stay tuned for updates and exciting announcements.
+        </p>
+      </div>
+    `;
+  }
+
+  getCurrentTheme = data => {
+    if (data === 'dark') {
+      return /*html*/`
+        <div class="theme">
+          <h4 class="name">Light</h4>
+          <p class="description">Light-colored background, dark-colored text, and improves readability.</p>
+          <button class="btn" name="light">Activate</button>
+        </div>
+        <div class="theme">
+          <h4 class="name">Dark</h4>
+          <p class="description">Dark-colored background, light-colored text, and also reduces eye strain.
+          </p>
+          <button class="btn activated" name="dark">Activated</button>
+        </div>
+      `
+    } else {
+      return /*html*/`
+        <div class="theme">
+          <h4 class="name">Light</h4>
+          <p class="description">Light-colored background, dark-colored text, and improves readability.</p>
+          <button class="btn activated" name="light">Activated</button>
+        </div>
+        <div class="theme">
+          <h4 class="name">Dark</h4>
+          <p class="description">Dark-colored background, light-colored text, and also reduces eye strain.
+          </p>
+          <button class="btn" name="dark">Activate</button>
+        </div>
+      `
+    }
   }
 
   getUpdates = () => {
@@ -1439,6 +1541,108 @@ export default class AppUser extends HTMLElement {
           text-align: center;
         }
 
+        div.themes {
+          display: flex;
+          flex-flow: column;
+          padding: 0;
+          width: 100%;
+          gap: 10px;
+          min-height: max-content;
+          height: max-content;
+        }
+
+        div.themes > .top > .desc {
+          margin: 0;
+          padding: 10px 0 0;
+          color: var(--text-color);
+          line-height: 1.2;
+          font-size: 1rem;
+          font-family: var(--font-main), sans-serif;
+        }
+
+        div.themes > .top > .desc > span {
+          display: inline-block;
+          margin: 10px 0 5px;
+          color: var(--gray-color);
+          font-size: 0.85rem;
+          font-style: italic;
+          font-family: var(--font-read), sans-serif;
+        }
+
+        div.themes > .themes-container {
+          display: flex;
+          color: var(--text-color);
+          padding: 0;
+          gap: 20px;
+          width: 100%;
+          min-height: max-content;
+          height: 100%;
+        }
+
+        div.themes > .themes-container > .theme {
+          display: flex;
+          flex-flow:column;
+          color: var(--text-color);
+          padding: 0;
+          gap: 5px;
+          width: 100%;
+          min-height: max-content;
+          height: 100%;
+        }
+
+        div.themes > .themes-container > .theme h4.name {
+          margin: 0;
+          font-weight: 600;
+          font-size: 1.15rem;
+          color: var(--title-color);
+        }
+
+        div.themes > .themes-container > .theme p.description {
+          margin: 0 0 5px;
+          font-size: 0.95rem;
+          color: var(--gray-color);
+        }
+
+        div.themes > .themes-container > .theme button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px 15px 5px;
+          height: max-content;
+          width: max-content;
+          border-radius: 10px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
+          background: var(--accent-linear);
+          color: var(--white-color);
+          font-weight: 500;
+          font-size: 0.9rem;
+          line-height: 1.3;
+          font-weight: 500;
+          font-family: var(--font-text), sans-serif;
+          cursor: pointer;
+          outline: none;
+          border: none;
+          text-transform: capitalize;
+        }
+
+        div.themes > .themes-container > .theme button.activated {
+          background: none;
+          padding: 4px 10px 5px;
+          color: var(--highlight-color);
+          background-color: var(--gray-background);
+        }
+
+        div.themes p.soon {
+          margin: 5px 0;
+          padding: 10px 0;
+          color: var(--gray-color);
+          font-size: 0.85rem;
+          font-style: italic;
+          font-family: var(--font-read), sans-serif;
+          border-top: var(--border);
+        }
+
 				@media screen and (max-width:900px) {
           section.tab {
             padding: 0;
@@ -1447,6 +1651,29 @@ export default class AppUser extends HTMLElement {
           section.content {
             width: 62%;
           }
+
+          div.themes > .themes-container {
+            flex-flow: column;
+            gap: 0;
+          }
+
+          div.themes > .themes-container > .theme {
+            display: flex;
+            flex-flow:column;
+            color: var(--text-color);
+            margin: 0 0 5px;
+            padding: 10px 0;
+            gap: 5px;
+            width: 100%;
+            min-height: max-content;
+            height: 100%;
+            border-top: var(--border);
+          }
+
+          div.themes > .themes-container > .theme:last-of-type {
+            margin: 0;
+            padding: 10px 0 0;
+          }
         }
 
 				@media screen and (max-width:660px) {
@@ -1454,6 +1681,7 @@ export default class AppUser extends HTMLElement {
             font-size: 16px;
 					}
 
+          div.themes > .themes-container > .theme button,
           svg {
             cursor: default !important;
           }
