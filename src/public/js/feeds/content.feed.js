@@ -26,7 +26,9 @@ export default class ContentFeed extends HTMLElement {
     this.fetchFeeds(contentContainer);
 
     // watch event 
-    this.scrollEvent(contentContainer)
+    setTimeout(() => {
+      this.scrollEvent(contentContainer);
+    }, 3000);
   }
 
   fetching = (url, feedContainer) => {

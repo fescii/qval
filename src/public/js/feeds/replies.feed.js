@@ -28,7 +28,9 @@ export default class RepliesFeed extends HTMLElement {
     // check if the container exists
     if (repliesContainer) {
       this.fetchReplies(repliesContainer);
-      this.scrollEvent(repliesContainer);
+      setTimeout(() => {
+        this.scrollEvent(repliesContainer);
+      }, 2000);
     }
   }
 

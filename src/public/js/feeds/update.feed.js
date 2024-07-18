@@ -24,7 +24,9 @@ export default class UpdateFeed extends HTMLElement {
     this.fetchActivities(contentContainer);
 
     // watch event 
-    this.scrollEvent(contentContainer)
+    setTimeout(() => {
+      this.scrollEvent(contentContainer);
+    }, 3000);
   }
 
   fetching = (url, activitiesContainer) => {

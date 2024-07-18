@@ -30,7 +30,9 @@ export default class StoryFeed extends HTMLElement {
       this._block = false;
       this._empty = false;
       this.fetchReplies(storiesContainer);
-      this.scrollEvent(storiesContainer);
+      setTimeout(() => {
+        this.scrollEvent(storiesContainer);
+      }, 2000);
     }
   }
 

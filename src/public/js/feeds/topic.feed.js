@@ -28,7 +28,9 @@ export default class TopicFeed extends HTMLElement {
     // check if the total
     if (topicsContainer) {
       this.fetchReplies(topicsContainer);
-      this.scrollEvent(topicsContainer);
+      setTimeout(() => {
+        this.scrollEvent(topicsContainer);
+      }, 2000);
     }
   }
 

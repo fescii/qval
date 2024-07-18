@@ -5,6 +5,8 @@ export default class DiscoverPeople extends HTMLElement {
 
 		this._url = this.getAttribute('url');
 
+		this._isHome = this.getAttribute('home') === 'true';
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -22,68 +24,67 @@ export default class DiscoverPeople extends HTMLElement {
     const contentContainer = this.shadowObj.querySelector('.people-list');
 
 		if (contentContainer) {
-			this.fetchPeople(contentContainer, mql.matches);
+			if (this._isHome) {
+				setTimeout(() => {
+					this.fetchPeople(contentContainer, mql.matches);
+				}, 1000);
+			}
+			else {
+				this.fetchPeople(contentContainer, mql.matches);
+			}
 		}
   }
 
   fetchPeople = (contentContainer, mql) => {
     const outerThis = this;
 		const peopleLoader = this.shadowObj.querySelector('authors-loader');
-		setTimeout(() => {
-      // fetch the user stats
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(result => {
-					const data = result.data;
-          // check for success response
-          if (result.success) {
-            if(data.people.length === 0) {
-              // display empty message
-              const content = outerThis.getEmpty();
-							// remove loader
-							peopleLoader.remove();
-              contentContainer.insertAdjacentHTML('beforeend', content);
-              return;
-            }
-            // update the content
-            const content = outerThis.mapUsers(data.people);
-            // remove loader
+		const options = {
+			method: 'GET',
+			// set the cache control to max-age to 1 day
+			"Cache-Control": "max-age=86400",
+			"Accept": "application/json"
+		}
+		this.getCacheData(this._url, options)
+			.then(result => {
+				const data = result.data;
+				// check for success response
+				if (result.success) {
+					if (data.people.length === 0) {
+						// display empty message
+						const content = outerThis.getEmpty();
+						// remove loader
 						peopleLoader.remove();
-						// add title
-						contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
-            contentContainer.insertAdjacentHTML('beforeend', content);
-						// activate controls
-						if(mql) {
-							outerThis.activateControls(contentContainer);
-						}
-          }
-          else {
-            // display error message
-            const content = outerThis.getEmpty();
-            // remove loader
-						peopleLoader.remove();
-            contentContainer.insertAdjacentHTML('beforeend', content);;
-          }
-        })
-        .catch(error => {
-					// console.error(error);
-          // display error message
-          const content = outerThis.getEmpty();
-          // remove loader
+						contentContainer.insertAdjacentHTML('beforeend', content);
+						return;
+					}
+					// update the content
+					const content = outerThis.mapUsers(data.people);
+					// remove loader
 					peopleLoader.remove();
-          contentContainer.insertAdjacentHTML('beforeend', content);
-        });
-		}, 1000)
+					// add title
+					contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
+					contentContainer.insertAdjacentHTML('beforeend', content);
+					// activate controls
+					if (mql) {
+						outerThis.activateControls(contentContainer);
+					}
+				}
+				else {
+					// display error message
+					const content = outerThis.getEmpty();
+					// remove loader
+					peopleLoader.remove();
+					contentContainer.insertAdjacentHTML('beforeend', content);;
+				}
+			})
+			.catch(error => {
+				// console.error(error);
+				// display error message
+				const content = outerThis.getEmpty();
+				// remove loader
+				peopleLoader.remove();
+				contentContainer.insertAdjacentHTML('beforeend', content);
+			});
 	}
 
   fetchWithTimeout = (url, options, timeout = 9500) => {
@@ -112,7 +113,27 @@ export default class DiscoverPeople extends HTMLElement {
           }
         });
     });
-  };
+  }
+
+	getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 
 	mapUsers = data => {
     return data.map(user => {

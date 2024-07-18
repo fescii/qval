@@ -31,7 +31,9 @@ export default class PeopleFeed extends HTMLElement {
 		// check total
 		if (peopleContainer) {
       this.fetchPeople(peopleContainer);
-			this.scrollEvent(peopleContainer);     
+      setTimeout(() => {
+        this.scrollEvent(peopleContainer);
+      }, 2000);     
 		}
   }
 
