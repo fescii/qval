@@ -341,7 +341,7 @@ export default class HeaderWrapper extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   getCacheData = async (url, options) => {
     const outerThis = this;
