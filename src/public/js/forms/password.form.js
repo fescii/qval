@@ -136,28 +136,33 @@ export default class FormPassword extends HTMLElement {
     });
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        // Throw a custom error
-        // throw new Error('Request timed out');
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   getServerSuccessMsg = (success, text) => {
     if (!success) {

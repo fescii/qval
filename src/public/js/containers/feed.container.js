@@ -46,6 +46,8 @@ export default class FeedContainer extends HTMLElement {
     const outerThis = this;
     this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
       response.json().then((result) => {
+        // check if the request was aborted
+
         if (result.success) {
           const data = result.data;
           // console.log(data)
@@ -192,27 +194,33 @@ export default class FeedContainer extends HTMLElement {
     `
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   parseToNumber = num_str => {
     // Try parsing the string to an integer
@@ -464,7 +472,7 @@ export default class FeedContainer extends HTMLElement {
         @media screen and (max-width:660px) {
           .last {
             width: 100%;
-            padding: 5px 0 10px;
+            padding: 15px 0;
             border-bottom: var(--border);
             display: flex;
             flex-flow: column;
@@ -474,7 +482,7 @@ export default class FeedContainer extends HTMLElement {
 
           .empty {
             width: 100%;
-            padding: 5px 0 10px;
+            padding: 20px 0;
             display: flex;
             flex-flow: column;
             align-items: center;
