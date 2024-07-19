@@ -74,6 +74,7 @@ import CustomSpan from "./elements/span.element.js";
 import QuickPost from "./post/quick.post.js";
 import PollPoll from "./post/poll.post.js";
 import StoryPost from "./post/story.post.js";
+import PreviewPost from "./post/preview.post.js";
 
 // Import feeds
 import ActivityFeed from "./feeds/activity.feed.js";
@@ -193,6 +194,7 @@ customElements.define("custom-span", CustomSpan, { extends: "span" });
 customElements.define("quick-post", QuickPost);
 customElements.define("poll-post", PollPoll);
 customElements.define("story-post", StoryPost);
+customElements.define("preview-post", PreviewPost);
 
 // Register feeds
 customElements.define("activity-feed", ActivityFeed);

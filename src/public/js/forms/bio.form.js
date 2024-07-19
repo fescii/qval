@@ -160,7 +160,7 @@ export default class FormBio extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   getServerSuccessMsg = (success, text) => {
     if (!success) {

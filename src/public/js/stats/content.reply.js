@@ -187,7 +187,7 @@ export default class ContentReply extends HTMLElement {
     const parent = this.getAttribute('parent');
     let text = parent ? `parent="${parent}"` : '';
     return /* html */`
-      <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+      <app-post story="reply" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
         likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text}
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
@@ -203,138 +203,138 @@ export default class ContentReply extends HTMLElement {
 
   getStyles() {
     return /* css */`
-    <style>
-      *,
-      *:after,
-      *:before {
-        box-sizing: border-box !important;
-        font-family: inherit;
-        -webkit-box-sizing: border-box !important;
-      }
+      <style>
+        *,
+        *:after,
+        *:before {
+          box-sizing: border-box !important;
+          font-family: inherit;
+          -webkit-box-sizing: border-box !important;
+        }
 
-      *:focus {
-        outline: inherit !important;
-      }
+        *:focus {
+          outline: inherit !important;
+        }
 
-      *::-webkit-scrollbar {
-        -webkit-appearance: none;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        padding: 0;
-        margin: 0;
-        font-family: inherit;
-      }
-
-      p,
-      ul,
-      ol {
-        padding: 0;
-        margin: 0;
-      }
-
-      a {
-        text-decoration: none;
-      }
-
-      :host {
-        font-size: 16px;
-        display: flex;
-        flex-flow: column;
-        gap: 10px;
-        padding: 10px 0;
-        width: 100%;
-      }
-
-      .content {
-        color: var(--text-color);
-        font-family: var(--font-text), sans-serif;
-        display: flex;
-        flex-flow: column;
-        font-size: 1rem;
-        gap: 5px;
-        padding: 0;
-        width: 100%;
-      }
-
-      .actions {
-        display: flex;
-        font-family: var(--font-main), sans-serif;
-        width: 100%;
-        flex-flow: row;
-        align-items: center;
-        gap: 15px;
-        margin: 0;
-      }
-      
-      .actions > .action {
-        border: var(--border-button);
-        text-decoration: none;
-        color: var(--gray-color);
-        font-size: 0.9rem;
-        display: flex;
-        width: max-content;
-        flex-flow: row;
-        align-items: center;
-        text-transform: lowercase;
-        justify-content: center;
-        padding: 1.5px 10px 2.5px;
-        border-radius: 10px;
-      }
-
-      .actions > .action.edit {
-        border: none;
-        background: var(--action-linear);
-        color: var(--white-color);
-        font-size: 0.9rem;
-      }
-
-      .actions > .action.plain {
-        padding: 0;
-        font-weight: 500;
-        pointer-events: none;
-        font-family: var(--font-text), sans-serif;
-        color: var(--gray-color);
-        border: none;
-        background: none;
-      }
-      
-      .actions > .action.plain > span.no {
-        font-family: var(--font-main), sans-serif;
-        font-size: 0.85rem;
-        color: var(--text-color);
-      }
-
-      .actions > .action.plain > span.text {
-        display: inline-block;
-        padding: 0 0 0 3px;
-      }
-
-      @media screen and (max-width:660px) {
-        ::-webkit-scrollbar {
+        *::-webkit-scrollbar {
           -webkit-appearance: none;
         }
 
-        .actions {
-          width: 100%;
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          padding: 0;
+          margin: 0;
+          font-family: inherit;
         }
 
-        .actions > .action.plain > span.no {
-          font-family: var(--font-main), sans-serif;
-          font-size: 0.8rem;
-          color: var(--text-color);
+        p,
+        ul,
+        ol {
+          padding: 0;
+          margin: 0;
         }
 
         a {
-          cursor: default !important;
+          text-decoration: none;
         }
-      }
-    </style>
+
+        :host {
+          font-size: 16px;
+          display: flex;
+          flex-flow: column;
+          gap: 10px;
+          padding: 10px 0;
+          width: 100%;
+        }
+
+        .content {
+          color: var(--text-color);
+          font-family: var(--font-text), sans-serif;
+          display: flex;
+          flex-flow: column;
+          font-size: 1rem;
+          gap: 5px;
+          padding: 0;
+          width: 100%;
+        }
+
+        .actions {
+          display: flex;
+          font-family: var(--font-main), sans-serif;
+          width: 100%;
+          flex-flow: row;
+          align-items: center;
+          gap: 15px;
+          margin: 0;
+        }
+        
+        .actions > .action {
+          border: var(--border-button);
+          text-decoration: none;
+          color: var(--gray-color);
+          font-size: 0.9rem;
+          display: flex;
+          width: max-content;
+          flex-flow: row;
+          align-items: center;
+          text-transform: lowercase;
+          justify-content: center;
+          padding: 1.5px 10px 2.5px;
+          border-radius: 10px;
+        }
+
+        .actions > .action.edit {
+          border: none;
+          background: var(--action-linear);
+          color: var(--white-color);
+          font-size: 0.9rem;
+        }
+
+        .actions > .action.plain {
+          padding: 0;
+          font-weight: 500;
+          pointer-events: none;
+          font-family: var(--font-text), sans-serif;
+          color: var(--gray-color);
+          border: none;
+          background: none;
+        }
+        
+        .actions > .action.plain > span.no {
+          font-family: var(--font-main), sans-serif;
+          font-size: 0.85rem;
+          color: var(--text-color);
+        }
+
+        .actions > .action.plain > span.text {
+          display: inline-block;
+          padding: 0 0 0 3px;
+        }
+
+        @media screen and (max-width:660px) {
+          ::-webkit-scrollbar {
+            -webkit-appearance: none;
+          }
+
+          .actions {
+            width: 100%;
+          }
+
+          .actions > .action.plain > span.no {
+            font-family: var(--font-main), sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-color);
+          }
+
+          a {
+            cursor: default !important;
+          }
+        }
+      </style>
     `;
   }
 }
