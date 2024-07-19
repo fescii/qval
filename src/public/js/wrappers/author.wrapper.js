@@ -458,7 +458,7 @@ export default class AuthorWrapper extends HTMLElement {
               actions.style.setProperty('border-bottom', 'var(--border)');
 
               // Collapse the content container
-              svg.style.transform = 'rotate(180deg)';
+              svg.style.transform = 'rotate(0deg)';
               contentContainer.dataset.expanded = 'true';
             }
             else {
@@ -474,7 +474,7 @@ export default class AuthorWrapper extends HTMLElement {
               actions.style.setProperty('border-bottom', 'none');
 
               // Expand the content container
-              svg.style.transform = 'rotate(0deg)';
+              svg.style.transform = 'rotate(180deg)';
               contentContainer.dataset.expanded = 'false';
             }
           })
@@ -1134,7 +1134,6 @@ export default class AuthorWrapper extends HTMLElement {
             display: inline-block;
             position: absolute;
             top: 20px;
-            rotate: 180deg;
             right: 5px;
             color: var(--title-color);
             cursor: default !important;

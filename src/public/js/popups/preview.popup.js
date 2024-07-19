@@ -286,7 +286,7 @@ export default class PreviewPopup extends HTMLElement {
     return /*html*/`
       <app-post story="reply" tab="replies" hash="${reply.hash}" url="/r/${reply.hash.toLowerCase()}" likes="${reply.likes}" liked="${reply.liked}"
         replies="${reply.replies}" views="${reply.views}" time="${reply.createdAt}" replies-url="/api/v1/r/${reply.hash}/replies" 
-        parent="${reply.story ? reply.story : reply.reply}" likes-url="/api/v1/r/${reply.hash}/likes" 
+        parent="${reply.story ? reply.story : reply.reply}" preview="full" likes-url="/api/v1/r/${reply.hash}/likes" 
         author-url="/u/${author.hash}" author-hash="${author.hash}" author-you="${reply.you}" author-stories="${author.stories}" 
         author-replies="${author.replies}" author-img="${author.picture}" author-verified="${author.verified}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
         author-name="${author.name}" author-followers="${author.followers}" author-following="${author.following}" 

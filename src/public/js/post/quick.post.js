@@ -502,9 +502,10 @@ export default class QuickPost extends HTMLElement {
   getFullPost = () => {
     const parent = this.getAttribute('parent');
     let text = parent ? `parent="${parent}"` : '';
+    const story = this.getAttribute('story') === 'quick' ? 'quick' : 'reply';
     return /* html */`
-      <app-post story="quick" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
-        likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text}
+      <app-post story="${story}" tab="replies" url="${this.getAttribute('url')}" hash="${this.getAttribute('hash')}"
+        likes="${this.getAttribute('likes')}" replies="${this.getAttribute('replies')}" ${text} preview="full"
         replies-url="${this.getAttribute('replies-url')}" likes-url="${this.getAttribute('likes-url')}"
         liked="${this.getAttribute('liked')}" views="${this.getAttribute('views')}" time="${this.getAttribute('time')}"
         author-stories="${this.getAttribute('author-stories')}" author-replies="${this.getAttribute('author-replies')}" author-contact='${this.getAttribute("author-contact")}'
