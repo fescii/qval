@@ -266,7 +266,7 @@ export default class StatReply extends HTMLElement {
         width: 100%;
         flex-flow: row;
         align-items: center;
-        gap: 8px;
+        gap: 15px;
         margin: 0;
       }
       

@@ -74,26 +74,33 @@ export default class TopicPopup extends HTMLElement {
 		}, 2000)
 	}
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   formatNumber = n => {
     if (n >= 0 && n <= 999) {
@@ -614,8 +621,6 @@ export default class TopicPopup extends HTMLElement {
         @media screen and ( max-width: 600px ){
           :host {
             border: none;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
             background-color: var(--modal-background);
             padding: 0px;
             justify-self: end;

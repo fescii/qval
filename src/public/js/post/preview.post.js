@@ -1,12 +1,13 @@
-export default class PreviewPopup extends HTMLElement {
+export default class PreviewPost extends HTMLElement {
   constructor() {
-
     // We are not even going to touch this.
     super();
 
     this._url = this.getAttribute('url');
 
-    this._story = '';
+    this._story = null;
+    this._reply = null;
+    this._item = '';
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({mode: 'open'});
@@ -19,23 +20,78 @@ export default class PreviewPopup extends HTMLElement {
   }
 
   connectedCallback() {
-    this.disableScroll();
-
-    // Select the close button & overlay
-    const overlay = this.shadowObj.querySelector('.overlay');
-    const btns = this.shadowObj.querySelectorAll('.cancel-btn');
     const contentContainer = this.shadowObj.querySelector('div.preview');
 
     // Close the modal
-    if (overlay && btns && contentContainer) {
-      this.fetchPreview(contentContainer);
-      this.closePopup(overlay, btns);
+    if (contentContainer) {
+      this.activateBtn(contentContainer);
+      this.activateFetchPreview(contentContainer);
     }
   }
 
-  fetchPreview = (contentContainer) => {
+  activateFetchPreview = contentContainer => {
+    const kind = this.getAttribute('preview');
+
+    // if the kind is full, fetch the preview
+    if (kind === 'full') {
+      this.fetchPreview(contentContainer);
+    }
+  }
+
+  activateBtn = contentContainer => {
+    const btn = this.shadowObj.querySelector('button.fetch');
+
+    if (btn && contentContainer) {
+      btn.addEventListener('click', event => {
+        event.preventDefault();
+        this.fetchPreview(contentContainer);
+      })
+    }
+  }
+
+  activateCloseBtn = contentContainer => {
     const outerThis = this;
-		const previewLoader = this.shadowObj.querySelector('.loader-container');
+    const closeBtn = this.shadowObj.querySelector('.action.close');
+
+    if (closeBtn && contentContainer) {
+      closeBtn.addEventListener('click', event => {
+        event.preventDefault();
+        contentContainer.innerHTML = /*html*/`<button class="fetch">Preview</button>`;
+
+        // activate the button
+        outerThis.activateBtn(contentContainer);
+      });
+    }
+  }
+
+  fetchPreview = contentContainer => {
+    const outerThis = this;
+    // Add the loader
+    contentContainer.innerHTML = this.getLoader();
+		const previewLoader = this.shadowObj.querySelector('#loader-container');
+
+    // Check if reply or story is already fetched
+    if (this._story || this._reply) {
+      // remove the loader
+      previewLoader.remove();
+      
+      const likes = this._story ? this._story.likes : this._reply.likes;
+      const views = this._story ? this._story.views : this._reply.views;
+      const url = this._story ? `/p/${this._story.hash.toLowerCase()}` : `/r/${this._reply.hash.toLowerCase()}`;
+      const itemContent = this._story ? outerThis.removeHtml(this._story.content, this._story.title) : outerThis.removeHtml(this._reply.content, null);
+      const content = outerThis.getContent(itemContent, url, this._story ? this._story.story_author.hash : this._reply.reply_author.hash, views, likes);
+
+      // insert the content
+      contentContainer.innerHTML = content;;
+
+      // activate the close button
+      outerThis.activateCloseBtn(contentContainer);
+
+      // open the story
+      this.openStory();
+      return;
+    }
+
 		setTimeout(() => {
       // fetch the user stats
       const options = {
@@ -55,84 +111,79 @@ export default class PreviewPopup extends HTMLElement {
           if (result.success) {
             if(result.reply) {
               const reply = result.reply;
-              outerThis._story = outerThis.mapReply(reply);
+              outerThis._reply = reply;
+              outerThis._item = outerThis.mapReply(reply);
               const replyContent = outerThis.removeHtml(reply.content, null);
               const content = outerThis.getContent(replyContent, `/r/${reply.hash.toLowerCase()}`, reply.reply_author.hash, reply.views, reply.likes);
 
               // remove the loader
               previewLoader.remove();
+
               // insert the content
-              contentContainer.insertAdjacentHTML('beforeend', content);
+              contentContainer.innerHTML = content;;
+
+              // activate the close button
+              outerThis.activateCloseBtn(contentContainer);
 
               // open the story
               outerThis.openStory();
             }
             else if (result.story){
               const story = result.story;
+              outerThis._story = story;
               const storyContent = outerThis.removeHtml(story.content, story.title);
-              outerThis._story = outerThis.mapStory(story);
+              outerThis._item = outerThis.mapStory(story);
               const content = outerThis.getContent(storyContent, `/p/${story.hash.toLowerCase()}`, story.story_author.hash, story.views, story.likes);
 
               // remove the loader
               previewLoader.remove();
 
               // insert the content
-              contentContainer.insertAdjacentHTML('beforeend', content);
+              contentContainer.innerHTML = content;;
+
+              // activate the close button
+              outerThis.activateCloseBtn(contentContainer);
 
               // open the story
               outerThis.openStory();
             }
-            else if (result.user){
-              const user = result.user;
-              const bio = user.bio === null ? 'This user has not added a bio yet.' : user.bio;
-              const userContent = outerThis.removeHtml(bio, user.name);
-              outerThis._story = outerThis.mapUser(user);
-              const content = outerThis.getUserContent(userContent, `/u/${user.hash.toLowerCase()}`, user.hash, user.followers);
-
-              // remove the loader
-              previewLoader.remove();
-
-              // insert the content
-              contentContainer.insertAdjacentHTML('beforeend', content);
-
-              // open the story
-              outerThis.openStory();
-            }
-            else if (result.topic){
-              const topic = result.topic;
-              const topicContent = outerThis.removeHtml(topic.summary, topic.name);
-              outerThis._story = outerThis.mapTopic(topic);
-              const content = outerThis.getTopicContent(topicContent, `/t/${topic.hash.toLowerCase()}`, topic.author, topic.followers);
-
-              // remove the loader
-              previewLoader.remove();
-
-              // insert the content
-              contentContainer.insertAdjacentHTML('beforeend', content);
-
-              // open the story
-              outerThis.openStory();
-            }
-
             else {
               // display error message
               const content = outerThis.getEmpty();
               previewLoader.remove();
-              contentContainer.insertAdjacentHTML('beforeend', content);
+              contentContainer.innerHTML = content;;
+
+              // activate close button
+              outerThis.activateCloseBtn(contentContainer);
+
+              // activate the button
+              outerThis.activateBtn(contentContainer);
             }
           }
           else {
             // display error message
             const content = outerThis.getEmpty();
             previewLoader.remove();
-            contentContainer.insertAdjacentHTML('beforeend', content);
+            contentContainer.innerHTML = content;;
+
+            // activate close button
+            outerThis.activateCloseBtn(contentContainer);
+
+            // activate the button
+            outerThis.activateBtn(contentContainer);
           }
         })
         .catch(error => {
           // display error message
           const content = outerThis.getEmpty();
           previewLoader.remove();
-          contentContainer.insertAdjacentHTML('beforeend', content);
+          contentContainer.innerHTML = content;;
+
+          // activate close button
+          outerThis.activateCloseBtn(contentContainer);
+
+          // activate the button
+          outerThis.activateBtn(contentContainer);
         });
 		}, 2000)
 	}
@@ -163,7 +214,7 @@ export default class PreviewPopup extends HTMLElement {
           }
         });
     });
-  };
+  }
 
   removeHtml = (text, title)=> {
     let str = text;
@@ -200,7 +251,7 @@ export default class PreviewPopup extends HTMLElement {
         let url = content.getAttribute('href');
 
         // Get full post
-        const post =  this._story;
+        const post =  this._item;
   
         // replace and push states
         this.replaceAndPushStates(url, body, post);
@@ -296,71 +347,6 @@ export default class PreviewPopup extends HTMLElement {
     `
   }
 
-  mapUser = user => {
-    const url = `/u/${user.hash.toLowerCase()}`;
-    return /*html*/`
-			<app-profile tab="stories" hash="${user.hash}" you="${user.you}" url="${url}" stories="${user.stories}" replies="${user.replies}"
-        picture="${user.picture}" verified="${user.verified}" name="${user.name}" followers="${user.followers}" contact='${user.contact ? JSON.stringify(user.contact) : null}'
-        following="${user.following}" user-follow="${user.is_following}" bio="${user.bio === null ? 'The author has no bio yet!': user.bio }"
-        followers-url="/api/v1${url}/followers" following-url="/api/v1${url}/following"
-        stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies">
-			</app-profile>
-    `
-  }
-
-  mapTopic = topic => {
-    const author = topic.topic_author;
-    const sections = topic.topic_sections;
-    const url = `/t/${topic.hash.toLowerCase()}`;
-    let apiUrl = `/api/v1${url}`
-    // Remove all HTML tags
-    const noHtmlContent = topic.summary.replace(/<\/?[^>]+(>|$)/g, "");
-    return /*html*/`
-      <app-topic tab="article" hash="${topic.hash}" name="${topic.name}" summary="${noHtmlContent}" slug="${topic.slug}"
-        topic-follow="${topic.is_following}" subscribed="${topic.is_subscribed}" url="${url}" views="${topic.views}"
-        subscribers="${topic.subscribers}" followers="${topic.followers}" stories="${topic.stories}"
-        stories-url="${apiUrl}/stories" contributors-url="${apiUrl}/contributors" followers-url="${apiUrl}/followers" 
-        author-hash="${author.hash}" author-you="${topic.you}" author-url="/u/${author.hash}" 
-        author-stories="${author.stories}" author-replies="${author.replies}"
-        author-img="${author.picture}" author-verified="${author.verified}" author-name="${author.name}" author-followers="${author.followers}"
-        author-following="${author.following}" author-follow="${author.is_following}" author-contact='${author.contact ? JSON.stringify(author.contact) : null}'
-        author-bio="${author.bio === null ? 'The has not added their bio yet' : author.bio}">
-        ${sections}
-      </app-topic>
-    `
-  }
-
-  mapTopicSections = (data, hash) => {
-    if (data.length <= 0) {
-      return /*html*/`
-        <div class="empty">
-          <p>The topic has no information yet. You can contribute to this topic by adding relevant information about the topic.</p>
-          <a href="/t/${hash}/contribute" class="button">Contribute</a>
-        </div>
-      `;
-    }
-    else {
-      const html = data.map(section => {
-        const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
-        return /*html*/`
-          <div class="section" order="${section.order}" id="section${section.order}">
-            ${title}
-            ${section.content}
-          </div>
-        `
-      }).join('');
-  
-      const last = /*html*/`
-        <div class="last">
-          <p>Do you have more information about this topic? You can contribute to this topic by adding or editing information.</p>
-          <a href="/t/${hash}/contribute" class="button">Contribute</a>
-        </div>
-      `
-  
-      return html + last;
-    }
-  }
-
   formatNumber = n => {
     if (n >= 0 && n <= 999) {
       return n.toString();
@@ -390,9 +376,9 @@ export default class PreviewPopup extends HTMLElement {
     }
   }
 
-  parseToNumber = num_str => {
+  parseToNumber = str => {
     // Try parsing the string to an integer
-    const num = parseInt(num_str);
+    const num = parseInt(str);
 
     // Check if parsing was successful
     if (!isNaN(num)) {
@@ -423,44 +409,28 @@ export default class PreviewPopup extends HTMLElement {
     window.onscroll = function() {};
   }
 
-  // close the modal
-  closePopup = (overlay, btns) => {
-    overlay.addEventListener('click', e => {
-      e.preventDefault();
-      this.remove();
-    });
-
-    btns.forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.preventDefault();
-        this.remove();
-      });
-    })
-  }
-
   getTemplate() {
+    const className = this.getClass(this.getAttribute('preview'));
+    const parent = this.getAttribute('hash');
     // Show HTML Here
-    return `
-      <div class="overlay"></div>
-      <section id="content" class="content">
-        <span class="control cancel-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-            </svg>
-        </span>
-        ${this.getWelcome()}
-      </section>
-    ${this.getStyles()}`
-  }
-
-  getWelcome() {
     return /*html*/`
       <div class="welcome">
-        <h2>Preview</h2>
-        <div class="preview">
-				  ${this.getLoader()}
+        <div class="replying-to">
+          <span class="meta-reply">
+            <span class="text">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="16px" height="16px" fill="currentColor">
+                <path d="M88.2 309.1c9.8-18.3 6.8-40.8-7.5-55.8C59.4 230.9 48 204 48 176c0-63.5 63.8-128 160-128s160 64.5 160 128s-63.8 128-160 128c-13.1 0-25.8-1.3-37.8-3.6c-10.4-2-21.2-.6-30.7 4.2c-4.1 2.1-8.3 4.1-12.6 6c-16 7.2-32.9 13.5-49.9 18c2.8-4.6 5.4-9.1 7.9-13.6c1.1-1.9 2.2-3.9 3.2-5.9zM0 176c0 41.8 17.2 80.1 45.9 110.3c-.9 1.7-1.9 3.5-2.8 5.1c-10.3 18.4-22.3 36.5-36.6 52.1c-6.6 7-8.3 17.2-4.6 25.9C5.8 378.3 14.4 384 24 384c43 0 86.5-13.3 122.7-29.7c4.8-2.2 9.6-4.5 14.2-6.8c15.1 3 30.9 4.5 47.1 4.5c114.9 0 208-78.8 208-176S322.9 0 208 0S0 78.8 0 176zM432 480c16.2 0 31.9-1.6 47.1-4.5c4.6 2.3 9.4 4.6 14.2 6.8C529.5 498.7 573 512 616 512c9.6 0 18.2-5.7 22-14.5c3.8-8.8 2-19-4.6-25.9c-14.2-15.6-26.2-33.7-36.6-52.1c-.9-1.7-1.9-3.4-2.8-5.1C622.8 384.1 640 345.8 640 304c0-94.4-87.9-171.5-198.2-175.8c4.1 15.2 6.2 31.2 6.2 47.8l0 .6c87.2 6.7 144 67.5 144 127.4c0 28-11.4 54.9-32.7 77.2c-14.3 15-17.3 37.6-7.5 55.8c1.1 2 2.2 4 3.2 5.9c2.5 4.5 5.2 9 7.9 13.6c-17-4.5-33.9-10.7-49.9-18c-4.3-1.9-8.5-3.9-12.6-6c-9.5-4.8-20.3-6.2-30.7-4.2c-12.1 2.4-24.7 3.6-37.8 3.6c-61.7 0-110-26.5-136.8-62.3c-16 5.4-32.8 9.4-50 11.8C279 439.8 350 480 432 480z"/>
+              </svg>
+              <span class="reply">Replying to</span>
+            </span>
+            <span class="parent">${parent.toUpperCase()}</span>
+          </span>
         </div>
-			</div>
+        <div class="preview ${className}">
+          <button class="fetch">Preview</button>
+        </div>
+      </div>
+      ${this.getStyles()}
     `
   }
 
@@ -475,32 +445,11 @@ export default class PreviewPopup extends HTMLElement {
     `
   }
 
-  getUserContent = (content, url, hash, followers) => {
-    return /*html*/`
-      <p>${content}</p>
-      <span class="meta">
-        <span class="by">@</span>
-        <span class="hash">${hash}</span>
-      </span>
-      ${this.getUserActions(followers, url)}
-    `
-  }
-
-  getTopicContent = (content, url, hash, followers) => {
-    return /*html*/`
-      <p>${content}</p>
-      <span class="meta">
-        <span class="by">by</span>
-        <span class="hash">${hash}</span>
-      </span>
-      ${this.getTopicActions(followers, url)}
-    `
-  }
-
   getActions = (likes, views, url) => {
     return /*html*/`
       <div class="actions">
         <a href="${url}" class="action view" id="view-action">view</a>
+        <span class="action close" id="close-action">close</span>
         <span class="action likes plain">
           <span class="no">${this.formatNumber(likes)}</span> <span class="text">likes</span>
         </span>
@@ -511,44 +460,35 @@ export default class PreviewPopup extends HTMLElement {
     `
   }
 
-  getUserActions = (followers, url) => {
-    return /*html*/`
-      <div class="actions">
-        <a href="${url}" class="action view" id="view-action">view</a>
-        <span class="action likes plain">
-          <span class="no">${this.formatNumber(followers)}</span> <span class="text">followers</span>
-        </span>
-      </div>
-    `
-  }
-
-  getTopicActions = (followers, url) => {
-    return /*html*/`
-      <div class="actions">
-        <a href="${url}" class="action view" id="view-action">view</a>
-        <span class="action likes plain">
-          <span class="no">${this.formatNumber(followers)}</span> <span class="text">followers</span>
-        </span>
-      </div>
-    `
-  }
-
   getEmpty = () => {
     return /* html */`
       <div class="empty">
-        <p>There was an error fetching the preview.</p>
-        <p>Try refreshing the page or check your internet connection. If the problem persists, please contact support.</p>
+        <p>An error has occurred.</p>
+        <div class="actions">
+          <button class="fetch last">Retry</button>
+          <span class="action close" id="close-action">close</span>
+        </div>
       </div>
     `
   }
 
+  getFullCss = preview => {
+    if (preview === 'full') {
+      return "padding: 10px 0;"
+    } else {
+      return "padding: 0;"
+    }
+  }
+
+  getClass = preview => {
+    return preview === 'full' ? '' : 'feed';
+  }
+
   getLoader() {
-    return /* html */`
-      <div class="loader-container">
-        <span id="btn-loader">
-          <span class="loader-alt"></span>
-        </span>
-      </div>
+    return `
+      <div id="loader-container">
+				<div class="loader"></div>
+			</div>
     `
   }
 
@@ -562,73 +502,36 @@ export default class PreviewPopup extends HTMLElement {
         :host{
           border: none;
           padding: 0;
+          ${this.getFullCss(this.getAttribute('preview'))}
           justify-self: end;
           display: flex;
           flex-flow: column;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          z-index: 100;
           width: 100%;
-          min-width: 100vw;
-          position: fixed;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          left: 0;
+          min-width: 100%;
         }
 
-        div.overlay {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          height: 100%;
-          width: 100%;
-          background-color: var(--modal-background);
-          backdrop-filter: blur(3px);
-          -webkit-backdrop-filter: blur(3px);
-        }
-
-        div.loader-container {
-          position: relative;
-          width: 100%;
-          height: 150px;
-          padding: 20px 0 0 0;
-        }
-
-        #btn-loader {
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          z-index: 5;
+        #loader-container {
+          padding: 10px 0;
+          width: 50px;
+          background-color: var(--loader-background);
+          backdrop-filter: blur(1px);
+          -webkit-backdrop-filter: blur(1px);
           display: flex;
           align-items: center;
           justify-content: center;
           border-radius: inherit;
+          -webkit-border-radius: inherit;
+          -moz-border-radius: inherit;
         }
 
-        #btn-loader > .loader-alt {
-          width: 35px;
+        #loader-container > .loader {
+          width: 20px;
           aspect-ratio: 1;
           --_g: no-repeat radial-gradient(farthest-side, #18A565 94%, #0000);
           --_g1: no-repeat radial-gradient(farthest-side, #21D029 94%, #0000);
-          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
-          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
-          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
-          background-size: 30% 30%;
-          animation: l38 .9s infinite ease-in-out;
-          -webkit-animation: l38 .9s infinite ease-in-out;
-        }
-
-        #btn-loader > .loader {
-          width: 20px;
-          aspect-ratio: 1;
-          --_g: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
-          --_g1: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
           --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
           --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
           background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
@@ -643,53 +546,44 @@ export default class PreviewPopup extends HTMLElement {
           }
         }
 
-        #content {
-          z-index: 1;
-          background-color: var(--background);
-          padding: 35px 15px 20px;
+        .welcome {
+          width: 100%;
+          height: max-content;
+          position: relative;
           display: flex;
           flex-flow: column;
           align-items: center;
           justify-content: center;
-          gap: 0;
-          width: 700px;
-          max-height: 90%;
-          height: max-content;
-          border-radius: 25px;
-          position: relative;
-        }
-  
-        #content span.control {
-          padding: 0;
-          cursor: pointer;
-          display: flex;
-          flex-flow: column;
-          gap: 0px;
-          justify-content: center;
-          position: absolute;
-          right: 14px;
-          top: 14px;
-        }
-
-        #content span.control svg {
-          width: 21px;
-          height: 21px;
-          color: var(--text-color);
-        }
-
-        #content span.control svg:hover{
-          color: var(--error-color);
+          row-gap: 0;
         }
 
         .preview {
           width: 100%;
+          position: relative;
           display: flex;
           flex-flow: column;
           color: var(--text-color);
           line-height: 1.4;
-          gap: 4px;
-          margin: 0;
-          padding: 0;
+          gap: 0;
+          margin: 2px 0;
+          padding: 0 0 0 15px;
+        }
+
+        .preview.feed {
+          padding: 0 0 0 10px;
+        }
+
+        .preview::before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          left: 0;
+          width: 1.5px;
+          height: 93%;
+          background: var(--action-linear);
+          border-radius: 5px;
         }
 
         .preview p,
@@ -699,7 +593,64 @@ export default class PreviewPopup extends HTMLElement {
         }
 
         .preview h3 {
-          margin: 0 0 5px 0;
+          margin: 0;
+        }
+
+        .replying-to {
+          position: relative;
+          text-decoration: none;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: start;
+          gap: 0;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .replying-to > .meta-reply {
+          display: flex;
+          width: max-content;
+          align-items: start;
+          color: var(--gray-color);
+          flex-flow: column;
+          font-size: 1rem;
+          gap: 2px;
+        }
+        
+        .replying-to > .meta-reply > .text {
+          display: flex;
+          align-items: center;
+          justify-content: start;
+          gap: 5px;
+        }
+
+        .replying-to > .meta-reply > .text > .reply {
+          display: flex;
+          font-size: 0.85rem;
+          font-family: var(--font-text), sans-serif;
+          padding: 0;
+          font-weight: 500;
+        }
+        
+        .replying-to > .meta-reply > .text > svg {
+          color: var(--gray-color);
+          width: 16px;
+          height: 16px;
+          display: inline-block;
+          margin: 0 0 1px 0px;
+        }
+        
+        .replying-to > .meta-reply .parent {
+          background: var(--action-linear);
+          font-family: var(--font-mono), monospace;
+          font-size: 0.8rem;
+          line-height: 1;
+          color: transparent;
+          font-weight: 600;
+          background-clip: text;
+          -webkit-background-clip: text;
+          -moz-background-clip: text;
         }
 
         .meta {
@@ -750,50 +701,55 @@ export default class PreviewPopup extends HTMLElement {
           font-family: var(--font-text), sans-serif;
         }
 
-        .welcome {
-          width: 90%;
-          display: flex;
-          flex-flow: column;
-          align-items: center;
-          justify-content: center;
-          row-gap: 0;
-        }
-
-        .welcome > h2 {
-          width: 100%;
-          font-size: 1.35rem;
-          font-weight: 600;
-          margin: 0 0 10px;
-          padding: 10px 10px;
-          background-color: var(--gray-background);
-          text-align: center;
-          border-radius: 12px;
-          font-family: var(--font-read), sans-serif;
-          color: var(--text-color);
-          font-weight: 500;
-        }
-
         div.empty {
           width: 100%;
           padding: 0;
           margin: 0;
           display: flex;
           flex-flow: column;
-          gap: 8px;
+          gap: 10px;
         }
 
         div.empty > p {
-          width: 100%;
+          width: max-content;
           padding: 0;
-          margin: 0;
-          color: var(--text-color);
-          font-family: var(--font-text), sans-serif;
+          margin: 5px 0 0 0;
+          color: var(--error-color);
+          font-family: var(--font-main), sans-serif;
           font-size: 1rem;
-          font-weight: 400;
+          font-weight: 500;
         }
 
-        div.empty > p.italics {
-          font-style: italic;
+        div.empty > .actions {
+          margin: 0;
+        }
+
+        button.fetch {
+          width: max-content;
+          margin: 10px 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2px 10px 3px;
+          font-size: 0.9rem;
+          font-family: var(--font-main), sans-serif;
+          font-weight: 500;
+          background: var(--accent-linear);
+          color: var(--white-color);
+          border: none;
+          border-radius: 10px;
+          cursor: pointer
+        }
+
+        button.fetch.last {
+          margin: 0 0 5px;
+        }
+
+        .preview.feed button.fetch {
+          margin: 5px 0 3px 0;
+          padding: 1px 10px 2px;
+          border-radius: 7px;
+          font-size: 0.8rem;
         }
         
         .actions {
@@ -802,14 +758,14 @@ export default class PreviewPopup extends HTMLElement {
           width: 100%;
           flex-flow: row;
           align-items: center;
-          gap: 20px;
-          margin: 10px 0 0;
+          gap: 15px;
+          margin: 10px 0 3px;
         }
         
         .actions > .action {
-          background: var(--accent-linear);
+          border: var(--border-button);
           text-decoration: none;
-          color: var(--white-color);
+          color: var(--gray-color);
           font-size: 0.9rem;
           display: flex;
           width: max-content;
@@ -817,10 +773,15 @@ export default class PreviewPopup extends HTMLElement {
           align-items: center;
           text-transform: lowercase;
           justify-content: center;
-          padding: 1px 15px 2px;
+          padding: 1px 10px 2px;
           border-radius: 10px;
           -webkit-border-radius: 10px;
           -moz-border-radius: 10px;
+        }
+
+        .actions > .action.close {
+          color: var(--error-color);
+          cursor: pointer;
         }
 
         .actions > .action.plain {
@@ -850,80 +811,22 @@ export default class PreviewPopup extends HTMLElement {
           }
         }
 
-        @media screen and ( max-width: 600px ){
+        @media screen and ( max-width: 660px ) {
           :host {
             border: none;
-            background-color: var(--modal-background);
-            padding: 0px;
+            ${this.getFullCss(this.getAttribute('preview'))}
             justify-self: end;
             display: flex;
             flex-flow: column;
             align-items: center;
-            justify-content: end;
-            gap: 10px;
-            z-index: 20;
-            position: fixed;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            left: 0;
-          }
-
-          #content {
-            box-sizing: border-box !important;
-            padding: 25px 0 0 0;
-            margin: 0;
-            width: 100%;
-            max-width: 100%;
-            max-height: 90%;
-            min-height: max-content;
-            border-radius: 0px;
-            border-top: var(--mobile-border);
-            border-top-right-radius: 15px;
-            border-top-left-radius: 15px;
-          }
-
-          #content span.control {
-            cursor: default !important;
-            display: none;
-            top: 15px;
-            right: 15px;
-          }
-
-          .welcome {
-            width: 100%;
-            padding: 0 15px 20px;
-            display: flex;
-            flex-flow: column;
-            align-items: center;
             justify-content: center;
-          }
-
-          .welcome > h2 {
+            gap: 10px;
             width: 100%;
-            font-size: 1.2rem;
-            margin: 0 0 10px;
-            padding: 10px 10px;
-            background-color: var(--gray-background);
-            text-align: center;
-            border-radius: 12px;
+            min-width: 100%;
           }
 
-          .welcome > .actions {
-            width: 100%;
-          }
-
-          .welcome > .actions .action {
-            background: var(--stage-no-linear);
-            text-decoration: none;
-            padding: 7px 20px 8px;
-            cursor: default;
-            margin: 10px 0;
-            width: 120px;
-            cursor: default !important;
-            border-radius: 12px;
-          }
-
+          button.fetch,
+          .actions > .action.close,
           a {
             cursor: default !important;
           }

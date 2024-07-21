@@ -26,29 +26,54 @@ export default class TopicsContainer extends HTMLElement {
 
 	fetching = (url, topicsContainer) => {
     const outerThis = this;
-    this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
-      response.json().then((result) => {
-        if (result.success) {
-					const data = result.data;
-					if(data.topics.length === 0) {
-						topicsContainer.innerHTML = outerThis.getWrongMessage();
-					}
-					else {
-						const content = outerThis.mapFields(data.topics);
-            topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
-          	topicsContainer.innerHTML =  content
-            outerThis.setLastItem(topicsContainer);
-					}
+    const options = { 
+      method: 'GET',
+      // set the cache control to max-age to 1 day
+      "Cache-Control": "max-age=86400",
+      "Accept": "application/json"
+    }
+    this.getCacheData(url, options)
+    .then(result => {
+      if (result.success) {
+        const data = result.data;
+        if(data.topics.length === 0) {
+          topicsContainer.innerHTML = outerThis.getWrongMessage();
         }
         else {
-          topicsContainer.innerHTML = outerThis.getWrongMessage();
+          const content = outerThis.mapFields(data.topics);
+          topicsContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle())
+          topicsContainer.innerHTML =  content
+          outerThis.setLastItem(topicsContainer);
         }
-        })
-        .catch((error) => {
-          console.log(error)
-          topicsContainer.innerHTML = outerThis.getWrongMessage();
-        });
+      }
+      else {
+        topicsContainer.innerHTML = outerThis.getWrongMessage();
+      }
+    })
+    .catch((error) => {
+      // console.log(error)
+      topicsContainer.innerHTML = outerThis.getWrongMessage();
     });
+  }
+
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   fetchTopics = topicsContainer => {
@@ -56,10 +81,7 @@ export default class TopicsContainer extends HTMLElement {
     const url = `${this._url}?limit=10`;
 
     if(!this._block && !this._empty) {
-      setTimeout(() => {
-        // fetch the topics
-        outerThis.fetching(url, topicsContainer)
-      }, 1000);
+      outerThis.fetching(url, topicsContainer);
     }
   }
 
@@ -74,7 +96,6 @@ export default class TopicsContainer extends HTMLElement {
     topicsContainer.insertAdjacentHTML('beforeend', content);
   }
   
-
   mapFields = data => {
     return data.map(topic => {
       const author = topic.topic_author;
@@ -127,27 +148,33 @@ export default class TopicsContainer extends HTMLElement {
     }
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   setLastItem = contentContainer => {
     // get last element child (topic)
@@ -187,7 +214,6 @@ export default class TopicsContainer extends HTMLElement {
 		return /*html*/`
 			<div class="title">
 				<h2>Most read topics</h2>
-				<p class="info">The most engaging topics on the platform</p>
 			</div>
 		`
 	}
@@ -261,7 +287,7 @@ export default class TopicsContainer extends HTMLElement {
 				  padding: 0;
 				  display: flex;
 				  flex-flow: column;
-				  gap: 8px;
+				  gap: 0;
 				}
 
 				.empty {
@@ -340,10 +366,10 @@ export default class TopicsContainer extends HTMLElement {
           display: flex;
 					width: 100%;
           flex-flow: column;
-					padding: 5px 5px 8px;
+					padding: 5px 10px 6px;
           gap: 0;
 					background: var(--light-linear);
-					border-radius: 10px;
+					border-radius: 7px;
         }
 
         .title > h2 {
@@ -378,16 +404,6 @@ export default class TopicsContainer extends HTMLElement {
 					a {
 						cursor: default !important;
 					}
-
-          .title {
-            display: flex;
-            width: 100%;
-            flex-flow: column;
-            padding: 5px 5px 5px;
-            gap: 0;
-            background: var(--light-linear);
-            border-radius: 10px;
-          }
 				}
 	    </style>
     `;

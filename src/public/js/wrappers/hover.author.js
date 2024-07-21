@@ -417,27 +417,33 @@ export default class HoverAuthor extends HTMLElement {
       });
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   updateFollowBtn = (following, btn) => {
     if (following) {
@@ -1088,7 +1094,7 @@ export default class HoverAuthor extends HTMLElement {
           align-items: center;
           gap: 5px;
           line-height: 1.2;
-          color: var(--text-color);
+          color: var(--title-color);
           font-family: var(--font-main), sans-serif;
           font-size: 1.1rem;
           font-weight: 600;
@@ -1157,9 +1163,9 @@ export default class HoverAuthor extends HTMLElement {
         }
         
         .stats > .stat > .number {
-          color: var(--text-color);
+          color: var(--highlight-color);
           font-family: var(--font-main), sans-serif;
-          font-size: 0.84rem;
+          font-size: 0.85rem;
           font-weight: 500;
           margin: 0 0 -2px 0;
         }

@@ -395,7 +395,6 @@ export default class UpdateItem extends HTMLElement {
         color: var(--gray-color);
         font-size: 0.9rem;
         font-family: var(--font-read), sans-serif;
-        /*font-style: italic;*/
       }
 
       .head span.author {
@@ -413,6 +412,13 @@ export default class UpdateItem extends HTMLElement {
         gap: 5px;
         padding: 0;
         width: 100%;
+      }
+
+      .content h4 {
+        color: var(--title-color);
+        font-weight: 500;
+        font-size: 1.1rem;
+        font-family: var(--font-text), sans-serif;
       }
 
       .foot {
@@ -443,12 +449,12 @@ export default class UpdateItem extends HTMLElement {
         width: 100%;
         flex-flow: row;
         align-items: center;
-        gap: 8px;
+        gap: 15px;
         margin: 5px 0 0 0;
       }
       
       .actions > .action {
-        border: var(--border);
+        border: var(--border-button);
         text-decoration: none;
         color: var(--gray-color);
         font-size: 0.9rem;

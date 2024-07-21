@@ -261,8 +261,6 @@ export default class UrlPopup extends HTMLElement {
           :host {
             border: none;
             background-color: var(--modal-background);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
             padding: 0px;
             justify-self: end;
             display: flex;

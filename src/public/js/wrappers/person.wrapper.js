@@ -268,27 +268,33 @@ export default class PersonWrapper extends HTMLElement {
       });
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   updateFollowBtn = (following, btn) => {
     if (following) {
@@ -667,6 +673,7 @@ export default class PersonWrapper extends HTMLElement {
           align-items: center;
           justify-content: center;
           border-radius: 50%;
+          color: var(--user-background);
         }
 
         .head > .avatar > svg path#top {
@@ -693,7 +700,6 @@ export default class PersonWrapper extends HTMLElement {
           font-family: var(--font-text), sans serif;
           font-weight: 500;
           font-size: 0.9rem;
-          /* prevet the text from overflowing */
           white-space: nowrap;
           overflow: hidden;
         }
@@ -767,7 +773,6 @@ export default class PersonWrapper extends HTMLElement {
         @media screen and (max-width:660px) {
           :host {
             font-size: 16px;
-            background-color: var(--author-background);
           }
 
           .action,

@@ -273,27 +273,33 @@ export default class VotesAuthor extends HTMLElement {
       });
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   showToast = (text, success) => {
     // Get the toast element
@@ -1003,10 +1009,11 @@ export default class VotesAuthor extends HTMLElement {
 
         .info > .total .total {
           font-family: var(--font-main), sans-serif;
-          font-weight: 500;
+          color: var(--highlight-color);
+          font-weight: 600;
           font-size: 0.8rem;
           display: inline-block;
-          margin: 2px 0 0 0;
+          margin: 1px 0 0 0;
         }
         .info .count {
           font-family: var(--font-main), sans-serif;

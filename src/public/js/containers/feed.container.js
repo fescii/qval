@@ -44,28 +44,32 @@ export default class FeedContainer extends HTMLElement {
 
   fetching = (url, feedContainer) => {
     const outerThis = this;
-    this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
-      response.json().then((result) => {
-        if (result.success) {
-          const data = result.data;
-          // console.log(data)
-          if (data.last && outerThis._page === 1 && data.stories.length === 0 && data.replies.length === 0) {
-            outerThis.populateFeeds(outerThis.getEmptyMsg(), feedContainer);
-          }
-          else {
-            const content = outerThis.mapFeeds(data.stories, data.replies);
-            outerThis.populateFeeds(content, feedContainer);
-            outerThis.setLastItem(feedContainer);
-          }
+    const options = { 
+      method: 'GET',
+      // set the cache control to max-age to 2 hours
+      "Cache-Control": "max-age=7200",
+      "Accept": "application/json"
+    }
+    this.getCacheData(url, options)
+    .then(result => {
+      if (result.success) {
+        const data = result.data;
+        if (data.last && outerThis._page === 1 && data.stories.length === 0 && data.replies.length === 0) {
+          outerThis.populateFeeds(outerThis.getEmptyMsg(), feedContainer);
         }
         else {
-          outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
+          const content = outerThis.mapFeeds(data.stories, data.replies);
+          outerThis.populateFeeds(content, feedContainer);
+          outerThis.setLastItem(feedContainer);
         }
-      })
-        .catch((error) => {
-          console.log(error)
-          outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
-        });
+      }
+      else {
+        outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
+      }
+    })
+    .catch((error) => {
+      // console.log(error)
+      outerThis.populateFeeds(outerThis.getWrongMessage(), feedContainer);
     });
   }
 
@@ -76,10 +80,8 @@ export default class FeedContainer extends HTMLElement {
     if (!this._block && !this._empty) {
       outerThis._empty = true;
       outerThis._block = true;
-      setTimeout(() => {
-        // fetch the stories
-        outerThis.fetching(url, feedContainer)
-      }, 1000);
+      // fetch the stories
+      outerThis.fetching(url, feedContainer);
     }
   }
 
@@ -192,24 +194,50 @@ export default class FeedContainer extends HTMLElement {
     `
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
   }
@@ -464,7 +492,7 @@ export default class FeedContainer extends HTMLElement {
         @media screen and (max-width:660px) {
           .last {
             width: 100%;
-            padding: 5px 0 10px;
+            padding: 15px 0;
             border-bottom: var(--border);
             display: flex;
             flex-flow: column;
@@ -474,7 +502,7 @@ export default class FeedContainer extends HTMLElement {
 
           .empty {
             width: 100%;
-            padding: 5px 0 10px;
+            padding: 20px 0;
             display: flex;
             flex-flow: column;
             align-items: center;

@@ -317,7 +317,7 @@ export default class StatStory extends HTMLElement {
         width: 100%;
         flex-flow: row;
         align-items: center;
-        gap: 8px;
+        gap: 15px;
         margin: 5px 0 0 0;
       }
       

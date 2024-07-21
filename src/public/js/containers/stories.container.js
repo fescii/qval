@@ -18,73 +18,78 @@ export default class StoriesContainer extends HTMLElement {
   connectedCallback() {
     const contentContainer = this.shadowObj.querySelector('.stories');
 
-    this.fetchStories(contentContainer);
+    setTimeout(() => {
+      this.fetchStories(contentContainer);
+    }, 1000);
   }
 
-  fetchStories = (contentContainer) => {
+  fetchStories = contentContainer => {
     const outerThis = this;
-		setTimeout(() => {
-      // fetch the user stats
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          // check for success response
-          if (data.success) {
-            if(data.stories.length === 0) {
-              // display empty message
-              const content = outerThis.getEmpty();
-              contentContainer.innerHTML = content;
-              return;
-            }
-            // update the content
-            const content = outerThis.mapFields(data.stories);
-            contentContainer.innerHTML = content;
-            // set the last item border-bottom to none
-            outerThis.setLastItem(contentContainer);
-          }
-          else {
-            // display error message
+		// fetch the user stats
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    };
+
+    this.fetchWithTimeout(this._url, options)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        // check for success response
+        if (data.success) {
+          if(data.stories.length === 0) {
+            // display empty message
             const content = outerThis.getEmpty();
             contentContainer.innerHTML = content;
+            return;
           }
-        })
-        .catch(error => {
+          // update the content
+          const content = outerThis.mapFields(data.stories);
+          contentContainer.innerHTML = content;
+          // set the last item border-bottom to none
+          outerThis.setLastItem(contentContainer);
+        }
+        else {
           // display error message
           const content = outerThis.getEmpty();
           contentContainer.innerHTML = content;
-        });
-		}, 100)
+        }
+      })
+      .catch(error => {
+        // display error message
+        const content = outerThis.getEmpty();
+        contentContainer.innerHTML = content;
+      });
 	}
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        // Throw a custom error
-        // throw new Error('Request timed out');
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
   }
@@ -177,7 +182,7 @@ export default class StoriesContainer extends HTMLElement {
     return /* html */`
       <div class="empty">
         <p>There was a problem loading some of the content or the content is not available.</p>
-        <p>Try refreshing the page or check your internet connection. If the problem persists, please contact support.</p>
+        <p>Try refreshing the page or check your internet connection.</p>
       </div>
     `
   }
@@ -240,7 +245,7 @@ export default class StoriesContainer extends HTMLElement {
 
         div.empty {
           width: 100%;
-          padding: 0;
+          padding: 15px 0;
           margin: 0;
           display: flex;
           flex-flow: column;
@@ -249,7 +254,7 @@ export default class StoriesContainer extends HTMLElement {
 
         div.empty > p {
           width: 100%;
-          padding: 0;
+          padding: 15px 0;
           margin: 0;
           color: var(--text-color);
           font-family: var(--font-text), sans-serif;

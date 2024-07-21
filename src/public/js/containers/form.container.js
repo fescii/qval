@@ -168,11 +168,12 @@ export default class FormContainer extends HTMLElement {
 
         form.reply > textarea {
           border: none;
-          padding: 4px 0;
+          background-color: var(--background) !important;
+          padding: 4px 0 0 2px;
           margin: 0;
           width: calc(100% - 35px);
           resize: none;
-          height: 35px;
+          height: 45px;
           display: flex;
           flex-flow: column;
           align-items: center;
@@ -191,7 +192,6 @@ export default class FormContainer extends HTMLElement {
         }
 
         form.reply .footer {
-          /* border: var(--input-border); */
           padding: 0;
           width: 100%;
           display: flex;
@@ -201,7 +201,6 @@ export default class FormContainer extends HTMLElement {
         }
 
         form.reply .footer > .actions {
-          /* border: var(--input-border); */
           padding: 0;
           display: flex;
           align-items: center;

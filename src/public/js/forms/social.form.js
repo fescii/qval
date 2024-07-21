@@ -135,28 +135,33 @@ export default class FormName extends HTMLElement {
     });
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        // Throw a custom error
-        // throw new Error('Request timed out');
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
-  }
+  };
 
   getServerSuccessMsg = (success, text) => {
     if (!success) {
@@ -567,7 +572,7 @@ export default class FormName extends HTMLElement {
 
         form.fields .field input {
           border: var(--input-border);
-          background: var(--background);
+          background-color: var(--background) !important;
           font-size: 1rem;
           width: 100%;
           height: 40px;
@@ -575,10 +580,20 @@ export default class FormName extends HTMLElement {
           padding: 10px 12px;
           border-radius: 12px;
           color: var(--text-color);
-          -webkit-border-radius: 12px;
-          -moz-border-radius: 12px;
-          -ms-border-radius: 12px;
-          -o-border-radius: 12px;
+        }
+        
+        form.fields .field input:-webkit-autofill,
+        form.fields .field input:-webkit-autofill:hover, 
+        form.fields .field input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+          -webkit-text-fill-color: var(--text-color) !important;
+          transition: background-color 5000s ease-in-out 0s;
+          color: var(--text-color) !important;
+        }
+        
+        form.fields .field input:autofill {
+          filter: none;
+          color: var(--text-color) !important;
         }
 
         form.fields .field input:focus {

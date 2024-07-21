@@ -1915,8 +1915,8 @@ export default class AppLogon extends HTMLElement {
           justify-content: center;
           background-position: 100%;
           background-size: 1rem 1rem;
-          background-color: #f8f9fa;
-          background-image: radial-gradient(circle, #dee2e6 1px, rgba(0, 0, 0, 0) 1px);
+          background-color: var(--logon-background);
+          background-image: var(--logon-image);
         }
 
         #loader-container {
@@ -2167,7 +2167,7 @@ export default class AppLogon extends HTMLElement {
           margin: 10px 0;
           font-family: var(--font-text), sans-serif;
           text-align: center;
-          color: var(--text-color);
+          color: var(--title-color);
           line-height: 1.4;
           font-size: 1.5rem;
         }
@@ -2197,7 +2197,7 @@ export default class AppLogon extends HTMLElement {
           margin: 0;
           text-align: center;
           font-family: var(--font-read), sans-serif;
-          color: var(--text-color);
+          color: var(--highlight-color);
           line-height: 1.4;
           font-size: 1.15rem;
         }
@@ -2276,7 +2276,6 @@ export default class AppLogon extends HTMLElement {
 
         .logon-container>.welcome>.info a {
           color: var(--gray-color);
-          /* font-style: italic; */
           font-size: 1em;
         }
 
@@ -2392,6 +2391,8 @@ export default class AppLogon extends HTMLElement {
 
         .logon-container > .fields label {
           padding: 0 0 5px 0;
+          color: var(--highlight-color);
+          font-weight: 500;
           color: var(--text-color);
         }
 
@@ -2409,6 +2410,7 @@ export default class AppLogon extends HTMLElement {
 
         .logon-container > .fields .field input {
           border: var(--input-border);
+          background-color: var(--background) !important;
           font-size: 1rem;
           width: 100%;
           height: 40px;
@@ -2416,6 +2418,20 @@ export default class AppLogon extends HTMLElement {
           padding: 10px 12px;
           border-radius: 12px;
           color: var(--text-color);
+        }
+        
+        .logon-container > .fields .field input:-webkit-autofill,
+        .logon-container > .fields .field input:-webkit-autofill:hover, 
+        .logon-container > .fields .field input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+          -webkit-text-fill-color: var(--text-color) !important;
+          transition: background-color 5000s ease-in-out 0s;
+          color: var(--text-color) !important;
+        }
+        
+        .logon-container > .fields .field input:autofill {
+          filter: none;
+          color: var(--text-color) !important;
         }
 
         .logon-container > .fields .field input:focus {
@@ -2490,7 +2506,7 @@ export default class AppLogon extends HTMLElement {
           line-height: 1.2;
           font-size: 1.2rem;
           font-weight: 500;
-          color: var(--text-color);
+          color: var(--highlight-color);
           width: 120px;
           padding: 8px 10px;
           height: 40px;

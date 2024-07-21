@@ -23,8 +23,13 @@ export default class HomeFeed extends HTMLElement {
 
     // check if the total
     if (feedContainer) {
-      this.fetchFeeds(feedContainer);
-      this.scrollEvent(feedContainer);
+      setTimeout(() => {
+        this.fetchFeeds(feedContainer);
+      }, 2000);
+    
+      setTimeout(() => {
+        this.scrollEvent(feedContainer);
+      }, 4000);
     }
   }
 
@@ -93,10 +98,8 @@ export default class HomeFeed extends HTMLElement {
     if (!this._block && !this._empty) {
       outerThis._empty = true;
       outerThis._block = true;
-      setTimeout(() => {
-        // fetch the stories
-        outerThis.fetching(url, feedContainer)
-      }, 2000);
+      // fetch the stories
+      outerThis.fetching(url, feedContainer)
     }
   }
 
@@ -118,7 +121,10 @@ export default class HomeFeed extends HTMLElement {
       if (window.scrollY > margin && !outerThis._empty && !outerThis._block) {
         outerThis._page += 1;
         outerThis.populateFeeds(outerThis.getLoader(), feedContainer);
-        outerThis.fetchFeeds(feedContainer);
+
+        this.setTimeout(() => {
+          outerThis.fetchFeeds(feedContainer);
+        }, 2000);
       }
     });
 
@@ -225,24 +231,30 @@ export default class HomeFeed extends HTMLElement {
     `
   }
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
   }

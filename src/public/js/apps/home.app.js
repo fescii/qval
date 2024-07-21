@@ -114,10 +114,10 @@ export default class AppHome extends HTMLElement {
       return /* html */`
         ${this.getTop()}
         <add-container type="story"></add-container>
+        <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
         <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
         <topics-container url="/api/v1/q/trending/topics"></topics-container>
-        <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
-        <discover-people url="${this.getAttribute('trending-people')}"></discover-people>
+        <discover-people url="${this.getAttribute('trending-people')}" home="true"></discover-people>
         <home-feed url="${this.getAttribute('feeds-url')}" page="1"></home-feed>
       `;
     }
@@ -126,9 +126,9 @@ export default class AppHome extends HTMLElement {
         <div class="feeds">
           ${this.getTop()}
           <add-container type="story"></add-container>
-          <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
           <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
-          <discover-people url="${this.getAttribute('trending-people')}"></discover-people>
+          <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
+          <discover-people url="${this.getAttribute('trending-people')}"  home="true"></discover-people>
           <home-feed url="${this.getAttribute('feeds-url')}" page="1"></home-feed>
         </div>
         <div class="side">

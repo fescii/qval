@@ -250,6 +250,7 @@ export default class AppPost extends HTMLElement {
     if (mql.matches) {
       return /* html */`
         ${this.getTop()}
+        ${this.getReply(this.getAttribute('story'))}
         ${this.getPost(story)}
         ${this.getSection()}
       `;
@@ -258,6 +259,7 @@ export default class AppPost extends HTMLElement {
       return /* html */`
         <div class="feeds">
           ${this.getTop()}
+          ${this.getReply(this.getAttribute('story'))}
           ${this.getPost(story)}
           ${this.getSection()}
         </div>
@@ -344,6 +346,16 @@ export default class AppPost extends HTMLElement {
        feedback="/about/feedback" request="/about/request" code="/about/code" donate="/about/donate" contact="/about/contact" company="https://github.com/aduki-hub">
       </info-container>
     `
+  }
+
+  getReply = story => {
+    if (story === 'reply') {
+      const parent = this.getAttribute('parent');
+      let url = parent.startsWith('P') ? `/api/v1/p/${parent.toLowerCase()}/preview` : `/api/v1/r/${parent.toLowerCase()}/preview`;
+      return /*html*/`
+        <preview-post url="${url}" hash="${parent}" preview="full"></preview-post>
+      `
+    } else return '';
   }
 
   getStyles() {

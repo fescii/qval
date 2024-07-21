@@ -5,6 +5,8 @@ export default class DiscoverPeople extends HTMLElement {
 
 		this._url = this.getAttribute('url');
 
+		this._isHome = this.getAttribute('home') === 'true';
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -22,91 +24,115 @@ export default class DiscoverPeople extends HTMLElement {
     const contentContainer = this.shadowObj.querySelector('.people-list');
 
 		if (contentContainer) {
-			this.fetchPeople(contentContainer, mql.matches);
+			if (this._isHome) {
+				setTimeout(() => {
+					this.fetchPeople(contentContainer, mql.matches);
+				}, 1000);
+			}
+			else {
+				this.fetchPeople(contentContainer, mql.matches);
+			}
 		}
   }
 
   fetchPeople = (contentContainer, mql) => {
     const outerThis = this;
 		const peopleLoader = this.shadowObj.querySelector('authors-loader');
-		setTimeout(() => {
-      // fetch the user stats
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      };
-  
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
-        .then(result => {
-					const data = result.data;
-          // check for success response
-          if (result.success) {
-            if(data.people.length === 0) {
-              // display empty message
-              const content = outerThis.getEmpty();
-							// remove loader
-							peopleLoader.remove();
-              contentContainer.insertAdjacentHTML('beforeend', content);
-              return;
-            }
-            // update the content
-            const content = outerThis.mapUsers(data.people);
-            // remove loader
+		const options = {
+			method: 'GET',
+			// set the cache control to max-age to 1 day
+			"Cache-Control": "max-age=86400",
+			"Accept": "application/json"
+		}
+		this.getCacheData(this._url, options)
+			.then(result => {
+				const data = result.data;
+				// check for success response
+				if (result.success) {
+					if (data.people.length === 0) {
+						// display empty message
+						const content = outerThis.getEmpty();
+						// remove loader
 						peopleLoader.remove();
-						// add title
-						contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
-            contentContainer.insertAdjacentHTML('beforeend', content);
-						// activate controls
-						if(mql) {
-							outerThis.activateControls(contentContainer);
-						}
-          }
-          else {
-            // display error message
-            const content = outerThis.getEmpty();
-            // remove loader
-						peopleLoader.remove();
-            contentContainer.insertAdjacentHTML('beforeend', content);;
-          }
-        })
-        .catch(error => {
-					// console.error(error);
-          // display error message
-          const content = outerThis.getEmpty();
-          // remove loader
+						contentContainer.insertAdjacentHTML('beforeend', content);
+						return;
+					}
+					// update the content
+					const content = outerThis.mapUsers(data.people);
+					// remove loader
 					peopleLoader.remove();
-          contentContainer.insertAdjacentHTML('beforeend', content);
-        });
-		}, 1000)
+					// add title
+					contentContainer.insertAdjacentHTML('beforebegin', outerThis.getTitle());
+					contentContainer.insertAdjacentHTML('beforeend', content);
+					// activate controls
+					if (mql) {
+						outerThis.activateControls(contentContainer);
+					}
+				}
+				else {
+					// display error message
+					const content = outerThis.getEmpty();
+					// remove loader
+					peopleLoader.remove();
+					contentContainer.insertAdjacentHTML('beforeend', content);;
+				}
+			})
+			.catch(error => {
+				// console.error(error);
+				// display error message
+				const content = outerThis.getEmpty();
+				// remove loader
+				peopleLoader.remove();
+				contentContainer.insertAdjacentHTML('beforeend', content);
+			});
 	}
 
-  fetchWithTimeout = (url, options, timeout = 9000) => {
+  fetchWithTimeout = (url, options, timeout = 9500) => {
     return new Promise((resolve, reject) => {
       const controller = new AbortController();
       const signal = controller.signal;
-
-      setTimeout(() => {
+  
+      const timeoutId = setTimeout(() => {
         controller.abort();
-        // add property to the error object
         reject(new Error('Request timed out'));
-        // Throw a custom error
-        // throw new Error('Request timed out');
       }, timeout);
-
+  
       fetch(url, { ...options, signal })
         .then(response => {
+          clearTimeout(timeoutId);
           resolve(response);
         })
         .catch(error => {
-          reject(error);
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
         });
     });
+  }
+
+	getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
 	mapUsers = data => {
@@ -120,17 +146,16 @@ export default class DiscoverPeople extends HTMLElement {
     }).join('');
   }
 
-	// Activate controls
 	activateControls = contentContainer => {
 		// select all controls
-		const letfControl = this.shadowObj.querySelector('.control.left');
+		const leftControl = this.shadowObj.querySelector('.control.left');
 		const rightControl = this.shadowObj.querySelector('.control.right');
 
 		// If left control and right control exists
-		if (letfControl && rightControl) {
+		if (leftControl && rightControl) {
 
 			// add event listener to left control
-			letfControl.addEventListener('click', () => {
+			leftControl.addEventListener('click', () => {
 				// Scroll by 200px smoothly
 				contentContainer.scrollTo({
 					left: contentContainer.scrollLeft - 300,
@@ -203,7 +228,6 @@ export default class DiscoverPeople extends HTMLElement {
 		return /*html*/`
 			<div class="title">
 				<h2>Discover people</h2>
-				<p class="info">Trending authors on the platform</p>
 			</div>
 		`
 	}
@@ -300,32 +324,11 @@ export default class DiscoverPeople extends HTMLElement {
           font-weight: 400;
         }
 
-        .title {
-				  padding: 2px 0 10px 5px;
-				  display: flex;
-				  flex-flow: column;
-				  gap: 0;
-				}
-
-				.title h4 {
-				  color: #1f2937;
-				  font-size: 1.3rem;
-				  font-weight: 500;
-					padding: 0;
-					margin: 0;
-				}
-
-				.title > span {
-				  color: var(--gray-color);
-          font-family: var(--font-text);
-				  font-size: 0.85rem;
-				}
-
 				.people-list {
 					background-color: var(--background);
 					display: flex;
 					flex-flow: row;
-					padding: 0 50px 0 0;
+					padding: 0;
 					gap: 20px;
 					width: 100%;
           max-width: 100%;
@@ -344,10 +347,10 @@ export default class DiscoverPeople extends HTMLElement {
 					position: absolute;
 					z-index: 3;
 					opacity: 0;
-					top: 30%;
+					top: 20%;
 					left: 0;
 					width: 40px;
-					height: 70%;
+					height: 80%;
 					pointer-events: none;
 					display: flex;
 					align-items: center;
@@ -384,10 +387,10 @@ export default class DiscoverPeople extends HTMLElement {
           display: flex;
 					width: 100%;
           flex-flow: column;
-					padding: 5px 5px 8px;
+					padding: 5px 10px 6px;
           gap: 0;
 					background: var(--light-linear);
-					border-radius: 10px;
+					border-radius: 7px;
         }
 
         .title > h2 {
@@ -413,14 +416,6 @@ export default class DiscoverPeople extends HTMLElement {
         		font-size: 16px;
 						padding: 15px 0 10px;
 						border-bottom: none;
-					}
-
-					.title {
-						padding: 2px 0 10px 8px;
-						margin: 0 0 10px 0;
-						display: flex;
-						flex-flow: column;
-						gap: 0;
 					}
 
 					a {
