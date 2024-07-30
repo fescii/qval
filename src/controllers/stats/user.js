@@ -58,7 +58,7 @@ const getUserStats = async(req, res, next) => {
         current: thisMonth,
         topics: topics
       },
-      message: "The stats retrived successfully!"
+      message: "The stats retrieved successfully!"
     })
   } 
   catch (error) {

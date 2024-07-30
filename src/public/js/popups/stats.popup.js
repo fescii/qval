@@ -241,12 +241,12 @@ export default class StatsPopup extends HTMLElement {
       const percentageFormatted = percentage % 1 === 0 ? percentage : percentage.toFixed(1);
 
       // get the increase or decrease in views
-      increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
+      increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(Math.abs(percentageFormatted));
     }
 
     // format the number of followers, views, stories and topics
     const followersFormatted = this.formatNumber(followers);
-    const viewsFormatted = this.formatNumber(views);
+    const viewsFormatted = this.formatNumber(currentMonthViews);
     const storiesFormatted = this.formatNumber(stories);
     const topicsFormatted = this.formatNumber(topics);
 

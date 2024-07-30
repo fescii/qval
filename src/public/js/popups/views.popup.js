@@ -213,7 +213,7 @@ export default class ViewsPopup extends HTMLElement {
       </li>
       <div class="empty">
         <p> 
-          Views are simply the number of times the this content has been viewed by others, more views means more people are interested in this content.
+          Views are simply the number of times the this content has been viewed by others.
         </p>
       </div>
     `
