@@ -9,6 +9,8 @@ export default class HeaderWrapper extends HTMLElement {
     this._user = null;
     this._unverified = false;
 
+    this.fetchUpdate();
+
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
@@ -58,8 +60,6 @@ export default class HeaderWrapper extends HTMLElement {
       // activate the back button
       this.activateBackButton(back);
     }
-
-    this.fetchUpdate();
 
     this.handleUserClick(body);
   }
@@ -185,6 +185,8 @@ export default class HeaderWrapper extends HTMLElement {
       links.forEach(link => {
         link.addEventListener('click', event => {
           event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
 
           const name = link.getAttribute('name');
 
@@ -199,7 +201,7 @@ export default class HeaderWrapper extends HTMLElement {
               this.replaceAndPushStates(url, body, outerThis.getUser(outerThis._user, 'updates'));
             } else if(name === 'profile'){
               // replace and push states
-              this.replaceAndPushStates(url, body, outerThis.getUser(this._user, ''));
+              this.replaceAndPushStates(url, body, outerThis.getUser(outerThis._user, ''));
             } else if(name === 'search') {
               // replace and push states
               this.replaceAndPushStates(url, body, outerThis.getSearch());
@@ -547,6 +549,7 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   getUser = (data, current) => {
+    // console.log(data)
     if(!data) throw new Error("User not found");
 
     const url = `/u/${data.hash.toLowerCase()}`;
