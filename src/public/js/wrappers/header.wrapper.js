@@ -90,7 +90,7 @@ export default class HeaderWrapper extends HTMLElement {
 
     // handle activity
     if (message.type === 'activity') {
-      if (data.to === userHash) {
+      if (data.to === userHash && data.author !== userHash) {
         this.handleActivity(data);
       }
     }

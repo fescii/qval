@@ -82,7 +82,8 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.enableScroll()
+    this.enableScroll();
+    this.remove();
   }
 
   openHighlights = (body, contentContainer) => {
@@ -143,7 +144,10 @@ export default class HoverAuthor extends HTMLElement {
     const firstElement = body.firstElementChild;
 
     // convert the custom element to a string
-     const elementString = firstElement.outerHTML;
+    const elementString = firstElement.outerHTML;
+
+    body.classList.remove('stop-scrolling');
+
     // get window location
     const pageUrl = window.location.href;
     window.history.replaceState(
@@ -210,7 +214,6 @@ export default class HoverAuthor extends HTMLElement {
     const body = document.querySelector('body');
     const content = this.getContent();
     setTimeout(() => {
-
       // change the content of the content container
       contentContainer.innerHTML = content;
 
@@ -259,8 +262,6 @@ export default class HoverAuthor extends HTMLElement {
       content.addEventListener('click', event => {
         event.preventDefault();
 
-        outerThis.enableScroll();
-
         // Get full post
         const profile =  outerThis.getProfile();
   
@@ -268,6 +269,10 @@ export default class HoverAuthor extends HTMLElement {
         this.replaceAndPushStates(url, body, profile);
 
         body.innerHTML = profile;
+
+        setTimeout(() => {
+          outerThis.enableScroll();
+        }, 2000);
       })
     }
   }
@@ -284,6 +289,8 @@ export default class HoverAuthor extends HTMLElement {
 
         outerThis.enableScroll();
 
+        body.classList.remove('stop-scrolling');
+
         // Get full post
         const profile =  outerThis.getProfile();
   
@@ -291,6 +298,10 @@ export default class HoverAuthor extends HTMLElement {
         this.replaceAndPushStates(url, body, profile);
 
         body.innerHTML = profile;
+
+        setTimeout(() => {
+          outerThis.enableScroll();
+        }, 2000);
       })
     }
   }
@@ -308,7 +319,8 @@ export default class HoverAuthor extends HTMLElement {
   }
 
   enableScroll() {
-    document.body.classList.remove("stop-scrolling");
+    const body = document.querySelector('body');
+    body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

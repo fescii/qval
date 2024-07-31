@@ -230,7 +230,7 @@ export default class TopicPopup extends HTMLElement {
       const percentageFormatted = percentage % 1 === 0 ? percentage : percentage.toFixed(1);
 
       // get the increase or decrease in views
-      increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(percentageFormatted);
+      increaseOrDecrease = percentage > 0 ? this.getIncrease(percentageFormatted) : this.getDecrease(Math.abs(percentageFormatted));
     }
 
     // format the number of followers, views, stories and topics

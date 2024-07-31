@@ -702,10 +702,17 @@ export default class AppUser extends HTMLElement {
   }
 
   getFormSocial = () =>  {
+    const socials = {
+      email: this.getAttribute('user-email') || '',
+      x: this.getAttribute('user-x') || '',
+      threads: this.getAttribute('user-threads') || '',
+      linkedin: this.getAttribute('user-linkedin') || '',
+      link: this.getAttribute('user-link') || ''
+    }
     return /* html */`
       <social-form method="PATCH" url="/user/socials" api="/api/v1/u/edit/contact"
-        email="${this.getAttribute('user-email')}" x="${this.getAttribute('user-x')}"
-        threads="${this.getAttribute('user-threads')}" linkedin="${this.getAttribute('user-linkedin')}" link="${this.getAttribute('user-link')}">
+        email="${socials.email}" x="${socials.x}"
+        threads="${socials.threads}" linkedin="${socials.linkedin}" link="${socials.link}">
       </social-form>
     `;
   }

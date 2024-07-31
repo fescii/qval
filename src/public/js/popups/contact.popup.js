@@ -36,7 +36,7 @@ export default class ContactPopup extends HTMLElement {
     const outerThis = this;
 		const topicsLoader = this.shadowObj.querySelector('.loader-container');
     const str = this.getAttribute('contact');
-    console.log(str)
+    // console.log(str)
     let contact= null;
     if (str !== null || str !== '' || str !== 'null') {
       try {

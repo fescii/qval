@@ -16,7 +16,6 @@ export default class FeedContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    
     const feedContainer = this.shadowObj.querySelector('.stories');
 
     // check if the total
@@ -46,8 +45,8 @@ export default class FeedContainer extends HTMLElement {
     const outerThis = this;
     const options = { 
       method: 'GET',
-      // set the cache control to max-age to 2 hours
-      "Cache-Control": "max-age=7200",
+      // set the cache control to max-age to 30 minutes
+      "Cache-Control": "max-age=1800",
       "Accept": "application/json"
     }
     this.getCacheData(url, options)
