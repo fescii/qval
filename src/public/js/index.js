@@ -51,6 +51,13 @@ import AppUser from "./apps/user.app.js";
 import WebSocketManager from "./apps/uWs.js";
 import NotificationManager from "./apps/notify.js";
 
+// Import Create
+import TextEditor from "./create/editor.js";
+import EditTopic from "./create/topic.js";
+import TopicSlug from "./create/topic.slug.js";
+import TopicSummary from "./create/topic.summary.js";
+import TopicTitle from "./create/topic.title.js";
+
 // Import Containers
 import AddContainer from "./containers/add.container.js";
 import ActivityContainer from "./containers/activity.container.js";
@@ -171,6 +178,13 @@ customElements.define("app-story", AppStory);
 customElements.define("app-topic", AppTopic);
 customElements.define("app-user", AppUser);
 
+// Register Create
+customElements.define("text-editor", TextEditor);
+customElements.define("edit-topic", EditTopic);
+customElements.define("topic-slug", TopicSlug);
+customElements.define("topic-summary", TopicSummary);
+customElements.define("topic-title", TopicTitle);
+
 // Register containers
 customElements.define("add-container", AddContainer);
 customElements.define("activity-container", ActivityContainer);
@@ -182,7 +196,6 @@ customElements.define("discover-people", DiscoverPeople);
 customElements.define("stat-container", StatContainer);
 customElements.define("stories-container", StoriesContainer);
 customElements.define("topics-container", TopicsContainer);
-// customElements.define("trending-container", TrendingContainer);
 customElements.define("feed-container", FeedContainer);
 customElements.define("update-container", UpdateContainer);
 customElements.define("content-container", ContentContainer);

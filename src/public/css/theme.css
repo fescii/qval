@@ -35,10 +35,9 @@ Author URL: https://femar.co.ke
   --font-mono: "Jetbrains Mono";
   --font-read: "Work Sans";
 
-  --card-box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2);
+  --card-box-shadow: 0 12px 28px 0 rgba(70, 53, 53, 0.2);
   --card-box-shadow-alt: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-  --box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a,
-    0 8px 16px -4px #0000000a;
+  --box-shadow: 0 0 0 1px #ffffff25, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;
 
   --scroll-bar-background: #ddddd7;
   --scroll-bar-linear: linear-gradient(#53595f, #627ea0);
@@ -52,6 +51,7 @@ Author URL: https://femar.co.ke
   --action-border: thin solid #627ea073;
   --topic-border: thin solid #6b728046;
   --topic-border-active: thin solid #21d02a7a;
+  --section-border: 2px solid #0066c5cb;
   --poll-border: thin solid #6b728025;
   --border-mobile: thin solid #6b728036;
   --border-header: 0.002rem solid #6b72809a;
@@ -82,6 +82,7 @@ Author URL: https://femar.co.ke
   --label-color: #3f4246;
   --highlight-color: #494d52;
   --read-color: #333333;
+  --editor-color: #333333;
   --title-color: #1f2937;
   --alt-color: #ff932f;
   --error-color: #ec4b19;
@@ -176,8 +177,7 @@ Author URL: https://femar.co.ke
 
   --card-box-shadow: 0 12px 28px 0 rgba(255, 255, 255, 0.1);
   --card-box-shadow-alt: 0 2px 4px 0 rgba(255, 255, 255, 0.08);
-  --box-shadow: 0 0 0 1px #ffffff10, 0 2px 2px #ffffff05,
-    0 8px 16px -4px #ffffff05;
+  --box-shadow: 0 0 0 1px #ffffff10, 0 2px 2px #ffffff05, 0 8px 16px -4px #ffffff05;
 
   --scroll-bar-background: #2a2e36;
   --scroll-bar-linear: linear-gradient(#8a8f99, #818da6);
@@ -192,6 +192,7 @@ Author URL: https://femar.co.ke
   --border-header: 0.002rem solid rgba(58, 62, 75, 0.5);
   --modal-border: 1px solid rgba(33, 36, 42, 0.4);
   --topic-border-active: thin solid #1cbb26cc;
+  --section-border: 2px solid #0066c5cb;
   --input-border-focus: thin solid #159159cc;
   --input-border-error: thin solid #d94317aa;
 
@@ -218,6 +219,7 @@ Author URL: https://femar.co.ke
   --add-color: #afb0b4;
   --highlight-color: #d1d2d4;
   --read-color: #b5b3b3;
+  --editor-color: #e2e2e2;
   --title-color: #d8d8d9;
   --alt-color: #eb831f;
   --error-color: #d94317;

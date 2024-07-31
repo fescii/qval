@@ -16,6 +16,85 @@ export default class FormContainer extends HTMLElement {
   connectedCallback() {
     //Scroll the window to the top
     window.scrollTo(0, 0);
+
+    // activate topic
+    this.activateTopicButton();
+  }
+
+  activateTopicButton = () => {
+    // Get the topic button
+    const topicButton = this.shadowObj.querySelector('.topic');
+    // Add an event listener to the topic button
+    topicButton.addEventListener('click', e => {
+      e.preventDefault();
+      // Get the body element
+      const body = document.querySelector('body');
+      // Get the content of the topic page
+      const content = this.getTopic();
+      // Replace and push the states
+      this.replaceAndPushStates('/create/topic', body, content);
+    });
+  }
+
+  activatePostButton = () => {
+    // Get the post button
+    const postButton = this.shadowObj.querySelector('.post');
+    // Add an event listener to the post button
+    postButton.addEventListener('click', e => {
+      e.preventDefault();
+      // Get the body element
+      const body = document.querySelector('body');
+      // Get the content of the post page
+      const content = body.innerHTML;
+      // Replace and push the states
+      this.replaceAndPushStates('/create/post', body, content);
+    });
+  }
+
+  activateArticleButton = () => {
+    // Get the article button
+    const articleButton = this.shadowObj.querySelector('.article');
+    // Add an event listener to the article button
+    articleButton.addEventListener('click', e => {
+      e.preventDefault();
+      // Get the body element
+      const body = document.querySelector('body');
+      // Get the content of the article page
+      const content = body.innerHTML;
+      // Replace and push the states
+      this.replaceAndPushStates('/create/article', body, content);
+    });
+  }
+
+  replaceAndPushStates = (url, body, content) => {
+    // Replace the content with the current url and body content
+    // get the first custom element in the body
+    const firstElement = body.firstElementChild;
+
+    // convert the custom element to a string
+     const elementString = firstElement.outerHTML;
+    // get window location
+    const pageUrl = window.location.href;
+    window.history.replaceState(
+      { page: 'page', content: elementString },
+      url, pageUrl
+    );
+
+    // Updating History State
+    window.history.pushState(
+      { page: 'page', content: content},
+      url, url
+    );
+
+    // update the body content
+    body.innerHTML = content;
+  }
+
+  getTopic = () => {
+    // Show Topic Page Here
+    return /*html*/`
+      <edit-topic new="true"></edit-topic>
+    `;
   }
 
   getTemplate = () => {
