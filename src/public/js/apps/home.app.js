@@ -135,7 +135,6 @@ export default class AppHome extends HTMLElement {
           <topics-container url="/api/v1/q/trending/topics"></topics-container>
           ${this.getInfo()}
         </div>
-        <create-topic api="/api/v1/t/add" method="PUT"></create-topic>
       `;
     }
   }
