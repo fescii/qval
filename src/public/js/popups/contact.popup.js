@@ -103,7 +103,7 @@ export default class ContactPopup extends HTMLElement {
 
   getTemplate() {
     // Show HTML Here
-    return `
+    return /*html*/`
       <div class="overlay"></div>
       <section id="content" class="content">
         <span class="control cancel-btn">
@@ -117,7 +117,7 @@ export default class ContactPopup extends HTMLElement {
   }
 
   getWelcome() {
-    return `
+    return /*html*/`
       <div class="welcome">
         <h2>User socials</h2>
 				<div class="options">

@@ -31,8 +31,9 @@ export default class FormContainer extends HTMLElement {
       const body = document.querySelector('body');
       // Get the content of the topic page
       const content = this.getTopic();
-      // Replace and push the states
-      this.replaceAndPushStates('/create/topic', body, content);
+
+      // insert the content into the body
+      body.insertAdjacentHTML('beforeend', content);
     });
   }
 
@@ -66,34 +67,10 @@ export default class FormContainer extends HTMLElement {
     });
   }
 
-  replaceAndPushStates = (url, body, content) => {
-    // Replace the content with the current url and body content
-    // get the first custom element in the body
-    const firstElement = body.firstElementChild;
-
-    // convert the custom element to a string
-     const elementString = firstElement.outerHTML;
-    // get window location
-    const pageUrl = window.location.href;
-    window.history.replaceState(
-      { page: 'page', content: elementString },
-      url, pageUrl
-    );
-
-    // Updating History State
-    window.history.pushState(
-      { page: 'page', content: content},
-      url, url
-    );
-
-    // update the body content
-    body.innerHTML = content;
-  }
-
   getTopic = () => {
     // Show Topic Page Here
-    return /*html*/`
-      <edit-topic new="true"></edit-topic>
+    return /* html */`
+      <create-topic api="/api/v1/t/add" method="PUT"></create-topic>
     `;
   }
 

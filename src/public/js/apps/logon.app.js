@@ -1597,7 +1597,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   getWelcome() {
-    return `
+    return /*html*/`
       <div class="welcome">
 				<p>
 					Connect with vibrant minds and share or contribute to ideas that can change the world.
@@ -1622,7 +1622,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   getRegSuccess(data) {
-    return `
+    return /*html*/`
       <div class="finish">
         <h2 class="title">Welcome!</h2>
 				<p>
@@ -1639,7 +1639,7 @@ export default class AppLogon extends HTMLElement {
 
     const display = next.length > 30 ? next.substring(0, 30) + '..' : next;
 
-    return `
+    return /*html*/`
       <div class="finish login-success">
         <p>Welcome</p>
         <h2 class="title">${name}</h2>
@@ -1654,7 +1654,7 @@ export default class AppLogon extends HTMLElement {
   getAlreadyLoggedIn = name => {
     // get the next attribute
     const next = this.getAttribute('next') || '/home';
-    return `
+    return /*html*/`
       <div class="welcome login-success">
         <h2 class="title">${name}</h2>
         <p class="next">
@@ -1667,7 +1667,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   getForgotSuccess = name => {
-    return `
+    return /*html*/`
       <div class="finish">
         <h2 class="title">Success!</h2>
 				<p>
@@ -1695,19 +1695,19 @@ export default class AppLogon extends HTMLElement {
   }
 
   getServerMsg = text => {
-    return `
+    return /*html*/`
       <p class="server-status">${text}</p>
     `
   }
 
   getServerSuccessMsg = text => {
-    return `
+    return /*html*/`
       <p class="server-status success">${text}</p>
     `
   }
 
   getBioFields() {
-    return `
+    return /*html*/`
       <div class="field bio">
 				<div class="input-group firstname">
 					<label for="firstname" class="center">First name</label>
@@ -1732,7 +1732,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   getPasswordFields() {
-    return `
+    return /*html*/`
       <div class="field password bio">
 				<div class="input-group password">
 					<label for="password" class="center">Password</label>
@@ -1749,7 +1749,7 @@ export default class AppLogon extends HTMLElement {
   }
 
   getForgotForm() {
-    return `
+    return /*html*/`
       <form class="fields initial">
 				${this.getForgotFields()}
 				<div class="actions">
@@ -1876,7 +1876,6 @@ export default class AppLogon extends HTMLElement {
 
   getStyles() {
     return /*css*/`
-      <!--suppress ALL -->
       <style>
         * {
           box-sizing: border-box !important;
