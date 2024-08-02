@@ -1,10 +1,11 @@
 // Import necessary modules, middlewares, and controllers
 const {
-  getTopic, getTopicStories, getTopicContributors, fetchTopic
+  getTopic, getTopicStories, getTopicContributors, fetchTopic,
+  editTopic
 } = require('../../controllers').topicController;
 
 const {
-  checkToken
+  checkToken, verifyLogin
 } = require('../../middlewares').authMiddleware;
 
 
@@ -39,4 +40,7 @@ module.exports = (app) => {
 
   // Route for fetching topic
   app.get('/api/v1/t/:topic/preview', checkToken, fetchTopic);
+
+  // Route for editing topic
+  app.get('/t/:hash/edit', verifyLogin, editTopic);
 }

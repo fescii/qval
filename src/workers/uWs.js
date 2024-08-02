@@ -9,7 +9,7 @@ dotenv.config();
 // import path module
 const path = require('path');
 
-const host = process.env['HOST'] || '192.168.68.49';
+const host = process.env['HOST'] || 'localhost';
 const port = process.env['PORT'] || 3001;
 
 // let credentials;

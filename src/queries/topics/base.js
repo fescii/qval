@@ -178,7 +178,7 @@ const editTopic = async (hash, data) => {
  * @param {String} hash - The hash of the topic
  * @returns {Object} - The topic object or null, and the error if any
 */
-const findTopic = async (hash) => {
+const findTopic = async hash => {
   // Check if a topic exists
   try {
     const topic = await Topic.findOne({

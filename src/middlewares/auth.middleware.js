@@ -99,6 +99,42 @@ const verifyToken = async (req, res, next) => {
   next();
 };
 
+
+/**
+ * @function verifyLogin
+ * @description - Middleware to verify token(JWT) and add user to the request object
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ * @returns {Object} - Returns response object
+ *
+*/
+// Middleware to verify token(JWT)
+const verifyLogin = async (req, res, next) => {
+
+  // Get jwt token from cookies or headers
+  let token = req.cookies['x-access-token'] || req.headers["x-access-token"]
+
+  // If not, token is found in the headers/cookies - return 403(Forbidden)
+  if (!token) {
+    return res.redirect('/join/login');
+  }
+
+  const {
+    user,
+    error
+  } = await validateToken(token);
+
+  // If error is returned
+  if(error) {
+    return res.redirect('/join/login');
+  }
+
+  // Add user to the request object
+  req.user = user;
+  next();
+};
+
 /**
  * @function checkToken
  * @description - Middleware to verify token(JWT) and add user to the request object
@@ -149,5 +185,6 @@ const checkToken = async (req, res, next) => {
 // Exporting all the middlewares as a single object
 module.exports = {
   checkDuplicateEmail,
-  verifyToken, checkToken
+  verifyToken, checkToken,
+  verifyLogin
 };

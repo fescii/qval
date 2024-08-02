@@ -61,5 +61,5 @@ const server = spdy.createServer(credentials, app);
 
 // app listen port
 server.listen(PORT, process.env['HOST'], () => {
-  console.log(`Server is listening on port https://${process.env['PORT']}:${PORT}`);
+  console.log(`Server is listening on port https://${process.env['HOST']}:${PORT}`);
 });
