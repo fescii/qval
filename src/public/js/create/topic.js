@@ -5,62 +5,16 @@ export default class EditTopic extends HTMLElement {
 
     this.sections = [],
     this.drafts = [],
+    this.error = null;
 
     this.setTitle(this.getAttribute('name'));
+
+    this.fetchSections();
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
 
-    // populate sections
-    this.populateSections();
-    // this.populateDrafts();
-
     this.render();
-  }
-
-  populateSections = () => {
-    this.sections = [
-      {
-        order: 1, id: 1, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 2, id: 2, title: null, content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 3, id: 3, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 4, id: 4, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 5, id: 5, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 6, id: 6, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 7, id: 7, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-      {
-        order: 8, id: 8, title: 'This is a section title', content: `
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ac libero <a href="#">link</a> ultricies. Donec</p>
-        <p> This is an example of a paragraph. </p>`
-      },
-    ]
   }
 
   populateDrafts = () => {
@@ -127,18 +81,86 @@ export default class EditTopic extends HTMLElement {
     // select section > sections
     const sectionsContainer = this.shadowObj.querySelector('section.sections');
     if(contentContainer && sectionsContainer && tabContainer) {
+      // populate sections
+      this.populateSections(sectionsContainer, contentContainer);
+
       // fetch content
       this.fetchContent(contentContainer);
 
       // activate tab
       this.activateTab(sectionsContainer, contentContainer);
 
-      // activate sections
-      this.activateSections(sectionsContainer, contentContainer);
-
       // activate current tab
       this.activateCurrentTab(tabContainer);
     }
+  }
+
+  populateSections = (sectionsContainer, contentContainer) => {
+    const container = sectionsContainer.querySelector('div.container');
+    setTimeout(() => {
+      container.innerHTML = this.getSections(this.sections);
+      // activate sections
+      this.activateSections(container, contentContainer);
+    }, 2000);
+  }
+
+  fetchSections = () => {
+    const outerThis = this;
+		// fetch the user stats
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    };
+
+    const hash = this.getAttribute('hash');
+
+    const url  = `/api/v1/t/${hash.toLowerCase()}/sections`;
+
+    outerThis.fetchWithTimeout(url, options)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        // check for success response
+        if (data.success) {
+          outerThis.sections = data.sections;
+        }
+      })
+      .catch(error => {
+        // display error message
+        this.error = error.message;
+      });
+	}
+
+  fetchWithTimeout = (url, options, timeout = 9500) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+  
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        reject(new Error('Request timed out'));
+      }, timeout);
+  
+      fetch(url, { ...options, signal })
+        .then(response => {
+          clearTimeout(timeoutId);
+          resolve(response);
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
+        });
+    });
   }
 
   fetchContent = contentContainer => {
@@ -200,6 +222,19 @@ export default class EditTopic extends HTMLElement {
         })
       })
     }
+  }
+
+  getDate = isoDateStr => {
+    const dateIso = new Date(isoDateStr); // ISO strings with timezone are automatically handled
+    let userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    // Convert posted time to the current timezone
+    const date = new Date(dateIso.toLocaleString('en-US', { timeZone: userTimezone }));
+
+    // Get date in the format: Oct 10, 2021
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+
+    return date.toLocaleDateString('en-US', options);
   }
 
   convertToNumber = str => {
@@ -395,7 +430,7 @@ export default class EditTopic extends HTMLElement {
   getButtonLoader() {
     return /*html*/`
       <span id="btn-loader">
-				<span class="loader"></span>
+				<span class="loader-alt"></span>
 			</span>
     `
   }
@@ -422,7 +457,7 @@ export default class EditTopic extends HTMLElement {
             ${this.getTop()}
             ${this.getSectionsHead()}
             <div class="container">
-              ${this.getSections()}
+              ${this.getButtonLoader()}
             </div>
           </section>
           <section class="content">
@@ -434,6 +469,7 @@ export default class EditTopic extends HTMLElement {
   }
 
   getTop = () => {
+    const date = this.getDate(this.getAttribute('updated'));
     return /* html */ `
       <div class="header">
         <div class="title">
@@ -443,12 +479,12 @@ export default class EditTopic extends HTMLElement {
           </svg>
           </span>
           <div class="info">
-            <h2>Health Care</h2>
+            <h2>${this.getAttribute('name')}</h2>
             <span class="description">
-              <span class="sections">3 Sections</span>
+              <span class="sections">Sections</span>
               <span class="sp">•</span>
               <span class="last-modified">
-                <span>Oct 10, 2021</span>
+                <span>${date}</span>
               </span>
             </span>
           </div>
@@ -488,8 +524,8 @@ export default class EditTopic extends HTMLElement {
     `;
   }
 
-  getSections = () => {
-    if (!this.sections || this.sections.length === 0) {
+  getSections = sections => {
+    if (!sections || sections.length === 0) {
       return /* html */`
         <div class="sections">
           <div class="empty">
@@ -501,7 +537,7 @@ export default class EditTopic extends HTMLElement {
       `;
     }
 
-    const sections = this.sections.map(section => {
+    const sectionsArray = sections.map(section => {
       let description = section.title ? section.title.substring(0, 50) : this.removeHTMLTags(section.content).substring(0, 50);
       return /* html */`
         <div class="section" data-id="${section.order}">
@@ -523,7 +559,7 @@ export default class EditTopic extends HTMLElement {
 
     return /* html */`
       <div class="sections">
-        ${sections.join('')}
+        ${sectionsArray.join('')}
       </div>
       ${this.getSectionsActions()}
     `;
@@ -728,6 +764,7 @@ export default class EditTopic extends HTMLElement {
           top: 0;
           left: 0;
           right: 0;
+          width: 100%;
           min-height: 100px;
           z-index: 5;
           display: flex;
@@ -750,7 +787,7 @@ export default class EditTopic extends HTMLElement {
         }
 
         #btn-loader > .loader {
-          width: 28px;
+          width: 25px;
           aspect-ratio: 1;
           --_g: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
           --_g1: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);

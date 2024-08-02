@@ -192,13 +192,7 @@ const findTopic = async hash => {
     // If a topic exists, return the topic
     if (topic) {
       return {
-        topic: {
-          author: topic.author,
-          hash: topic.hash,
-          name: topic.name,
-          slug: topic.slug,
-          summary: topic.summary
-        }, 
+        topic: topic, 
         error: null
       }
     }

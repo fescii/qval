@@ -84,7 +84,9 @@ export default class NewTopic extends HTMLElement {
     const url = `/t/${data.hash.toLowerCase()}/edit`;
     
     return /*html*/`
-      <edit-topic url="${url}" name="${data.name}" slug="${data.slug}" summary="${data.summary}" hash="${data.hash}"></edit-topic>
+      <edit-topic url="${url}" name="${data.name}" slug="${data.slug}" summary="${data.summary}" hash="${data.hash}"
+        author="${data.author}" created="${data.created}" updated="${data.updated}">
+      </edit-topic>
     `;
   }
 
