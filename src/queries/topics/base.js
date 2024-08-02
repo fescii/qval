@@ -71,7 +71,9 @@ const addTopic = async (user, data) => {
         hash: topic.hash,
         name: topic.name,
         slug: topic.slug,
-        summary: topic.summary
+        summary: topic.summary,
+        created: topic.createdAt,
+        updated: topic.updatedAt
       },
       error: null
     }
