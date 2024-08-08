@@ -372,13 +372,13 @@ export default class JoinPopup extends HTMLElement {
             background: var(--stage-no-linear);
             text-decoration: none;
             font-size: 0.9rem;
-            padding: 3px 12px 4px;
+            padding: 3.5px 12px 4.5px;
             font-weight: 400;
             cursor: default;
             margin: 5px 0;
             width: max-content;
             cursor: default !important;
-            border-radius: 8px;
+            border-radius: 10px;
           }
         }
       </style>

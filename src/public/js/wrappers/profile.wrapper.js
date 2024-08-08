@@ -667,8 +667,8 @@ export default class ProfileWrapper extends HTMLElement {
     return /*html*/`
       <app-user hash="${this.getAttribute('hash')}" home-url="/home" current="name" verified="${this.getAttribute('verified')}"
         stories-url="/api/v1${url}/stories" replies-url="/api/v1${url}/replies" stories="${this.getAttribute('stories')}" replies="${this.getAttribute('replies')}" 
-        user-link="${contact.link ? contact.link : ''}" user-email="${contact.email ? contact.email : ''}" user-x="${contact.x ? contact.x : ''}" 
-        user-threads="${contact.threads ? contact.threads : ''}" user-linkedin="${contact.linkedin ? contact.linkedin : ''}" email="${contact.email ? contact.email : ''}" 
+        user-link="${contact?.link ? contact.link : ''}" user-email="${contact?.email ? contact.email : ''}" user-x="${contact?.x ? contact.x : ''}" 
+        user-threads="${contact?.threads ? contact.threads : ''}" user-linkedin="${contact.linkedin ? contact.linkedin : ''}" email="${contact?.email ? contact.email : ''}" 
         user-username="${this.getAttribute('hash')}" user-contact='${str}'
         user-you="true" user-url="${url}" user-img="${this.getAttribute('picture')}" user-verified="${this.getAttribute('verified')}"
         user-name="${this.getAttribute('name')}" user-followers="${this.getAttribute('followers')}" user-following="${this.getAttribute('following')}"

@@ -168,27 +168,24 @@ export default class TopicInfo extends HTMLElement {
         if (result.success) {
           // show success message
           actions.insertAdjacentHTML('beforebegin', 
-            outerThis.getServerSuccessMsg(true, 'Topic created successfully. Click continue to edit the topic')
+            outerThis.getServerSuccessMsg(true, result.message)
           );
 
           outerThis._topic = result.topic;
 
           // reset button
-          button.innerHTML = '<span class="text">Continue</span>';
+          button.innerHTML = '<span class="text">Update</span>';
           // remove the loader
           const loader = content.querySelector('#loader-container');
           if (loader) {
             loader.remove();
           }
-
-          // activate the next button
-          outerThis.activateNextButton(button);
         } else {
           // show error message
           actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
 
           // reset button
-          button.innerHTML = '<span class="text">Create</span>';
+          button.innerHTML = '<span class="text">Update</span>';
           // remove the loader
           const loader = content.querySelector('#loader-container');
           if (loader) {
@@ -201,7 +198,7 @@ export default class TopicInfo extends HTMLElement {
         actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
 
         // reset button
-        button.innerHTML = '<span class="text">Create</span>';
+        button.innerHTML = '<span class="text">Update</span>';
 
         // remove the loader
         const loader = content.querySelector('#loader-container');

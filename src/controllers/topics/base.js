@@ -68,7 +68,7 @@ const updateTopic = async (req, res, next) => {
   const {
     topic,
     error
-  } = await editTopic(hash, valObj.data);
+  } = await editTopic(hash.toUpperCase(), valObj.data);
 
   // Passing the error to error middleware
   if (error) {
