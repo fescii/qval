@@ -20,7 +20,7 @@ const findStoriesByTopic = async (reqData) => {
     // dEstructure the request data
     const { topic, user, page, limit } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the stories
@@ -98,7 +98,7 @@ const findRelatedStories = async (reqData) => {
     // Destructure the request data
     const { topics, user, page, limit } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the stories
@@ -177,7 +177,7 @@ const findTopicContributors = async reqData => {
     // Destructure the request data
     const { hash, user, page, limit } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // fetch the topic authors from Topic table

@@ -55,9 +55,7 @@ import NotificationManager from "./apps/notify.js";
 import CreateTopic from "./create/new.topic.js";
 import TextEditor from "./create/editor.js";
 import EditTopic from "./create/topic.js";
-import TopicSlug from "./create/topic.slug.js";
-import TopicSummary from "./create/topic.summary.js";
-import TopicTitle from "./create/topic.title.js";
+import TopicInfo from "./create/topic.info.js";
 
 // Import Containers
 import AddContainer from "./containers/add.container.js";
@@ -183,9 +181,7 @@ customElements.define("app-user", AppUser);
 customElements.define("create-topic", CreateTopic);
 customElements.define("text-editor", TextEditor);
 customElements.define("edit-topic", EditTopic);
-customElements.define("topic-slug", TopicSlug);
-customElements.define("topic-summary", TopicSummary);
-customElements.define("topic-title", TopicTitle);
+customElements.define("topic-info", TopicInfo);
 
 // Register containers
 customElements.define("add-container", AddContainer);

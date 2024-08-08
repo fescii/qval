@@ -118,10 +118,6 @@ export default class PersonWrapper extends HTMLElement {
     return text === 'true' ? true : false;
   }
 
-  updateFollowers = (element, value) => {
-    element.setAttribute('followers', value);
-  }
-
   // Open user profile
   handleUserClick = (url, body) => {
     const outerThis = this;
@@ -379,7 +375,7 @@ export default class PersonWrapper extends HTMLElement {
     `
   }
 
-  updateFollowers = (followed) => {
+  updateFollowers = followed => {
     let value = followed ? 1 : -1;
     // Get followers attribute : convert to number then add value
 

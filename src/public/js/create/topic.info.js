@@ -1,4 +1,4 @@
-export default class TopicSlug extends HTMLElement {
+export default class TopicInfo extends HTMLElement {
   constructor() {
     // We are not even going to touch this.
     super();
@@ -16,14 +16,14 @@ export default class TopicSlug extends HTMLElement {
   }
 
   connectedCallback() {
-    // select the form
+    // select form
     const form = this.shadowObj.querySelector('form');
 
-    // add event listener to the form
+    // submit form
     this.submitForm(form);
 
-    // validate the slug
-    this.validateSlug(form);
+    // validate form
+    this.validateForm(form);
   }
 
   disableScroll() {
@@ -63,7 +63,9 @@ export default class TopicSlug extends HTMLElement {
 
       // get form data
       const data = {
-        slug: formData.get('slug')
+        slug: formData.get('slug'),
+        name: formData.get('title'),
+        summary: formData.get('summary')
       };
 
       // check if form data is valid
@@ -113,9 +115,41 @@ export default class TopicSlug extends HTMLElement {
         return;
       }
 
-      // show loader
+      // validate title and not less than 2 characters
+      if (!data.name || data.name.length < 2) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'title must be at least 2 characters'));
+
+        setTimeout(() => {
+          const serverStatus = form.querySelector('.server-status');
+          if (serverStatus) {
+            serverStatus.remove();
+          }
+        }, 5000);
+
+        return;
+      }
+
+      // validate summary and not less than 100 characters
+      if (!data.summary || data.summary.length < 100) {
+        // show error message
+        actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'summary must be at least 100 characters'));
+
+        setTimeout(() => {
+          const serverStatus = form.querySelector('.server-status');
+          if (serverStatus) {
+            serverStatus.remove();
+          }
+        }, 5000);
+
+        return;
+      }
+
       const button = form.querySelector('.action.next');
-      button.innerHTML = outerThis.getButtonLoader();
+
+      // show loader
+      const content = form.parentElement;
+      content.insertAdjacentHTML('beforeend', outerThis.getLoader());
 
       // send data to server
       const options = {
@@ -133,16 +167,33 @@ export default class TopicSlug extends HTMLElement {
         // check if request was successful
         if (result.success) {
           // show success message
-          actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(true, result.message));
+          actions.insertAdjacentHTML('beforebegin', 
+            outerThis.getServerSuccessMsg(true, 'Topic created successfully. Click continue to edit the topic')
+          );
+
+          outerThis._topic = result.topic;
 
           // reset button
-          button.innerHTML = '<span class="text">Update slug</span>';
+          button.innerHTML = '<span class="text">Continue</span>';
+          // remove the loader
+          const loader = content.querySelector('#loader-container');
+          if (loader) {
+            loader.remove();
+          }
+
+          // activate the next button
+          outerThis.activateNextButton(button);
         } else {
           // show error message
           actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, result.message));
 
           // reset button
-          button.innerHTML = '<span class="text">Update slug</span>';
+          button.innerHTML = '<span class="text">Create</span>';
+          // remove the loader
+          const loader = content.querySelector('#loader-container');
+          if (loader) {
+            loader.remove();
+          }
         }
       }
       catch (error) {
@@ -150,7 +201,13 @@ export default class TopicSlug extends HTMLElement {
         actions.insertAdjacentHTML('beforebegin', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
 
         // reset button
-        button.innerHTML = '<span class="text">Update slug</span>';
+        button.innerHTML = '<span class="text">Create</span>';
+
+        // remove the loader
+        const loader = content.querySelector('#loader-container');
+        if (loader) {
+          loader.remove();
+        }
       }
 
       // remove success message
@@ -202,40 +259,39 @@ export default class TopicSlug extends HTMLElement {
     `
   }
 
-  getButtonLoader() {
-    return `
-      <span id="btn-loader">
-				<span class="loader"></span>
-			</span>
-    `
-  }
-
   getTemplate() {
     // Show HTML Here
-    return `
-      ${this.getBody()}
-      ${this.getStyles()}
-    `;
+    return /*html*/`
+      <section id="content" class="content">
+        ${this.getBody()}
+      </section>
+    ${this.getStyles()}`
   }
 
   getBody = () => {
-    let slug = this.getAttribute('slug') || '';
-    if (slug === 'undefined' || slug === 'null' || slug === null) {
-      slug = '';
-    }
+    const name = this.getAttribute('name');
+    const slug = this.getAttribute('slug');
+    const summary = this.getAttribute('summary');
     return /* html */`
       ${this.getHeader()}
-      <form class="fields slug" id="slug-form">
-        <div class="field slug">
+      <form class="fields slug" id="topic-form">
+        <div class="field new">
+          <div class="input-group title">
+            <input type="text" name="title" id="title" placeholder="Enter topic title" required value="${name}"/>
+            <span class="status">title is required</span>
+          </div>
           <div class="input-group slug">
-            <label for="slug" class="center">Topic slug</label>
-            <input type="text" name="slug" value="${slug}" id="slug" placeholder="Enter topic slug" />
+            <input type="text" name="slug" id="slug" placeholder="Enter topic slug" required value="${slug}"/>
             <span class="status">slug is required</span>
+          </div>
+          <div class="input-group your-summary">
+            <textarea name="summary" id="summary" cols="30" rows="10" required placeholder="Enter topic summary">${summary}</textarea>
+            <span class="status">summary is required</span>
           </div>
         </div>
         <div class="actions">
           <button type="submit" class="action next">
-            <span class="text">Update slug</span>
+            <span class="text">Edit</span>
           </button>
         </div>
       </form>
@@ -246,17 +302,18 @@ export default class TopicSlug extends HTMLElement {
     return /* html */`
       <div class="top">
         <p class="desc">
-          Update the topic slug here, this will be used to generate the topic URL, use a unique slug which is related to the topic name.
-          Please note that the slug must be unique and can only contain letters, numbers, and hyphens.
+          Edit the topic details below. Make sure to provide a unique slug for the topic. The slug is used to identify the topic in the URL and summary should be at least 100 characters.
         </p>
       </div>
     `;
   }
 
-  validateSlug =form => {
+  validateForm = form => {
     const input = form.querySelector('input[name="slug"]');
+    const title = form.querySelector('input[name="title"]');
+    const summary = form.querySelector('textarea[name="summary"]');
 
-    if (input) {
+    if (input && title && summary) {
       // add an input event listener
       input.addEventListener('input', e => {
         const value = e.target.value;
@@ -286,7 +343,63 @@ export default class TopicSlug extends HTMLElement {
         input.parentElement.classList.add('success');
         input.parentElement.querySelector('span.status').textContent = '';
       });
+
+      // add an input event listener to title
+      title.addEventListener('input', e => {
+        const value = e.target.value;
+
+        if (!value) {
+          title.parentElement.classList.remove('success');
+          title.parentElement.classList.add('failed');
+          title.parentElement.querySelector('span.status').textContent = 'title is required';
+          return;
+        }
+
+        // check for length
+        if (value.length < 2) {
+          title.parentElement.classList.remove('success');
+          title.parentElement.classList.add('failed');
+          title.parentElement.querySelector('span.status').textContent = 'title must be at least 2 characters';
+          return;
+        }
+
+        title.parentElement.classList.remove('failed');
+        title.parentElement.classList.add('success');
+        title.parentElement.querySelector('span.status').textContent = '';
+      });
+
+      // add an input event listener to summary
+      summary.addEventListener('input', e => {
+        const value = e.target.value;
+
+        if (!value) {
+          summary.parentElement.classList.remove('success');
+          summary.parentElement.classList.add('failed');
+          summary.parentElement.querySelector('span.status').textContent = 'summary is required';
+          return;
+        }
+
+        // check for length
+        if (value.length < 100) {
+          summary.parentElement.classList.remove('success');
+          summary.parentElement.classList.add('failed');
+          summary.parentElement.querySelector('span.status').textContent = 'summary must be at least 100 characters';
+          return;
+        }
+
+        summary.parentElement.classList.remove('failed');
+        summary.parentElement.classList.add('success');
+        summary.parentElement.querySelector('span.status').textContent = '';
+      });
     }
+  }
+
+  getLoader() {
+    return /*html*/`
+      <div id="loader-container">
+				<div class="loader"></div>
+			</div>
+    `
   }
 
   getStyles() {
@@ -357,27 +470,26 @@ export default class TopicSlug extends HTMLElement {
           -webkit-background-clip: text;
         }
 
-        @keyframes l38 {
-          100% {
-            background-position: 100% 0, 100% 100%, 0 100%, 0 0
-          }
-        }
-
-        #btn-loader {
+        #loader-container {
           position: absolute;
           top: 0;
           left: 0;
           bottom: 0;
           right: 0;
           z-index: 5;
+          background-color: var(--loader-background);
+          backdrop-filter: blur(1px);
+          -webkit-backdrop-filter: blur(1px);
           display: flex;
           align-items: center;
           justify-content: center;
           border-radius: inherit;
+          -webkit-border-radius: inherit;
+          -moz-border-radius: inherit;
         }
 
-        #btn-loader > .loader-alt {
-          width: 20px;
+        #loader-container > .loader {
+          width: 35px;
           aspect-ratio: 1;
           --_g: no-repeat radial-gradient(farthest-side, #18A565 94%, #0000);
           --_g1: no-repeat radial-gradient(farthest-side, #21D029 94%, #0000);
@@ -389,17 +501,10 @@ export default class TopicSlug extends HTMLElement {
           -webkit-animation: l38 .9s infinite ease-in-out;
         }
 
-        #btn-loader > .loader {
-          width: 20px;
-          aspect-ratio: 1;
-          --_g: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
-          --_g1: no-repeat radial-gradient(farthest-side, #ffffff 94%, #0000);
-          --_g2: no-repeat radial-gradient(farthest-side, #df791a 94%, #0000);
-          --_g3: no-repeat radial-gradient(farthest-side, #f09c4e 94%, #0000);
-          background:    var(--_g) 0 0,    var(--_g1) 100% 0,    var(--_g2) 100% 100%,    var(--_g3) 0 100%;
-          background-size: 30% 30%;
-          animation: l38 .9s infinite ease-in-out;
-          -webkit-animation: l38 .9s infinite ease-in-out;
+        @keyframes l38 {
+          100% {
+            background-position: 100% 0, 100% 100%, 0 100%, 0 0
+          }
         }
 
         .top {
@@ -427,6 +532,14 @@ export default class TopicSlug extends HTMLElement {
           color: var(--text-color);
           font-size: 1rem;
           font-family: var(--font-main), sans-serif;
+        }
+
+        .top > .desc span {
+          color: var(--gray-color);
+          font-size: 0.9rem;
+          display: inline-block;
+          padding: 5px 0 0 0;
+          font-family: var(--font-read), sans-serif;
         }
 
         form.fields {
@@ -464,12 +577,12 @@ export default class TopicSlug extends HTMLElement {
           transition: border-color 0.3s ease-in-out;
         }
 
-        form.fields .field.bio .input-group {
+        form.fields .field.summary .input-group {
           width: 100%;
         }
 
-        form.fields .field.bio .input-group.code,
-        form.fields .field.bio .input-group.slug {
+        form.fields .field.summary .input-group.code,
+        form.fields .field.summary .input-group.email {
           grid-column: 1/3;
           width: 100%;
         }
@@ -507,7 +620,7 @@ export default class TopicSlug extends HTMLElement {
           color: var(--text-color);
         }
 
-        form.fields .field.bio label {
+        form.fields .field.summary label {
           padding: 0 0 0 5px;
         }
 
@@ -535,32 +648,30 @@ export default class TopicSlug extends HTMLElement {
           -o-border-radius: 12px;
         }
 
-        form.fields .field input {
+        form.fields textarea {
+          border: none;
           border: var(--input-border);
-          background-color: var(--background) !important;
+          background: var(--background);
           font-size: 1rem;
-          width: 100%;
-          height: 40px;
-          outline: none;
           padding: 10px 12px;
-          border-radius: 12px;
+          margin: 0;
+          width: 100%;
+          resize: none;
+          height: 160px;
+          gap: 5px;
+          font-weight: 400;
           color: var(--text-color);
-        }
-        
-        form.fields .field input:-webkit-autofill,
-        form.fields .field input:-webkit-autofill:hover, 
-        form.fields .field input:-webkit-autofill:focus {
-          -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
-          -webkit-text-fill-color: var(--text-color) !important;
-          transition: background-color 5000s ease-in-out 0s;
-          color: var(--text-color) !important;
-        }
-        
-        form.fields .field input:autofill {
-          filter: none;
-          color: var(--text-color) !important;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          border-radius: 12px;
         }
 
+        form.fields textarea::-webkit-scrollbar {
+          display: none !important;
+          visibility: hidden;
+        }
+
+        form.fields textarea:focus,
         form.fields .field input:focus {
           border: var(--input-border-focus);
         }

@@ -140,7 +140,7 @@ export default class JoinPopup extends HTMLElement {
       <div class="welcome">
         <h2>Unauthorized.</h2>
 				<p>
-          Please note that you need to be logged in order to perform certain actions on this platform.
+          Please note that you need to be logged in order to perform certain actions on this platform.<br>
           Although you can still view content, you will not be able to interact with it.
         </p>
         <div class="actions">
@@ -264,8 +264,9 @@ export default class JoinPopup extends HTMLElement {
         }
 
         .welcome  p {
+          width: 100%;
           margin: 0;
-          text-align: center;
+          /*text-align: center;*/
           font-family: var(--font-read), sans-serif;
           color: var(--text-color);
           line-height: 1.3;
@@ -274,32 +275,32 @@ export default class JoinPopup extends HTMLElement {
 
         .welcome > .actions {
           margin: 20px 0 5px;
-          width: 80%;
+          width: 100%;
           display: flex;
           flex-flow: row;
           align-items: center;
-          justify-content: space-between;
+          justify-content: start;
           gap: 30px;
         }
 
         .welcome > .actions a {
-          background: var(--stage-no-linear);
+          background: var(--accent-linear);
           text-decoration: none;
-          padding: 5px 20px 6px;
+          padding: 3px 12px 4px;
+          font-size: 1rem;
           cursor: pointer;
           margin: 20px 0;
-          width: 150px;
+          width: max-content;
           justify-self: center;
           text-align: center;
           color: var(--white-color);
           border: none;
-          font-size: 1.15rem;
           font-weight: 500;
-          border-radius: 12px;
+          border-radius: 8px;
         }
 
         .welcome > .actions a.register {
-          background: var(--stage-active-linear);
+          background: var(--second-linear);
         }
 
         .welcome > .actions a.recover {
@@ -363,9 +364,6 @@ export default class JoinPopup extends HTMLElement {
 
           .welcome > .actions {
             width: 100%;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
             gap: 18px;
             margin: 10px 0 20px;
           }
@@ -373,13 +371,14 @@ export default class JoinPopup extends HTMLElement {
           .welcome > .actions .action {
             background: var(--stage-no-linear);
             text-decoration: none;
-            padding: 6px 15px 7px;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            padding: 3px 12px 4px;
+            font-weight: 400;
             cursor: default;
             margin: 5px 0;
             width: max-content;
             cursor: default !important;
-            border-radius: 12px;
+            border-radius: 8px;
           }
         }
       </style>

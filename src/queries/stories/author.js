@@ -24,7 +24,7 @@ const findStoriesByAuthor = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the stories
@@ -112,7 +112,7 @@ const findRepliesByAuthor = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the replies
@@ -200,7 +200,7 @@ const findFollowersByAuthor = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the followers
@@ -261,7 +261,7 @@ const findFollowingByAuthor = async (reqData) => {
       hash, user, page, limit
     } = reqData;
 
-    // Contruct offset from page and limit
+    // Construct offset from page and limit
     const offset = (page - 1) * limit;
 
     // Find the following

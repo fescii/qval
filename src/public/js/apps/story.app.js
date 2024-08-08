@@ -67,10 +67,6 @@ export default class AppStory extends HTMLElement {
     }
   }
 
-  disconnectedCallback() {
-    this.enableScroll()
-  }
-
   checkAndAddHandler() {
     if (window.wss) {
       window.wss.addMessageHandler(this.boundHandleWsMessage);
@@ -82,6 +78,7 @@ export default class AppStory extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.enableScroll()
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }

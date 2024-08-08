@@ -8,6 +8,7 @@ const {
 
 
 // Map story fields(sections) to html
+// Map story fields(sections) to html
 const mapFields = (content, data) => {
   let html = /*html*/`
     <div class="intro">
@@ -19,12 +20,13 @@ const mapFields = (content, data) => {
     return html;
   }
   else {
+    // NB: 0: kind, 1: content, 2: order, 3: id, 4: title, 5: createdAt, 6: updatedAt
     const sections =  data.map(section => {
-      const title = section.title !== null ? `<h2 class="title">${section.title}</h2>` : '';
+      const title = section[4] !== null ? `<h2 class="title">${section[4]}</h2>` : '';
       return /*html*/`
-        <div class="section" order="${section.order}" id="section${section.order}">
+        <div class="section" order="${section[2]}" id="section${section[3]}" kind="${section[0]}">
           ${title}
-          ${section.content}
+          ${section[1]}
         </div>
       `
     }).join('');

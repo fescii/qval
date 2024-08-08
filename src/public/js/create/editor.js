@@ -99,17 +99,148 @@ export default class TextEditor extends HTMLElement {
   connectedCallback() {
     this.render();
     this.initEditor();
+
+		// handle update
+		this.handleUpdate();
   }
 
   render() {
-		if (!this.convertToBool(this.getAttribute('authorized'))) {
-			this.shadowRoot.innerHTML = this.getUnauthorized();
-			return;
+		this.shadowRoot.innerHTML = this.getTemplate();
+  }
+
+	handleUpdate = async () => {
+		// get save button
+		const updateBtn = this.shadowRoot.querySelector('.actions > button.update');
+
+		if (updateBtn) {
+			updateBtn.addEventListener('click', async e => {
+				const data = await this.getData(this.shadowRoot.querySelector('.top'));
+				this.updateData(data, this.shadowRoot.querySelector('.top'));
+			})
+		}
+	}
+
+	fetchWithTimeout = (url, options, timeout = 9500) => {
+    return new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+  
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        reject(new Error('Request timed out'));
+      }, timeout);
+  
+      fetch(url, { ...options, signal })
+        .then(response => {
+          clearTimeout(timeoutId);
+          resolve(response);
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            // This error is thrown when the request is aborted
+            reject(new Error('Request timed out'));
+          } else {
+            // This is for other errors
+            reject(error);
+          }
+        });
+    });
+  }
+
+  getServerSuccessMsg = (success, text) => {
+    if (!success) {
+      return `
+        <p class="server-status">${text}</p>
+      `
+    }
+    return `
+      <p class="server-status success">${text}</p>
+    `
+  }
+
+	getData = async top => {
+		console.log(this.editor)
+		let title = top.querySelector('input.title').value.trim();
+		let content;
+		this.editor.then(editor => {
+			content = editor.getData()
+		});
+		return { title, content };
+	}
+
+	updateData = async (data, top) => {
+		const outerThis = this;
+		let body = {}
+		// CHECK IF title is empty
+		if (data.title === '') {
+			body = {
+				id: this.convertToNumber(this.getAttribute('section-id')),
+				content: data.content
+			}
 		}
 		else {
-			this.shadowRoot.innerHTML = this.getTemplate();
+			body = {
+				section: this.convertToNumber(this.getAttribute('section-id')),
+				title: data.title,
+				content: data.content
+			}
 		}
-  }
+
+		// send data to server
+		const options = {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(body)
+		};
+
+		const api = this.getAttribute('api');
+
+		const url = `${api}/edit`;
+
+		try {
+			// insert loader to the host element
+			top.insertAdjacentHTML('beforeend', this.getLoader());
+
+			const response = await outerThis.fetchWithTimeout(url, options);
+			const result = await response.json();
+
+			// check if request was successful
+			if (result.success) {
+				// show success message
+				top.insertAdjacentHTML('beforeend', 
+					outerThis.getServerSuccessMsg(true, result.message)
+				);
+
+				// remove the loader
+				const loader = top.querySelector('#loader-container');
+				if (loader) {
+					loader.remove();
+				}
+			} else {
+				// show error message
+				top.insertAdjacentHTML('beforeend', outerThis.getServerSuccessMsg(false, result.message));
+
+				// remove the loader
+				const loader = top.querySelector('#loader-container');
+				if (loader) {
+					loader.remove();
+				}
+			}
+		}
+		catch (error) {
+			// show error message
+			top.insertAdjacentHTML('beforeend', outerThis.getServerSuccessMsg(false, 'An error occurred, please try again'));
+
+			// remove the loader
+			const loader = top.querySelector('#loader-container');
+			if (loader) {
+				loader.remove();
+			}
+		}
+	}
 
 	convertToBool = str => {
 		return str === 'true' ? true : false;
@@ -145,7 +276,7 @@ export default class TextEditor extends HTMLElement {
 		}
     return /* html */`
       <div class="top">
-        ${this.checkDraft(this.getAttribute('draft'), this.getAttribute('modify'), this.getAttribute('author'))}
+        ${this.checkDraft(this.getAttribute('draft'))}
 				<input type="text" class="title" placeholder="Section title - (optional) -" value="${title}">
       </div>
     `;
@@ -160,36 +291,43 @@ export default class TextEditor extends HTMLElement {
 		});
   }
 
-	checkDraft = (draft, modify, author) => {
-		if (this.convertToBool(draft) && modify === 'true') {
+	checkDraft = (draft) => {
+		if (this.convertToBool(draft)) {
 			return /*html*/`
 				<div class="actions">
+					${this.checkNew()}
 					<button class="approve">Approve</button>
-					<button class="save">Save</button>
-					<!--<button class="discard">discard</button>-->
-				</div>
-			`;
-		}
-		else if (this.convertToBool(author)) {
-			return /*html*/`
-				<div class="actions">
-					<button class="save">Save</button>
-				</div>
-			`;
-		}
-		else if(this.convertToBool(this.getAttribute('new'))) {
-			return /*html*/`
-				<div class="actions">
-					<button class="save">Save</button>
+					<button class="discard">Discard</button>
 				</div>
 			`;
 		}
 		else {
 			return /*html*/`
-				<p class="desc"> You are not authorized to modify this section/draft. Any changes will not be saved. </p>
+				<div class="actions">
+					${this.checkNew()}
+				</div>
 			`;
 		}
 	}
+
+	checkNew = () => {
+		if (this.convertToBool(this.getAttribute('new'))) {
+			return /*html*/`
+				<button class="save">Save</button>
+			`;
+		}
+		return /*html*/`
+			<button class="update">Update</button>
+		`;
+	}
+
+	getLoader() {
+    return /*html*/`
+      <div id="loader-container">
+				<div class="loader"></div>
+			</div>
+    `
+  }
 
 	getStyles = () => {
 		return /*css*/`
@@ -203,10 +341,29 @@ export default class TextEditor extends HTMLElement {
 				display: block;
 				width: 100%;
 				min-height: calc(100dvh - 70px);
+				position: relative;
 				height: max-content;
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-start;
+			}
+
+			p.server-status {
+				margin: 0;
+				width: 100%;
+				text-align: start;
+				font-family: var(--font-read), sans-serif;
+				color: var(--error-color);
+				font-weight: 500;
+				line-height: 1.4;
+				font-size: 1.18rem;
+			}
+
+			p.server-status.success {
+				color: transparent;
+				background: var(--accent-linear);
+				background-clip: text;
+				-webkit-background-clip: text;
 			}
 
 			.unauthorize {

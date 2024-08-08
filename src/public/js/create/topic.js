@@ -209,7 +209,7 @@ export default class EditTopic extends HTMLElement {
                 outerThis.activateBaseSection(content, mainContainer);
               }
               else if (tabElement === 'sections') {
-                contentContainer.innerHTML = outerThis.getSections();
+                contentContainer.innerHTML = outerThis.getSections(outerThis.sections);
                 // activate sections & add section
                 outerThis.activateSections(content, mainContainer);
                 outerThis.activateAddSection(content, mainContainer);
@@ -258,32 +258,15 @@ export default class EditTopic extends HTMLElement {
   }
 
   activateBaseSection = (container, mainContainer) => {
-    const baseSections = container.querySelectorAll('div.base');
+    const baseSection = container.querySelector('div.base');
 
-    baseSections.forEach(section => {
-      section.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
+    baseSection.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
 
-        const activeSection = container.querySelector('div.base.active');
-        if (activeSection) {
-          activeSection.classList.remove('active');
-        }
+      baseSection.classList.add('active');
 
-        section.classList.add('active');
-
-        // set content based on the data-element
-        const element = section.dataset.element;
-        if (element === 'title') {
-          mainContainer.innerHTML = this.getTitle();
-        }
-        else if (element === 'summary') {
-          mainContainer.innerHTML = this.getSummary();
-        }
-        else if (element === 'slug') {
-          mainContainer.innerHTML = this.getSlug();
-        }
-      })
+      mainContainer.innerHTML = this.getInfo();
     })
   }
 
@@ -304,7 +287,7 @@ export default class EditTopic extends HTMLElement {
 
         // set content based on the data-id
         const id = this.convertToNumber(section.dataset.id);
-        const sectionData = this.sections.find(section => section.id === id);
+        const sectionData = this.sections.find(section => section.order === id);
         if (sectionData) {
           mainContainer.innerHTML = this.getEditor(sectionData);
         }
@@ -512,14 +495,8 @@ export default class EditTopic extends HTMLElement {
 
   getBaseSection = () => {
     return /* html */`
-      <div class="base title" data-element="title">
-        <h4>Title</h4>
-      </div>
-      <div class="base summary" data-element="summary">
-        <h4>Summary</h4>
-      </div>
-      <div class="base slug" data-element="slug">
-        <h4>Slug</h4>
+      <div class="base">
+        <h4>Edit info</h4>
       </div>
     `;
   }
@@ -629,35 +606,41 @@ export default class EditTopic extends HTMLElement {
     `;
   }
 
-  getTitle = () => {
+  getInfo = () => {
+    const hash = this.getAttribute('hash');
     return /* html */`
-      <topic-title name="${this.getAttribute('topic-title')}" api-url="${this.getAttribute('api-title') || ''}"></topic-title>
-    `;
-  }
-
-  getSlug = () => {
-    return /* html */`
-      <topic-slug slug="${this.getAttribute('slug')}" api-url="${this.getAttribute('api-slug')}"></topic-slug>
-    `;
-  }
-
-  getSummary = () => {
-    return /* html */`
-      <topic-summary summary="${this.getAttribute('summary')}" api-url="${this.getAttribute('api-summary')}"></topic-summary>
+      <topic-info slug="${this.getAttribute('slug')}" name="${this.getAttribute('name')}" summary="${this.getAttribute('summary')}"
+        api="/api/v1/t/${hash.toLowerCase()}/edit">
+      </topic-info>
     `;
   }
 
   getEditor = data => {
+    const hash = this.getAttribute('hash').toLowerCase();
+    const url = `/api/v1/t/${hash}/section`;
     return /* html */`
-      <text-editor modify="true" author="true" draft="true" authorized="true" api-url="${this.getAttribute('api-section')}" section="${data ? data.id : ''}" order="${data ? data.order : ''}" section-title="${data === null ? '' : data.title }">
+      <text-editor new="false" draft="false" api="${url}" section="${data ? data.id : ''}" order="${data ? data.order : ''}" section-title="${data === null ? '' : data.title }">
+        ${data ? data.content : ''}
+      </text-editor>
+    `;
+  }
+
+  getDraftEditor = data => {
+    const hash = this.getAttribute('hash').toLowerCase();
+    const url = `/api/v1/t/${hash}/draft`;
+    return /* html */`
+      <text-editor new="false" draft="true" api="${url}" section="${data ? data.id : ''}" order="${data ? data.order : ''}" section-title="${data === null ? '' : data.title }">
         ${data ? data.content : ''}
       </text-editor>
     `;
   }
 
   getNewSection = order => {
+    const author = this.getAttribute('author') === window.hash;
+    const hash = this.getAttribute('hash').toLowerCase();
+    const url = `/api/v1/t/${hash}/section/add`;
     return /* html */`
-      <text-editor order="${order}" new="true" section="true" authorized="true" api-url="${this.getAttribute('api-section')}">
+      <text-editor order="${order}" new="true" section="true"  api="${this.getAttribute('api-section')}">
     `;
   }
 

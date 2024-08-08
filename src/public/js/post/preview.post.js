@@ -30,12 +30,14 @@ export default class PreviewPost extends HTMLElement {
   }
 
   activateFetchPreview = contentContainer => {
-    const kind = this.getAttribute('preview');
+    // const kind = this.getAttribute('preview');
 
     // if the kind is full, fetch the preview
-    if (kind === 'full') {
-      this.fetchPreview(contentContainer);
-    }
+    // if (kind === 'full') {
+    //   this.fetchPreview(contentContainer);
+    // }
+
+    this.fetchPreview(contentContainer);
   }
 
   activateBtn = contentContainer => {
@@ -98,14 +100,13 @@ export default class PreviewPost extends HTMLElement {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          // Set cookie age to 2 hours
+          'Cache-Control': 'public, max-age=7200'
         }
       };
   
-      this.fetchWithTimeout(this._url, options)
-        .then(response => {
-          return response.json();
-        })
+      this.getCacheData(this._url, options)
         .then(result => {
           // check for success response
           if (result.success) {
@@ -185,7 +186,7 @@ export default class PreviewPost extends HTMLElement {
           // activate the button
           outerThis.activateBtn(contentContainer);
         });
-		}, 2000)
+		}, 100)
 	}
 
   fetchWithTimeout = (url, options, timeout = 9500) => {
@@ -216,6 +217,26 @@ export default class PreviewPost extends HTMLElement {
     });
   }
 
+  getCacheData = async (url, options) => {
+    const outerThis = this;
+    const cacheName = "user-cache";
+    try {
+      const cache = await caches.open(cacheName);
+      const response = await cache.match(url);
+      if (response) {
+        const data = await response.json();
+        return data;
+      } else {
+        const networkResponse = await outerThis.fetchWithTimeout(url, options);
+        await cache.put(url, networkResponse.clone());
+        const data = await networkResponse.json();
+        return data;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   removeHtml = (text, title)=> {
     let str = text;
     // Check if the text is encoded (contains &lt; or &gt;)
@@ -229,12 +250,30 @@ export default class PreviewPost extends HTMLElement {
 
     str = str.trim();
     const filteredTitle = title ? `<h3>${title}</h3>` : '';
-    const content = str.length > 250 ? `<p>${str.substring(0, 250)}</p>` : `<p>${str}</p>`;
+    const content = `<p>${this.trimContent(str)}</p>`;
 
     return `
       ${filteredTitle}
       ${content}
     `
+  }
+
+  trimContent = text => {
+    // if text is less than 150 characters
+    if (text.length <= 150) return text;
+
+
+    // check for mobile view
+    const mql = window.matchMedia('(max-width: 660px)');
+
+    // Check if its a mobile view
+    if (mql.matches) {
+      // return text substring: 150 characters + ...
+      return text.substring(0, 150) + '...';
+    } else {
+      // trim the text to 250 characters
+      return text.substring(0, 250) + '...';
+    }
   }
 
   openStory = () => {
