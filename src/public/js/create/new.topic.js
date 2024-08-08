@@ -118,7 +118,7 @@ export default class NewTopic extends HTMLElement {
   }
 
   enableScroll() {
-document.body.classList.remove("stop-scrolling");
+    document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 
@@ -997,7 +997,7 @@ document.body.classList.remove("stop-scrolling");
 
           #content {
             box-sizing: border-box !important;
-            padding: 10px 10px 25px 10px;
+            padding: 0 10px 25px 10px;
             margin: 0;
             width: 100%;
             max-width: 100%;
