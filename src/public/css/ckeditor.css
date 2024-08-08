@@ -102,7 +102,10 @@
   text-decoration:none;
   transition:none;
   vertical-align:middle;
-  width:auto
+  width:auto;
+}
+.ck.ck-reset.ck-editor {
+  width: 100%;
 }
 .ck-reset_all :not(.ck-reset_all-excluded *),
 .ck.ck-reset_all {

@@ -47,7 +47,7 @@ export default class RepliesFeed extends HTMLElement {
   }
 
   enableScroll() {
-document.body.classList.remove("stop-scrolling");
+    document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

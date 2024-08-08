@@ -14,9 +14,6 @@ export default class FormContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    //Scroll the window to the top
-    window.scrollTo(0, 0);
-
     // activate topic
     this.activateTopicButton();
   }

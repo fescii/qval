@@ -95,7 +95,7 @@ export default class AppHome extends HTMLElement {
   }
 
   enableScroll() {
-document.body.classList.remove("stop-scrolling");
+    document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 
@@ -112,6 +112,7 @@ document.body.classList.remove("stop-scrolling");
     if (mql.matches) {
       return /* html */`
         ${this.getTop()}
+        <create-post api="/api/v1/p/add" method="PUT"></create-post>
         <add-container type="story"></add-container>
         <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
         <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>
@@ -124,6 +125,7 @@ document.body.classList.remove("stop-scrolling");
       return /* html */`
         <div class="feeds">
           ${this.getTop()}
+          <create-post api="/api/v1/p/add" method="PUT"></create-post>
           <add-container type="story"></add-container>
           <feed-container url="${this.getAttribute('trending-url')}"></feed-container>
           <stories-container stories="recent" url="${this.getAttribute('recent-url')}"></stories-container>

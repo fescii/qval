@@ -1,9 +1,50 @@
-export default class NewTopic extends HTMLElement {
+import { ClassicEditor, AccessibilityHelp, Autoformat,
+	AutoLink, Autosave, Bold, Essentials, Heading,
+	Italic, Link, List, Paragraph, SelectAll, Table, TableCaption, TableCellProperties,
+	TableColumnResize, TableProperties, TableToolbar,
+	TextTransformation, TodoList, Underline, Undo 
+} from 'https://cdn.ckeditor.com/ckeditor5/42.0.2/ckeditor5.js';
+const editorConfig = {
+	height: '200px',
+	toolbar: {
+		items: ['bold', 'italic', 'underline', '|', 'link', 'bulletedList', 'numberedList'],
+		shouldNotGroupWhenFull: false
+	},
+	toolbarLocation: 'bottom',
+	plugins: [
+		AccessibilityHelp,
+		Autoformat, AutoLink, Autosave, Bold,
+		Essentials, Italic, Link, List,
+		Paragraph, SelectAll, Table,
+		TableCaption, TableCellProperties, TableColumnResize,
+		TableProperties, TableToolbar,
+		TextTransformation, TodoList, Underline,
+	],
+	link: {
+		addTargetToExternalLinks: true,
+		defaultProtocol: 'https://',
+		decorators: {
+			toggleDownloadable: {
+				mode: 'manual',
+				label: 'Downloadable',
+				attributes: {
+					download: 'file'
+				}
+			}
+		}
+	},
+	placeholder: 'Type or paste your content here!',
+	table: {
+		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
+	}
+};
+
+export default class NewPost extends HTMLElement {
   constructor() {
     // We are not even going to touch this.
     super();
 
-    this._topic = null;
+    this.editor = null;
 
     // let's create our shadow root
     this.shadowObj = this.attachShadow({ mode: "open" });
@@ -18,6 +59,9 @@ export default class NewTopic extends HTMLElement {
   }
 
   connectedCallback() {
+    // initialize the editor
+    this.initEditor();
+
     // select the form
     const form = this.shadowObj.querySelector('form');
 
@@ -34,7 +78,19 @@ export default class NewTopic extends HTMLElement {
     if (overlay && btns) {
       this.closePopup(overlay, btns);
     }
+
     this.disableScroll();
+  }
+
+  initEditor() {
+    ClassicEditor.create(this.shadowRoot.getElementById('editor'), editorConfig)
+    .then(editor => {
+      this.editor = editor;
+      this.editor.setData(this.innerHTML || '');
+    })
+    .catch(error => {
+      console.log('Failed to initialize the editor. Error: ', error);
+    });
   }
 
   disconnectedCallback() {
@@ -117,7 +173,7 @@ export default class NewTopic extends HTMLElement {
     };
   }
 
-  enableScroll() {
+    enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
@@ -356,42 +412,42 @@ export default class NewTopic extends HTMLElement {
   getBody = () => {
     return /* html */`
       ${this.getHeader()}
-      <form class="fields slug" id="topic-form">
-        <div class="field new">
-          <div class="input-group title">
-            <input type="text" name="title" id="title" placeholder="Enter topic title" required/>
-            <span class="status">title is required</span>
-          </div>
-          <div class="input-group slug">
-            <input type="text" name="slug" id="slug" placeholder="Enter topic slug" required/>
-            <span class="status">slug is required</span>
-          </div>
-          <div class="input-group your-summary">
-            <textarea name="summary" id="summary" cols="30" rows="10" required placeholder="Enter topic summary"></textarea>
-            <span class="status">summary is required</span>
-          </div>
-        </div>
+      <form class="fields post" id="post-form">
+        <textarea name="editor" id="editor" cols="30" rows="10" required placeholder="Type or paste your content hare!"></textarea>
         <div class="actions">
           <button class="action cancel-btn">
             <span class="text">Cancel</span>
           </button>
           <button type="submit" class="action next">
-            <span class="text">Create</span>
+            <span class="text">Post</span>
           </button>
         </div>
       </form>
     `;
   }
 
+  getDaysInput = () => {
+    return /* html */`
+      <div class="field">
+        <label for="days">Days</label>
+        <div class="input-group">
+          <input type="number" name="days" id="days" placeholder="Enter number of days" required/>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 1a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 1a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 1a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 1a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
   getHeader = () => {
     return /* html */`
-      <h2 class="pop-title">Create topic</h2>
+      <h2 class="pop-title">Create post</h2>
       <div class="top">
         <p class="desc">
-          Create a new topic by filling in the form below. You'll be ask to continue to edit the topic after creation, so make sure you continue.
+          Create a new post by typing or pasting your content in the editor below.
           <br>
-          <span>Note: Title must be at least 2 characters, summary must be at least 100 characters, and topic slug can only contain letters, numbers, and hyphens and be in lowercase.</span>
-          <span>Use keywords in your title and summary to make it easier to find your topic.</span>
+          <span>Note: For polls, only one poll can be created per post and each poll can have a maximum of 4 options. Poll runs upto a maximum 7 days(1 week), i.e 168 hours.</span>
         </p>
       </div>
     `;
@@ -493,6 +549,7 @@ export default class NewTopic extends HTMLElement {
 
   getStyles() {
     return /* css */`
+      <link rel="stylesheet" href="/static/css/ckeditor.css">
       <style>
         *,
         *:after,
@@ -525,7 +582,6 @@ export default class NewTopic extends HTMLElement {
         ul,
         ol {
           padding: 0;
-          margin: 0;
         }
 
         a {
@@ -699,6 +755,7 @@ export default class NewTopic extends HTMLElement {
         form.fields {
           margin: 0;
           width: 100%;
+          min-width: 100%;
           display: flex;
           flex-flow: column;
           justify-content: center;
@@ -945,7 +1002,7 @@ export default class NewTopic extends HTMLElement {
           width: max-content;
           flex-flow: row;
           align-items: center;
-          text-transform: lowercase;
+          text-transform: capitalize;
           justify-content: center;
           padding: 4px 15px 5px;
           border-radius: 10px;
@@ -956,6 +1013,7 @@ export default class NewTopic extends HTMLElement {
         form.fields .actions > .action.cancel-btn {
           background: var(--gray-background);
           fill: var(--text-color);
+          /*text-transform: lowercase;*/
         }
 
         form.fields .actions > .action.prev svg path {
@@ -973,6 +1031,57 @@ export default class NewTopic extends HTMLElement {
 
         form.fields .actions > .action.disabled {
           pointer-events: none;
+        }
+
+        #editor {
+          min-width: 100%;
+          width: 100%;
+          max-height: 200px;
+          height: 200px;
+          overflow-y: auto;
+        }
+
+        .ck.ck-editor__main > .ck-editor__editable {
+          color: var(--editor-color);
+        }
+
+        .ck.ck-editor__main > .ck-editor__editable a {
+          color: var(--anchor-color);
+        }
+
+        .ck-editor__editable_inline:not(.ck-comment__input *) {
+          height: 150px;
+          overflow-y: auto;
+        }
+
+        .ck-body-wrapper {
+          display: none
+          opacity: 0
+          visibility: hidden
+        }
+
+        .ck.ck-reset.ck-editor {
+          display: -webkit-box;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -webkit-flex-direction: column;
+          -moz-flex-direction: column;
+          -ms-flex-direction: column;
+          flex-direction: column;
+        }
+
+        .ck-focused, .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+          border: none;
+          border: none;
+          outline: none !important;
+          -moz-outline: none !important;
+          -webkit-outline: none !important;
+          -ms-outline: none !important;
+          -webkit-box-shadow: none;
+          -moz-box-shadow: none;
+          box-shadow: none
         }
 
         @media screen and (max-width:600px) {

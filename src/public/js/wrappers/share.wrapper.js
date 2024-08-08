@@ -148,7 +148,7 @@ export default class ShareWrapper extends HTMLElement {
     };
   }
 
-  enableScroll() {
+    enableScroll() {
     document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }

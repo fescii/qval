@@ -263,7 +263,7 @@ export default class PollPost extends HTMLElement {
   }
 
   enableScroll() {
-document.body.classList.remove("stop-scrolling");
+    document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

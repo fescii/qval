@@ -53,6 +53,7 @@ import NotificationManager from "./apps/notify.js";
 
 // Import Create
 import CreateTopic from "./create/new.topic.js";
+import CreatePost from "./create/post.js";
 import TextEditor from "./create/editor.js";
 import EditTopic from "./create/topic.js";
 import TopicInfo from "./create/topic.info.js";
@@ -179,6 +180,7 @@ customElements.define("app-user", AppUser);
 
 // Register Create
 customElements.define("create-topic", CreateTopic);
+customElements.define("create-post", CreatePost);
 customElements.define("text-editor", TextEditor);
 customElements.define("edit-topic", EditTopic);
 customElements.define("topic-info", TopicInfo);
