@@ -3,6 +3,7 @@ export default class HomeFeed extends HTMLElement {
     // We are not even going to touch this.
     super();
 
+    this._isFirstLoad = true;
     this._block = false;
     this._empty = false;
     this._page = this.parseToNumber(this.getAttribute('page'));
@@ -23,13 +24,7 @@ export default class HomeFeed extends HTMLElement {
 
     // check if the total
     if (feedContainer) {
-      setTimeout(() => {
-        this.fetchFeeds(feedContainer);
-      }, 2000);
-    
-      setTimeout(() => {
-        this.scrollEvent(feedContainer);
-      }, 4000);
+      this.fetchFeeds(feedContainer);
     }
   }
 
@@ -51,6 +46,8 @@ export default class HomeFeed extends HTMLElement {
   }
 
   fetching = (url, feedContainer) => {
+    // Remove the scroll event
+    this.removeScrollEvent();
     const outerThis = this;
     this.fetchWithTimeout(url, { method: "GET" }).then((response) => {
       response.json().then((result) => {
@@ -75,6 +72,9 @@ export default class HomeFeed extends HTMLElement {
             const content = outerThis.mapFeeds(data.stories, data.replies);
             outerThis.populateFeeds(content, feedContainer);
           }
+
+          // Add scroll event
+          outerThis.scrollEvent(feedContainer);
         }
         else {
           outerThis._empty = true;
@@ -99,7 +99,9 @@ export default class HomeFeed extends HTMLElement {
       outerThis._empty = true;
       outerThis._block = true;
       // fetch the stories
-      outerThis.fetching(url, feedContainer)
+      setTimeout(() => {
+        outerThis.fetching(url, feedContainer)
+      }, 2000);
     }
   }
 
@@ -122,15 +124,17 @@ export default class HomeFeed extends HTMLElement {
         outerThis._page += 1;
         outerThis.populateFeeds(outerThis.getLoader(), feedContainer);
 
-        this.setTimeout(() => {
-          outerThis.fetchFeeds(feedContainer);
-        }, 2000);
+        outerThis.fetchFeeds(feedContainer);
       }
     });
 
     // Launch scroll event
     const scrollEvent = new Event('scroll');
     window.dispatchEvent(scrollEvent);
+  }
+
+  removeScrollEvent = () => {
+    window.removeEventListener('scroll', function () { });
   }
 
   mapFeeds = (stories, replies) => {
