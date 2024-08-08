@@ -68,6 +68,13 @@ export default class NewPost extends HTMLElement {
     // add event listener to the form
     this.submitForm(form);
 
+    const textarea = form.querySelector('textarea#poll');
+
+    // add event listener to the textarea
+    if (textarea) {
+      this.growTextarea(textarea);
+    }
+
     // validate the slug
     this.validateForm(form);
 
@@ -413,11 +420,9 @@ export default class NewPost extends HTMLElement {
     return /* html */`
       ${this.getHeader()}
       <form class="fields post" id="post-form">
-        <textarea name="editor" id="editor" cols="30" rows="10" required placeholder="Type or paste your content hare!"></textarea>
+        ${this.getPollEditor()}
         <div class="actions">
-          <button class="action cancel-btn">
-            <span class="text">Cancel</span>
-          </button>
+          <span class="action-info">Publishing to feeds</span>
           <button type="submit" class="action next">
             <span class="text">Post</span>
           </button>
@@ -426,18 +431,54 @@ export default class NewPost extends HTMLElement {
     `;
   }
 
-  getDaysInput = () => {
+  getPostEditor = () => {
     return /* html */`
-      <div class="field">
-        <label for="days">Days</label>
-        <div class="input-group">
-          <input type="number" name="days" id="days" placeholder="Enter number of days" required/>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 1a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 1a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 1a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 1a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-          </svg>
+      <textarea name="editor" id="editor" cols="30" rows="10" required placeholder="Type or paste your content hare!"></textarea>
+    `;
+  }
+
+  getPollEditor = () => {
+    return /* html */`
+      <div class="field polls">
+        <span class="title">Poll</span>
+        <div class="poll-inputs">
+          <textarea name="poll" id="poll" cols="30" rows="1" required placeholder="What's your poll question?"></textarea>
+          <input type="text" name="option1" id="option1" placeholder="Option 1" required spellcheck="false">
+          <input type="text" name="option2" id="option2" placeholder="Option 2" required spellcheck="false">
+          <span class="add-option">Add option</span>
+        </div>
+        <div class="poll-inputs">
+          <input type="number" name="poll-end" id="poll-end" placeholder="Poll ends in? e.g 7 (days)" max="7" min="1" required>
+        </div>
+        <div class="remove">
+          <span class="remove-poll">Remove poll</span>
         </div>
       </div>
     `;
+  }
+
+  growTextarea = input => {
+    // when next line is clicked, increase the rows up to 10 after which it should scroll
+    // input.addEventListener('keydown', e => {
+    //   if (e.key === 'Enter') {
+    //     if (input.rows < 5) {
+    //       input.rows += 1;
+    //     }
+    //   }
+    // })
+
+    input.addEventListener('input', e => {
+      const value = e.target.value;
+      const lines = value.split('\n').length;
+      if(lines === 1) {
+        input.rows = 1;
+      }
+      else if (lines > 1 && lines <= 5) {
+        input.rows = lines;
+      } else if (lines > 5) {
+        input.rows = 5;
+      }
+    })
   }
 
   getHeader = () => {
@@ -581,7 +622,7 @@ export default class NewPost extends HTMLElement {
         p,
         ul,
         ol {
-          padding: 0;
+          font-family: inherit;
         }
 
         a {
@@ -631,6 +672,7 @@ export default class NewPost extends HTMLElement {
           gap: 0;
           width: 700px;
           max-height: 90%;
+          height: 90%;
           height: max-content;
           border-radius: 15px;
           position: relative;
@@ -756,11 +798,12 @@ export default class NewPost extends HTMLElement {
           margin: 0;
           width: 100%;
           min-width: 100%;
+          height: auto;
           display: flex;
           flex-flow: column;
           justify-content: center;
           align-items: center;
-          gap: 20px;
+          gap: 10px;
         }
 
         form.fields > .field {
@@ -769,85 +812,79 @@ export default class NewPost extends HTMLElement {
           flex-flow: column;
           justify-content: center;
           align-items: start;
-          gap: 20px;
+          gap: 0;
         }
 
-        form.fields.center > .field {
-          align-items: center;
+        form.fields > .field.polls {
+          /*border-top: var(--border);*/
+          padding: 10px 0 0 0;
         }
 
-        form.fields .field .input-group {
+        form.fields > .field.polls > span.title {
+          display: none;
+          margin: 0;
+          padding: 0 0 10px 3px;
+          color: var(--text-color);
+          font-size: 1rem;
+          font-weight: 600;
+          font-family: var(--font-main), sans-serif;
+        }
+
+        form.fields > .field.polls > .poll-inputs {
           width: 100%;
           display: flex;
           flex-flow: column;
           justify-content: center;
           align-items: start;
-          color: var(--text-color);
-          gap: 5px;
-          position: relative;
-          transition: border-color 0.3s ease-in-out;
+          gap: 10px;
         }
 
-        form.fields .field.bio .input-group {
+        form.fields > .field.polls > div.remove {
           width: 100%;
+          display: flex;
+          flex-flow: row;
+          justify-content: end;
+          align-items: center;
+          gap: 0;
+          padding: 8px 0 10px;
         }
 
-        form.fields .field.bio .input-group.code,
-        form.fields .field.bio .input-group.slug {
-          grid-column: 1/3;
-          width: 100%;
-        }
-
-        form.fields .field .input-group > svg {
-          position: absolute;
-          right: 10px;
-          top: 38px;
-          width: 20px;
-          height: 20px;
-        }
-
-        form.fields .field .input-group > svg {
-          display: none;
-        }
-
-        form.fields .field .input-group.success > svg {
-          display: inline-block;
-        }
-
-        form.fields .field .input-group.failed > svg {
-          display: inline-block;
-        }
-
-        form.fields .field .input-group.success > svg {
-          color: var(--accent-color);
-        }
-
-        form.fields .field .input-group.failed > svg {
-          color: var(--error-color);
-        }
-
-        form.fields label {
-          padding: 0 0 5px 0;
-          color: var(--text-color);
-        }
-
-        form.fields .field.bio label {
-          padding: 0 0 0 5px;
-        }
-
-        form.fields label {
-          color: var(--label-color);
-          font-size: 1.1rem;
+        form.fields > .field.polls > div.remove > span.remove-poll {
+          width: max-content;
+          padding: 0 5px;
+          display: flex;
           font-family: var(--font-read), sans-serif;
-          transition: all 0.3s ease-in-out;
-          pointer-events: none;
+          font-size: 0.95rem;
+          font-weight: 400;
+          color: var(--gray-color);
+        }
+
+        form.fields > .field.polls > .poll-inputs > span.add-option {
+          border: var(--input-border);
+          background: var(--background);
+          font-family: var(--font-read), sans-serif;
+          font-size: 1rem;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          width: 100%;
+          height: 40px;
+          outline: none;
+          padding: 10px 12px;
+          margin: 0 0 15px;
+          border-radius: 12px;
+          color: var(--gray-color);
+          -webkit-border-radius: 12px;
+          -moz-border-radius: 12px;
+          -ms-border-radius: 12px;
+          -o-border-radius: 12px;
         }
 
         form.fields .field input {
           border: var(--input-border);
           background: var(--background);
           font-family: var(--font-read), sans-serif;
-          font-size: 1rem;
+          font-size: 0.95rem;
           width: 100%;
           height: 40px;
           outline: none;
@@ -862,11 +899,13 @@ export default class NewPost extends HTMLElement {
 
         form.fields .field input {
           border: none;
+          display: inline-block;
           border: var(--border);
           font-family: var(--font-read), sans-serif;
           background-color: var(--background) !important;
           font-size: 1rem;
           width: 100%;
+          min-width: 100%;
           height: 40px;
           outline: none;
           padding: 10px 12px;
@@ -889,35 +928,38 @@ export default class NewPost extends HTMLElement {
         }
 
         form.fields .field input:focus {
-          border: var(--input-border-focus);
+          /* border: var(--input-border-focus); */
+          border: var(--border);
         }
 
         form.fields textarea {
           border: none;
-          border: var(--border);
+          /* border: var(--border); */
           font-family: var(--font-read), sans-serif;
           background: var(--background);
           font-size: 1rem;
-          padding: 10px 12px;
+          padding: 10px 5px;
           margin: 0;
           width: 100%;
           resize: none;
-          height: 120px;
+          height: auto;
+          line-height: 1.5;
           gap: 5px;
           font-weight: 400;
           color: var(--text-color);
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+          /*-ms-overflow-style: none;*/
+          scrollbar-width: 3px;
           border-radius: 12px;
         }
 
         form.fields textarea::-webkit-scrollbar {
-          display: none !important;
-          visibility: hidden;
+          width: 3px;
+          -webkit-appearance: auto;
         }
 
         form.fields textarea:focus {
-          border: var(--input-border-focus);
+          /*border: var(--input-border-focus);*/
+          border: none;
         }
 
         form.fields .field span.wrapper {
@@ -926,30 +968,6 @@ export default class NewPost extends HTMLElement {
           align-items: center;
           gap: 0;
           width: 100%;
-        }
-
-        form.fields .field .input-group.success > span.wrapper > input,
-        form.fields .field .input-group.success > span.wrapper > input:focus,
-        form.fields .field .input-group.success input,
-        form.fields .field .input-group.success input:focus {
-          border: var(--input-border-focus);
-        }
-
-        form.fields .field .input-group.failed > span.wrapper > input,
-        form.fields .field .input-group.failed > span.wrapper > input:focus,
-        form.fields .field .input-group.failed input,
-        form.fields .field .input-group.failed input:focus {
-          border: var(--input-border-error);
-        }
-
-        form.fields .field .input-group.success span.wrapper > input,
-        form.fields .field .input-group.success input {
-          color: var(--accent-color);
-        }
-
-        form.fields .field .input-group.failed span.wrapper > input,
-        form.fields .field .input-group.failed input {
-          color: var(--error-color);
         }
 
         form.fields label.focused {
@@ -983,20 +1001,32 @@ export default class NewPost extends HTMLElement {
         }
 
         form.fields .actions {
+          border-top: var(--border);
           display: flex;
           align-items: center;
+          justify-content: space-between;
           width: 100%;
           gap: 20px;
           margin: 0 0 0 2px;
+          padding: 10px 0 0;
+        }
+
+        form.fields .actions > span.action-info {
+          color: var(--gray-color);
+          font-size: 0.95rem;
+          font-family: var(--font-read), sans-serif;
+          font-weight: 500;
+          line-height: 1.5;
         }
 
         form.fields .actions > .action {
           border: none;
           background: var(--accent-linear);
+          font-family: var(--font-main), sans-serif;
           text-decoration: none;
           color: var(--white-color);
-          font-size: 0.95rem;
-          font-weight: 500;
+          font-size: 1rem;
+          font-weight: 600;
           cursor: pointer;
           display: flex;
           width: max-content;
@@ -1004,10 +1034,10 @@ export default class NewPost extends HTMLElement {
           align-items: center;
           text-transform: capitalize;
           justify-content: center;
-          padding: 4px 15px 5px;
-          border-radius: 10px;
-          -webkit-border-radius: 10px;
-          -moz-border-radius: 10px;
+          padding: 7px 15px 8px;
+          border-radius: 50px;
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
         }
 
         form.fields .actions > .action.cancel-btn {
@@ -1114,7 +1144,6 @@ export default class NewPost extends HTMLElement {
             max-height: 100%;
             min-height: 100%;
             border-radius: 0;
-            border: none;
             overflow-y: auto;
           }
 
@@ -1147,16 +1176,11 @@ export default class NewPost extends HTMLElement {
             font-family: var(--font-main), sans-serif;
           }
 
-          form.fields textarea {
-            height: 120px;
-          }
-
           form.fields .actions {
             display: flex;
             align-items: center;
             width: 100%;
             gap: 25px;
-            margin: 10px 0 0 2px;
           }
 
           form.fields .actions > .action {
