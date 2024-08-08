@@ -68,14 +68,8 @@ export default class NewPost extends HTMLElement {
     // add event listener to the form
     this.submitForm(form);
 
-    const textarea = form.querySelector('textarea#poll');
-    const pollInputs = form.querySelector('div#poll-inputs');
-
-    // add event listener to the textarea
-    if (textarea && pollInputs) {
-      this.growTextarea(textarea);
-      this.addPollOption(pollInputs);
-    }
+    // activate the poll
+    this.activatePoll(form);
 
     // validate the slug
     this.validateForm(form);
@@ -100,6 +94,17 @@ export default class NewPost extends HTMLElement {
     .catch(error => {
       console.log('Failed to initialize the editor. Error: ', error);
     });
+  }
+
+  activatePoll = form => {
+    const textarea = form.querySelector('textarea#poll');
+    const pollInputs = form.querySelector('div#poll-inputs');
+
+    // add event listener to the textarea
+    if (textarea && pollInputs) {
+      this.growTextarea(textarea);
+      this.addPollOption(pollInputs);
+    }
   }
 
   disconnectedCallback() {
