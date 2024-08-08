@@ -18,7 +18,6 @@ export default class NewTopic extends HTMLElement {
   }
 
   connectedCallback() {
-    this.disableScroll();
     // select the form
     const form = this.shadowObj.querySelector('form');
 
@@ -35,6 +34,7 @@ export default class NewTopic extends HTMLElement {
     if (overlay && btns) {
       this.closePopup(overlay, btns);
     }
+    this.disableScroll();
   }
 
   disconnectedCallback() {
@@ -118,7 +118,7 @@ export default class NewTopic extends HTMLElement {
   }
 
   enableScroll() {
-    document.body.classList.remove("stop-scrolling");
+document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 
@@ -388,7 +388,10 @@ export default class NewTopic extends HTMLElement {
       <h2 class="pop-title">Create topic</h2>
       <div class="top">
         <p class="desc">
-          Create a new topic by filling in the details below. Remember to make the topic title and slug unique.
+          Create a new topic by filling in the form below. You'll be ask to continue to edit the topic after creation, so make sure you continue.
+          <br>
+          <span>Note: Title must be at least 2 characters, summary must be at least 100 characters, and topic slug can only contain letters, numbers, and hyphens and be in lowercase.</span>
+          <span>Use keywords in your title and summary to make it easier to find your topic.</span>
         </p>
       </div>
     `;
@@ -573,25 +576,25 @@ export default class NewTopic extends HTMLElement {
           width: 700px;
           max-height: 90%;
           height: max-content;
-          border-radius: 25px;
+          border-radius: 15px;
           position: relative;
         }
   
         #content span.control {
           padding: 0;
           cursor: pointer;
-          display: flex;
+          display: none;
           flex-flow: column;
           gap: 0px;
           justify-content: center;
           position: absolute;
-          right: 14px;
-          top: 14px;
+          right: 9px;
+          top: 9px;
         }
 
         #content span.control svg {
-          width: 21px;
-          height: 21px;
+          width: 16px;
+          height: 16px;
           color: var(--text-color);
         }
 
@@ -684,6 +687,15 @@ export default class NewTopic extends HTMLElement {
           font-family: var(--font-main), sans-serif;
         }
 
+        .top > .desc > span {
+          display: inline-block;
+          margin: 10px 0 5px;
+          color: var(--gray-color);
+          font-size: 0.85rem;
+          font-style: italic;
+          font-family: var(--font-read), sans-serif;
+        }
+
         form.fields {
           margin: 0;
           width: 100%;
@@ -769,7 +781,7 @@ export default class NewTopic extends HTMLElement {
         form.fields label {
           color: var(--label-color);
           font-size: 1.1rem;
-          font-family: var(--font-main), sans-serif;
+          font-family: var(--font-read), sans-serif;
           transition: all 0.3s ease-in-out;
           pointer-events: none;
         }
@@ -777,6 +789,7 @@ export default class NewTopic extends HTMLElement {
         form.fields .field input {
           border: var(--input-border);
           background: var(--background);
+          font-family: var(--font-read), sans-serif;
           font-size: 1rem;
           width: 100%;
           height: 40px;
@@ -791,7 +804,9 @@ export default class NewTopic extends HTMLElement {
         }
 
         form.fields .field input {
-          border: var(--input-border);
+          border: none;
+          border: var(--border);
+          font-family: var(--font-read), sans-serif;
           background-color: var(--background) !important;
           font-size: 1rem;
           width: 100%;
@@ -822,14 +837,15 @@ export default class NewTopic extends HTMLElement {
 
         form.fields textarea {
           border: none;
-          border: var(--input-border);
+          border: var(--border);
+          font-family: var(--font-read), sans-serif;
           background: var(--background);
           font-size: 1rem;
           padding: 10px 12px;
           margin: 0;
           width: 100%;
           resize: none;
-          height: 100px;
+          height: 120px;
           gap: 5px;
           font-weight: 400;
           color: var(--text-color);
@@ -843,7 +859,7 @@ export default class NewTopic extends HTMLElement {
           visibility: hidden;
         }
 
-        form.fields textarea:focus,
+        form.fields textarea:focus {
           border: var(--input-border-focus);
         }
 
@@ -913,7 +929,7 @@ export default class NewTopic extends HTMLElement {
           display: flex;
           align-items: center;
           width: 100%;
-          gap: 15px;
+          gap: 20px;
           margin: 0 0 0 2px;
         }
 
@@ -938,8 +954,7 @@ export default class NewTopic extends HTMLElement {
         }
 
         form.fields .actions > .action.cancel-btn {
-          background: var(--gray-background);
-          color: var(--text-color);
+          background: var(--error-linear);
         }
 
         form.fields .actions > .action.prev svg path {
@@ -976,20 +991,21 @@ export default class NewTopic extends HTMLElement {
             top: 0;
             bottom: 0;
             left: 0;
+            min-width: 100dvw;
+            min-height: 100dvh;
           }
 
           #content {
             box-sizing: border-box !important;
-            padding: 15px 10px 25px 10px;
+            padding: 10px 10px 25px 10px;
             margin: 0;
             width: 100%;
             max-width: 100%;
-            max-height: 90%;
-            min-height: max-content;
-            border-radius: 0px;
-            border-top: var(--mobile-border);
-            border-top-right-radius: 15px;
-            border-top-left-radius: 15px;
+            max-height: 100%;
+            min-height: 100%;
+            border-radius: 0;
+            border: none;
+            overflow-y: auto;
           }
 
           #content span.control {
@@ -1006,7 +1022,7 @@ export default class NewTopic extends HTMLElement {
           h2.pop-title {
             width: 100%;
             font-size: 1.2rem;
-            margin: 0 0 10px;
+            margin: 0 0 15px;
             padding: 10px 10px;
             background-color: var(--gray-background);
             text-align: center;
@@ -1019,6 +1035,18 @@ export default class NewTopic extends HTMLElement {
             font-size: 0.95rem;
             line-height: 1.5;
             font-family: var(--font-main), sans-serif;
+          }
+
+          form.fields textarea {
+            height: 120px;
+          }
+
+          form.fields .actions {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 25px;
+            margin: 10px 0 0 2px;
           }
 
           form.fields .actions > .action {

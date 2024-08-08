@@ -75,7 +75,7 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.enableScroll()
+    this.enableScroll();
     if (window.wss) {
       window.wss.removeMessageHandler(this.boundHandleWsMessage);
     }
@@ -383,7 +383,7 @@ export default class HeaderWrapper extends HTMLElement {
     });
   }
 
-  disableScroll() {
+   disableScroll() {
     // Get the current page scroll position
     let scrollTop = window.scrollY || document.documentElement.scrollTop;
     let scrollLeft = window.scrollX || document.documentElement.scrollLeft;
@@ -396,7 +396,7 @@ export default class HeaderWrapper extends HTMLElement {
   }
 
   enableScroll() {
-    document.body.classList.remove("stop-scrolling");
+document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

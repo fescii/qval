@@ -22,10 +22,6 @@ export default class ShareWrapper extends HTMLElement {
     this.openShare(mql.matches);
   }
 
-  disconnectedCallback() {
-    this.enableScroll()
-  }
-
   // fn to open the share overlay
   openShare = mql => {
     // Get share button
@@ -53,7 +49,7 @@ export default class ShareWrapper extends HTMLElement {
         // disable scroll
 
         if (mql) {
-          this.disableScroll()
+          this.disableScroll();
         }
 
         if (!mql) {
@@ -67,7 +63,7 @@ export default class ShareWrapper extends HTMLElement {
             if (!content.contains(e.target)) {
               // Remove the active class
               overlay.classList.remove('active');
-              this.enableScroll()
+              this.enableScroll();
             }
           }, { once: true });
         }
@@ -79,7 +75,7 @@ export default class ShareWrapper extends HTMLElement {
             e.stopImmediatePropagation();
   
             overlay.classList.remove('active');
-            this.enableScroll()
+            this.enableScroll();
           }, { once: true });
         }
       });
@@ -105,7 +101,7 @@ export default class ShareWrapper extends HTMLElement {
     }
   }
 
-  // Perform the copy action using the Clipboard API if faild show a toast message
+  // Perform the copy action using the Clipboard API if failed show a toast message
   copyToClipboard = text => {
     // Use the Clipboard API to copy the url
     navigator.clipboard.writeText(text).then(() => {

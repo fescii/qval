@@ -130,7 +130,7 @@ export default class ActionWrapper extends HTMLElement {
     }
   }
 
-  disableScroll() {
+   disableScroll() {
     // Get the current page scroll position
     let scrollTop = window.scrollY || document.documentElement.scrollTop;
     let scrollLeft = window.scrollX || document.documentElement.scrollLeft;
@@ -143,7 +143,7 @@ export default class ActionWrapper extends HTMLElement {
   }
 
   enableScroll() {
-    document.body.classList.remove("stop-scrolling");
+document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

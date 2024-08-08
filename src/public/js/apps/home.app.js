@@ -21,7 +21,6 @@ export default class AppHome extends HTMLElement {
   }
 
   connectedCallback() {
-    this.enableScroll()
     //Scroll the window to the top
     window.scrollTo(0, 0);
 
@@ -83,7 +82,7 @@ export default class AppHome extends HTMLElement {
     body.innerHTML = content;
   }
 
-  disableScroll() {
+   disableScroll() {
     // Get the current page scroll position
     let scrollTop = window.scrollY || document.documentElement.scrollTop;
     let scrollLeft = window.scrollX || document.documentElement.scrollLeft;
@@ -96,7 +95,7 @@ export default class AppHome extends HTMLElement {
   }
 
   enableScroll() {
-    document.body.classList.remove("stop-scrolling");
+document.body.classList.remove("stop-scrolling");
     window.onscroll = function () { };
   }
 

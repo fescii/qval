@@ -427,10 +427,6 @@ export default class PreviewPost extends HTMLElement {
     }
   }
 
-  disconnectedCallback() {
-    this.enableScroll()
-  }
-
   disableScroll() {
     // Get the current page scroll position
     let scrollTop = window.scrollY || document.documentElement.scrollTop;
