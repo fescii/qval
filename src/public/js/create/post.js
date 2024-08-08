@@ -69,10 +69,12 @@ export default class NewPost extends HTMLElement {
     this.submitForm(form);
 
     const textarea = form.querySelector('textarea#poll');
+    const pollInputs = form.querySelector('div#poll-inputs');
 
     // add event listener to the textarea
-    if (textarea) {
+    if (textarea && pollInputs) {
       this.growTextarea(textarea);
+      this.addPollOption(pollInputs);
     }
 
     // validate the slug
@@ -406,11 +408,6 @@ export default class NewPost extends HTMLElement {
     return /*html*/`
       <div class="overlay"></div>
       <section id="content" class="content">
-        <span class="control cancel-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-            </svg>
-        </span>
         ${this.getBody()}
       </section>
     ${this.getStyles()}`
@@ -439,9 +436,9 @@ export default class NewPost extends HTMLElement {
 
   getPollEditor = () => {
     return /* html */`
-      <div class="field polls">
+      <div class="field polls" id="poll-inputs">
         <span class="title">Poll</span>
-        <div class="poll-inputs">
+        <div class="poll-inputs texts">
           <textarea name="poll" id="poll" cols="30" rows="1" required placeholder="What's your poll question?"></textarea>
           <input type="text" name="option1" id="option1" placeholder="Option 1" required spellcheck="false">
           <input type="text" name="option2" id="option2" placeholder="Option 2" required spellcheck="false">
@@ -458,15 +455,6 @@ export default class NewPost extends HTMLElement {
   }
 
   growTextarea = input => {
-    // when next line is clicked, increase the rows up to 10 after which it should scroll
-    // input.addEventListener('keydown', e => {
-    //   if (e.key === 'Enter') {
-    //     if (input.rows < 5) {
-    //       input.rows += 1;
-    //     }
-    //   }
-    // })
-
     input.addEventListener('input', e => {
       const value = e.target.value;
       const lines = value.split('\n').length;
@@ -481,9 +469,68 @@ export default class NewPost extends HTMLElement {
     })
   }
 
+  addPollOption = container => {
+    const addOption = container.querySelector('span.add-option ');
+    const removePoll = container.querySelector('div.remove > span.remove-poll');
+
+    if(addOption && removePoll) {
+      addOption.addEventListener('click', e => {
+        e.preventDefault();
+        const pollInputs = container.querySelector('.poll-inputs.texts');
+        const options = pollInputs.querySelectorAll('input[type="text"]');
+        const lastOption = options[options.length - 1];
+
+        if (options.length >= 4) {
+          return;
+        }
+
+        const newOption = document.createElement('input');
+        newOption.type = 'text';
+        newOption.name = `option${options.length + 1}`;
+        newOption.id = `option${options.length + 1}`;
+        newOption.placeholder = `Option ${options.length + 1}`;
+        newOption.required = true;
+        newOption.spellcheck = false;
+
+        pollInputs.insertBefore(newOption, addOption);
+
+        // if length is now 4, hide the add option button
+        if (options.length === 3) {
+          addOption.style.display = 'none';
+        }
+      });
+
+      removePoll.addEventListener('click', e => {
+        e.preventDefault();
+        const pollInputs = container.querySelector('.poll-inputs');
+        const options = pollInputs.querySelectorAll('input[type="text"]');
+        const lastOption = options[options.length - 1];
+
+        if (options.length <= 2) {
+          return;
+        }
+
+        lastOption.remove();
+
+        // if length is now 3, show the add option button
+        if (options.length === 4) {
+          addOption.style.display = 'flex';
+        }
+      });
+    }
+  }
+    
+
   getHeader = () => {
     return /* html */`
-      <h2 class="pop-title">Create post</h2>
+      <h2 class="pop-title">
+        <span class="control cancel-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+          </svg>
+        </span>
+        <span class="text">Create a new post</span>
+      </h2>
       <div class="top">
         <p class="desc">
           Create a new post by typing or pasting your content in the editor below.
@@ -676,28 +723,7 @@ export default class NewPost extends HTMLElement {
           height: max-content;
           border-radius: 15px;
           position: relative;
-        }
-  
-        #content span.control {
-          padding: 0;
-          cursor: pointer;
-          display: none;
-          flex-flow: column;
-          gap: 0px;
-          justify-content: center;
-          position: absolute;
-          right: 9px;
-          top: 9px;
-        }
-
-        #content span.control svg {
-          width: 16px;
-          height: 16px;
-          color: var(--text-color);
-        }
-
-        #content span.control svg:hover{
-          color: var(--error-color);
+          overflow-y: auto;
         }
 
         p.server-status {
@@ -767,6 +793,30 @@ export default class NewPost extends HTMLElement {
           font-family: var(--font-read), sans-serif;
           color: var(--text-color);
           font-weight: 500;
+          position: relative;
+        }
+
+        h2.pop-title > span.control {
+          padding: 0;
+          cursor: pointer;
+          display: flex;
+          flex-flow: column;
+          gap: 0px;
+          justify-content: center;
+          position: absolute;
+          top: 50%;
+          left: 10px;
+          transform: translateY(-50%);
+        }
+
+        h2.pop-title > span.control svg {
+          width: 21px;
+          height: 21px;
+          color: var(--text-color);
+        }
+
+        h2.pop-title > span.control svg:hover{
+          color: var(--error-color);
         }
 
         .top {
@@ -836,7 +886,11 @@ export default class NewPost extends HTMLElement {
           flex-flow: column;
           justify-content: center;
           align-items: start;
-          gap: 10px;
+          gap: 15px;
+        }
+
+        form.fields > .field.polls > .poll-inputs.texts {
+          margin: 0 0 18px;
         }
 
         form.fields > .field.polls > div.remove {
@@ -853,6 +907,7 @@ export default class NewPost extends HTMLElement {
           width: max-content;
           padding: 0 5px;
           display: flex;
+          cursor: pointer;
           font-family: var(--font-read), sans-serif;
           font-size: 0.95rem;
           font-weight: 400;
@@ -860,24 +915,27 @@ export default class NewPost extends HTMLElement {
         }
 
         form.fields > .field.polls > .poll-inputs > span.add-option {
-          border: var(--input-border);
-          background: var(--background);
-          font-family: var(--font-read), sans-serif;
+          /*border: var(--border);*/
+          background: var(--gray-background);
+          font-family: var(--font-main), sans-serif;
           font-size: 1rem;
+          font-weight: 500;
           display: flex;
-          flex-flow: column;
           justify-content: center;
+          align-items: center;
           width: 100%;
+          cursor: pointer;
           height: 40px;
-          outline: none;
-          padding: 10px 12px;
-          margin: 0 0 15px;
           border-radius: 12px;
           color: var(--gray-color);
           -webkit-border-radius: 12px;
           -moz-border-radius: 12px;
           -ms-border-radius: 12px;
           -o-border-radius: 12px;
+        }
+
+        form.fields > .field.polls > .poll-inputs > span.add-option:hover {
+          color: var(--accent-color);
         }
 
         form.fields .field input {
@@ -1008,14 +1066,14 @@ export default class NewPost extends HTMLElement {
           width: 100%;
           gap: 20px;
           margin: 0 0 0 2px;
-          padding: 10px 0 0;
+          padding: 15px 0 0;
         }
 
         form.fields .actions > span.action-info {
           color: var(--gray-color);
           font-size: 0.95rem;
           font-family: var(--font-read), sans-serif;
-          font-weight: 500;
+          font-weight: 400;
           line-height: 1.5;
         }
 
@@ -1149,9 +1207,6 @@ export default class NewPost extends HTMLElement {
 
           #content span.control {
             cursor: default !important;
-            display: none;
-            top: 15px;
-            right: 15px;
           }
 
           ::-webkit-scrollbar {
@@ -1183,6 +1238,8 @@ export default class NewPost extends HTMLElement {
             gap: 25px;
           }
 
+          form.fields > .field.polls > div.remove > span.remove-poll,
+          form.fields > .field.polls > .poll-inputs > span.add-option,
           form.fields .actions > .action {
             cursor: default !important;
           }
